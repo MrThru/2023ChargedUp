@@ -18,6 +18,11 @@ public class Vector3d {
         y_ = y;
         z_ = z;
     }
+    public Vector3d() {
+        x_ = 0;
+        y_ = 0;
+        z_ = 0;
+    }
 
     public double x() {
         return x_;

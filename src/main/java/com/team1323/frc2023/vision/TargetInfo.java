@@ -13,6 +13,12 @@ public class TargetInfo {
         this.y = y;
         this.z = z;
     }
+    public TargetInfo(double y, double z, double x) {
+        this.y = y;
+        this.z = z;
+        this.x = x;
+    }
+
 
     public void setSkew(double skew) {
         this.skew = skew;
