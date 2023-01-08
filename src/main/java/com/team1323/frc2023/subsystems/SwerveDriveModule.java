@@ -53,8 +53,8 @@ public class SwerveDriveModule extends Subsystem{
 	public SwerveDriveModule(int rotationSlot, int driveSlot, int moduleID, 
 	double encoderOffset, Translation2d startingPose, boolean flipMagEncoder){
 		name += (moduleID + " ");
-		rotationMotor = new LazyTalonFX(rotationSlot, "main");
-		driveMotor = new LazyTalonFX(driveSlot, "main");
+		rotationMotor = new LazyTalonFX(rotationSlot);
+		driveMotor = new LazyTalonFX(driveSlot);
 		if (RobotBase.isReal()) {
 			if (Settings.kIsUsingCompBot) {
 				rotationMagEncoder = new DutyCycle(new DigitalInput(Ports.kModuleEncoders[moduleID]));

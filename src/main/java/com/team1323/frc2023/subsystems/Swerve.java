@@ -1040,7 +1040,6 @@ public class Swerve extends Subsystem{
 			resetAveragedDirection();
 			headingController.temporarilyDisable();
 			stop();
-			outputWpiPose = false;
 			lastUpdateTimestamp = timestamp;
 		}
 		
@@ -1063,7 +1062,6 @@ public class Swerve extends Subsystem{
 		public void onStop(double timestamp) {
 			translationalVector = new Translation2d();
 			rotationalInput = 0;
-			outputWpiPose = false;
 			stop();
 		}
 		
@@ -1358,7 +1356,7 @@ public class Swerve extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
-		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
+		//SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
 		SmartDashboard.putNumberArray("Robot Velocity", new double[]{velocity.dx, velocity.dy, velocity.dtheta});
 
 		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());

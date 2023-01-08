@@ -55,6 +55,7 @@ public class Robot extends TimedRobot {
 		driverControls = DriverControls.getInstance();
 		
 		subsystems = driverControls.getSubsystems();
+		Swerve.getInstance().zeroSensors();
 
 		Logger.clearLog();
 

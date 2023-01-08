@@ -25,23 +25,7 @@ public class Constants {
     
     //Field Landmarks
     public static final Translation2d kCenterOfField = new Translation2d(324.0, 0.0);
-    public static final Pose2d kRobotStartingPose = new Pose2d(new Translation2d(kFieldLength - (120.0 + 2.0 + kRobotHalfLength), (161.625 - 94.66)), Rotation2d.fromDegrees(180.0));
-    public static final Pose2d kPartnerRobotStartingPose = new Pose2d(new Translation2d(kFieldLength - (120.0 + 2.0 + kRobotHalfLength), (161.625 - 27.75)), Rotation2d.fromDegrees(180.0));
-    public static final Pose2d kAltRobotStartingPose = new Pose2d(new Translation2d(kFieldLength - (120.0 + 2.0 + kRobotHalfLength), -(161.625 - 27.75)), Rotation2d.fromDegrees(180.0));
-    //!!!ALL ROBOT RELATIVE!!!//
-    public static final Pose2d kTopRightQuadrantPose = new Pose2d(new Translation2d(585.0, 105.0), new Rotation2d()); //Opposite Hanger
-    public static final Pose2d kTopLeftQuadrantPose = new Pose2d(new Translation2d(602.0, -115.0), new Rotation2d()); //Opposite Terminal
-    public static final Pose2d kBottomLeftQuadrantPose = new Pose2d(new Translation2d(61.0, -101.0), new Rotation2d()); //Our alliance's hanger
-    public static final Pose2d kBottomRightQuadrantPose = new Pose2d(new Translation2d(47.0, 111.0), new Rotation2d()); //Our alliance's terminal
-    public static final List<Pose2d> kFieldCornerPositions = Arrays.asList(kTopRightQuadrantPose, kTopLeftQuadrantPose,
-        kBottomLeftQuadrantPose, kBottomRightQuadrantPose);
-
-    public static final Pose2d autoRightStartingPose = new Pose2d(new Translation2d(297.7142857142857, 92.85714285714286), Rotation2d.fromDegrees(90));
-    public static final Pose2d autoLeftStartingPose = new Pose2d(new Translation2d(233.71428571428572, -40.28571428571429), Rotation2d.fromDegrees(-135.0));
-    public static final Pose2d autoLeftFarStartingPose = new Pose2d(new Translation2d(264.57142857142856, -79.71428571428571), Rotation2d.fromDegrees(-135.0));
-
-    public static final Pose2d kLaunchPadPose = new Pose2d(new Translation2d(152, -53), Rotation2d.fromDegrees(0));
-    public static final Pose2d kManualResetPose = Pose2d.fromTranslation(kCenterOfField.translateBy(new Translation2d(-96, 0))); //8 feet from the center
+    public static final Pose2d kRobotStartingPose = Pose2d.identity();
 
     /**
     * Target Specifications
@@ -109,10 +93,10 @@ public class Constants {
     * Enter angle read by the absolute encoder. Insert as degrees and subtract or add 90° to the value
     * based on where the bevel ended up.
     */
-    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? -286.0 : -135.291513; //Module 0 - Front Right -3.52 | -7.91 | 5.71
-    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -224.5 : -13.761396; //Module 1 - Front Left -109.97 | -109.95
-    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -201.7 : -352.380087; //Module 2 - Rear Left -219.4 | -219.28 | 242.94
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? -281.9 : -16.178085; //Module 3 - Rear Right -353.5 | 351.77
+    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ?  -5.3 : 0; //Module 0 - Front Right -3.52 | -7.91 | 5.71
+    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -193.0 : -312.275391; //Module 1 - Front Left -109.97 | -109.95
+    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -196.2 : -174.462891; //Module 2 - Rear Left -219.4 | -219.28 | 242.94
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? -89.2 : -23.818359; //Module 3 - Rear Right -353.5 | 351.77
     
     //Swerve Module Positions (relative to the center of the drive base)
     public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, kWheelbaseWidth / 2);
@@ -147,9 +131,9 @@ public class Constants {
     public static final double kSwerveDriveEncoderResolution = 2048.0; //2048.0 for falcon 500
     public static final double kSwerveRotationEncoderResolution = 2048.0;
     /** The number of rotations the swerve rotation motor undergoes for every rotation of the module. */
-    public static final double kSwerveRotationReduction = 15.42857143;
+    public static final double kSwerveRotationReduction = 10.2857;
     /** The number of rotations the swerve drive encoder undergoes for every rotation of the wheel. */
-    public static final double kSwerveEncoderToWheelRatio = 7.791666667; //7.132867133
+    public static final double kSwerveEncoderToWheelRatio = 6.55; //7.132867133
     public static final double kSwerveEncUnitsPerWheelRev = kSwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
     public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
     
