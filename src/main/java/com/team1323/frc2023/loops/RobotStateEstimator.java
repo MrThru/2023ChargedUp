@@ -26,7 +26,6 @@ public class RobotStateEstimator implements Loop{
 	@Override
 	public void onLoop(double timestamp) {
 		robotState.addObservations(timestamp, swerve.getPose(), swerve.getVelocity(), Rotation2d.identity());
-		robotState.getAimingParameters();
 	}
 
 	@Override

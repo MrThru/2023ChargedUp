@@ -87,7 +87,7 @@ public class DriverControls implements Loop {
             // Any auto-specific LED controls can go here
         } else {
             driver.update();
-			coDriver.update();
+			//coDriver.update();
             //singleController.update();
             //testController.update();
             if(oneControllerMode)
