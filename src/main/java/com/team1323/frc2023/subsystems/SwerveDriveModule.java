@@ -282,7 +282,7 @@ public class SwerveDriveModule extends Subsystem{
 		return (isRotationEncoderFlipped ? -1.0 : 1.0) * periodicIO.absoluteRotation;
 	}
 	
-	private double getDriveDistanceInches(){
+	public double getDriveDistanceInches(){
 		return encUnitsToInches(periodicIO.drivePosition);
 	}
 	
