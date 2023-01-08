@@ -17,20 +17,9 @@ public class Ports {
     public static final int REAR_RIGHT_ROTATION = 11;
     public static final int REAR_RIGHT_DRIVE    = 16;
     
-
-    public static final int INTAKE = 2;
-    public static final int WRIST = 3;
-    public static final int BALL_SPLITTER = 12;
-    public static final int BALL_FEEDER = 13;
-    public static final int COLUMN = 5;
-    public static final int TURRET = 14;
-    //public static final int SHOOTER_TOP = 7;
-    public static final int HOOD_TALON = 15;
-    public static final int SHOOTER_LEFT = 20;
-    public static final int SHOOTER_RIGHT = 7;
-
-    public static final int TELESCOPE_LEFT = 41;
-    public static final int TELESCOPE_RIGHT = 40;
+    public static final int INTAKE_1 = 40;
+    public static final int INTAKE_2 = 50;
+    public static final int INTAKE_3 = 41;
 
     // MISC CAN
     public static final int PIGEON = 45;

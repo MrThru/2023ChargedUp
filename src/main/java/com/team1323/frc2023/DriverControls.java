@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.Intake;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Swerve;
 import com.team1323.io.Xbox;
@@ -38,6 +39,7 @@ public class DriverControls implements Loop {
     //PS4 driver;
 
     private Swerve swerve;
+    private Intake intake;
 
     private SubsystemManager subsystems;
     public SubsystemManager getSubsystems(){ return subsystems; }
@@ -64,8 +66,9 @@ public class DriverControls implements Loop {
 		coDriver.rightBumper.setLongPressDuration(1.0);
 
         swerve = Swerve.getInstance();
+        intake = Intake.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, intake));
 
     }
 
@@ -131,10 +134,15 @@ public class DriverControls implements Loop {
             swerve.resetAveragedDirection();
         }
 
-        if (driver.leftTrigger.wasActivated()) {
-            swerve.toggleEvade(true);
+        // if (driver.leftTrigger.wasActivated()) {
+        //     swerve.toggleEvade(true);
+        // } else if(driver.leftTrigger.wasReleased()) {
+        //     swerve.toggleEvade(false);
+        // }
+        if(driver.leftTrigger.wasActivated()) {
+            intake.setSpeed(0.7);
         } else if(driver.leftTrigger.wasReleased()) {
-            swerve.toggleEvade(false);
+            intake.setSpeed(0);
         }
 
         if(driver.POV0.wasActivated()) {
