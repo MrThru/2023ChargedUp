@@ -416,10 +416,12 @@ public class SwerveDriveModule extends Subsystem{
 		periodicIO.velocity = driveMotor.getSelectedSensorVelocity(0);
 		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);
 		if(useDriveEncoder) periodicIO.drivePosition = driveMotor.getSelectedSensorPosition(0);
-		if (Settings.kIsUsingCompBot) {
-			if(/*!rotationMotorZeroed*/true) periodicIO.absoluteRotation = rotationMagEncoder.getOutput() * 360.0;
-		} else {
-			if(/*!rotationMotorZeroed*/ true) periodicIO.absoluteRotation = rotationCancoder.getOutput() * 360.0;
+		if (RobotBase.isReal()) {
+			if (Settings.kIsUsingCompBot) {
+				if(/*!rotationMotorZeroed*/true) periodicIO.absoluteRotation = rotationMagEncoder.getOutput() * 360.0;
+			} else {
+				if(/*!rotationMotorZeroed*/ true) periodicIO.absoluteRotation = rotationCancoder.getOutput() * 360.0;
+			}
 		}
 		if (Settings.debugSwerve()) {
 			periodicIO.driveVoltage = driveMotor.getMotorOutputVoltage();

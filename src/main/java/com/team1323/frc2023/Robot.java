@@ -9,7 +9,7 @@ import java.util.Set;
 import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeExecuter;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
-import com.team1323.frc2023.auto.modes.StandStillMode;
+import com.team1323.frc2023.auto.modes.TestMode;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.Looper;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
@@ -74,7 +74,7 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new StandStillMode();
+		AutoModeBase auto = new TestMode();
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}
