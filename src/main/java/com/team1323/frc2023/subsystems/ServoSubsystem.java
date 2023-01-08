@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1323.frc2023.Constants;
+import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyTalonFX;
 
@@ -42,9 +41,9 @@ public abstract class ServoSubsystem extends Subsystem {
         this.minOutputUnits = minOutputUnits;
         this.maxOutputUnits = maxOutputUnits;
 
-        leader = new LazyTalonFX(portNumber, canBus);
+        leader = TalonFXFactory.createServoTalon(portNumber, canBus);
         followers = followerPortNumbers.stream()
-                .map(port -> new LazyTalonFX(port, canBus))
+                .map(port -> TalonFXFactory.createServoTalon(portNumber, canBus))
                 .collect(Collectors.toList());
         allMotors = Arrays.asList(leader);
         allMotors.addAll(followers);
@@ -52,24 +51,6 @@ public abstract class ServoSubsystem extends Subsystem {
     }
 
     private void configureMotors(int leaderPortNumber, double cruiseVelocityScalar, double accelerationScalar) {
-        for (LazyTalonFX motor : allMotors) {
-            motor.configVoltageCompSaturation(12.0, Constants.kCANTimeoutMs);
-            motor.enableVoltageCompensation(true);
-
-            motor.setNeutralMode(NeutralMode.Brake);
-
-            motor.configClosedloopRamp(0.0, Constants.kCANTimeoutMs);
-            motor.configOpenloopRamp(0.0, Constants.kCANTimeoutMs);
-
-            motor.configPeakOutputForward(1.0, Constants.kCANTimeoutMs);
-            motor.configPeakOutputReverse(-1.0, Constants.kCANTimeoutMs);
-
-            motor.configNominalOutputForward(0.0, Constants.kCANTimeoutMs);
-            motor.configNominalOutputReverse(0.0, Constants.kCANTimeoutMs);
-
-            motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        }
-
         leader.configForwardSoftLimitThreshold(outputUnitsToEncoderUnits(maxOutputUnits), Constants.kCANTimeoutMs);
         leader.configReverseSoftLimitThreshold(outputUnitsToEncoderUnits(minOutputUnits), Constants.kCANTimeoutMs);
         enableLimits(true);
