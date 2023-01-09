@@ -28,18 +28,21 @@ public abstract class ServoSubsystem extends Subsystem {
     private final double encoderUnitsPerOutputUnit;
     private final double minOutputUnits;
     private final double maxOutputUnits;
+    private final double outputUnitTolerance;
 
     public ServoSubsystem(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
-            double minOutputUnits, double maxOutputUnits, double cruiseVelocityScalar, double accelerationScalar) {
+            double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
+            double cruiseVelocityScalar, double accelerationScalar) {
         this(portNumber, new ArrayList<>(), canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits,
-                cruiseVelocityScalar, accelerationScalar);
+                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar);
     }
 
     public ServoSubsystem(int portNumber, List<Integer> followerPortNumbers, String canBus, double encoderUnitsPerOutputUnit, 
-            double minOutputUnits, double maxOutputUnits, double cruiseVelocityScalar, double accelerationScalar) {
+            double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, double cruiseVelocityScalar, double accelerationScalar) {
         this.encoderUnitsPerOutputUnit = encoderUnitsPerOutputUnit;
         this.minOutputUnits = minOutputUnits;
         this.maxOutputUnits = maxOutputUnits;
+        this.outputUnitTolerance = outputUnitTolerance;
 
         leader = TalonFXFactory.createServoTalon(portNumber, canBus);
         followers = followerPortNumbers.stream()
@@ -113,6 +116,11 @@ public abstract class ServoSubsystem extends Subsystem {
     protected void setOpenLoop(double percent) {
         periodicIO.demand = percent;
         periodicIO.controlMode = ControlMode.PercentOutput;
+    }
+
+    public boolean isOnTarget() {
+        return periodicIO.controlMode == ControlMode.MotionMagic && 
+                Math.abs(encoderUnitsToOutputUnits(periodicIO.demand) - getPosition()) <= outputUnitTolerance;
     }
 
     public void acceptManualInput(double input) {

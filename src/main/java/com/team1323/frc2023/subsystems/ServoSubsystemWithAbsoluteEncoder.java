@@ -14,15 +14,17 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
     private AbsoluteEncoderInfo absoluteEncoderInfo;
 
     public ServoSubsystemWithAbsoluteEncoder(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
-            double minOutputUnits, double maxOutputUnits, double cruiseVelocityScalar, double accelerationScalar, AbsoluteEncoderInfo encoderInfo) {
+            double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
+            double cruiseVelocityScalar, double accelerationScalar, AbsoluteEncoderInfo encoderInfo) {
         this(portNumber, new ArrayList<>(), canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits,
-                cruiseVelocityScalar, accelerationScalar, encoderInfo);
+                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, encoderInfo);
     }
 
     public ServoSubsystemWithAbsoluteEncoder(int portNumber, List<Integer> followerPortNumbers, String canBus, double encoderUnitsPerOutputUnit, 
-            double minOutputUnits, double maxOutputUnits, double cruiseVelocityScalar, double accelerationScalar, AbsoluteEncoderInfo encoderInfo) {
+            double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, double cruiseVelocityScalar, double accelerationScalar, 
+            AbsoluteEncoderInfo encoderInfo) {
         super(portNumber, followerPortNumbers, canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
-                cruiseVelocityScalar, accelerationScalar);
+                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar);
         absoluteEncoderInfo = encoderInfo;
         absoluteEncoder = new DutyCycle(new DigitalInput(absoluteEncoderInfo.digitalInputChannel));
     }

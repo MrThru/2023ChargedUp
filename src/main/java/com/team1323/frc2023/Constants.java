@@ -164,6 +164,8 @@ public class Constants {
         public static final double kMinControlHeight = 0.0;
         public static final double kMaxControlHeight = 10.0;
 
+        public static final double kHeightTolerance = 1.0;
+
         public static final double kP = 0.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
@@ -177,6 +179,8 @@ public class Constants {
 
         public static final double kMinControlAngle = 0.0;
         public static final double kMaxControlAngle = 45.0;
+
+        public static final double kAngleTolerance = 2.0;
 
         public static final double kP = 0.0;
         public static final double kI = 0.0;

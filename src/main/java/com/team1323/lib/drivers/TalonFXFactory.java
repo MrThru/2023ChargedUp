@@ -12,6 +12,7 @@ public class TalonFXFactory {
 
         return talon;
     }
+
     public static LazyTalonFX createRollerTalon(int deviceId) {
         return createRollerTalon(deviceId, null);
     }
@@ -21,6 +22,10 @@ public class TalonFXFactory {
         configureServoTalon(talon);
 
         return talon;
+    }
+
+    public static LazyTalonFX createServoTalon(int deviceId) {
+        return createServoTalon(deviceId, null);
     }
 
     private static LazyTalonFX constructTalon(int deviceId, String canBus) {

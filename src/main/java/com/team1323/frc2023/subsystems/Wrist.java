@@ -18,7 +18,8 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
     public Wrist() {
         super(Ports.WRIST, null, Constants.Wrist.kEncoderUnitsPerDegree, 
                 Constants.Wrist.kMinControlAngle, Constants.Wrist.kMaxControlAngle, 
-                0.25, 1.0, Constants.Wrist.kAbsoluteEncoderInfo);
+                Constants.Wrist.kAngleTolerance, 0.25, 1.0, 
+                Constants.Wrist.kAbsoluteEncoderInfo);
 
         setPIDF(0, Constants.Wrist.kP, Constants.Wrist.kI, Constants.Wrist.kD, Constants.Wrist.kF);
         setSupplyCurrentLimit(30.0);
@@ -31,6 +32,11 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
             @Override
             public void act() {
                 setPosition(degrees);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return isOnTarget();
             }
         };
     }
