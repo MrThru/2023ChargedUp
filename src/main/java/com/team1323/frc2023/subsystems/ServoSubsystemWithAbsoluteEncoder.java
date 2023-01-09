@@ -10,8 +10,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycle;
 
 public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
+    private static final int kMaxPositionResets = 50;
+
     private DutyCycle absoluteEncoder;
     private AbsoluteEncoderInfo absoluteEncoderInfo;
+    private int numPositionResets = kMaxPositionResets;
 
     public ServoSubsystemWithAbsoluteEncoder(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
@@ -54,6 +57,13 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
         }
 
         leader.setSelectedSensorPosition(outputUnitsToEncoderUnits(absoluteSubsystemAngle));
+    }
+
+    public void zeroPositionWithCounter() {
+        if (numPositionResets < kMaxPositionResets) {
+            zeroPosition();
+            numPositionResets++;
+        }
     }
 
     public static class AbsoluteEncoderInfo {

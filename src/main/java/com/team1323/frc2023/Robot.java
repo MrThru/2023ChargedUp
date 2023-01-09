@@ -16,6 +16,7 @@ import com.team1323.frc2023.loops.QuinticPathTransmitter;
 import com.team1323.frc2023.loops.RobotStateEstimator;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Swerve;
+import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.lib.util.CrashTracker;
 import com.team1323.lib.util.Logger;
 import com.team254.lib.trajectory.TrajectoryGenerator;
@@ -156,6 +157,7 @@ public class Robot extends TimedRobot {
 			smartDashboardInteractions.output();
 			Settings.update();
 			Swerve.getInstance().zeroModuleAngles();
+			Wrist.getInstance().zeroPositionWithCounter();
 			if (subsystems.haveEmergency()) {
 				//leds.configLEDs(LEDColors.RED);
 			}
