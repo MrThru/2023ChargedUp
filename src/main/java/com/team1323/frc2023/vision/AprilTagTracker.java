@@ -18,6 +18,7 @@ public class AprilTagTracker {
             instance = new AprilTagTracker();
         return instance;
     }
+    
     public enum AprilTags {
         ZERO(0, new Pose3d(new Vector3d(), new Rotation2d()));
         Pose3d pose3d;
@@ -26,7 +27,6 @@ public class AprilTagTracker {
             this.pose3d = pose3d;
             this.id = id;
         }
-
     }
 
     private AprilTags currentDetectedAprilTag = AprilTags.ZERO;

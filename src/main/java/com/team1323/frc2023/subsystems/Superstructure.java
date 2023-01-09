@@ -18,11 +18,19 @@ public class Superstructure extends Subsystem {
 	private Compressor compressor;
 	
 	public Swerve swerve;
+	public VerticalElevator verticalElevator;
+
+	public Intake intake;
+
 	public RobotState robotState;
+
 
 	
 	public Superstructure(){
 		swerve = Swerve.getInstance();
+		verticalElevator = VerticalElevator.getInstance();
+
+		intake = Intake.getInstance();
 
 		robotState = RobotState.getInstance();
 		

@@ -4,17 +4,15 @@
 
 package com.team1323.frc2023.subsystems;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.team1323.frc2023.Constants;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.lib.drivers.TalonFXFactory;
 import com.team254.drivers.LazyTalonFX;
+
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 
 /** Add your docs here. */
 public class Intake extends Subsystem {
@@ -25,58 +23,66 @@ public class Intake extends Subsystem {
         return instance;
     }
 
-    LazyTalonFX intake1, intake2, intake3;
-    List<LazyTalonFX> motors;
+    TalonFX leftTalon, rightTalon;
+    Solenoid leftSolenoid, rightSolenoid;
     public Intake() {
-        intake1 = new LazyTalonFX(Ports.INTAKE_1);
-        intake2 = new LazyTalonFX(Ports.INTAKE_2);
-        intake3 = new LazyTalonFX(Ports.INTAKE_3);
+        leftTalon = TalonFXFactory.createRollerTalon(Ports.INTAKE_LEFT);
+        rightTalon = TalonFXFactory.createRollerTalon(Ports.INTAKE_RIGHT);
 
-        motors = Arrays.asList(intake1, intake2, intake3);
-        for(LazyTalonFX motor : motors) {
-            motor.configVoltageCompSaturation(12.0, Constants.kCANTimeoutMs);
-            motor.enableVoltageCompensation(true);
-
-            motor.setNeutralMode(NeutralMode.Brake);
-
-            motor.configClosedloopRamp(0.0, Constants.kCANTimeoutMs);
-            motor.configOpenloopRamp(0.0, Constants.kCANTimeoutMs);
-
-            motor.configPeakOutputForward(1.0, Constants.kCANTimeoutMs);
-            motor.configPeakOutputReverse(-1.0, Constants.kCANTimeoutMs);
-
-            motor.configNominalOutputForward(0.0, Constants.kCANTimeoutMs);
-            motor.configNominalOutputReverse(0.0, Constants.kCANTimeoutMs);
-
-            motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-            motor.configForwardSoftLimitEnable(false);
-            motor.configReverseSoftLimitEnable(false);
-
-            
-            motor.setInverted(TalonFXInvertType.CounterClockwise);
-
+        leftSolenoid = new Solenoid(0, PneumaticsModuleType.REVPH, Ports.INTAKE_LEFT_CLAMPER);
+        rightSolenoid = new Solenoid(0, PneumaticsModuleType.REVPH, Ports.INTAKE_RIGHT_CLAMPER);
+    }
+    public enum ControlState {
+        OFF(0.0, false), INTAKE_CUBE(0.5, false), INTAKE_CONE(0.5, true);
+        double speed;
+        boolean clampOpened;
+        ControlState(double speed, boolean clampOpened) {
+            this.speed = speed;
+            this.clampOpened = clampOpened;
         }
-        setSupplyCurrentLimit(10);
-        
     }
-    protected void setSupplyCurrentLimit(double amps) {
-        SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(true, amps, amps, 0.01);
-        motors.forEach(m -> m.configSupplyCurrentLimit(currentLimitConfiguration, Constants.kCANTimeoutMs));
+    private ControlState currentState = ControlState.OFF;
+    public void setState(ControlState state) {
+        currentState = state;
     }
-    public void setSpeed(double speed1, double speed2, double speed3) {
-        intake1.set(ControlMode.PercentOutput, speed1);
-        intake2.set(ControlMode.PercentOutput, speed2);
-        intake3.set(ControlMode.PercentOutput, speed3);
+    public ControlState getState() {
+        return currentState;
     }
-    public void setSpeed(double speed) {
-        setSpeed(speed, speed, speed);
+    public void conformToState(ControlState state) {
+        setSpeed(state.speed);
+        openClamp(state.clampOpened);
+    }
+    public void setSpeed(double demand) {
+        leftTalon.set(ControlMode.PercentOutput, demand);
+    }
+    public void openClamp(boolean openClamp) {
+        leftSolenoid.set(openClamp);
+        rightSolenoid.set(openClamp);
     }
     @Override
     public void outputTelemetry() {
-        
+
     }
+    public Request setSpeedRequest(double speed) {
+        return new Request() {
+            @Override
+            public void act() {
+                setSpeed(speed);
+            }
+        };
+    }
+    public Request stateRequest(ControlState desiredState) {
+        return new Request() {
+            @Override
+            public void act() {
+                conformToState(desiredState);
+            }
+        };
+    }
+
     @Override
     public void stop() {
-        setSpeed(0);
+        conformToState(ControlState.OFF);
     }
+
 }

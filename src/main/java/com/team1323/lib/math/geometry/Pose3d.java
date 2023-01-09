@@ -10,8 +10,8 @@ import com.team1323.lib.math.geometry.Vector3d;
 
 /** Add your docs here. */
 public class Pose3d {
-    protected final Vector3d vector3d;
-    protected final Rotation2d rotation2d;
+    protected Vector3d vector3d;
+    protected Rotation2d rotation2d;
 
     public Pose3d() {
         vector3d = new Vector3d();
@@ -28,5 +28,5 @@ public class Pose3d {
     public Rotation2d getRotation2d() {
         return this.rotation2d;
     }
-
+    
 }
