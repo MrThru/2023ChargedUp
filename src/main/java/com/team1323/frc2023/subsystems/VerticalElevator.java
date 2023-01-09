@@ -27,7 +27,7 @@ public class VerticalElevator extends ServoSubsystem {
         stop();
     }
 
-    public Request setHeightRequest(double inches) {
+    public Request heightRequest(double inches) {
         return new Request() {
             @Override
             public void act() {

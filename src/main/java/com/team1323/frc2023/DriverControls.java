@@ -15,6 +15,7 @@ import com.team1323.frc2023.subsystems.Intake;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Swerve;
 import com.team1323.frc2023.subsystems.VerticalElevator;
+import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Pose2d;
@@ -42,6 +43,7 @@ public class DriverControls implements Loop {
     private Swerve swerve;
     private Intake intake;
     private VerticalElevator verticalElevator;
+    private Wrist wrist;
 
     private SubsystemManager subsystems;
     public SubsystemManager getSubsystems(){ return subsystems; }
@@ -70,8 +72,9 @@ public class DriverControls implements Loop {
         swerve = Swerve.getInstance();
         intake = Intake.getInstance();
         verticalElevator = VerticalElevator.getInstance();
+        wrist = Wrist.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, intake, verticalElevator));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, intake, verticalElevator, wrist));
 
     }
 
@@ -162,6 +165,7 @@ public class DriverControls implements Loop {
         }
 
         verticalElevator.acceptManualInput(-coDriver.getLeftY());
+        wrist.acceptManualInput(-coDriver.getRightY());
     }
 
     private void oneControllerMode() {}

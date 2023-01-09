@@ -3,6 +3,7 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team1323.frc2023.subsystems.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
@@ -167,5 +168,29 @@ public class Constants {
         public static final double kI = 0.0;
         public static final double kD = 0.0;
         public static final double kF = 0.0;
+    }
+
+    public static class Wrist {
+        public static final double kMotorRotationsPerWristRotation = 1.0;
+        public static final double kEncoderUnitsPerWristRotation = kMotorRotationsPerWristRotation * 2048.0;
+        public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWristRotation / 360.0;
+
+        public static final double kMinControlAngle = 0.0;
+        public static final double kMaxControlAngle = 45.0;
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kF = 0.0;
+
+        public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
+            Ports.WRIST_ENCODER, 
+            false, 
+            1.0, 
+            0.0, 
+            0.0, 
+            0.0, 
+            45.0
+        );
     }
 }
