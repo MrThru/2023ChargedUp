@@ -46,7 +46,7 @@ public abstract class ServoSubsystem extends Subsystem {
 
         leader = TalonFXFactory.createServoTalon(portNumber, canBus);
         followers = followerPortNumbers.stream()
-                .map(port -> TalonFXFactory.createServoTalon(portNumber, canBus))
+                .map(port -> TalonFXFactory.createServoTalon(port, canBus))
                 .collect(Collectors.toList());
         allMotors = Arrays.asList(leader);
         allMotors.addAll(followers);
