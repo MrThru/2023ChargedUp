@@ -158,6 +158,14 @@ public class Constants {
     }
 
     public static class VerticalElevator {
-        public static final double 
+        public static final double kTicksPerInch = 1.0;
+
+        public static final double kMinControlHeight = 0.0;
+        public static final double kMaxControlHeight = 10.0;
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kF = 0.0;
     }
 }

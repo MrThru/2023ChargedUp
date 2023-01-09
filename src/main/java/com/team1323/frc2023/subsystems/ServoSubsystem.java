@@ -115,6 +115,14 @@ public abstract class ServoSubsystem extends Subsystem {
         periodicIO.controlMode = ControlMode.PercentOutput;
     }
 
+    public void acceptManualInput(double input) {
+        if (input != 0.0) {
+            setOpenLoop(input);
+        } else if (periodicIO.controlMode == ControlMode.PercentOutput) {
+            lockPosition();
+        }
+    }
+
     @Override
     public void readPeriodicInputs() {
         periodicIO.position = leader.getSelectedSensorPosition();

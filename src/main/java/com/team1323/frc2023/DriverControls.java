@@ -14,6 +14,7 @@ import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Intake;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Swerve;
+import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Pose2d;
@@ -40,6 +41,7 @@ public class DriverControls implements Loop {
 
     private Swerve swerve;
     private Intake intake;
+    private VerticalElevator verticalElevator;
 
     private SubsystemManager subsystems;
     public SubsystemManager getSubsystems(){ return subsystems; }
@@ -67,8 +69,9 @@ public class DriverControls implements Loop {
 
         swerve = Swerve.getInstance();
         intake = Intake.getInstance();
+        verticalElevator = VerticalElevator.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, intake));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, intake, verticalElevator));
 
     }
 
@@ -90,7 +93,7 @@ public class DriverControls implements Loop {
             // Any auto-specific LED controls can go here
         } else {
             driver.update();
-			//coDriver.update();
+			coDriver.update();
             //singleController.update();
             //testController.update();
             if(oneControllerMode)
@@ -157,7 +160,8 @@ public class DriverControls implements Loop {
         if((!driver.POV0.isBeingPressed() && !driver.POV90.isBeingPressed() && !driver.POV180.isBeingPressed() && !driver.POV270.isBeingPressed())) {
             swerve.setCenterOfRotation(new Translation2d());
         }
-        
+
+        verticalElevator.acceptManualInput(-coDriver.getLeftY());
     }
 
     private void oneControllerMode() {}
