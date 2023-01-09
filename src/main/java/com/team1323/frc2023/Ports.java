@@ -21,6 +21,15 @@ public class Ports {
     public static final int INTAKE_2 = 50;
     public static final int INTAKE_3 = 41;
 
+    public static final int VERTICAL_ELEVATOR_LEADER = 0;
+    public static final int VERTICAL_ELEVATOR_FOLLOWER = 0;
+
+    public static final int HORIZONTAL_ELEVATOR_LEADER = 0;
+    public static final int HORIZONTAL_ELEVATOR_FOLLOWER = 0;
+
+    public static final int WRIST = 0;
+    public static final int INTAKE_LEFT = 0;
+    public static final int INTAKE_RIGHT = 0;
     // MISC CAN
     public static final int PIGEON = 45;
     public static final int CANDLE = 46;
@@ -35,13 +44,17 @@ public class Ports {
     public static final int REAR_RIGHT_ENCODER = Settings.kIsUsingCompBot ? 2 : 33; //33
     public static final int[] kModuleEncoders = new int[]{FRONT_RIGHT_ENCODER, FRONT_LEFT_ENCODER,
         REAR_LEFT_ENCODER, REAR_RIGHT_ENCODER};
+
+    public static final int WRIST_ENCODER = 9;
+
     //CANCoders
     
     // Pneumatics
+    public static final int INTAKE_LEFT_CLAMPER = 0;
+    public static final int INTAKE_RIGHT_CLAMPER = 1;
 
     //Canifier
     public static final int CANIFIER = 30;
-    public static final int HOOD_ENCODER = 9;
         
     }
     

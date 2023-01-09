@@ -1,0 +1,10 @@
+- Swerve (done)
+- Vertical elevator
+    - 2 falcons
+- Horizontal elevator
+    - 2 falcons
+- Wrist
+    - 1 falcon
+- Intake
+    - 2 falcons
+    - 1-2 solenoids

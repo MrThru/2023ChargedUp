@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.team254.lib.geometry.Pose2d;
-import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 public class Constants {
@@ -156,5 +155,9 @@ public class Constants {
         //LED Arrays
         public static final List<List<Double>> rainbow = Arrays.asList(red, orange, yellow, green, blue, pink, purple);
         
+    }
+
+    public static class VerticalElevator {
+        public static final double 
     }
 }

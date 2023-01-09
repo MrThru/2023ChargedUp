@@ -6,32 +6,25 @@ import com.team1323.frc2023.Constants;
 import com.team254.drivers.LazyTalonFX;
 
 public class TalonFXFactory {
-    public static LazyTalonFX createRollerTalon(int deviceId) {
-        LazyTalonFX talon = new LazyTalonFX(deviceId);
-        configureRollerTalon(talon);
-
-        return talon;
-    }
-
     public static LazyTalonFX createRollerTalon(int deviceId, String canBus) {
-        LazyTalonFX talon = new LazyTalonFX(deviceId, canBus);
+        LazyTalonFX talon = constructTalon(deviceId, canBus);
         configureRollerTalon(talon);
-
-        return talon;
-    }
-
-    public static LazyTalonFX createServoTalon(int deviceId) {
-        LazyTalonFX talon = new LazyTalonFX(deviceId);
-        configureServoTalon(talon);
 
         return talon;
     }
 
     public static LazyTalonFX createServoTalon(int deviceId, String canBus) {
-        LazyTalonFX talon = new LazyTalonFX(deviceId, canBus);
+        LazyTalonFX talon = constructTalon(deviceId, canBus);
         configureServoTalon(talon);
 
         return talon;
+    }
+
+    private static LazyTalonFX constructTalon(int deviceId, String canBus) {
+        if (canBus == null) {
+            return new LazyTalonFX(deviceId);
+        }
+        return new LazyTalonFX(deviceId, canBus);
     }
 
     private static void configureRollerTalon(LazyTalonFX talon) {
