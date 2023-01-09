@@ -171,6 +171,24 @@ public class Constants {
         public static final double kD = 0.0;
         public static final double kF = 0.0;
     }
+    public static class HorizontalElevator {
+        public static final double kTicksPerInch = 1.0;
+
+        public static final double kMinExtension = 0.0;
+        public static final double kMaxExtension = 10.0;
+
+        public static final double kExtensionTolerance = 1.0;
+
+        public static final double kVelocityScalar = 0.25;
+        public static final double kAccelerationScalar = 1.0;
+
+        public static final double kSupplyLimit = 40.0;
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kF = 0.0;
+    }
 
     public static class Wrist {
         public static final double kMotorRotationsPerWristRotation = 1.0;

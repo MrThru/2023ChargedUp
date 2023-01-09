@@ -19,6 +19,8 @@ public class Superstructure extends Subsystem {
 	
 	public Swerve swerve;
 	public VerticalElevator verticalElevator;
+	public HorizontalElevator horizontalElevator;
+	public Wrist wrist;
 
 	public Intake intake;
 
@@ -29,7 +31,8 @@ public class Superstructure extends Subsystem {
 	public Superstructure(){
 		swerve = Swerve.getInstance();
 		verticalElevator = VerticalElevator.getInstance();
-
+		horizontalElevator = HorizontalElevator.getInstance();
+		wrist = Wrist.getInstance();
 		intake = Intake.getInstance();
 
 		robotState = RobotState.getInstance();

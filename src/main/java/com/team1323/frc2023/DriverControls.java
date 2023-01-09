@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Intake;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Swerve;
@@ -41,9 +42,11 @@ public class DriverControls implements Loop {
     //PS4 driver;
 
     private Swerve swerve;
-    private Intake intake;
     private VerticalElevator verticalElevator;
+    private HorizontalElevator horizontalElevator;
     private Wrist wrist;
+    private Intake intake;
+
 
     private SubsystemManager subsystems;
     public SubsystemManager getSubsystems(){ return subsystems; }
@@ -70,11 +73,12 @@ public class DriverControls implements Loop {
 		coDriver.rightBumper.setLongPressDuration(1.0);
 
         swerve = Swerve.getInstance();
-        intake = Intake.getInstance();
         verticalElevator = VerticalElevator.getInstance();
+        horizontalElevator = HorizontalElevator.getInstance();
         wrist = Wrist.getInstance();
+        intake = Intake.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, intake, verticalElevator, wrist));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, verticalElevator, horizontalElevator, wrist, intake));
 
     }
 
