@@ -36,13 +36,12 @@ import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.wpilib.SwerveDriveKinematics;
-import com.wpilib.SwerveDriveOdometry;
+import com.wpilib.SwerveDrivePoseEstimator;
+import com.wpilib.SwerveModulePosition;
 import com.wpilib.SwerveModuleState;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -129,11 +128,8 @@ public class Swerve extends Subsystem{
 		return velocity;
 	}
 	
-	//Wpilib odometry
-	SwerveDriveOdometry odometry;
+	// WPILib odometry
 	SwerveDrivePoseEstimator poseEstimator;
-	Pose2d wpiPose = new Pose2d();
-	boolean outputWpiPose = true;
 	
 	// Module configuration variables (for beginnning of auto)
 	boolean modulesReady = false;
@@ -225,24 +221,21 @@ public class Swerve extends Subsystem{
 		
 		pigeon = Pigeon.getInstance();
 		
-		pose = new Pose2d();
-		distanceTraveled = 0;
-		
 		motionPlanner = new DriveMotionPlanner();
 		
 		robotState = RobotState.getInstance();
 		
-		odometry = new SwerveDriveOdometry(new SwerveDriveKinematics(Constants.kVehicleToModuleZero, 
-		Constants.kVehicleToModuleOne, Constants.kVehicleToModuleTwo, Constants.kVehicleToModuleThree), 
-		Rotation2d.identity());
-		edu.wpi.first.math.kinematics.SwerveDriveKinematics wpiKinematics = new edu.wpi.first.math.kinematics.SwerveDriveKinematics(
+		SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
 			Units.inchesToMeters(Constants.kVehicleToModuleZero),
 			Units.inchesToMeters(Constants.kVehicleToModuleOne),
 			Units.inchesToMeters(Constants.kVehicleToModuleTwo),
 			Units.inchesToMeters(Constants.kVehicleToModuleThree)
 		);
-		poseEstimator = new SwerveDrivePoseEstimator(wpiKinematics, edu.wpi.first.math.geometry.Rotation2d.fromDegrees(pigeon.getYaw().getDegrees()),
-				getModulePositions(), new edu.wpi.first.math.geometry.Pose2d(), VecBuilder.fill(0.1, 0.1, 0.1), VecBuilder.fill(0.1, 0.1, 0.1));
+		poseEstimator = new SwerveDrivePoseEstimator(kinematics, pigeon.getYaw(), 
+				getModulePositions(), Pose2d.identity(), VecBuilder.fill(0.1, 0.1, 0.1), 
+				VecBuilder.fill(0.1, 0.1, 0.1));
+		pose = poseEstimator.getEstimatedPosition();
+		distanceTraveled = 0;
 		
 		generator = TrajectoryGenerator.getInstance();
 		
@@ -1048,9 +1041,8 @@ public class Swerve extends Subsystem{
 			if(modulesReady || (getState() != ControlState.TRAJECTORY)){
 				//updatePose(timestamp);
 				//alternatePoseUpdate();
-				pose = odometry.update(pigeon.getYaw(), getModuleStates());
-				velocity = odometry.getVelocity();
-				wpiPose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, edu.wpi.first.math.geometry.Rotation2d.fromDegrees(pigeon.getYaw().getDegrees()), getModulePositions()));
+				pose = poseEstimator.updateWithTime(timestamp, pigeon.getYaw(), getModulePositions());
+				velocity = poseEstimator.getVelocity();
 				//pose = robotState.getLatestFieldToVehicle().getValue();
 			}
 			updateControlCycle(timestamp);
@@ -1246,7 +1238,7 @@ public class Swerve extends Subsystem{
 		SwerveModulePosition[] positions = new SwerveModulePosition[modules.size()];
 		for (int i = 0; i < modules.size(); i++) {
 			positions[i] = new SwerveModulePosition(Units.inchesToMeters(modules.get(i).getDriveDistanceInches()), 
-					edu.wpi.first.math.geometry.Rotation2d.fromDegrees(modules.get(i).getModuleAngle().getDegrees()));
+					modules.get(i).getModuleAngle());
 		}
 		return positions;
 	}
@@ -1318,34 +1310,30 @@ public class Swerve extends Subsystem{
 		pigeon.setAngle(startingPose.getRotation().getUnboundedDegrees());
 		modules.forEach((m) -> m.zeroSensors(startingPose));
 		pose = startingPose;
-		odometry.resetPosition(startingPose, startingPose.getRotation());
 		robotState.reset(Timer.getFPGATimestamp(), startingPose, Rotation2d.identity());
-		poseEstimator.resetPosition(edu.wpi.first.math.geometry.Rotation2d.fromDegrees(pigeon.getYaw().getDegrees()), getModulePositions(), Units.inchesToMeters(pose));
+		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(pose));
 		distanceTraveled = 0;
 	}
 	
 	public synchronized void resetPosition(Pose2d newPose){
 		pose = new Pose2d(newPose.getTranslation(), pose.getRotation());
 		modules.forEach((m) -> m.zeroSensors(pose));
-		odometry.resetPosition(pose, pose.getRotation());
 		robotState.reset(Timer.getFPGATimestamp(), pose, Rotation2d.identity());
-		poseEstimator.resetPosition(edu.wpi.first.math.geometry.Rotation2d.fromDegrees(pigeon.getYaw().getDegrees()), getModulePositions(), Units.inchesToMeters(pose));
+		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(pose));
 		distanceTraveled = 0;
 	}
 	
 	public synchronized void setXCoordinate(double x){
 		pose.getTranslation().setX(x);
 		modules.forEach((m) -> m.zeroSensors(pose));
-		odometry.resetPosition(pose, pose.getRotation());
-		poseEstimator.resetPosition(edu.wpi.first.math.geometry.Rotation2d.fromDegrees(pigeon.getYaw().getDegrees()), getModulePositions(), Units.inchesToMeters(pose));
+		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(pose));
 		System.out.println("X coordinate reset to: " + pose.getTranslation().x());
 	}
 	
 	public synchronized void setYCoordinate(double y){
 		pose.getTranslation().setY(y);
 		modules.forEach((m) -> m.zeroSensors(pose));
-		odometry.resetPosition(pose, pose.getRotation());
-		poseEstimator.resetPosition(edu.wpi.first.math.geometry.Rotation2d.fromDegrees(pigeon.getYaw().getDegrees()), getModulePositions(), Units.inchesToMeters(pose));
+		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(pose));
 		System.out.println("Y coordinate reset to: " + pose.getTranslation().y());
 	}
 	double prevSwerveVelocity = 0;
@@ -1360,10 +1348,6 @@ public class Swerve extends Subsystem{
 		SmartDashboard.putNumberArray("Robot Velocity", new double[]{velocity.dx, velocity.dy, velocity.dtheta});
 
 		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());
-		// testing the wpi odometry
-		if(outputWpiPose) {
-			SmartDashboard.putNumberArray("Path Pose", new double[]{wpiPose.getTranslation().x(), wpiPose.getTranslation().y(), wpiPose.getRotation().getUnboundedDegrees()});
-		}
 
 		if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
 			setDriveNeutralMode(NeutralMode.Coast);

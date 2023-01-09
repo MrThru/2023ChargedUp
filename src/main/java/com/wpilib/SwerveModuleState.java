@@ -1,35 +1,23 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 package com.wpilib;
 
+import java.util.Objects;
+
 import com.team254.lib.geometry.Rotation2d;
 
-/**
- * Represents the state of one swerve module.
- */
-@SuppressWarnings("MemberName")
+/** Represents the state of one swerve module. */
 public class SwerveModuleState implements Comparable<SwerveModuleState> {
-
-  /**
-   * Speed of the wheel of the module.
-   */
+  /** Speed of the wheel of the module. */
   public double speedMetersPerSecond;
 
-  /**
-   * Angle of the module.
-   */
+  /** Angle of the module. */
   public Rotation2d angle = Rotation2d.fromDegrees(0);
 
-  /**
-   * Constructs a SwerveModuleState with zeros for speed and angle.
-   */
-  public SwerveModuleState() {
-  }
+  /** Constructs a SwerveModuleState with zeros for speed and angle. */
+  public SwerveModuleState() {}
 
   /**
    * Constructs a SwerveModuleState.
@@ -42,16 +30,56 @@ public class SwerveModuleState implements Comparable<SwerveModuleState> {
     this.angle = angle;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof SwerveModuleState) {
+      return Double.compare(speedMetersPerSecond, ((SwerveModuleState) obj).speedMetersPerSecond)
+          == 0;
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(speedMetersPerSecond);
+  }
+
   /**
    * Compares two swerve module states. One swerve module is "greater" than the other if its speed
    * is higher than the other.
    *
-   * @param o The other swerve module.
+   * @param other The other swerve module.
    * @return 1 if this is greater, 0 if both are equal, -1 if other is greater.
    */
   @Override
-  @SuppressWarnings("ParameterName")
-  public int compareTo(SwerveModuleState o) {
-    return Double.compare(this.speedMetersPerSecond, o.speedMetersPerSecond);
+  public int compareTo(SwerveModuleState other) {
+    return Double.compare(this.speedMetersPerSecond, other.speedMetersPerSecond);
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+        "SwerveModuleState(Speed: %.2f m/s, Angle: %s)", speedMetersPerSecond, angle);
+  }
+
+  /**
+   * Minimize the change in heading the desired swerve module state would require by potentially
+   * reversing the direction the wheel spins. If this is used with the PIDController class's
+   * continuous input functionality, the furthest a wheel will ever rotate is 90 degrees.
+   *
+   * @param desiredState The desired state.
+   * @param currentAngle The current module angle.
+   * @return Optimized swerve module state.
+   */
+  public static SwerveModuleState optimize(
+      SwerveModuleState desiredState, Rotation2d currentAngle) {
+    var delta = desiredState.angle.minus(currentAngle);
+    if (Math.abs(delta.getDegrees()) > 90.0) {
+      return new SwerveModuleState(
+          -desiredState.speedMetersPerSecond,
+          desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));
+    } else {
+      return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+    }
   }
 }

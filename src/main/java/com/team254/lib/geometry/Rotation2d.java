@@ -112,6 +112,10 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
                 cos_angle_ * other.sin_angle_ + sin_angle_ * other.cos_angle_, true);
     }
 
+    public Rotation2d minus(final Rotation2d other) {
+        return this.rotateBy(other.inverse());
+    }
+
     public Rotation2d normal() {
         return new Rotation2d(-sin_angle_, cos_angle_, false);
     }
