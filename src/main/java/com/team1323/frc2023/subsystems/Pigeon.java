@@ -17,14 +17,11 @@ public class Pigeon {
 		return instance;
 	}
 	
-	private PigeonIMU pigeon/*, secondPigeon*/;
-
-	private Rotation2d lastYaw = new Rotation2d();
+	private PigeonIMU pigeon;
     
 	private Pigeon(){
 		try{
 			pigeon = new PigeonIMU(Ports.PIGEON);
-			//secondPigeon = new PigeonIMU(Ports.SECONDARY_PIGEON);
 		}catch(Exception e){
 			System.out.println(e);
 		}
@@ -36,18 +33,18 @@ public class Pigeon {
 	
 	public Rotation2d getYaw(){
 		if(RobotBase.isReal()){
-			return Rotation2d.fromDegrees(-pigeon.getFusedHeading());
+			return Rotation2d.fromDegrees(pigeon.getFusedHeading());
 		}
 		return new Rotation2d();
 	}
 
 	public double getPitch(){
-		double [] ypr = new double[3];
+		double[] ypr = new double[3];
 		pigeon.getYawPitchRoll(ypr);
 		return ypr[1];
 	}
 	public double getRoll(){
-		double [] ypr = new double[3];
+		double[] ypr = new double[3];
 		pigeon.getYawPitchRoll(ypr);
 		return ypr[2];
 	}
@@ -59,11 +56,11 @@ public class Pigeon {
 	}
 	
 	public void setAngle(double angle){
-		pigeon.setFusedHeading(-angle * 64.0, 10);
+		pigeon.setFusedHeading(angle * 64.0, 10);
 		//pigeon.setYaw(-angle, 10);
 		//secondPigeon.setFusedHeading(-angle * 64.0, 10);
 		//secondPigeon.setYaw(-angle, 10);
-		System.out.println("Pigeon angle set to: " + -angle);
+		System.out.println("Pigeon angle set to: " + angle);
 	}
 	
 	public void outputToSmartDashboard(){

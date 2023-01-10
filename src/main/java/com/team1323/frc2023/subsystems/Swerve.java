@@ -187,37 +187,22 @@ public class Swerve extends Subsystem{
 		 * 		
 		 */
 		frontRight = new SwerveDriveModule(Ports.FRONT_RIGHT_ROTATION, Ports.FRONT_RIGHT_DRIVE,
-		0, Constants.kFrontRightEncoderStartingPos, Constants.kVehicleToModuleZero, true);
+		0, Constants.kFrontRightEncoderStartingPos, Constants.kVehicleToModuleZero, false);
 		frontLeft = new SwerveDriveModule(Ports.FRONT_LEFT_ROTATION, Ports.FRONT_LEFT_DRIVE,
-		1, Constants.kFrontLeftEncoderStartingPos, Constants.kVehicleToModuleOne, true);
+		1, Constants.kFrontLeftEncoderStartingPos, Constants.kVehicleToModuleOne, false);
 		rearLeft = new SwerveDriveModule(Ports.REAR_LEFT_ROTATION, Ports.REAR_LEFT_DRIVE,
-		2, Constants.kRearLeftEncoderStartingPos, Constants.kVehicleToModuleTwo, true);
+		2, Constants.kRearLeftEncoderStartingPos, Constants.kVehicleToModuleTwo, false);
 		rearRight = new SwerveDriveModule(Ports.REAR_RIGHT_ROTATION, Ports.REAR_RIGHT_DRIVE,
-		3, Constants.kRearRightEncoderStartingPos, Constants.kVehicleToModuleThree, true);
+		3, Constants.kRearRightEncoderStartingPos, Constants.kVehicleToModuleThree, false);
 		
 		modules = Arrays.asList(frontRight, frontLeft, rearLeft, rearRight);
 		positionModules = Arrays.asList(frontRight, frontLeft, rearLeft, rearRight);
-
-		/**
-		 * frontLeft.invertDriveMotor(true)
-		 * rearLeft.invertDriveMotor(true)
-		 * 
-		 * frontRight.invertDriveMotor(false)
-		 * rearRight.invertDriveMotor(false)
-		 */
-
-		/*
-		 frontLeft.invertDriveMotor(true);
-		rearLeft.invertDriveMotor(true);
-		frontRight.invertDriveMotor(false);
-		rearRight.invertDriveMotor(false);
-		*/
 
 		frontLeft.invertDriveMotor(TalonFXInvertType.Clockwise);
 		rearLeft.invertDriveMotor(TalonFXInvertType.Clockwise);
 		frontRight.invertDriveMotor(TalonFXInvertType.CounterClockwise);
 		rearRight.invertDriveMotor(TalonFXInvertType.CounterClockwise);
-
+		modules.forEach(m -> m.invertRotationMotor(TalonFXInvertType.Clockwise));
 		
 		pigeon = Pigeon.getInstance();
 		

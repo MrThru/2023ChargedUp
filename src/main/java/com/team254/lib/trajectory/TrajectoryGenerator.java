@@ -76,10 +76,9 @@ public class TrajectoryGenerator {
     }
     
     // CRITICAL POSES
-    // Origin is the center of the robot when the robot is placed against the middle of the alliance station wall.
+    // Origin is the bottom left corner of the field, when viewed from above with the blue alliance on the left side.
     // +x is towards the center of the field.
-    // +y is to the right.
-    // ALL POSES DEFINED FOR THE CASE THAT ROBOT STARTS ON LEFT! (mirrored about +x axis for RIGHT)
+    // +y is to the left.
     static final Pose2d autoStartingPose = new Pose2d(new Translation2d(297.7142857142857, 92.85714285714286), Rotation2d.fromDegrees(90));
     static final Pose2d autoEjectStartingPose = new Pose2d(new Translation2d(233.71428571428572, -40.28571428571429), Rotation2d.fromDegrees(-135.0));
 

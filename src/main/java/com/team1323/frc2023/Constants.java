@@ -38,10 +38,6 @@ public class Constants {
     public static final double kWheelbaseLength = 24.75;
     public static final double kWheelbaseWidth = 24.75;
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
-
-    public static final double kBumperLength = 30.0;
-    public static final double kBumperWidth = 30.0;
-    public static final double kBumperDiagonal = Math.hypot(kBumperLength, kBumperWidth);
     
     //Camera Constants (X and Y are with respect to the turret's center)
     public static final double kCameraYOffset = 0.0;//0.25
@@ -93,16 +89,16 @@ public class Constants {
     * Enter angle read by the absolute encoder. Insert as degrees and subtract or add 90° to the value
     * based on where the bevel ended up.
     */
-    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ?  -5.3 : 0; //Module 0 - Front Right -3.52 | -7.91 | 5.71
-    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -193.0 : -312.275391; //Module 1 - Front Left -109.97 | -109.95
-    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -196.2 : -174.462891; //Module 2 - Rear Left -219.4 | -219.28 | 242.94
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? -89.2 : -23.818359; //Module 3 - Rear Right -353.5 | 351.77
+    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ?  5.3 : 0;
+    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 0;
+    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2 : 0;
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 0;
     
     //Swerve Module Positions (relative to the center of the drive base)
-    public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, kWheelbaseWidth / 2);
-    public static final Translation2d kVehicleToModuleOne = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
-    public static final Translation2d kVehicleToModuleTwo = new Translation2d(-kWheelbaseLength / 2, -kWheelbaseWidth / 2);
-    public static final Translation2d kVehicleToModuleThree = new Translation2d(-kWheelbaseLength / 2, kWheelbaseWidth / 2);
+    public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
+    public static final Translation2d kVehicleToModuleOne = new Translation2d(kWheelbaseLength / 2, kWheelbaseWidth / 2);
+    public static final Translation2d kVehicleToModuleTwo = new Translation2d(-kWheelbaseLength / 2, kWheelbaseWidth / 2);
+    public static final Translation2d kVehicleToModuleThree = new Translation2d(-kWheelbaseLength / 2, -kWheelbaseWidth / 2);
     
     public static final List<Translation2d> kModulePositions = Arrays.asList(kVehicleToModuleZero,
     kVehicleToModuleOne, kVehicleToModuleTwo, kVehicleToModuleThree);
@@ -171,6 +167,7 @@ public class Constants {
         public static final double kD = 0.0;
         public static final double kF = 0.0;
     }
+
     public static class HorizontalElevator {
         public static final double kTicksPerInch = 1.0;
 

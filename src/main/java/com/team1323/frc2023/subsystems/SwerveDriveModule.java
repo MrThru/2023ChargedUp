@@ -75,10 +75,6 @@ public class SwerveDriveModule extends Subsystem{
 	public void invertDriveMotor(TalonFXInvertType invertType){
 		driveMotor.setInverted(invertType);
 	}
-
-	public void invertDriveMotor(boolean invert) {
-		driveMotor.setInverted(invert);
-	}
 	
 	public void invertRotationMotor(TalonFXInvertType invertType){
 		rotationMotor.setInverted(invertType);
