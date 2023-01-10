@@ -9,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.TalonFXFactory;
-import com.team254.drivers.LazyTalonFX;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -29,8 +28,8 @@ public class Intake extends Subsystem {
         leftTalon = TalonFXFactory.createRollerTalon(Ports.INTAKE_LEFT);
         rightTalon = TalonFXFactory.createRollerTalon(Ports.INTAKE_RIGHT);
 
-        leftSolenoid = new Solenoid(0, PneumaticsModuleType.REVPH, Ports.INTAKE_LEFT_CLAMPER);
-        rightSolenoid = new Solenoid(0, PneumaticsModuleType.REVPH, Ports.INTAKE_RIGHT_CLAMPER);
+        leftSolenoid = new Solenoid(Ports.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Ports.INTAKE_LEFT_CLAMPER);
+        rightSolenoid = new Solenoid(Ports.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Ports.INTAKE_RIGHT_CLAMPER);
     }
     public enum ControlState {
         OFF(0.0, false), INTAKE_CUBE(0.5, false), INTAKE_CONE(0.5, true);

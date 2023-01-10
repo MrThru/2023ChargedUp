@@ -1,7 +1,6 @@
 package com.team1323.frc2023.subsystems;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,8 @@ public abstract class ServoSubsystem extends Subsystem {
         followers = followerPortNumbers.stream()
                 .map(port -> TalonFXFactory.createServoTalon(port, canBus))
                 .collect(Collectors.toList());
-        allMotors = Arrays.asList(leader);
+        allMotors = new ArrayList<>();
+        allMotors.add(leader);
         allMotors.addAll(followers);
         configureMotors(portNumber, cruiseVelocityScalar, accelerationScalar);
     }
