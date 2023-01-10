@@ -103,41 +103,45 @@ public class TrajectoryGenerator {
     
     public class TrajectorySet {
         public class MirroredTrajectory {
-            public MirroredTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> left) {
-                this.left = left;
-                this.right = TrajectoryUtil.mirrorTimed(left, left.defaultVelocity());
+            private static final double kXMirror = 325.625;
+            private static final double kYMirror = 108.5;
+
+            public MirroredTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> bottomLeft) {
+                this.bottomLeft = bottomLeft;
+                double defaultVelocity = bottomLeft.defaultVelocity();
+                topLeft = TrajectoryUtil.mirrorAboutYTimed(bottomLeft, kYMirror, defaultVelocity);
+                topRight = TrajectoryUtil.mirrorAboutXTimed(topLeft, kXMirror, defaultVelocity);
+                bottomRight = TrajectoryUtil.mirrorAboutYTimed(topRight, kYMirror, defaultVelocity);
             }
             
-            public Trajectory<TimedState<Pose2dWithCurvature>> get(boolean left) {
-                return left ? this.left : this.right;
-            }
-            
-            public final Trajectory<TimedState<Pose2dWithCurvature>> left;
-            public final Trajectory<TimedState<Pose2dWithCurvature>> right;
+            public final Trajectory<TimedState<Pose2dWithCurvature>> bottomLeft;
+            public final Trajectory<TimedState<Pose2dWithCurvature>> topLeft;
+            public final Trajectory<TimedState<Pose2dWithCurvature>> topRight;
+            public final Trajectory<TimedState<Pose2dWithCurvature>> bottomRight;
         }
         
         //Test Paths
         public final Trajectory<TimedState<Pose2dWithCurvature>> testPath;
         
         // Auto Paths
-        public final Trajectory<TimedState<Pose2dWithCurvature>> secondPiecePickupPath;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> secondPieceToAprilTag;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> thirdPiecePickupPath;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> thirdPieceToAprilTagPath;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> frontBridgePath;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> thirdPieceToBridgePath;
+        public final MirroredTrajectory secondPiecePickupPath;
+        public final MirroredTrajectory secondPieceToAprilTag;
+        public final MirroredTrajectory thirdPiecePickupPath;
+        public final MirroredTrajectory thirdPieceToAprilTagPath;
+        public final MirroredTrajectory frontBridgePath;
+        public final MirroredTrajectory thirdPieceToBridgePath;
         
         private TrajectorySet() {
             //Test Paths
             testPath = getTestPath();
 
             // Auto Paths
-            secondPiecePickupPath = getSecondPiecePickupPath();
-            secondPieceToAprilTag = getSecondPieceToAprilTagPath();
-            thirdPiecePickupPath = getThirdPiecePickupPath();
-            thirdPieceToAprilTagPath = getThirdPieceToAprilTagPath();
-            frontBridgePath = getFrontBridgePath();
-            thirdPieceToBridgePath = getThirdPieceToBridgePath();
+            secondPiecePickupPath = new MirroredTrajectory(getSecondPiecePickupPath());
+            secondPieceToAprilTag = new MirroredTrajectory(getSecondPieceToAprilTagPath());
+            thirdPiecePickupPath = new MirroredTrajectory(getThirdPiecePickupPath());
+            thirdPieceToAprilTagPath = new MirroredTrajectory(getThirdPieceToAprilTagPath());
+            frontBridgePath = new MirroredTrajectory(getFrontBridgePath());
+            thirdPieceToBridgePath = new MirroredTrajectory(getThirdPieceToBridgePath());
         }
         
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath() {
@@ -150,48 +154,48 @@ public class TrajectoryGenerator {
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPiecePickupPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(74, 132), Rotation2d.fromDegrees(0)));
-            waypoints.add(new Pose2d(new Translation2d(260, 114.5), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(74, 22.25), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(260, 38.25), Rotation2d.fromDegrees(0)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPieceToAprilTagPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(260, 114.5), Rotation2d.fromDegrees(180)));
-            waypoints.add(new Pose2d(new Translation2d(74, 111), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(260, 38.25), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(74, 44), Rotation2d.fromDegrees(180)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPiecePickupPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(74, 111), Rotation2d.fromDegrees(0)));
-            waypoints.add(new Pose2d(new Translation2d(265.75, 79.75), Rotation2d.fromDegrees(-45)));
+            waypoints.add(new Pose2d(new Translation2d(74, 44), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(265.75, 73), Rotation2d.fromDegrees(45)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToAprilTagPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(265.75, 79.75), Rotation2d.fromDegrees(135)));
-            waypoints.add(new Pose2d(new Translation2d(74, 111), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(265.75, 73), Rotation2d.fromDegrees(-135)));
+            waypoints.add(new Pose2d(new Translation2d(74, 44), Rotation2d.fromDegrees(180)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getFrontBridgePath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(74, 111), Rotation2d.fromDegrees(-90)));
-            waypoints.add(new Pose2d(new Translation2d(152.5, 76), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(74, 44), Rotation2d.fromDegrees(90)));
+            waypoints.add(new Pose2d(new Translation2d(152.5, 85), Rotation2d.fromDegrees(0)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToBridgePath(){
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(265.75, 79.75), Rotation2d.fromDegrees(180)));
-            waypoints.add(new Pose2d(new Translation2d(152.5, 76), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(265.75, 73), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(152.5, 85), Rotation2d.fromDegrees(180)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }

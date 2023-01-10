@@ -2,18 +2,25 @@ package com.team1323.frc2023.auto.modes;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeEndedException;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryGenerator.TrajectorySet.MirroredTrajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 
 public class TestMode extends AutoModeBase {
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath, trajectories.secondPieceToAprilTag,
-                trajectories.thirdPiecePickupPath, trajectories.thirdPieceToBridgePath);   
+        List<MirroredTrajectory> pathList = Arrays.asList(trajectories.secondPiecePickupPath, trajectories.secondPieceToAprilTag,
+                trajectories.thirdPiecePickupPath, trajectories.thirdPieceToAprilTagPath, trajectories.frontBridgePath);
+
+        return pathList.stream()
+                .flatMap(path -> Stream.of(path.bottomLeft, path.topLeft, path.topRight, path.bottomRight))
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -61,6 +61,16 @@ public class Pose2dWithCurvature implements IPose2d<Pose2dWithCurvature>, ICurva
     }
 
     @Override
+    public Pose2dWithCurvature mirrorAboutX(double xValue) {
+        return new Pose2dWithCurvature(getPose().mirrorAboutX(xValue), -getCurvature(), -getDCurvatureDs());
+    }
+
+    @Override
+    public Pose2dWithCurvature mirrorAboutY(double yValue) {
+        return new Pose2dWithCurvature(getPose().mirrorAboutY(yValue), -getCurvature(), -getDCurvatureDs());
+    }
+
+    @Override
     public double getCurvature() {
         return curvature_;
     }
