@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1323.frc2023.Constants;
 import com.team1323.lib.drivers.TalonFXFactory;
@@ -138,7 +139,7 @@ public abstract class ServoSubsystem extends Subsystem {
 
     @Override
     public void writePeriodicOutputs() {
-        leader.set(periodicIO.controlMode, periodicIO.demand);
+        leader.set(periodicIO.controlMode, periodicIO.demand, DemandType.ArbitraryFeedForward, periodicIO.arbitraryFeedForward);
     }
 
     @Override
@@ -151,5 +152,6 @@ public abstract class ServoSubsystem extends Subsystem {
 
         public double demand = 0.0;
         public ControlMode controlMode = ControlMode.PercentOutput;
+        public double arbitraryFeedForward = 0.0;
     }
 }

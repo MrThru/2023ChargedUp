@@ -154,20 +154,28 @@ public class Constants {
         
     }
 
+    public static final double kMaxFalconEncoderSpeed = 6380.0 * 2048.0 / 600.0;
+    public static final double kFalconMotionMagicFeedForward = 1023.0 / kMaxFalconEncoderSpeed;
+
     public static class VerticalElevator {
         public static final double kTicksPerInch = 37327.0 / 13.0;
-
-        public static final double kMaxSpeed = 6380.0 * 2048.0 / 600.0;
 
         public static final double kMinControlHeight = 0.0;
         public static final double kMaxControlHeight = 31.0;
 
         public static final double kHeightTolerance = 1.0;
 
+        public static final double kVelocityScalar = 1.0;
+        public static final double kAccelerationScalar = 1.0;
+
+        public static final double kSupplyCurrentLimit = 40.0;
+
         public static final double kP = 0.05;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
-        public static final double kF = 1023.0 / kMaxSpeed;
+        public static final double kF = kFalconMotionMagicFeedForward;
+
+        public static final double kArbitraryFeedForward = 0.0;
     }
 
     public static class HorizontalElevator {

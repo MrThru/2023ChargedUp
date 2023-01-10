@@ -20,10 +20,11 @@ public class VerticalElevator extends ServoSubsystem {
         super(Ports.VERTICAL_ELEVATOR_LEADER, Arrays.asList(Ports.VERTICAL_ELEVATOR_FOLLOWER), 
                 null, Constants.VerticalElevator.kTicksPerInch, Constants.VerticalElevator.kMinControlHeight, 
                 Constants.VerticalElevator.kMaxControlHeight, Constants.VerticalElevator.kHeightTolerance, 
-                1.0, 1.0);
+                Constants.VerticalElevator.kVelocityScalar, Constants.VerticalElevator.kAccelerationScalar);
 
         setPIDF(0, Constants.VerticalElevator.kP, Constants.VerticalElevator.kI, Constants.VerticalElevator.kD, Constants.VerticalElevator.kF);
-        setSupplyCurrentLimit(40.0);
+        setSupplyCurrentLimit(Constants.VerticalElevator.kSupplyCurrentLimit);
+        periodicIO.arbitraryFeedForward = Constants.VerticalElevator.kArbitraryFeedForward;
         zeroPosition();
         stop();
     }
@@ -47,5 +48,4 @@ public class VerticalElevator extends ServoSubsystem {
         SmartDashboard.putNumber("Vertical Elevator Height", getPosition());
         SmartDashboard.putNumber("Vertical Elevator Encoder Position", periodicIO.position);
     }
-    
 }
