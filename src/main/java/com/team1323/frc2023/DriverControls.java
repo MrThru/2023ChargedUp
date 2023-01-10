@@ -168,8 +168,16 @@ public class DriverControls implements Loop {
             swerve.setCenterOfRotation(new Translation2d());
         }
 
-        verticalElevator.acceptManualInput(-coDriver.getLeftY());
+        verticalElevator.acceptManualInput(-coDriver.getLeftY() * 0.25);
         wrist.acceptManualInput(-coDriver.getRightY());
+
+        if (coDriver.xButton.wasActivated()) {
+            verticalElevator.setPosition(25);
+        }
+
+        if (coDriver.aButton.wasActivated()) {
+            verticalElevator.setPosition(2);
+        }
     }
 
     private void oneControllerMode() {}
