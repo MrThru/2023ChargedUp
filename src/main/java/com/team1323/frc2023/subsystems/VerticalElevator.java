@@ -20,7 +20,7 @@ public class VerticalElevator extends ServoSubsystem {
         super(Ports.VERTICAL_ELEVATOR_LEADER, Arrays.asList(Ports.VERTICAL_ELEVATOR_FOLLOWER), 
                 null, Constants.VerticalElevator.kTicksPerInch, Constants.VerticalElevator.kMinControlHeight, 
                 Constants.VerticalElevator.kMaxControlHeight, Constants.VerticalElevator.kHeightTolerance, 
-                0.25, 1.0);
+                1.0, 1.0);
 
         setPIDF(0, Constants.VerticalElevator.kP, Constants.VerticalElevator.kI, Constants.VerticalElevator.kD, Constants.VerticalElevator.kF);
         setSupplyCurrentLimit(40.0);

@@ -17,19 +17,16 @@ public class Ports {
     public static final int REAR_RIGHT_ROTATION = 11;
     public static final int REAR_RIGHT_DRIVE    = 16;
     
-    public static final int INTAKE_1 = 40;
-    public static final int INTAKE_2 = 50;
-    public static final int INTAKE_3 = 41;
 
-    public static final int VERTICAL_ELEVATOR_LEADER = 0;
-    public static final int VERTICAL_ELEVATOR_FOLLOWER = 0;
+    public static final int VERTICAL_ELEVATOR_LEADER = 40;
+    public static final int VERTICAL_ELEVATOR_FOLLOWER = 50;
 
-    public static final int HORIZONTAL_ELEVATOR_LEADER = 0;
-    public static final int HORIZONTAL_ELEVATOR_FOLLOWER = 0;
+    public static final int HORIZONTAL_ELEVATOR_LEADER = 43;
+    public static final int HORIZONTAL_ELEVATOR_FOLLOWER = 44;
 
-    public static final int WRIST = 0;
-    public static final int INTAKE_LEFT = 0;
-    public static final int INTAKE_RIGHT = 0;
+    public static final int WRIST = 45;
+    public static final int INTAKE_LEFT = 46;
+    public static final int INTAKE_RIGHT = 47;
     // MISC CAN
     public static final int PIGEON = 45;
     public static final int CANDLE = 46;

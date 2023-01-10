@@ -97,13 +97,13 @@ public abstract class ServoSubsystem extends Subsystem {
         return encoderUnitsToOutputUnits(periodicIO.position);
     }
 
-    protected void setPosition(double outputUnits) {
+    public void setPosition(double outputUnits) {
         double boundedOutputUnits = Util.limit(outputUnits, minOutputUnits, maxOutputUnits);
         periodicIO.demand = outputUnitsToEncoderUnits(boundedOutputUnits);
         periodicIO.controlMode = ControlMode.MotionMagic;
     }
 
-    protected void setPositionWithCruiseVelocity(double outputUnits, double cruiseVelocityScalar) {
+    public void setPositionWithCruiseVelocity(double outputUnits, double cruiseVelocityScalar) {
         leader.configMotionCruiseVelocity(kMaxFalconEncoderVelocity * cruiseVelocityScalar);
         setPosition(outputUnits);
     }
