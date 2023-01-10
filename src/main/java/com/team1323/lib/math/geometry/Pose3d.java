@@ -5,7 +5,7 @@
 package com.team1323.lib.math.geometry;
 
 import com.team254.lib.geometry.Rotation2d;
-import com.team1323.lib.math.geometry.Vector3d;
+
 
 
 /** Add your docs here. */

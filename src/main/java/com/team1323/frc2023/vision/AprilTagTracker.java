@@ -6,6 +6,7 @@ package com.team1323.frc2023.vision;
 
 import com.team1323.lib.math.geometry.Plane;
 import com.team1323.lib.math.geometry.Pose3d;
+import com.team1323.lib.math.geometry.Rotation3d;
 import com.team1323.lib.math.geometry.Translation3d;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team254.lib.geometry.Rotation2d;
@@ -39,25 +40,28 @@ public class AprilTagTracker {
     public AprilTagTracker() {
 
     }
-    /**
-     * 
-     * @param x - Lateral distance
-     * @param y - Vertical distance
-     * @param z - Distance
-     * @param yaw - In Radians
-     * @param pitch - In Radians
-     * @param roll - In Radians
-     * @return A 3d plane of the April Tag
-     */
-    public Plane aprilTagInfoTo3dPlane(double x, double y, double z, double yaw, double pitch, double roll) {
-        Vector3d pointVector = new Vector3d(x, y, z);
-        Plane plane = new Plane(pointVector.add(new Vector3d(Math.cos(yaw), Math.cos(pitch), Math.sin(roll))), pointVector);
-        return plane;
-    }
-
 
     
     public void update() {
 
+    }
+
+
+    public static class AprilTag {
+        private Vector3d tagPosition;
+        private Rotation3d tagOrientation;
+        public AprilTag() {
+            this(new Vector3d(), new Rotation3d()); 
+        }
+        public AprilTag(Vector3d tagPosition, Rotation3d tagOrientation) {
+            this.tagPosition = tagPosition;
+            this.tagOrientation = tagOrientation;
+        }
+        public Rotation3d getRotation() {
+            return this.tagOrientation;
+        }
+        public Vector3d getPosition() {
+            return this.tagPosition;
+        }
     }
 }
