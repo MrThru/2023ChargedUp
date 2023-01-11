@@ -34,20 +34,21 @@ public class NetworkBuffer {
 
     private static List<List> entryQueue = new ArrayList<>();
 
-    public static void replaceValueInQueue(String valueName, Object value) {
+    public static void replaceValueInQueue(String valueName, List value) {
         for(int currentEntryQueue = 0; currentEntryQueue < entryQueue.size(); currentEntryQueue++) {
             if(entryQueue.get(currentEntryQueue).get(0) == valueName) {
+                entryQueue.set(currentEntryQueue, value);
             }
         }
     }
     public static synchronized void queueNumber(String valueName, double number) {
-        entryQueue.add(Arrays.asList(valueName, number));
+        replaceValueInQueue(valueName, Arrays.asList(valueName, number));
     }
     public static synchronized void queueString(String valueName, String string) {
-        entryQueue.add(Arrays.asList(valueName, string));
+        replaceValueInQueue(valueName, Arrays.asList(valueName, string));
     }
     public static synchronized void queueBoolean(String valueName, boolean bool) {
-        entryQueue.add(Arrays.asList(valueName, bool));
+        replaceValueInQueue(valueName, Arrays.asList(valueName, bool));
     }
     
     private static void addValueToTable(String valueName, NetworkTableValue valueType) {
