@@ -7,6 +7,7 @@ package com.team1323.lib.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -29,21 +30,37 @@ public class NetworkBuffer {
         table = netTableInstance.getTable("dashPipe");
     }
 
-    private static int GroupSize = 10;
-    private static final int NumberOfPartitions = 5;
+    private static final int kPartitionSize = 5;
 
-    private static List<List> entryQueue = new ArrayList<>();
+    private static Map<String, Object> globalData;
+    
+    private static List<List<String>> partitionsNamesList = new ArrayList<>();
 
-    public static void replaceValueInQueue(String valueName, List value) {
-        for(int currentEntryQueue = 0; currentEntryQueue < entryQueue.size(); currentEntryQueue++) {
-            if(entryQueue.get(currentEntryQueue).get(0) == valueName) {
-                entryQueue.set(currentEntryQueue, value);
-            }
+    static {
+        for(int i = 0; i < kPartitionSize; i++) {
+            partitionsNamesList.add(new ArrayList<>());
         }
+    }
+
+    private static int currentPartitionAdded = 0;
+    private static int currentPartitionUpdated = 0;
+
+
+    private static void addValueToPartition(String valueName) {
+        partitionsNamesList.get(currentPartitionAdded).add(valueName);
+        currentPartitionAdded++;
+        currentPartitionAdded %= kPartitionSize - 1;
+    }
+
+
+    public static void replaceValueInQueue(String valueName, Object value) {
+        if(globalData.get(valueName) == null) 
+            addValueToPartition(valueName);
+        globalData.put(valueName, value);
     }
     public static synchronized void queueNumber(String valueName, double number) {
         replaceValueInQueue(valueName, Arrays.asList(valueName, number));
-    }
+    }   
     public static synchronized void queueString(String valueName, String string) {
         replaceValueInQueue(valueName, Arrays.asList(valueName, string));
     }
@@ -57,24 +74,21 @@ public class NetworkBuffer {
     }
 
     public static void update() {
-        for(int currentValue = 0; currentValue < GroupSize; currentValue++) {
-            if(entryQueue.size() >= currentValue) 
-                break;
-            
-            List currentObject = entryQueue.get(currentValue);
-            Object valueClassType = currentObject.get(1).getClass();
-            Object objectValue = currentObject.get(0);
-            String objectName = (String) (currentObject.get(1));
-            
+        List<String> currentPartition = partitionsNamesList.get(currentPartitionUpdated);
+        for(int currentEntry = 0; currentEntry < currentPartition.size(); currentEntry++) {
+            String objectName = currentPartition.get(currentEntry);
+            Object objectValue = globalData.get(objectName);
+            Object objectClassType = objectValue.getClass();
 
-            if(valueClassType == Double.class) {
+            if(objectClassType == Double.class) {
                 addValueToTable(objectName, NetworkTableValue.makeDouble((Double) objectValue));
-            } else if(valueClassType == String.class) {
+            } else if(objectClassType == String.class) {
                 addValueToTable(objectName, NetworkTableValue.makeString((String) objectValue));
-            } else if(valueClassType == Boolean.class) {
+            } else if(objectClassType == Boolean.class) {
                 addValueToTable(objectName, NetworkTableValue.makeBoolean((Boolean) objectValue));
             }
-            entryQueue.remove(currentValue);
         }
+        currentPartitionUpdated++;
+        currentPartitionUpdated  %= kPartitionSize - 1;
     }
 }

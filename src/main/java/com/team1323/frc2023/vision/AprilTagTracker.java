@@ -4,13 +4,10 @@
 
 package com.team1323.frc2023.vision;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.team1323.lib.math.geometry.Pose3d;
-import com.team1323.lib.math.geometry.Rotation3d;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team254.lib.geometry.Rotation2d;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
 /** Add your docs here. */
 public class AprilTagTracker {
@@ -28,7 +25,7 @@ public class AprilTagTracker {
         THREE(new AprilTag(3, new Pose3d(new Vector3d(610.77, 174.19, 18.22), Rotation2d.fromDegrees(180)))),
         FOUR(new AprilTag(4, new Pose3d(new Vector3d(636.96, 265.74, 27.38), Rotation2d.fromDegrees(180)))),
         FIVE(new AprilTag(5, new Pose3d(new Vector3d(14.25, 265.74, 27.38), Rotation2d.fromDegrees(0)))),
-        SIX(new AprilTag(6, new Pose3d(new Vector3d(40.45, 147.19, 18.22), Rotation2d.fromDegrees(0)))),
+        SIX(new AprilTag(6, new Pose3d(new Vector3d(40.45, 174.19, 18.22), Rotation2d.fromDegrees(0)))),
         SEVEN(new AprilTag(7, new Pose3d(new Vector3d(40.45, 108.19, 18.22), Rotation2d.fromDegrees(0)))),
         EIGHT(new AprilTag(8, new Pose3d(new Vector3d(40.45, 42.19, 18.22), Rotation2d.fromDegrees(0))));
 
