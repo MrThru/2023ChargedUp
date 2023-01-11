@@ -13,40 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** An easier way to connect robot code to the custom dashboard */
 public class Netlink {
-    private boolean defaultBooleanValue = false;
-    private String defaultStringValue = "";
-    private double defaultDoubleValue = 0;
-
-    private String name = "";
+ 
     private static List<String> initializedSD = new ArrayList<>();
-    
-    private ValueTypes valueType = ValueTypes.NONE;
-    public enum ValueTypes {
-        STRING, DOUBLE, BOOLEAN, NONE;
-    }
-    public Netlink(String name) {
-        this.name = name;
-        valueType = ValueTypes.NONE;
-        initializeDashboard();
-    }
-    public Netlink(String name, boolean defaultValue) {
-        this.name = name;
-        this.defaultBooleanValue = defaultValue;
-        valueType = ValueTypes.BOOLEAN;
-        initializeDashboard();
-    }
-    public Netlink(String name, String defaultValue) {
-        this.name = name;
-        this.defaultStringValue = defaultValue;
-        valueType = ValueTypes.STRING;
-        initializeDashboard();
-    }
-    public Netlink(String name, double defaultValue) {
-        this.name = name;
-        this.defaultDoubleValue = defaultValue;
-        valueType = ValueTypes.DOUBLE;
-        initializeDashboard();
-    }
+
 
     public static double getNumberValue(String name) {
         for(int i = 0; i < initializedSD.size(); i++) {
@@ -67,25 +36,4 @@ public class Netlink {
         return SmartDashboard.getBoolean(name, false);
     } 
 
-    private void initializeDashboard() {
-        switch(valueType) {
-            case BOOLEAN:
-                boolean dashboardBooleanValue = SmartDashboard.getBoolean(name, defaultBooleanValue);
-                SmartDashboard.putBoolean(name, dashboardBooleanValue);
-                break;
-            case STRING:
-                String dashboardStringValue = SmartDashboard.getString(name, defaultStringValue);
-                SmartDashboard.putString(name, dashboardStringValue);
-                break;
-            case DOUBLE:
-                double dashboardDoubleValue = SmartDashboard.getNumber(name, defaultDoubleValue);
-                SmartDashboard.putNumber(name, dashboardDoubleValue);
-                
-                break;
-            case NONE:
-                break;
-            default:
-                break;
-        }
-    }
 }

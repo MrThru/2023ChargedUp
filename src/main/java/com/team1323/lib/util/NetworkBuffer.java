@@ -54,23 +54,26 @@ public class NetworkBuffer {
 
 
     public static void replaceValueInQueue(String valueName, Object value) {
-        if(globalData.get(valueName) == null) 
+        if(globalData.containsKey(valueName)) 
             addValueToPartition(valueName);
         globalData.put(valueName, value);
     }
+
     public static synchronized void queueNumber(String valueName, double number) {
-        replaceValueInQueue(valueName, Arrays.asList(valueName, number));
+        replaceValueInQueue(valueName, number);
     }   
     public static synchronized void queueString(String valueName, String string) {
-        replaceValueInQueue(valueName, Arrays.asList(valueName, string));
+        replaceValueInQueue(valueName, string);
     }
     public static synchronized void queueBoolean(String valueName, boolean bool) {
-        replaceValueInQueue(valueName, Arrays.asList(valueName, bool));
+        replaceValueInQueue(valueName, bool);
+    }
+    public static synchronized void queueNetworkValue(String valueName, NetworkTableValue value) {
+        replaceValueInQueue(valueName, value);
     }
     
     private static void addValueToTable(String valueName, NetworkTableValue valueType) {
         table.putValue(valueName, valueType);
-        networkTableInstance.flush();
     }
 
     public static void update() {
@@ -88,6 +91,7 @@ public class NetworkBuffer {
                 addValueToTable(objectName, NetworkTableValue.makeBoolean((Boolean) objectValue));
             }
         }
+        networkTableInstance.flush();
         currentPartitionUpdated++;
         currentPartitionUpdated  %= kPartitionSize - 1;
     }
