@@ -117,7 +117,7 @@ public class DriverControls implements Loop {
     }
 
     private void twoControllerMode() {
-        double swerveYInput = driver.getLeftX();
+        double swerveYInput = -driver.getLeftX();
         double swerveXInput = -driver.getLeftY();
         double swerveRotationInput = driver.getRightX() + (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0);
         
