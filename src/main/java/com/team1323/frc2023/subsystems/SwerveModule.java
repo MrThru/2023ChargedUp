@@ -20,9 +20,9 @@ import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public abstract class SwerveModule extends Subsystem{
+public abstract class SwerveModule extends Subsystem {
 	LazyTalonFX rotationMotor, driveMotor;
-	DutyCycle rotationMagEncoder;
+	DutyCycle rotationAbsoluteEncoder;
 	int moduleId;
 	String name = "Module ";
 	int rotationSetpoint = 0;
@@ -45,16 +45,16 @@ public abstract class SwerveModule extends Subsystem{
 	PeriodicIO periodicIO = new PeriodicIO();
 	
 	public SwerveModule(int rotationPort, int drivePort, int moduleId, 
-	double encoderOffset, Translation2d startingPose, boolean flipMagEncoder){
+	double encoderOffset, Translation2d startingPose, boolean flipAbsoluteEncoder){
 		name += (moduleId + " ");
 		rotationMotor = new LazyTalonFX(rotationPort);
 		driveMotor = new LazyTalonFX(drivePort);
 		if (RobotBase.isReal()) {
-			rotationMagEncoder = new DutyCycle(new DigitalInput(Ports.kModuleEncoders[moduleId]));
+			rotationAbsoluteEncoder = new DutyCycle(new DigitalInput(Ports.kModuleEncoders[moduleId]));
 		}
 			
 		this.encoderOffset = encoderOffset;
-		this.isRotationEncoderFlipped = flipMagEncoder;
+		this.isRotationEncoderFlipped = flipAbsoluteEncoder;
 		configureMotors();
 		this.moduleId = moduleId;
 		previousEncDistance = 0;
@@ -86,7 +86,7 @@ public abstract class SwerveModule extends Subsystem{
 	
 	protected boolean isRotationSensorConnected(){
 		if(RobotBase.isReal()){
-			return rotationMagEncoder.getFrequency() != 0;
+			return rotationAbsoluteEncoder.getFrequency() != 0;
 		}
 		return true;
 	}

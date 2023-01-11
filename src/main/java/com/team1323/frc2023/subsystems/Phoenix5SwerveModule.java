@@ -127,7 +127,7 @@ public class Phoenix5SwerveModule extends SwerveModule {
 		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);
 		if(useDriveEncoder) periodicIO.drivePosition = driveMotor.getSelectedSensorPosition(0);
 		if (RobotBase.isReal()) {
-            periodicIO.absoluteRotation = rotationMagEncoder.getOutput() * 360.0;
+            periodicIO.absoluteRotation = rotationAbsoluteEncoder.getOutput() * 360.0;
 		}
 		if (Settings.debugSwerve()) {
 			periodicIO.driveVoltage = driveMotor.getMotorOutputVoltage();
