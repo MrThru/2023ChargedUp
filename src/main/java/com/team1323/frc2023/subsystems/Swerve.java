@@ -56,9 +56,9 @@ public class Swerve extends Subsystem{
 	}
 	
 	//Module declaration
-	public SwerveDriveModule frontRight, frontLeft, rearLeft, rearRight;
-	List<SwerveDriveModule> modules;
-	List<SwerveDriveModule> positionModules;
+	public SwerveModule frontRight, frontLeft, rearLeft, rearRight;
+	List<SwerveModule> modules;
+	List<SwerveModule> positionModules;
 	
 	//Evade maneuver variables
 	Translation2d clockwiseCenter = new Translation2d();
@@ -186,13 +186,13 @@ public class Swerve extends Subsystem{
 		 *     |____|_______________|____|
 		 * 		
 		 */
-		frontRight = new SwerveDriveModule(Ports.FRONT_RIGHT_ROTATION, Ports.FRONT_RIGHT_DRIVE,
+		frontRight = new Phoenix5SwerveModule(Ports.FRONT_RIGHT_ROTATION, Ports.FRONT_RIGHT_DRIVE,
 		0, Constants.kFrontRightEncoderStartingPos, Constants.kVehicleToModuleZero, false);
-		frontLeft = new SwerveDriveModule(Ports.FRONT_LEFT_ROTATION, Ports.FRONT_LEFT_DRIVE,
+		frontLeft = new Phoenix5SwerveModule(Ports.FRONT_LEFT_ROTATION, Ports.FRONT_LEFT_DRIVE,
 		1, Constants.kFrontLeftEncoderStartingPos, Constants.kVehicleToModuleOne, false);
-		rearLeft = new SwerveDriveModule(Ports.REAR_LEFT_ROTATION, Ports.REAR_LEFT_DRIVE,
+		rearLeft = new Phoenix5SwerveModule(Ports.REAR_LEFT_ROTATION, Ports.REAR_LEFT_DRIVE,
 		2, Constants.kRearLeftEncoderStartingPos, Constants.kVehicleToModuleTwo, false);
-		rearRight = new SwerveDriveModule(Ports.REAR_RIGHT_ROTATION, Ports.REAR_RIGHT_DRIVE,
+		rearRight = new Phoenix5SwerveModule(Ports.REAR_RIGHT_ROTATION, Ports.REAR_RIGHT_DRIVE,
 		3, Constants.kRearRightEncoderStartingPos, Constants.kVehicleToModuleThree, false);
 		
 		modules = Arrays.asList(frontRight, frontLeft, rearLeft, rearRight);
@@ -569,17 +569,12 @@ public class Swerve extends Subsystem{
 		}
 	}
 	
-	/** Increases each module's rotational power cap for the beginning of auto */
-	public void set10VoltRotationMode(boolean tenVolts){
-		modules.forEach((m) -> m.set10VoltRotationMode(tenVolts));
-	}
-	
 	/**
 	* @return Whether or not at least one module has reached its MotionMagic setpoint
 	*/
 	public boolean positionOnTarget(){
 		boolean onTarget = false;
-		for(SwerveDriveModule m : modules){
+		for(SwerveModule m : modules){
 			onTarget |= m.drivePositionOnTarget();
 		}
 		return onTarget;
@@ -590,7 +585,7 @@ public class Swerve extends Subsystem{
 	*/
 	public boolean moduleAnglesOnTarget(){
 		boolean onTarget = true;
-		for(SwerveDriveModule m : modules){
+		for(SwerveModule m : modules){
 			onTarget &= m.angleOnTarget();
 		}
 		return onTarget;
@@ -791,22 +786,22 @@ public class Swerve extends Subsystem{
 		
 		double averageDistance = 0.0;
 		double[] distances = new double[4];
-		for(SwerveDriveModule m : positionModules){
+		for(SwerveModule m : positionModules){
 			m.updatePose(heading);
 			double distance = m.getEstimatedRobotPose().getTranslation().translateBy(pose.getTranslation().inverse()).norm();
-			distances[m.moduleID] = distance;
+			distances[m.moduleId] = distance;
 			averageDistance += distance;
 		}
 		averageDistance /= positionModules.size();
 		
 		int minDevianceIndex = 0;
 		double minDeviance = 100.0;
-		List<SwerveDriveModule> modulesToUse = new ArrayList<>();
-		for(SwerveDriveModule m : positionModules){
-			double deviance = Math.abs(distances[m.moduleID] - averageDistance);
+		List<SwerveModule> modulesToUse = new ArrayList<>();
+		for(SwerveModule m : positionModules){
+			double deviance = Math.abs(distances[m.moduleId] - averageDistance);
 			if(deviance < minDeviance){
 				minDeviance = deviance;
-				minDevianceIndex = m.moduleID;
+				minDevianceIndex = m.moduleId;
 			}
 			if(deviance <= 0.01){
 				modulesToUse.add(m);
@@ -819,7 +814,7 @@ public class Swerve extends Subsystem{
 		
 		//SmartDashboard.putNumber("Modules Used", modulesToUse.size());
 		
-		for(SwerveDriveModule m : modulesToUse){
+		for(SwerveModule m : modulesToUse){
 			x += m.getEstimatedRobotPose().getTranslation().x();
 			y += m.getEstimatedRobotPose().getTranslation().y();
 		}
@@ -838,11 +833,11 @@ public class Swerve extends Subsystem{
 		Rotation2d heading = pigeon.getYaw();
 		
 		double[][] distances = new double[4][2];
-		for(SwerveDriveModule m : modules){
+		for(SwerveModule m : modules){
 			m.updatePose(heading);
 			double distance = m.getEstimatedRobotPose().getTranslation().distance(pose.getTranslation());
-			distances[m.moduleID][0] = m.moduleID;
-			distances[m.moduleID][1] = distance;
+			distances[m.moduleId][0] = m.moduleId;
+			distances[m.moduleId][1] = distance;
 		}
 		
 		Arrays.sort(distances, new java.util.Comparator<double[]>() {
@@ -850,7 +845,7 @@ public class Swerve extends Subsystem{
 				return Double.compare(a[1], b[1]);
 			}
 		});
-		List<SwerveDriveModule> modulesToUse = new ArrayList<>();
+		List<SwerveModule> modulesToUse = new ArrayList<>();
 		double firstDifference = distances[1][1] - distances[0][1];
 		double secondDifference = distances[2][1] - distances[1][1];
 		double thirdDifference = distances[3][1] - distances[2][1];
@@ -870,7 +865,7 @@ public class Swerve extends Subsystem{
 		
 		SmartDashboard.putNumber("Modules Used", modulesToUse.size());
 		
-		for(SwerveDriveModule m : modulesToUse){
+		for(SwerveModule m : modulesToUse){
 			x += m.getEstimatedRobotPose().getTranslation().x();
 			y += m.getEstimatedRobotPose().getTranslation().y();
 		}
@@ -962,15 +957,11 @@ public class Swerve extends Subsystem{
 						setVelocityDriveOutput(Kinematics.inverseKinematics(driveVector.x(), driveVector.y(), rotationInput, true));
 					}
 				}else if(!moduleConfigRequested){
-					//set10VoltRotationMode(true);
-					/*setModuleAngles(inverseKinematics.updateDriveVectors(driveVector, 
-					0.0, pose, false));*/
 					setModuleAngles(Kinematics.inverseKinematics(driveVector.x(), driveVector.y(), 0.0, true));
 					moduleConfigRequested = true;
 				}
 				
 				if(moduleAnglesOnTarget() && !modulesReady){
-					set10VoltRotationMode(false);
 					modules.forEach((m) -> m.resetLastEncoderReading());
 					modulesReady = true;
 					System.out.println("Modules Ready");
@@ -1197,18 +1188,6 @@ public class Swerve extends Subsystem{
 				setMaxSpeed(power);
 			}
 		};
-	}
-	
-	public void setNominalDriveOutput(double voltage){
-		modules.forEach((m) -> m.setNominalDriveOutput(voltage));
-	}
-	
-	/** Sets the maximum rotation speed opf the modules, based on the robot's velocity */
-	public void setMaxRotationSpeed(){
-		double currentDriveSpeed = translationalVector.norm() * Constants.kSwerveMaxSpeedInchesPerSecond;
-		double newMaxRotationSpeed = Constants.kSwerveRotationMaxSpeed / 
-		((Constants.kSwerveRotationSpeedScalar * currentDriveSpeed) + 1.0);
-		modules.forEach((m) -> m.setMaxRotationSpeed(newMaxRotationSpeed));
 	}
 	
 	public SwerveModuleState[] getModuleStates() {

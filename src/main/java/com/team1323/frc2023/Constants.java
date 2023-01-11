@@ -205,6 +205,8 @@ public class Constants {
         public static final double kMinControlAngle = 0.0;
         public static final double kMaxControlAngle = 45.0;
 
+        public static final double kStartingAngle = 0.0;
+
         public static final double kAngleTolerance = 2.0;
 
         public static final double kVelocityScalar = 0.25;

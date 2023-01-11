@@ -9,7 +9,7 @@ import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
+public class Wrist extends ServoSubsystem {
     private static Wrist instance = null;
     public static Wrist getInstance() {
         if (instance == null) {
@@ -22,12 +22,17 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
         super(Ports.WRIST, null, Constants.Wrist.kEncoderUnitsPerDegree, 
                 Constants.Wrist.kMinControlAngle, Constants.Wrist.kMaxControlAngle, 
                 Constants.Wrist.kAngleTolerance, Constants.Wrist.kVelocityScalar, 
-                Constants.Wrist.kAccelerationScalar, Constants.Wrist.kAbsoluteEncoderInfo);
+                Constants.Wrist.kAccelerationScalar);
 
         setPIDF(0, Constants.Wrist.kP, Constants.Wrist.kI, Constants.Wrist.kD, Constants.Wrist.kF);
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
         zeroPosition();
         stop();
+    }
+
+    @Override
+    protected void zeroPosition() {
+        leader.setSelectedSensorPosition(outputUnitsToEncoderUnits(Constants.Wrist.kStartingAngle));
     }
 
     /**
@@ -76,6 +81,6 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
     @Override
     public void outputTelemetry() {
         SmartDashboard.putNumber("Wrist Angle", getPosition());
-        SmartDashboard.putNumber("Wrist Absolute Encoder", getAbsoluteEncoderDegrees());
+        //SmartDashboard.putNumber("Wrist Absolute Encoder", getAbsoluteEncoderDegrees());
     }
 }

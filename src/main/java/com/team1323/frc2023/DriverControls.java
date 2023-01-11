@@ -87,8 +87,6 @@ public class DriverControls implements Loop {
         if(inAuto) {
             swerve.zeroSensors();
             swerve.requireModuleConfiguration();
-        } else {
-            swerve.set10VoltRotationMode(false);
         }
         swerve.setDriveNeutralMode(NeutralMode.Brake);
     }
