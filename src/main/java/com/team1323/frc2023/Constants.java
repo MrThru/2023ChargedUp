@@ -207,10 +207,17 @@ public class Constants {
 
         public static final double kAngleTolerance = 2.0;
 
+        public static final double kVelocityScalar = 0.25;
+        public static final double kAccelerationScalar = 1.0;
+
+        public static final double kSupplyCurrentLimit = 30.0;
+
         public static final double kP = 0.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
         public static final double kF = 0.0;
+
+        public static final double kArbitraryFeedForward = 0.0;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             Ports.WRIST_ENCODER, 
