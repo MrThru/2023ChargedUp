@@ -2,6 +2,7 @@ package com.team254.drivers;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.team1323.frc2023.Constants;
@@ -16,6 +17,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 public class LazyTalonFX extends TalonFX {
     protected double mLastSet = Double.NaN;
     protected ControlMode mLastControlMode = null;
+    protected DemandType mLastDemandType = null;
+    protected double mLastDemandValue = Double.NaN;
 
     protected double mLastSetPosition = Double.NaN;
     protected ErrorCode mLastSetPositionErrorCode = ErrorCode.GeneralError;
@@ -81,9 +84,28 @@ public class LazyTalonFX extends TalonFX {
             mLastControlMode = mode;
 
             if(!kSimulated){
-                if (log)
-                    System.out.println("Talon " + id + " set to " + value + " in " + mode.toString() + " mode");
+                if (log) {
+                    System.out.println(String.format("Talon %d set to %.2f in %s mode", id, value, mode.toString()));
+                }
                 super.set(mode, value);
+            }
+        }
+    }
+
+    @Override
+    public void set(ControlMode mode, double value, DemandType demandType, double demandValue) {
+        if (mode != mLastControlMode || value != mLastSet || demandType != mLastDemandType || demandValue != mLastDemandValue) {
+            mLastControlMode = mode;
+            mLastSet = value;
+            mLastDemandType = demandType;
+            mLastDemandValue = demandValue;
+
+            if (!kSimulated) {
+                if (log) {
+                    System.out.println(String.format("Talon %d set to %.2f in %s mode with demand type and value (%s, %.2f)", 
+                            id, value, mode.toString(), demandType.toString(), demandValue));
+                }
+                super.set(mode, value, demandType, demandValue);
             }
         }
     }
