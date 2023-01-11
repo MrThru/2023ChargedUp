@@ -5,10 +5,8 @@
 package com.team1323.lib.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** An easier way to connect robot code to the custom dashboard */
