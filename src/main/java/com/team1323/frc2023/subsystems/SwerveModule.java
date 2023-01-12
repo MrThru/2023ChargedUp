@@ -8,7 +8,7 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.Settings;
 import com.team1323.lib.util.Util;
-import com.team254.drivers.LazyTalonFX;
+import com.team254.drivers.LazyPhoenix5TalonFX;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class SwerveModule extends Subsystem {
-	LazyTalonFX rotationMotor, driveMotor;
+	LazyPhoenix5TalonFX rotationMotor, driveMotor;
 	DutyCycle rotationAbsoluteEncoder;
 	int moduleId;
 	String name = "Module ";
@@ -37,18 +37,14 @@ public abstract class SwerveModule extends Subsystem {
 	private Translation2d position;
 	private Translation2d startingPosition;
 	private Pose2d estimatedRobotPose = new Pose2d();
-	boolean standardCarpetDirection = true;
-	public void setCarpetDirection(boolean standardDirection){
-		standardCarpetDirection = standardDirection;
-	}
 
 	PeriodicIO periodicIO = new PeriodicIO();
 	
 	public SwerveModule(int rotationPort, int drivePort, int moduleId, 
 	double encoderOffset, Translation2d startingPose, boolean flipAbsoluteEncoder){
 		name += (moduleId + " ");
-		rotationMotor = new LazyTalonFX(rotationPort);
-		driveMotor = new LazyTalonFX(drivePort);
+		rotationMotor = new LazyPhoenix5TalonFX(rotationPort);
+		driveMotor = new LazyPhoenix5TalonFX(drivePort);
 		if (RobotBase.isReal()) {
 			rotationAbsoluteEncoder = new DutyCycle(new DigitalInput(Ports.kModuleEncoders[moduleId]));
 		}

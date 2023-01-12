@@ -235,11 +235,6 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.setRotationNeutralMode(mode));
 	}
 	
-	//Assigns appropriate directions for scrub factors
-	public void setCarpetDirection(boolean standardDirection){
-		modules.forEach((m) -> m.setCarpetDirection(standardDirection));
-	}
-	
 	//Teleop driving variables
 	private Translation2d translationalVector = new Translation2d();
 	private double rotationalInput = 0;

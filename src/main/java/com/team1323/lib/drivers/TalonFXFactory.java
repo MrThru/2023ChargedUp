@@ -3,49 +3,49 @@ package com.team1323.lib.drivers;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.Constants;
-import com.team254.drivers.LazyTalonFX;
+import com.team254.drivers.LazyPhoenix5TalonFX;
 
 public class TalonFXFactory {
-    public static LazyTalonFX createRollerTalon(int deviceId, String canBus) {
-        LazyTalonFX talon = constructTalon(deviceId, canBus);
+    public static LazyPhoenix5TalonFX createRollerTalon(int deviceId, String canBus) {
+        LazyPhoenix5TalonFX talon = constructTalon(deviceId, canBus);
         configureRollerTalon(talon);
 
         return talon;
     }
 
-    public static LazyTalonFX createRollerTalon(int deviceId) {
+    public static LazyPhoenix5TalonFX createRollerTalon(int deviceId) {
         return createRollerTalon(deviceId, null);
     }
 
-    public static LazyTalonFX createServoTalon(int deviceId, String canBus) {
-        LazyTalonFX talon = constructTalon(deviceId, canBus);
+    public static LazyPhoenix5TalonFX createServoTalon(int deviceId, String canBus) {
+        LazyPhoenix5TalonFX talon = constructTalon(deviceId, canBus);
         configureServoTalon(talon);
 
         return talon;
     }
 
-    public static LazyTalonFX createServoTalon(int deviceId) {
+    public static LazyPhoenix5TalonFX createServoTalon(int deviceId) {
         return createServoTalon(deviceId, null);
     }
 
-    private static LazyTalonFX constructTalon(int deviceId, String canBus) {
+    private static LazyPhoenix5TalonFX constructTalon(int deviceId, String canBus) {
         if (canBus == null) {
-            return new LazyTalonFX(deviceId);
+            return new LazyPhoenix5TalonFX(deviceId);
         }
-        return new LazyTalonFX(deviceId, canBus);
+        return new LazyPhoenix5TalonFX(deviceId, canBus);
     }
 
-    private static void configureRollerTalon(LazyTalonFX talon) {
+    private static void configureRollerTalon(LazyPhoenix5TalonFX talon) {
         configureTalon(talon);
         talon.configForwardSoftLimitEnable(false, Constants.kCANTimeoutMs);
         talon.configReverseSoftLimitEnable(false, Constants.kCANTimeoutMs);
     }
 
-    private static void configureServoTalon(LazyTalonFX talon) {
+    private static void configureServoTalon(LazyPhoenix5TalonFX talon) {
         configureTalon(talon);
     }
 
-    private static void configureTalon(LazyTalonFX talon) {
+    private static void configureTalon(LazyPhoenix5TalonFX talon) {
         talon.configVoltageCompSaturation(12.0, Constants.kCANTimeoutMs);
         talon.enableVoltageCompensation(true);
 

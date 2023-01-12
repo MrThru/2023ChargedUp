@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj.RobotBase;
  * This class is a thin wrapper around the TalonFX that reduces CAN bus / CPU overhead by skipping duplicate set
  * commands. (By default the Talon flushes the Tx buffer on every set call).
  */
-public class LazyTalonFX extends TalonFX {
+public class LazyPhoenix5TalonFX extends TalonFX {
+    private static final String kDefaultCanBus = "rio";
+
     protected double mLastSet = Double.NaN;
     protected ControlMode mLastControlMode = null;
     protected DemandType mLastDemandType = null;
@@ -36,21 +38,11 @@ public class LazyTalonFX extends TalonFX {
     double simRampRate = 0.0;
     int simSensorPosition = 0;
 
-    public LazyTalonFX(int deviceNumber) {
-        super(deviceNumber);
-        if(Settings.kResetTalons) super.configFactoryDefault();
-        id = deviceNumber;
-        if (kSimulated) {
-            super.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000, Constants.kLongCANTimeoutMs);
-            super.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 1000, Constants.kLongCANTimeoutMs);
-            super.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000, Constants.kLongCANTimeoutMs);
-            super.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 1000, Constants.kLongCANTimeoutMs);
-            super.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1000, Constants.kLongCANTimeoutMs);
-            super.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 1000, Constants.kLongCANTimeoutMs);
-            super.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 1000, Constants.kLongCANTimeoutMs);
-        }
+    public LazyPhoenix5TalonFX(int deviceNumber) {
+        this(deviceNumber, kDefaultCanBus);
     }
-    public LazyTalonFX(int deviceNumber, String canbus) {
+
+    public LazyPhoenix5TalonFX(int deviceNumber, String canbus) {
         super(deviceNumber, canbus);
         if(Settings.kResetTalons) super.configFactoryDefault();
         id = deviceNumber;

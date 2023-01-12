@@ -5,14 +5,14 @@
 package com.team1323.lib.util;
 
 import com.team1323.frc2023.Constants;
-import com.team254.drivers.LazyTalonFX;
+import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class SmartTuner {
 
-    private LazyTalonFX motor;
+    private LazyPhoenix5TalonFX motor;
     private String keyName;
 
     private boolean enabled = false;
@@ -30,7 +30,7 @@ public class SmartTuner {
 
 
 
-    public SmartTuner(LazyTalonFX motorInstance, String dashboardKeyName) {
+    public SmartTuner(LazyPhoenix5TalonFX motorInstance, String dashboardKeyName) {
         motor = motorInstance;
         keyName = dashboardKeyName;
     }

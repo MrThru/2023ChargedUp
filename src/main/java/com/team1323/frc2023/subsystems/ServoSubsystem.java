@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1323.frc2023.Constants;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Util;
-import com.team254.drivers.LazyTalonFX;
+import com.team254.drivers.LazyPhoenix5TalonFX;
 
 /**
  * A class which can serve as the base for any subsystem that is primarily controlled
@@ -19,9 +19,9 @@ import com.team254.drivers.LazyTalonFX;
 public abstract class ServoSubsystem extends Subsystem {
     private static final double kMaxFalconEncoderVelocity = 6380.0 * 2048.0 / 600.0;
 
-    protected LazyTalonFX leader;
-    protected List<LazyTalonFX> allMotors;
-    protected List<LazyTalonFX> followers;
+    protected LazyPhoenix5TalonFX leader;
+    protected List<LazyPhoenix5TalonFX> allMotors;
+    protected List<LazyPhoenix5TalonFX> followers;
 
     protected PeriodicIO periodicIO = new PeriodicIO();
 

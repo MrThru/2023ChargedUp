@@ -5,7 +5,7 @@
 package com.team1323.lib.util;
 
 import com.ctre.phoenix.sensors.CANCoder;
-import com.team254.drivers.LazyTalonFX;
+import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
@@ -39,7 +39,7 @@ public class SensorCheck {
         sensorInstance = sensor;
         mF = f;
     }
-    public SensorCheck(LazyTalonFX falcon, VoidInterface f) {
+    public SensorCheck(LazyPhoenix5TalonFX falcon, VoidInterface f) {
         selectedSensorType = SensorType.FalconFX;
         sensorInstance = falcon;
         mF = f;
@@ -66,7 +66,7 @@ public class SensorCheck {
                 }
             break;
             case FalconFX:
-                if(((LazyTalonFX)sensorInstance).getBusVoltage() > 0) {
+                if(((LazyPhoenix5TalonFX)sensorInstance).getBusVoltage() > 0) {
                     currentSensorStatus = SensorStatus.OPERATIONAL;
                 } else {
                     currentSensorStatus = SensorStatus.DISCONNECTED;
