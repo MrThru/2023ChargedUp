@@ -89,10 +89,10 @@ public class Constants {
     * Enter angle read by the absolute encoder. Insert as degrees and subtract or add 90° to the value
     * based on where the bevel ended up.
     */
-    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ?  5.3 : 0;
-    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 0;
-    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2 : 0;
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 0;
+    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 0;
+    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 0;
+    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 5.3 : 0;
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 0;
     
     //Swerve Module Positions (relative to the center of the drive base)
     public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
@@ -179,10 +179,10 @@ public class Constants {
     }
 
     public static class HorizontalElevator {
-        public static final double kTicksPerInch = 1.0;
+        public static final double kTicksPerInch = 25890.0 / 9.0;
 
         public static final double kMinExtension = 0.0;
-        public static final double kMaxExtension = 10.0;
+        public static final double kMaxExtension = 12.25;
 
         public static final double kExtensionTolerance = 1.0;
 
@@ -198,14 +198,14 @@ public class Constants {
     }
 
     public static class Wrist {
-        public static final double kMotorRotationsPerWristRotation = 1.0;
+        public static final double kMotorRotationsPerWristRotation = 81.57;
         public static final double kEncoderUnitsPerWristRotation = kMotorRotationsPerWristRotation * 2048.0;
-        public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWristRotation / 360.0;
+        public static final double kEncoderUnitsPerDegree = 35858.0 / 90.0; // kEncoderUnitsPerWristRotation / 360.0;
 
-        public static final double kMinControlAngle = 0.0;
-        public static final double kMaxControlAngle = 45.0;
+        public static final double kMinControlAngle = -27.0;
+        public static final double kMaxControlAngle = 148.0;
 
-        public static final double kStartingAngle = 0.0;
+        public static final double kStartingAngle = 148.0;
 
         public static final double kAngleTolerance = 2.0;
 
@@ -214,12 +214,12 @@ public class Constants {
 
         public static final double kSupplyCurrentLimit = 30.0;
 
-        public static final double kP = 0.0;
+        public static final double kP = 0.01;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
-        public static final double kF = 0.0;
+        public static final double kF = kFalconMotionMagicFeedForward;
 
-        public static final double kArbitraryFeedForward = 0.0;
+        public static final double kArbitraryFeedForward = 0.05;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             Ports.WRIST_ENCODER, 

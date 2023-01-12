@@ -39,7 +39,18 @@ public class LazyPhoenix5TalonFX extends TalonFX {
     int simSensorPosition = 0;
 
     public LazyPhoenix5TalonFX(int deviceNumber) {
-        this(deviceNumber, kDefaultCanBus);
+        super(deviceNumber);
+        if(Settings.kResetTalons) super.configFactoryDefault();
+        id = deviceNumber;
+        if (kSimulated) {
+            super.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000, Constants.kLongCANTimeoutMs);
+            super.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 1000, Constants.kLongCANTimeoutMs);
+            super.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000, Constants.kLongCANTimeoutMs);
+            super.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 1000, Constants.kLongCANTimeoutMs);
+            super.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1000, Constants.kLongCANTimeoutMs);
+            super.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 1000, Constants.kLongCANTimeoutMs);
+            super.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 1000, Constants.kLongCANTimeoutMs);
+        }
     }
 
     public LazyPhoenix5TalonFX(int deviceNumber, String canbus) {
@@ -76,10 +87,11 @@ public class LazyPhoenix5TalonFX extends TalonFX {
             mLastControlMode = mode;
 
             if(!kSimulated){
+                super.set(mode, value);
                 if (log) {
                     System.out.println(String.format("Talon %d set to %.2f in %s mode", id, value, mode.toString()));
+                    System.out.println("Closed loop target: " + getClosedLoopTarget());
                 }
-                super.set(mode, value);
             }
         }
     }

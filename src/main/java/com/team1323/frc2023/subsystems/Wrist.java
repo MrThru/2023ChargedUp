@@ -28,6 +28,7 @@ public class Wrist extends ServoSubsystem {
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
         zeroPosition();
         stop();
+        leader.enableLogging(true);
     }
 
     @Override
@@ -81,6 +82,7 @@ public class Wrist extends ServoSubsystem {
     @Override
     public void outputTelemetry() {
         SmartDashboard.putNumber("Wrist Angle", getPosition());
+        SmartDashboard.putNumber("Wrist Encoder Position", periodicIO.position);
         //SmartDashboard.putNumber("Wrist Absolute Encoder", getAbsoluteEncoderDegrees());
     }
 }

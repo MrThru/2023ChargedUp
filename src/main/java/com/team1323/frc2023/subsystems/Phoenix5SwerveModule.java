@@ -22,6 +22,9 @@ public class Phoenix5SwerveModule extends SwerveModule {
     
     @Override
 	protected void configureMotors(){
+		driveMotor.configFactoryDefault();
+		rotationMotor.configFactoryDefault();
+
 		rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		rotationMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20, 10);
 		rotationMotor.setNeutralMode(NeutralMode.Brake);
@@ -138,5 +141,6 @@ public class Phoenix5SwerveModule extends SwerveModule {
 	public void writePeriodicOutputs() {
 		rotationMotor.set(periodicIO.rotationControlMode, periodicIO.rotationDemand);
 		driveMotor.set(periodicIO.driveControlMode, periodicIO.driveDemand);
+		//System.out.println("Setting drive output to " + periodicIO.driveDemand);
 	}
 }

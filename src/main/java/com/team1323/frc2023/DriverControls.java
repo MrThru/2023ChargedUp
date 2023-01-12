@@ -9,6 +9,7 @@ package com.team1323.frc2023;
 
 import java.util.Arrays;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
@@ -120,6 +121,7 @@ public class DriverControls implements Loop {
         double swerveRotationInput = driver.getRightX() + (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0);
         
         swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, Netlink.getBooleanValue("Slow Driving Enabled"));
+        //swerve.frontRight.driveMotor.set(ControlMode.PercentOutput, 0.1);
         
         SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
 
@@ -167,13 +169,16 @@ public class DriverControls implements Loop {
         }
 
         verticalElevator.acceptManualInput(-coDriver.getLeftY() * 0.25);
-        wrist.acceptManualInput(-coDriver.getRightY());
+        double wristManualInput = -coDriver.getRightY() * 0.25; 
+        wrist.acceptManualInput(wristManualInput);
 
         if (coDriver.xButton.wasActivated()) {
-            verticalElevator.setPosition(25);
+            //wrist.setPosition(90.0);
+            verticalElevator.setPosition(10);
         }
 
         if (coDriver.aButton.wasActivated()) {
+            //wrist.setPosition(45.0);
             verticalElevator.setPosition(2);
         }
     }
