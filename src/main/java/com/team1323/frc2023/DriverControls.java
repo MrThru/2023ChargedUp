@@ -95,6 +95,7 @@ public class DriverControls implements Loop {
             swerve.requireModuleConfiguration();
         }
         swerve.setDriveNeutralMode(NeutralMode.Brake);
+        s.enableCompressor(true);
     }
 
     @Override
@@ -171,33 +172,52 @@ public class DriverControls implements Loop {
         if((!driver.POV0.isBeingPressed() && !driver.POV90.isBeingPressed() && !driver.POV180.isBeingPressed() && !driver.POV270.isBeingPressed())) {
             swerve.setCenterOfRotation(new Translation2d());
         }
-        double leftYInput = -coDriver.getLeftY() * 0.10;
-        verticalElevator.acceptManualInput(leftYInput);
-        SmartDashboard.putNumber("Vertical Elevator Manual Input", leftYInput);
-        double wristManualInput = -coDriver.getRightY() * 0.25; 
-        horizontalElevator.acceptManualInput(wristManualInput);
+
+
+        double verticalElevatorYInput = -coDriver.getLeftY() * 0.25;
+        double wristAngleYInput = -coDriver.getRightY() * 0.25;
+
+        verticalElevator.acceptManualInput(verticalElevatorYInput);
+        wrist.acceptManualInput(wristAngleYInput);
+
+        if(coDriver.POV0.wasActivated()) {
+            horizontalElevator.acceptManualInput(0.10);
+        } else if(coDriver.POV180.wasActivated()) {
+            horizontalElevator.acceptManualInput(-0.10);
+        } else if(coDriver.POV0.wasReleased() || coDriver.POV180.wasReleased()) {
+            horizontalElevator.acceptManualInput(0);
+        }
 
         if (coDriver.aButton.wasActivated()) {
-            //s.setScoringPositionState(ScoringPositions.LOW);
+            s.setScoringPositionState(ScoringPositions.LOW);
         }
         if (coDriver.xButton.wasActivated()) {
             s.setScoringPositionState(ScoringPositions.MID);
         } 
         if (coDriver.yButton.wasActivated()) {
-            //s.setScoringPositionState(ScoringPositions.HIGH);
+            s.setScoringPositionState(ScoringPositions.HIGH);
         }
         if (coDriver.bButton.wasActivated()) {
             s.setScoringPositionState(ScoringPositions.STOW);
         }
 
-        if (coDriver.leftTrigger.wasActivated()) {
+        if (coDriver.leftBumper.wasActivated()) {
             s.intakeConeState();
+        } else if (coDriver.leftBumper.wasReleased()) {
+            intake.conformToState(Intake.ControlState.HOLD_CONE);
         }
     
-        if (coDriver.rightTrigger.wasActivated()) {
+        if (coDriver.rightBumper.wasActivated()) {
             s.intakeCubeState();
+        } else if (coDriver.rightBumper.wasReleased()) {
+            intake.conformToState(Intake.ControlState.HOLD_CUBE);
         }
         
+        if (coDriver.rightTrigger.wasActivated()) {
+            intake.conformToState(Intake.ControlState.EJECT);
+        } else if (coDriver.rightTrigger.wasReleased()) {
+            intake.conformToState(Intake.ControlState.OFF);
+        }
     }
     
     private void oneControllerMode() {}

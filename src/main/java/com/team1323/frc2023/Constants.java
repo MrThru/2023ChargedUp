@@ -198,7 +198,7 @@ public class Constants {
         public static final double kD = 0.0;
         public static final double kF = kFalconMotionMagicFeedForward;
 
-        public static final double kStowExtension = 1.0;
+        public static final double kStowExtension = 0.25;
         public static final double kIntakeExtension = 1.0;
         
     }
@@ -241,9 +241,9 @@ public class Constants {
         );
     }
     public static enum ScoringPositions {
-        INTAKE(4, 4,Constants.Wrist.kIntakeAngle), STOW(1, 1, Constants.Wrist.kStowAngle),
-        LOW(0,0,0), MID(20, 10, 0),
-        HIGH(0,0,0);
+        INTAKE(0.25, 4,Constants.Wrist.kIntakeAngle), STOW(1, Constants.HorizontalElevator.kStowExtension, Constants.Wrist.kStowAngle),
+        LOW(4, 4, Constants.Wrist.kIntakeAngle), MID(20, 10, 0),
+        HIGH(30, 12, 0);
 
         public final double verticalHeight;
         public final double horizontalExtension;

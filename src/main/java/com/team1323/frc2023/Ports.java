@@ -46,9 +46,9 @@ public class Ports {
     //CANCoders
     
     // Pneumatics
-    public static final int PNEUMATIC_HUB = 1;
-    public static final int INTAKE_LEFT_CLAMPER = 0;
-    public static final int INTAKE_RIGHT_CLAMPER = 1;
+    public static final int PNEUMATIC_HUB = 21;
+    public static final int INTAKE_CLAMPER = 0;
+
 
     //Canifier
     public static final int CANIFIER = 30;

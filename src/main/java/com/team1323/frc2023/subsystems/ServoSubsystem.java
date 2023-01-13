@@ -109,7 +109,7 @@ public abstract class ServoSubsystem extends Subsystem {
         setPosition(outputUnits);
     }
 
-    protected void lockPosition() {
+    public void lockPosition() {
         periodicIO.demand = periodicIO.position;
         periodicIO.controlMode = ControlMode.MotionMagic;
     }

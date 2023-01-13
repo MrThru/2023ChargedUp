@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.team1323.frc2023.Constants;
+import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.RobotState;
 import com.team1323.frc2023.Constants.ScoringPositions;
 import com.team1323.frc2023.loops.ILooper;
@@ -14,6 +15,7 @@ import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Superstructure extends Subsystem {
@@ -32,6 +34,8 @@ public class Superstructure extends Subsystem {
 
 	
 	public Superstructure(){
+		compressor = new Compressor(Ports.PNEUMATIC_HUB, PneumaticsModuleType.CTREPCM);
+
 		swerve = Swerve.getInstance();
 		verticalElevator = VerticalElevator.getInstance();
 		horizontalElevator = HorizontalElevator.getInstance();
@@ -129,11 +133,11 @@ public class Superstructure extends Subsystem {
 	};
 	
 	public void enableCompressor(boolean enable){
-		/*if (enable) {
+		if (enable) {
 			compressor.enableDigital();
 		} else {
 			compressor.disable();
-		}*/
+		}
 	}
 
 	@Override

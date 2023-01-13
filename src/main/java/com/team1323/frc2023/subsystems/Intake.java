@@ -5,6 +5,7 @@
 package com.team1323.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
@@ -32,10 +33,14 @@ public class Intake extends Subsystem {
         TalonFXFactory.setSupplyCurrentLimit(leftTalon, 10);
         TalonFXFactory.setSupplyCurrentLimit(rightTalon, 10);
 
-        solenoid = new Solenoid(Ports.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Ports.INTAKE_LEFT_CLAMPER);
+        leftTalon.setInverted(TalonFXInvertType.Clockwise);
+        rightTalon.setInverted(TalonFXInvertType.CounterClockwise);
+
+        solenoid = new Solenoid(Ports.PNEUMATIC_HUB, PneumaticsModuleType.CTREPCM, Ports.INTAKE_CLAMPER);
     }
     public enum ControlState {
-        OFF(0.0, false), INTAKE_CUBE(0.5, false), INTAKE_CONE(0.0, true);
+        OFF(0.0, false), INTAKE_CUBE(-0.5, true), INTAKE_CONE(0.0, true),
+        HOLD_CUBE(-0.1, true), HOLD_CONE(-0.1, false), EJECT(0.2, true);
         double speed;
         boolean clampOpened;
         ControlState(double speed, boolean clampOpened) {
@@ -56,9 +61,11 @@ public class Intake extends Subsystem {
     }
     public void setSpeed(double demand) {
         leftTalon.set(ControlMode.PercentOutput, demand);
+        rightTalon.set(ControlMode.PercentOutput, demand);
     }
     public void openClamp(boolean openClamp) {
         solenoid.set(openClamp);
+        System.out.println("Clamp Solenoid set to " + openClamp);
     }
     @Override
     public void outputTelemetry() {
