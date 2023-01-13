@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.RobotState;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
@@ -196,7 +198,26 @@ public class Superstructure extends Subsystem {
     }
 
 	///// States /////
+	private void intakeState(Intake.ControlState intakeState) {
+		request(
+			new SequentialRequest(
+				new ParallelRequest(
+					verticalElevator.heightRequest(Constants.VerticalElevator.kIntakeHeight),
+					horizontalElevator.extensionRequest(Constants.HorizontalElevator.kIntakeExtension),
+					wrist.angleRequest(Constants.Wrist.kIntakeAngle)
+				),
+				intake.stateRequest(intakeState)
+			)
+		);
+	}
+	public void intakeConeState() {
+		intakeState(Intake.ControlState.INTAKE_CONE);
+	}
+	public void intakeCubeState() {
+		intakeState(Intake.ControlState.INTAKE_CUBE);
+	}
 
+	
 	public void neutralState() {
 		request(new ParallelRequest(
 		));

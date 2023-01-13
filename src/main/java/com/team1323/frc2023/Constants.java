@@ -176,6 +176,8 @@ public class Constants {
         public static final double kF = kFalconMotionMagicFeedForward;
 
         public static final double kArbitraryFeedForward = 0.0;
+
+        public static final double kIntakeHeight = 2.0;
     }
 
     public static class HorizontalElevator {
@@ -195,6 +197,8 @@ public class Constants {
         public static final double kI = 0.0;
         public static final double kD = 0.0;
         public static final double kF = 0.0;
+
+        public static final double kIntakeExtension = 1.0;
     }
 
     public static class Wrist {
@@ -220,6 +224,8 @@ public class Constants {
         public static final double kF = kFalconMotionMagicFeedForward;
 
         public static final double kArbitraryFeedForward = 0.05;
+
+        public static final double kIntakeAngle = 0;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             Ports.WRIST_ENCODER, 
