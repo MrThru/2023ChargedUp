@@ -166,16 +166,16 @@ public class Constants {
         public static final double kHeightTolerance = 1.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 1.0;
+        public static final double kAccelerationScalar = 2.0;
 
         public static final double kSupplyCurrentLimit = 40.0;
 
-        public static final double kP = 0.05;
+        public static final double kP = 0.02;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
         public static final double kF = kFalconMotionMagicFeedForward;
 
-        public static final double kArbitraryFeedForward = 0.0;
+        public static final double kArbitraryFeedForward = 0.03;
 
         public static final double kIntakeHeight = 2.0;
     }
@@ -188,17 +188,19 @@ public class Constants {
 
         public static final double kExtensionTolerance = 1.0;
 
-        public static final double kVelocityScalar = 0.25;
-        public static final double kAccelerationScalar = 1.0;
+        public static final double kVelocityScalar = 1.0;
+        public static final double kAccelerationScalar = 2.0;
 
         public static final double kSupplyLimit = 40.0;
 
-        public static final double kP = 0.0;
+        public static final double kP = 0.08;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
-        public static final double kF = 0.0;
+        public static final double kF = kFalconMotionMagicFeedForward;
 
+        public static final double kStowExtension = 1.0;
         public static final double kIntakeExtension = 1.0;
+        
     }
 
     public static class Wrist {
@@ -213,7 +215,7 @@ public class Constants {
 
         public static final double kAngleTolerance = 2.0;
 
-        public static final double kVelocityScalar = 0.25;
+        public static final double kVelocityScalar = 0.5;
         public static final double kAccelerationScalar = 1.0;
 
         public static final double kSupplyCurrentLimit = 30.0;
@@ -225,7 +227,8 @@ public class Constants {
 
         public static final double kArbitraryFeedForward = 0.05;
 
-        public static final double kIntakeAngle = 0;
+        public static final double kStowAngle = kMaxControlAngle - 10;
+        public static final double kIntakeAngle = -25;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             Ports.WRIST_ENCODER, 
@@ -236,5 +239,19 @@ public class Constants {
             0.0, 
             45.0
         );
+    }
+    public static enum ScoringPositions {
+        INTAKE(4, 4,Constants.Wrist.kIntakeAngle), STOW(1, 1, Constants.Wrist.kStowAngle),
+        LOW(0,0,0), MID(20, 10, 0),
+        HIGH(0,0,0);
+
+        public final double verticalHeight;
+        public final double horizontalExtension;
+        public final double wristAngle;
+        private ScoringPositions(double verticalHeight, double horizontalExtension, double wristAngle) {
+            this.verticalHeight = verticalHeight;
+            this.horizontalExtension = horizontalExtension;
+            this.wristAngle = wristAngle;
+        }
     }
 }

@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.TalonFXFactory;
+import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -22,17 +23,19 @@ public class Intake extends Subsystem {
         return instance;
     }
 
-    TalonFX leftTalon, rightTalon;
-    Solenoid leftSolenoid, rightSolenoid;
+    LazyPhoenix5TalonFX leftTalon, rightTalon;
+    Solenoid solenoid;
     public Intake() {
         leftTalon = TalonFXFactory.createRollerTalon(Ports.INTAKE_LEFT);
         rightTalon = TalonFXFactory.createRollerTalon(Ports.INTAKE_RIGHT);
 
-        leftSolenoid = new Solenoid(Ports.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Ports.INTAKE_LEFT_CLAMPER);
-        rightSolenoid = new Solenoid(Ports.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Ports.INTAKE_RIGHT_CLAMPER);
+        TalonFXFactory.setSupplyCurrentLimit(leftTalon, 10);
+        TalonFXFactory.setSupplyCurrentLimit(rightTalon, 10);
+
+        solenoid = new Solenoid(Ports.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Ports.INTAKE_LEFT_CLAMPER);
     }
     public enum ControlState {
-        OFF(0.0, false), INTAKE_CUBE(0.5, false), INTAKE_CONE(0.5, true);
+        OFF(0.0, false), INTAKE_CUBE(0.5, false), INTAKE_CONE(0.0, true);
         double speed;
         boolean clampOpened;
         ControlState(double speed, boolean clampOpened) {
@@ -55,8 +58,7 @@ public class Intake extends Subsystem {
         leftTalon.set(ControlMode.PercentOutput, demand);
     }
     public void openClamp(boolean openClamp) {
-        leftSolenoid.set(openClamp);
-        rightSolenoid.set(openClamp);
+        solenoid.set(openClamp);
     }
     @Override
     public void outputTelemetry() {

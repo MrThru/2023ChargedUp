@@ -11,10 +11,12 @@ import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team1323.frc2023.Constants.ScoringPositions;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Intake;
 import com.team1323.frc2023.subsystems.SubsystemManager;
+import com.team1323.frc2023.subsystems.Superstructure;
 import com.team1323.frc2023.subsystems.Swerve;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
@@ -52,6 +54,8 @@ public class DriverControls implements Loop {
     private SubsystemManager subsystems;
     public SubsystemManager getSubsystems(){ return subsystems; }
 
+    private Superstructure s;
+
 
     private final boolean oneControllerMode = false;
         
@@ -79,7 +83,9 @@ public class DriverControls implements Loop {
         wrist = Wrist.getInstance();
         intake = Intake.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, verticalElevator, horizontalElevator, wrist, intake));
+        s = Superstructure.getInstance();
+
+        subsystems = new SubsystemManager(Arrays.asList(swerve, verticalElevator, horizontalElevator, wrist, intake, s));
     }
 
     @Override
@@ -165,21 +171,34 @@ public class DriverControls implements Loop {
         if((!driver.POV0.isBeingPressed() && !driver.POV90.isBeingPressed() && !driver.POV180.isBeingPressed() && !driver.POV270.isBeingPressed())) {
             swerve.setCenterOfRotation(new Translation2d());
         }
-
-        verticalElevator.acceptManualInput(-coDriver.getLeftY() * 0.25);
+        double leftYInput = -coDriver.getLeftY() * 0.10;
+        verticalElevator.acceptManualInput(leftYInput);
+        SmartDashboard.putNumber("Vertical Elevator Manual Input", leftYInput);
         double wristManualInput = -coDriver.getRightY() * 0.25; 
-        wrist.acceptManualInput(wristManualInput);
-
-        if (coDriver.xButton.wasActivated()) {
-            wrist.setPosition(120.0);
-            //verticalElevator.setPosition(10);
-        }
+        horizontalElevator.acceptManualInput(wristManualInput);
 
         if (coDriver.aButton.wasActivated()) {
-            wrist.setPosition(-15.0);
-            //verticalElevator.setPosition(2);
+            //s.setScoringPositionState(ScoringPositions.LOW);
         }
-    }
+        if (coDriver.xButton.wasActivated()) {
+            s.setScoringPositionState(ScoringPositions.MID);
+        } 
+        if (coDriver.yButton.wasActivated()) {
+            //s.setScoringPositionState(ScoringPositions.HIGH);
+        }
+        if (coDriver.bButton.wasActivated()) {
+            s.setScoringPositionState(ScoringPositions.STOW);
+        }
 
+        if (coDriver.leftTrigger.wasActivated()) {
+            s.intakeConeState();
+        }
+    
+        if (coDriver.rightTrigger.wasActivated()) {
+            s.intakeCubeState();
+        }
+        
+    }
+    
     private void oneControllerMode() {}
 }

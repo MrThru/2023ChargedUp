@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.RobotState;
+import com.team1323.frc2023.Constants.ScoringPositions;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
@@ -201,11 +202,7 @@ public class Superstructure extends Subsystem {
 	private void intakeState(Intake.ControlState intakeState) {
 		request(
 			new SequentialRequest(
-				new ParallelRequest(
-					verticalElevator.heightRequest(Constants.VerticalElevator.kIntakeHeight),
-					horizontalElevator.extensionRequest(Constants.HorizontalElevator.kIntakeExtension),
-					wrist.angleRequest(Constants.Wrist.kIntakeAngle)
-				),
+				scoringPositionRequest(ScoringPositions.INTAKE),
 				intake.stateRequest(intakeState)
 			)
 		);
@@ -215,6 +212,26 @@ public class Superstructure extends Subsystem {
 	}
 	public void intakeCubeState() {
 		intakeState(Intake.ControlState.INTAKE_CUBE);
+	}
+
+	public void stowObjectState() {
+		request(
+			new ParallelRequest(
+				horizontalElevator.extensionRequest(Constants.HorizontalElevator.kStowExtension),
+				wrist.angleRequest(Constants.Wrist.kStowAngle)
+			)
+		);
+	}
+
+	private Request scoringPositionRequest(ScoringPositions scoringPosition) {
+		return new ParallelRequest(
+				horizontalElevator.extensionRequest(scoringPosition.horizontalExtension),
+				verticalElevator.heightRequest(scoringPosition.verticalHeight),
+				wrist.angleRequest(scoringPosition.wristAngle)
+			);
+	}
+	public void setScoringPositionState(ScoringPositions scoringPosition) {
+		request(scoringPositionRequest(scoringPosition));
 	}
 
 	
