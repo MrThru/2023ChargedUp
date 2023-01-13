@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class SwerveModule extends Subsystem {
-	public LazyPhoenix5TalonFX rotationMotor, driveMotor;
+	LazyPhoenix5TalonFX rotationMotor, driveMotor;
 	DutyCycle rotationAbsoluteEncoder;
 	int moduleId;
 	String name = "Module ";

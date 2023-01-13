@@ -90,12 +90,11 @@ public class LazyPhoenix5TalonFX extends TalonFX {
                 super.set(mode, value);
                 if (log) {
                     System.out.println(String.format("Talon %d set to %.2f in %s mode", id, value, mode.toString()));
-                    System.out.println("Closed loop target: " + getClosedLoopTarget());
                 }
             }
         }
     }
-
+/*
     @Override
     public void set(ControlMode mode, double value, DemandType demandType, double demandValue) {
         if (mode != mLastControlMode || value != mLastSet || demandType != mLastDemandType || demandValue != mLastDemandValue) {
@@ -113,7 +112,7 @@ public class LazyPhoenix5TalonFX extends TalonFX {
             }
         }
     }
-
+*/
     @Override
     public ErrorCode setSelectedSensorPosition(double sensorPos, int pidIdx, int timeout) {
         mLastSetPosition = sensorPos;

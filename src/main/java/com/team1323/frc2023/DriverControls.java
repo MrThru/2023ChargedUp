@@ -80,7 +80,6 @@ public class DriverControls implements Loop {
         intake = Intake.getInstance();
 
         subsystems = new SubsystemManager(Arrays.asList(swerve, verticalElevator, horizontalElevator, wrist, intake));
-
     }
 
     @Override
@@ -121,7 +120,6 @@ public class DriverControls implements Loop {
         double swerveRotationInput = driver.getRightX() + (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0);
         
         swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, Netlink.getBooleanValue("Slow Driving Enabled"));
-        //swerve.frontRight.driveMotor.set(ControlMode.PercentOutput, 0.1);
         
         SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
 

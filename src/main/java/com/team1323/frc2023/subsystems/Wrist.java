@@ -28,7 +28,6 @@ public class Wrist extends ServoSubsystem {
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
         zeroPosition();
         stop();
-        leader.enableLogging(true);
     }
 
     @Override

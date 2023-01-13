@@ -194,8 +194,6 @@ public class Swerve extends Subsystem{
 		2, Constants.kRearLeftEncoderStartingPos, Constants.kVehicleToModuleTwo, false);
 		rearRight = new Phoenix5SwerveModule(Ports.REAR_RIGHT_ROTATION, Ports.REAR_RIGHT_DRIVE,
 		3, Constants.kRearRightEncoderStartingPos, Constants.kVehicleToModuleThree, false);
-
-		//frontRight.rotationMotor.enableLogging(true);
 		
 		modules = Arrays.asList(frontRight, frontLeft, rearLeft, rearRight);
 		positionModules = Arrays.asList(frontRight, frontLeft, rearLeft, rearRight);

@@ -27,7 +27,6 @@ public class VerticalElevator extends ServoSubsystem {
         periodicIO.arbitraryFeedForward = Constants.VerticalElevator.kArbitraryFeedForward;
         zeroPosition();
         stop();
-        leader.enableLogging(true);
     }
 
     public Request heightRequest(double inches) {

@@ -139,8 +139,7 @@ public abstract class ServoSubsystem extends Subsystem {
 
     @Override
     public void writePeriodicOutputs() {
-        //leader.set(periodicIO.controlMode, periodicIO.demand, DemandType.ArbitraryFeedForward, periodicIO.arbitraryFeedForward);
-        leader.set(periodicIO.controlMode, periodicIO.demand);
+        leader.set(periodicIO.controlMode, periodicIO.demand, DemandType.ArbitraryFeedForward, periodicIO.arbitraryFeedForward);
     }
 
     @Override
