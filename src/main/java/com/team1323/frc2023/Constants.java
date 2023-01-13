@@ -228,7 +228,7 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.05;
 
         public static final double kStowAngle = kMaxControlAngle - 10;
-        public static final double kIntakeAngle = -25;
+        public static final double kIntakeAngle = -20;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             Ports.WRIST_ENCODER, 
@@ -241,9 +241,11 @@ public class Constants {
         );
     }
     public static enum ScoringPositions {
-        INTAKE(0.25, 4,Constants.Wrist.kIntakeAngle), STOW(1, Constants.HorizontalElevator.kStowExtension, Constants.Wrist.kStowAngle),
-        LOW(4, 4, Constants.Wrist.kIntakeAngle), MID(20, 10, 0),
-        HIGH(30, 12, 0);
+        INTAKE(0.25, 0.25,Constants.Wrist.kIntakeAngle), STOW(1, Constants.HorizontalElevator.kStowExtension, Constants.Wrist.kStowAngle),
+        LOW_CUBE(0.1, 0.25, Constants.Wrist.kIntakeAngle), MID_CUBE(20, 10, 0),
+        HIGH_CUBE(30.5, 12, 0),
+        LOW_CONE(LOW_CUBE), MID_CONE(30.0, 8.0, 0), 
+        HIGH_CONE(30.5, 12, 25); //Wrist Angle = 25 for third pole
 
         public final double verticalHeight;
         public final double horizontalExtension;
@@ -252,6 +254,11 @@ public class Constants {
             this.verticalHeight = verticalHeight;
             this.horizontalExtension = horizontalExtension;
             this.wristAngle = wristAngle;
+        }
+        private ScoringPositions(ScoringPositions scoringPos) {
+            this.verticalHeight = scoringPos.verticalHeight;
+            this.horizontalExtension = scoringPos.horizontalExtension;
+            this.wristAngle = scoringPos.wristAngle;
         }
     }
 }

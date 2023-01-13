@@ -5,6 +5,7 @@
 package com.team1323.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.team1323.frc2023.Ports;
@@ -30,8 +31,10 @@ public class Intake extends Subsystem {
         leftTalon = TalonFXFactory.createRollerTalon(Ports.INTAKE_LEFT);
         rightTalon = TalonFXFactory.createRollerTalon(Ports.INTAKE_RIGHT);
 
-        TalonFXFactory.setSupplyCurrentLimit(leftTalon, 10);
-        TalonFXFactory.setSupplyCurrentLimit(rightTalon, 10);
+        leftTalon.setNeutralMode(NeutralMode.Brake);
+        rightTalon.setNeutralMode(NeutralMode.Brake);
+        TalonFXFactory.setSupplyCurrentLimit(leftTalon, 5);
+        TalonFXFactory.setSupplyCurrentLimit(rightTalon, 5);
 
         leftTalon.setInverted(TalonFXInvertType.Clockwise);
         rightTalon.setInverted(TalonFXInvertType.CounterClockwise);
@@ -39,8 +42,9 @@ public class Intake extends Subsystem {
         solenoid = new Solenoid(Ports.PNEUMATIC_HUB, PneumaticsModuleType.CTREPCM, Ports.INTAKE_CLAMPER);
     }
     public enum ControlState {
-        OFF(0.0, false), INTAKE_CUBE(-0.5, true), INTAKE_CONE(0.0, true),
-        HOLD_CUBE(-0.1, true), HOLD_CONE(-0.1, false), EJECT(0.2, true);
+        OFF(0.0, false), INTAKE_CUBE(-0.1, true), INTAKE_CONE(0.0, true),
+        HOLD_CUBE(0.0, true), HOLD_CONE(0.0, false), EJECT_CUBE(0.2, true),
+        EJECT_CONE(0.0, true);
         double speed;
         boolean clampOpened;
         ControlState(double speed, boolean clampOpened) {
