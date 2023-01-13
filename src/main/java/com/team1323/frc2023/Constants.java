@@ -214,8 +214,8 @@ public class Constants {
 
         public static final double kSupplyCurrentLimit = 30.0;
 
-        public static final double kP = 0.01;
-        public static final double kI = 0.0;
+        public static final double kP = 0.08;
+        public static final double kI = 0.0001;
         public static final double kD = 0.0;
         public static final double kF = kFalconMotionMagicFeedForward;
 

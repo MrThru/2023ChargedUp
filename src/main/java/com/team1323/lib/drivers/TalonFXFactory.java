@@ -43,6 +43,7 @@ public class TalonFXFactory {
 
     private static void configureServoTalon(LazyPhoenix5TalonFX talon) {
         configureTalon(talon);
+        talon.configNeutralDeadband(0.001, Constants.kCANTimeoutMs);
     }
 
     private static void configureTalon(LazyPhoenix5TalonFX talon) {

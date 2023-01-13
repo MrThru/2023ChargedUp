@@ -117,7 +117,7 @@ public class DriverControls implements Loop {
     private void twoControllerMode() {
         double swerveYInput = -driver.getLeftX();
         double swerveXInput = -driver.getLeftY();
-        double swerveRotationInput = driver.getRightX() + (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0);
+        double swerveRotationInput = -(driver.getRightX() + (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0));
         
         swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, Netlink.getBooleanValue("Slow Driving Enabled"));
         
@@ -171,13 +171,13 @@ public class DriverControls implements Loop {
         wrist.acceptManualInput(wristManualInput);
 
         if (coDriver.xButton.wasActivated()) {
-            //wrist.setPosition(90.0);
-            verticalElevator.setPosition(10);
+            wrist.setPosition(120.0);
+            //verticalElevator.setPosition(10);
         }
 
         if (coDriver.aButton.wasActivated()) {
-            //wrist.setPosition(45.0);
-            verticalElevator.setPosition(2);
+            wrist.setPosition(-15.0);
+            //verticalElevator.setPosition(2);
         }
     }
 

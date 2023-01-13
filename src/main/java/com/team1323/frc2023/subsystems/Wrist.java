@@ -24,6 +24,7 @@ public class Wrist extends ServoSubsystem {
                 Constants.Wrist.kAngleTolerance, Constants.Wrist.kVelocityScalar, 
                 Constants.Wrist.kAccelerationScalar);
 
+        leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
         setPIDF(0, Constants.Wrist.kP, Constants.Wrist.kI, Constants.Wrist.kD, Constants.Wrist.kF);
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
         zeroPosition();
