@@ -249,10 +249,11 @@ public class Constants {
     }
     public static enum ScoringPositions {
         INTAKE(0.25, 0.25,Constants.Wrist.kIntakeAngle), STOW(1, Constants.HorizontalElevator.kStowExtension, Constants.Wrist.kStowAngle),
-        LOW_CUBE(0.1, 0.25, Constants.Wrist.kIntakeAngle), MID_CUBE(20, 10, 0),
+        LOW_CUBE(0.1, 0.25, Constants.Wrist.kIntakeAngle), MID_CUBE(20, 0.25, 0),
         HIGH_CUBE(30.5, 12, 0),
         LOW_CONE(LOW_CUBE), MID_CONE(30.0, 8.0, 0), 
-        HIGH_CONE(30.5, 12, 25); //Wrist Angle = 25 for third pole
+        HIGH_CONE(30.5, 12, 25), SIDE_LAUNCH(30.0, 7.0, 30),
+        TEST_PICK_UP(27.3, 6.0, 0); //Wrist Angle = 25 for third pole
 
         public final double verticalHeight;
         public final double horizontalExtension;

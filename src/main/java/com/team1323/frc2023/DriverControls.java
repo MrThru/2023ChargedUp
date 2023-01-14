@@ -41,7 +41,7 @@ public class DriverControls implements Loop {
         return instance;
     }
 
-	Xbox driver, coDriver, singleController, testController;
+	Xbox driver, coDriver, otherDriver, singleController, testController;
     //PS4 driver;
 
     private Swerve swerve;
@@ -71,6 +71,7 @@ public class DriverControls implements Loop {
     public DriverControls() {
         driver = new Xbox(0);
 		coDriver = new Xbox(1);
+        otherDriver = new Xbox(2);
         testController = new Xbox(4);
         singleController = new Xbox(5);
         driver.setDeadband(0.0);
@@ -105,6 +106,7 @@ public class DriverControls implements Loop {
         } else {
             driver.update();
 			coDriver.update();
+            otherDriver.update();
             //singleController.update();
             //testController.update();
             if(oneControllerMode)
@@ -130,11 +132,12 @@ public class DriverControls implements Loop {
         SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
 
         if (driver.bButton.wasActivated())
-            swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());
+            swerve.rotate(-90);
+            //swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());
         else if (driver.aButton.wasActivated()) 
             swerve.rotate(180);
         else if (driver.xButton.wasActivated())
-            swerve.rotate(270);
+            swerve.rotate(90);
         else if (driver.yButton.wasActivated())
             swerve.rotate(0);
         
@@ -183,6 +186,18 @@ public class DriverControls implements Loop {
             horizontalElevator.acceptManualInput(0);
         }
 
+        if(coDriver.POV90.wasActivated()) {
+            intake.setSpeed(-0.5);
+        } else if(coDriver.POV90.wasReleased()) {
+            intake.setSpeed(0);
+        }
+
+        if(coDriver.POV270.wasActivated()) {
+            intake.setSpeed(0.75);
+        } else if(coDriver.POV270.wasReleased()) {
+            intake.setSpeed(0.0);
+        }
+
         if (coDriver.aButton.shortReleased()) {
             s.setScoringPositionState(ScoringPositions.LOW_CUBE);
         } else if (coDriver.aButton.longPressed()) {
@@ -220,12 +235,17 @@ public class DriverControls implements Loop {
         if (coDriver.rightTrigger.wasActivated()) {
             intake.conformToState(Intake.ControlState.EJECT_CUBE);
         } else if (coDriver.rightTrigger.wasReleased()) {
-            intake.conformToState(Intake.ControlState.OFF);
+            intake.conformToState(Intake.ControlState.INTAKE_CONE);
+            //intake.conformToState(Intake.ControlState.OFF);
         }
         if(coDriver.leftTrigger.wasActivated()) {
             intake.conformToState(Intake.ControlState.EJECT_CONE);
         } else if(coDriver.leftTrigger.wasReleased()) {
             intake.conformToState(Intake.ControlState.OFF);
+        }
+
+        if(otherDriver.xButton.wasActivated()) {
+            s.setScoringPositionState(ScoringPositions.SIDE_LAUNCH);
         }
 
         if(coDriver.backButton.wasActivated()) {

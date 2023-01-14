@@ -117,6 +117,7 @@ public class Swerve extends Subsystem{
 	
 	//Odometry variables
 	Pose2d pose;
+	Rotation2d pigeonAngle = Rotation2d.identity();
 	Twist2d velocity = Twist2d.identity();
 	double distanceTraveled;
 	double currentVelocity = 0;
@@ -388,13 +389,13 @@ public class Swerve extends Subsystem{
 		rotateInPlace(goalHeading);
 		else
 		headingController.setStabilizationTarget(
-		Util.placeInAppropriate0To360Scope(pose.getRotation().getUnboundedDegrees(), goalHeading));
+		Util.placeInAppropriate0To360Scope(pigeonAngle.getUnboundedDegrees(), goalHeading));
 	}
 	
 	public void rotateInPlace(double goalHeading){
 		setState(ControlState.ROTATION);
 		headingController.setStationaryTarget(
-		Util.placeInAppropriate0To360Scope(pose.getRotation().getUnboundedDegrees(), goalHeading));
+		Util.placeInAppropriate0To360Scope(pigeonAngle.getUnboundedDegrees(), goalHeading));
 	}
 	
 	public void rotateInPlaceAbsolutely(double absoluteHeading){
@@ -405,7 +406,7 @@ public class Swerve extends Subsystem{
 	public void setPathHeading(double goalHeading){
 		headingController.setSnapTarget(
 		Util.placeInAppropriate0To360Scope(
-		pose.getRotation().getUnboundedDegrees(), goalHeading));
+		pigeonAngle.getUnboundedDegrees(), goalHeading));
 	}
 	
 	public void setAbsolutePathHeading(double absoluteHeading){
@@ -625,7 +626,7 @@ public class Swerve extends Subsystem{
 		waypoints.add(new Pose2d(pose.getTranslation(), startHeading));	
 		waypoints.add(new Pose2d(pose.transformBy(Pose2d.fromTranslation(relativeEndPos)).getTranslation(), startHeading));
 		Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, defaultVel, 1);
-		double heading = Util.placeInAppropriate0To360Scope(pose.getRotation().getUnboundedDegrees(), targetHeading);
+		double heading = Util.placeInAppropriate0To360Scope(pigeonAngle.getUnboundedDegrees(), targetHeading);
 		setTrajectory(trajectory, heading, 1.0);
 	}
 
@@ -636,7 +637,7 @@ public class Swerve extends Subsystem{
 		waypoints.add(new Pose2d(pose.getTranslation(), relativeEndPos.direction()));
 		waypoints.add(new Pose2d(endPos, relativeEndPos.direction()));
 		Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, defaultVel, 1);
-		double heading = Util.placeInAppropriate0To360Scope(pose.getRotation().getUnboundedDegrees(), targetHeading);
+		double heading = Util.placeInAppropriate0To360Scope(pigeonAngle.getUnboundedDegrees(), targetHeading);
 		setTrajectory(trajectory, heading, 1.0);
 	}
 	
@@ -750,7 +751,7 @@ public class Swerve extends Subsystem{
 	int currentModuleIndex = 0;
 	int totalModulesPivoted = 1;
 	public synchronized void startEvadeRevolve(Translation2d revolveAround) {
-		startingRotationValue = pose.getRotation().getUnboundedDegrees() - 45;
+		startingRotationValue = pigeonAngle.getUnboundedDegrees() - 45;
 		currentModuleIndex = 0;
 		totalModulesPivoted = 1;
 		for(int i = 0; i < Constants.kModulePositions.size(); i++) {
@@ -763,8 +764,8 @@ public class Swerve extends Subsystem{
 	
 	
 	public synchronized void updateEvadeRevolve() {
-		double predictedRotation = pose.getRotation().getUnboundedDegrees() + (velocity.dtheta * 180/Math.PI) * 0.1;
-		double rotationDifference = predictedRotation /*pose.getRotation().getUnboundedDegrees()*/ - startingRotationValue;
+		double predictedRotation = pigeonAngle.getUnboundedDegrees() + (velocity.dtheta * 180/Math.PI) * 0.1;
+		double rotationDifference = predictedRotation /*pigeonAngle.getUnboundedDegrees()*/ - startingRotationValue;
 		if(Math.abs(rotationDifference) >= (rotationAmount * totalModulesPivoted * Math.signum(rotationalInput))) {
 			totalModulesPivoted += Math.signum(rotationalInput);
 			currentModuleIndex = (int) Util.boundToScope(0, 4, currentModuleIndex + Math.signum(rotationalInput));
@@ -875,7 +876,7 @@ public class Swerve extends Subsystem{
 	boolean isDriveLocked = false;
 	/** Called every cycle to update the swerve based on its control state */
 	public synchronized void updateControlCycle(double timestamp){
-		double rotationCorrection = headingController.updateRotationCorrection(pose.getRotation().getUnboundedDegrees(), timestamp);
+		double rotationCorrection = headingController.updateRotationCorrection(getHeading().getUnboundedDegrees(), timestamp);
 		switch(currentState){
 			case MANUAL:
 			if(evading && evadingToggled){
@@ -1012,8 +1013,8 @@ public class Swerve extends Subsystem{
 			if(modulesReady || (getState() != ControlState.TRAJECTORY)){
 				//updatePose(timestamp);
 				//alternatePoseUpdate();
-				pose = poseEstimator.updateWithTime(timestamp, pigeon.getYaw(), getModulePositions());
-				velocity = poseEstimator.getVelocity();
+				pose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, pigeon.getYaw(), getModulePositions()));
+				velocity = poseEstimator.getVelocity(); // TODO: Convert this to inches
 				//pose = robotState.getLatestFieldToVehicle().getValue();
 			}
 			updateControlCycle(timestamp);
@@ -1221,7 +1222,7 @@ public class Swerve extends Subsystem{
 	}
 
 	public Rotation2d getHeading() {
-		return pigeon.getYaw();
+		return pigeonAngle;
 	}
 
 	public void zeroModuleAngles() {
@@ -1235,6 +1236,7 @@ public class Swerve extends Subsystem{
 	@Override
 	public void readPeriodicInputs() {
 		modules.forEach((m) -> m.readPeriodicInputs());
+		pigeonAngle = pigeon.getYaw();
 	}
 	
 	@Override
@@ -1303,10 +1305,10 @@ public class Swerve extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
-		//SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
+		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pigeonAngle.getUnboundedDegrees()});
 		SmartDashboard.putNumberArray("Robot Velocity", new double[]{velocity.dx, velocity.dy, velocity.dtheta});
 
-		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());
+		SmartDashboard.putNumber("Robot Heading", pigeonAngle.getUnboundedDegrees());
 
 		if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
 			setDriveNeutralMode(NeutralMode.Coast);
