@@ -227,6 +227,10 @@ public class DriverControls implements Loop {
         } else if(coDriver.leftTrigger.wasReleased()) {
             intake.conformToState(Intake.ControlState.OFF);
         }
+
+        if(coDriver.backButton.wasActivated()) {
+            s.neutralState();
+        }
     }
     
     private void oneControllerMode() {}

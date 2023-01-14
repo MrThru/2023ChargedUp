@@ -36,7 +36,7 @@ public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
 
         @Override
         public void onLoop(double timestamp) {
-            if (!isZeroed && leader.getStatorCurrent() > zeroingConfig.triggerStatorCurrent) {
+            if (!isZeroed && leader.getSupplyCurrent() > zeroingConfig.triggerSupplyCurrent) {
                 zeroPosition();
                 enableLimits(true);
                 isZeroed = true;
@@ -78,12 +78,12 @@ public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
 
     public static class CurrentZeroingConfig {
         public final double outputPercent;
-        public final double triggerStatorCurrent;
+        public final double triggerSupplyCurrent;
         public final double targetOutputAfterZeroing;
 
-        public CurrentZeroingConfig(double outputPercent, double triggerStatorCurrent, double targetOutputAfterZeroing) {
+        public CurrentZeroingConfig(double outputPercent, double triggerSupplyCurrent, double targetOutputAfterZeroing) {
             this.outputPercent = outputPercent;
-            this.triggerStatorCurrent = triggerStatorCurrent;
+            this.triggerSupplyCurrent = triggerSupplyCurrent;
             this.targetOutputAfterZeroing = targetOutputAfterZeroing;
         }
     }

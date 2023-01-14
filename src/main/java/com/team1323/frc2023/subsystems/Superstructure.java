@@ -10,6 +10,7 @@ import com.team1323.frc2023.RobotState;
 import com.team1323.frc2023.Constants.ScoringPositions;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.requests.LambdaRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
@@ -241,6 +242,12 @@ public class Superstructure extends Subsystem {
 	
 	public void neutralState() {
 		request(new ParallelRequest(
+			new LambdaRequest(()-> {
+				verticalElevator.stop();
+				wrist.stop();
+				horizontalElevator.stop();
+				intake.stop();
+			})
 		));
 	}
 		

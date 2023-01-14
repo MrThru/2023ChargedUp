@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.team1323.frc2023.subsystems.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
+import com.team1323.frc2023.subsystems.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
@@ -200,6 +201,12 @@ public class Constants {
 
         public static final double kStowExtension = 0.25;
         public static final double kIntakeExtension = 1.0;
+
+        public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
+            -0.05,
+            1.0,
+            0.25
+        );
         
     }
 
