@@ -1,4 +1,4 @@
-package com.team1323.frc2023.subsystems;
+package com.team1323.frc2023.subsystems.gyros;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -8,7 +8,7 @@ import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
-public class Pigeon {
+public class Pigeon extends Gyro{
 	private static Pigeon instance = null;
 	public static Pigeon getInstance(){
 		if(instance == null){
@@ -38,17 +38,22 @@ public class Pigeon {
 		return new Rotation2d();
 	}
 
-	public double getPitch(){
+	public double getRawPitch(){
 		double[] ypr = new double[3];
 		pigeon.getYawPitchRoll(ypr);
 		return ypr[1];
 	}
-	public double getRoll(){
+	public Rotation2d getPitch() {
+		return Rotation2d.fromDegrees(getRawPitch());
+	}
+	public double getRawRoll(){
 		double[] ypr = new double[3];
 		pigeon.getYawPitchRoll(ypr);
 		return ypr[2];
 	}
-
+	public Rotation2d getRoll() {
+		return Rotation2d.fromDegrees(getRawRoll());
+	}
 	public double[] getYPR(){
 		double[] ypr = new double[3];
 		pigeon.getYawPitchRoll(ypr);
@@ -66,5 +71,10 @@ public class Pigeon {
 		SmartDashboard.putBoolean("Pigeon 2 Good", isGood(secondPigeon));
 		SmartDashboard.putNumber("Pigeon 1 Yaw", pigeon.getFusedHeading());
 		SmartDashboard.putNumber("Pigeon 2 Yaw", secondPigeon.getFusedHeading());*/
+	}
+
+	@Override
+	public Rotation2d getAngle() {
+		return getYaw();
 	}
 }

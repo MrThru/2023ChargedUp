@@ -7,7 +7,7 @@
 
 package com.team1323.frc2023.auto.actions;
 
-import com.team1323.frc2023.subsystems.Pigeon;
+import com.team1323.frc2023.subsystems.gyros.Pigeon;
 
 import edu.wpi.first.wpilibj.Timer;
 
@@ -30,7 +30,7 @@ public class WaitToLeaveRampAction implements Action{
 
     @Override
     public boolean isFinished() {
-        double rollAngle = pigeon.getRoll();
+        double rollAngle = pigeon.getRawRoll();
         //System.out.println("Pigeon roll: " + rollAngle);
         if(Math.abs(rollAngle) >= (startingRoll + kMinExitAngle) && !startedDescent)
             startedDescent = true;
@@ -51,7 +51,7 @@ public class WaitToLeaveRampAction implements Action{
     @Override
     public void start() {
         startTime = Timer.getFPGATimestamp();
-        startingRoll = pigeon.getRoll();
+        startingRoll = pigeon.getRawRoll();
     }
 
     @Override

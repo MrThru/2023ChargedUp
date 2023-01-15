@@ -14,6 +14,7 @@ import com.team1323.frc2023.RobotState;
 import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.gyros.Pigeon;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.vision.ShooterAimingParameters;
 import com.team1323.lib.math.Units;
