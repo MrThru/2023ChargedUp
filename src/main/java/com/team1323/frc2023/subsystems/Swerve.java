@@ -1012,11 +1012,8 @@ public class Swerve extends Subsystem{
 		@Override
 		public void onLoop(double timestamp) {
 			if(modulesReady || (getState() != ControlState.TRAJECTORY)){
-				//updatePose(timestamp);
-				//alternatePoseUpdate();
 				pose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, pigeon.getYaw(), getModulePositions()));
 				velocity = Units.metersToInches(poseEstimator.getVelocity());
-				//pose = robotState.getLatestFieldToVehicle().getValue();
 			}
 			updateControlCycle(timestamp);
 			lastUpdateTimestamp = timestamp;
@@ -1232,6 +1229,10 @@ public class Swerve extends Subsystem{
 
 	public void setRotationMotorZeroed(boolean isZeroed) {
 		modules.forEach((m) -> m.setRotationMotorZeroed(isZeroed));
+	}
+
+	public void addVisionMeasurement(Pose2d estimatedRobotPose, double observationTimestamp) {
+		poseEstimator.addVisionMeasurement(estimatedRobotPose, observationTimestamp);
 	}
 	
 	@Override
