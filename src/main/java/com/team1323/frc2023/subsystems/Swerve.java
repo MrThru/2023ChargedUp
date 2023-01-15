@@ -1014,7 +1014,7 @@ public class Swerve extends Subsystem{
 				//updatePose(timestamp);
 				//alternatePoseUpdate();
 				pose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, pigeon.getYaw(), getModulePositions()));
-				velocity = poseEstimator.getVelocity(); // TODO: Convert this to inches
+				velocity = Units.metersToInches(poseEstimator.getVelocity());
 				//pose = robotState.getLatestFieldToVehicle().getValue();
 			}
 			updateControlCycle(timestamp);
