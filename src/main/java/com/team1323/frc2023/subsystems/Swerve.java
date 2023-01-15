@@ -1269,11 +1269,10 @@ public class Swerve extends Subsystem{
 	
 	/** Zeroes the drive motors, and sets the robot's internal position and heading to match that of the fed pose */
 	public void zeroSensors(Pose2d startingPose){
-		pigeon.setAngle(startingPose.getRotation().getUnboundedDegrees());
 		modules.forEach((m) -> m.zeroSensors(startingPose));
 		pose = startingPose;
 		robotState.reset(Timer.getFPGATimestamp(), startingPose, Rotation2d.identity());
-		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(pose));
+		poseEstimator.resetPosition(pigeonAngle, getModulePositions(), Units.inchesToMeters(pose));
 		distanceTraveled = 0;
 	}
 	
@@ -1281,21 +1280,21 @@ public class Swerve extends Subsystem{
 		pose = new Pose2d(newPose.getTranslation(), pose.getRotation());
 		modules.forEach((m) -> m.zeroSensors(pose));
 		robotState.reset(Timer.getFPGATimestamp(), pose, Rotation2d.identity());
-		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(pose));
+		poseEstimator.resetPosition(pigeonAngle, getModulePositions(), Units.inchesToMeters(pose));
 		distanceTraveled = 0;
 	}
 	
 	public synchronized void setXCoordinate(double x){
 		pose.getTranslation().setX(x);
 		modules.forEach((m) -> m.zeroSensors(pose));
-		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(pose));
+		poseEstimator.resetPosition(pigeonAngle, getModulePositions(), Units.inchesToMeters(pose));
 		System.out.println("X coordinate reset to: " + pose.getTranslation().x());
 	}
 	
 	public synchronized void setYCoordinate(double y){
 		pose.getTranslation().setY(y);
 		modules.forEach((m) -> m.zeroSensors(pose));
-		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(pose));
+		poseEstimator.resetPosition(pigeonAngle, getModulePositions(), Units.inchesToMeters(pose));
 		System.out.println("Y coordinate reset to: " + pose.getTranslation().y());
 	}
 	double prevSwerveVelocity = 0;
