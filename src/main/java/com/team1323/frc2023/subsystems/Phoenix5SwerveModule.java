@@ -9,15 +9,21 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Settings;
+import com.team254.drivers.LazyPhoenix5TalonFX;
 import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public class Phoenix5SwerveModule extends SwerveModule {
+	private final LazyPhoenix5TalonFX rotationMotor, driveMotor;
+
     public Phoenix5SwerveModule(int rotationPort, int drivePort, int moduleId, 
             double encoderOffset, Translation2d startingPose, boolean flipAbsoluteEncoder) {
-        super(rotationPort, drivePort, moduleId, encoderOffset, startingPose, flipAbsoluteEncoder);
+        super(moduleId, encoderOffset, startingPose, flipAbsoluteEncoder);
+		rotationMotor = new LazyPhoenix5TalonFX(rotationPort);
+		driveMotor = new LazyPhoenix5TalonFX(drivePort);
+		configureMotors();
     }
     
     @Override

@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class SwerveModule extends Subsystem {
-	LazyPhoenix5TalonFX rotationMotor, driveMotor;
 	DutyCycle rotationAbsoluteEncoder;
 	int moduleId;
 	String name = "Module ";
@@ -40,18 +39,14 @@ public abstract class SwerveModule extends Subsystem {
 
 	PeriodicIO periodicIO = new PeriodicIO();
 	
-	public SwerveModule(int rotationPort, int drivePort, int moduleId, 
-	double encoderOffset, Translation2d startingPose, boolean flipAbsoluteEncoder){
+	public SwerveModule(int moduleId, double encoderOffset, Translation2d startingPose, boolean flipAbsoluteEncoder) {
 		name += (moduleId + " ");
-		rotationMotor = new LazyPhoenix5TalonFX(rotationPort);
-		driveMotor = new LazyPhoenix5TalonFX(drivePort);
 		if (RobotBase.isReal()) {
 			rotationAbsoluteEncoder = new DutyCycle(new DigitalInput(Ports.kModuleEncoders[moduleId]));
 		}
 			
 		this.encoderOffset = encoderOffset;
 		this.isRotationEncoderFlipped = flipAbsoluteEncoder;
-		configureMotors();
 		this.moduleId = moduleId;
 		previousEncDistance = 0;
 		position = startingPose;
