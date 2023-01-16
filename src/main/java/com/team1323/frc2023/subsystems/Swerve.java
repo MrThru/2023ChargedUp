@@ -3,7 +3,6 @@ package com.team1323.frc2023.subsystems;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
@@ -16,7 +15,6 @@ import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.gyros.Pigeon;
 import com.team1323.frc2023.subsystems.requests.Request;
-import com.team1323.frc2023.vision.ShooterAimingParameters;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.math.vectors.VectorField;
 import com.team1323.lib.util.DriveSignal;
@@ -89,19 +87,14 @@ public class Swerve extends Subsystem{
 	//Vision dependencies
 	RobotState robotState;
 	Rotation2d visionTargetHeading = new Rotation2d();
-	boolean visionUpdatesAllowed = true;
-	Translation2d lastVisionEndTranslation = new Translation2d(0.0, 0.0);
-	boolean useFixedVisionOrientation = false;
-	Rotation2d fixedVisionOrientation = Rotation2d.fromDegrees(0.0);
 	Rotation2d visionApproachAngle = Rotation2d.fromDegrees(0.0);
 	double visionCutoffDistance = Constants.kClosestVisionDistance;
 	public boolean isTracking(){
 		return currentState == ControlState.VISION_PID;
 	}
-	Pose2d visionPIDTarget;
-	SynchronousPIDF lateralPID = new SynchronousPIDF(0.04, 0.0, 0.0); // 0.05, 0.0, 0.0
-	SynchronousPIDF forwardPID = new SynchronousPIDF(0.04, 0.0, 0.0); // 0.02, 0.0, 0.0
-	boolean visionTargetAcquired = false;
+	Translation2d visionPIDTarget;
+	SynchronousPIDF lateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
+	SynchronousPIDF forwardPID = new SynchronousPIDF(0.02, 0.0, 0.0);
 	boolean visionTargetReached = false;
 	
 	boolean needsToNotifyDrivers = false;
@@ -438,7 +431,6 @@ public class Swerve extends Subsystem{
 		System.out.println("LOCKING MODULE POSITION");
 		setState(ControlState.POSITION);
 		isDriveLocked = false;
-		//modules.forEach((m) -> m.setDrivePositionTarget(0.0));
 	}
 
 	public void atomicLockDrivePosition() {
@@ -643,83 +635,38 @@ public class Swerve extends Subsystem{
 	}
 	
 	// Vision PID (new, simpler vision tracking system)
-	public void startVisionPID(Translation2d endTranslation, Rotation2d approachAngle, Rotation2d targetHeading) {
-		Optional<ShooterAimingParameters> aim = robotState.getCachedAimingParameters();
-		if(aim.isPresent()) {
-			useFixedVisionOrientation = (approachAngle != null);
-			Optional<Pose2d> scoringPos = robotState.getRobotScoringPosition(aim, useFixedVisionOrientation ? approachAngle : aim.get().getTurretToGoal().direction(), endTranslation);
-			if(scoringPos.isPresent()) {
-				lateralPID.setSetpoint(0.0);
-				forwardPID.setSetpoint(0.0);
-				fixedVisionOrientation = (useFixedVisionOrientation ? approachAngle : aim.get().getTurretToGoal().direction());
-				if (useFixedVisionOrientation)
-					visionApproachAngle = approachAngle;
-				lastVisionEndTranslation = endTranslation;
-				visionPIDTarget = scoringPos.get();
-				visionTargetAcquired = false;
-				visionTargetReached = /*true*/false;
-				rotationScalar = 0.5;
-				setPathHeading(targetHeading.getDegrees());
-				setState(ControlState.VISION_PID);
-			} else {
-				System.out.println("No target detected");
-				visionTargetAcquired = false;
-			}
-		} else {
-			System.out.println("No target detected");
-			visionTargetAcquired = false;
-		}
+	public void startVisionPID(Translation2d desiredFieldPosition, Rotation2d approachAngle, Rotation2d targetHeading) {
+		lateralPID.setSetpoint(0.0);
+		forwardPID.setSetpoint(0.0);
+		visionApproachAngle = approachAngle;
+		visionPIDTarget = desiredFieldPosition;
+		visionTargetReached = false;
+		rotationScalar = 0.5;
+		setPathHeading(targetHeading.getDegrees());
+		setState(ControlState.VISION_PID);
 	}
 
 	public void startVisionPID(Translation2d endTranslation, Rotation2d approachAngle) {
 		startVisionPID(endTranslation, approachAngle, pose.getRotation());
 	}
 	
-	public void startVisionPID(Translation2d endTranslation) {
-		startVisionPID(endTranslation, null, pose.getRotation());
-	}
-	
 	Translation2d updateVisionPID(double dt) {
-		Optional<ShooterAimingParameters> aim = robotState.getCachedAimingParameters();
-		if(aim.isPresent() /*&& visionTargetReached*/) {
-			if(!useFixedVisionOrientation) 
-				fixedVisionOrientation = aim.get().getTurretToGoal().direction();
-			else
-				fixedVisionOrientation = visionApproachAngle;
-			Optional<Pose2d> scoringPos = robotState.getRobotScoringPosition(aim, fixedVisionOrientation, lastVisionEndTranslation);
-			if(scoringPos.isPresent()) {
-				visionPIDTarget = scoringPos.get();
-				visionTargetAcquired = true;
-				//visionTargetReached = false;
-			}
-		} 
-		
-		if(visionTargetAcquired) {
-			Translation2d adjustedTarget = visionPIDTarget.getTranslation().rotateBy(fixedVisionOrientation.inverse());
-			Translation2d adjustedPose = pose.transformBy(RobotState.kVehicleToTurretFixed).getTranslation().rotateBy(fixedVisionOrientation.inverse());
-			Translation2d error = adjustedTarget.translateBy(adjustedPose.inverse());
-			Translation2d output = new Translation2d(-forwardPID.calculate(error.x(), dt), -lateralPID.calculate(error.y(), dt));
-			double magnitude = Util.deadBand(output.norm(), 0.01);
-			output = Translation2d.fromPolar(output.direction(), magnitude);
-			if(output.norm() > Constants.kVisionPIDOutputPercent) {
-				//normalize the output vector
-				output = Translation2d.fromPolar(output.direction(), Constants.kVisionPIDOutputPercent);
-			}
-			output = output.rotateBy(fixedVisionOrientation);
-			visionTargetHeading = output.direction();
-			if (error.norm() <= Constants.kDistanceToTargetTolerance) {
-				visionTargetReached = true;
-				//output = new Translation2d();
-				//setState(ControlState.NEUTRAL);
-				lockDrivePosition();
-			}
-			System.out.println("Vision PID output vector: " + output.toString() + "Error Norm: " + error.norm());
-			SmartDashboard.putNumber("Vision Output Vector Angle", output.direction().getDegrees());
-			return output;
-		} else {
-			System.out.println("No target detected");
-			return new Translation2d();
+		Translation2d adjustedTarget = visionPIDTarget.rotateBy(visionApproachAngle.inverse());
+		Translation2d adjustedPose = pose.getTranslation().rotateBy(visionApproachAngle.inverse());
+		Translation2d error = adjustedTarget.translateBy(adjustedPose.inverse());
+		Translation2d output = new Translation2d(-forwardPID.calculate(error.x(), dt), -lateralPID.calculate(error.y(), dt));
+		double magnitude = Util.deadBand(output.norm(), 0.01);
+		magnitude = Math.min(magnitude, Constants.kVisionPIDOutputPercent);
+		output = Translation2d.fromPolar(output.direction(), magnitude);
+		output = output.rotateBy(visionApproachAngle);
+		visionTargetHeading = output.direction();
+		if (error.norm() <= Constants.kDistanceToTargetTolerance) {
+			visionTargetReached = true;
+			lockDrivePosition();
 		}
+		System.out.println("Vision PID output vector: " + output.toString() + ", Error Norm: " + error.norm());
+		
+		return output;
 	}
 	
 	/****************************************************/
@@ -1029,14 +976,14 @@ public class Swerve extends Subsystem{
 		
 	};
 	
-	public Request visionPIDRequest(Translation2d endTranslation, Rotation2d approachAngle, double cutoffDistance) {
+	public Request visionPIDRequest(Translation2d desiredFieldPosition, Rotation2d approachAngle, double cutoffDistance) {
 		return new Request(){
 			
 			@Override
 			public void act() {
 				if (!isTracking()) {
 					visionCutoffDistance = cutoffDistance;
-					startVisionPID(endTranslation, approachAngle);
+					startVisionPID(desiredFieldPosition, approachAngle);
 					System.out.println("Vision Request started");
 				}
 			}
@@ -1049,13 +996,13 @@ public class Swerve extends Subsystem{
 		};
 	}
 
-	public Request visionPIDRequest(Translation2d endTranslation, Rotation2d approachAngle) {
+	public Request visionPIDRequest(Translation2d desiredFieldPosition, Rotation2d approachAngle) {
 		return new Request(){
 		
 			@Override
 			public void act() {
 				if (!isTracking()) {
-					startVisionPID(endTranslation, approachAngle);
+					startVisionPID(desiredFieldPosition, approachAngle);
 					System.out.println("Vision Request Started");
 				}
 			}
@@ -1063,7 +1010,6 @@ public class Swerve extends Subsystem{
 			@Override
 			public boolean isFinished() {
 				if (visionTargetReached) {
-					//setState(ControlState.NEUTRAL);
 					DriverStation.reportError("Swerve Vision PID Request Finished", false);
 					return true;
 				}
@@ -1073,31 +1019,6 @@ public class Swerve extends Subsystem{
 		};
 	}
 
-	public Request visionPIDRequest(Translation2d endTranslation) {
-		return new Request(){
-		
-			@Override
-			public void act() {
-				if (!isTracking()) {
-					startVisionPID(endTranslation);
-					System.out.println("Vision Request Started");
-				}
-			}
-
-			@Override
-			public boolean isFinished() {
-				if (visionTargetReached) {
-					//setState(ControlState.NEUTRAL);
-					DriverStation.reportError("Swerve Vision PID Request Finished", false);
-					return true;
-				}
-				return false;
-			}
-
-		};
-		
-	}
-	
 	public Request robotCentricTrajectoryRequest(Translation2d relativeEndPos, double targetHeading, double defaultVel){
 		return new Request(){
 			
@@ -1307,7 +1228,6 @@ public class Swerve extends Subsystem{
 			SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
 			SmartDashboard.putString("Robot Velocity", velocity.toString());
 			SmartDashboard.putString("Swerve State", currentState.toString());
-			SmartDashboard.putBoolean("Vision Updates Allowed", visionUpdatesAllowed);
 			SmartDashboard.putNumberArray("Pigeon YPR", pigeon.getYPR());
 
 			double swerveVelocity =  (Math.sqrt((velocity.dx * velocity.dx) + (velocity.dy * velocity.dy))) / 12;
