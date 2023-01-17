@@ -1,7 +1,7 @@
 package com.team1323.frc2023.loops;
 
 import com.team1323.frc2023.RobotState;
-import com.team1323.frc2023.subsystems.Swerve;
+import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team254.lib.geometry.Rotation2d;
 
 public class RobotStateEstimator implements Loop{

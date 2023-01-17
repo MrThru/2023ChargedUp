@@ -1,7 +1,7 @@
 package com.team1323.frc2023.loops;
 
 import com.team1323.frc2023.Constants;
-import com.team1323.frc2023.subsystems.Swerve;
+import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 

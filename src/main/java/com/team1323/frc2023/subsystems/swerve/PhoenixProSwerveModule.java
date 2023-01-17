@@ -1,4 +1,4 @@
-package com.team1323.frc2023.subsystems;
+package com.team1323.frc2023.subsystems.swerve;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
