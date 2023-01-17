@@ -78,7 +78,8 @@ public class Constants {
     //Swerve Speed Constants
     public static final double kSwerveDriveMaxSpeed = 22000.0;
     public static final double kSwerveMaxSpeedInchesPerSecond = 12.5 * 12.0;
-    public static final double kSwerveRotationMaxSpeed = 12720.0 * 0.8; //The 0.8 is to request a speed that is always achievable
+    public static final double kSwerveRotationMaxSpeed = 106.33 * 0.46728;
+    public static final double kSwerveRotationMaxAcceleration = kSwerveRotationMaxSpeed * 12.5;
     public static final double kSwerveRotation10VoltMaxSpeed = 1350.0;
     public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     public static final double kSwerveXInputRate = 0.5;
@@ -133,6 +134,8 @@ public class Constants {
     public static final double kSwerveEncoderToWheelRatio = 6.55; //7.132867133
     public static final double kSwerveEncUnitsPerWheelRev = kSwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
     public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
+    public static final double kSwerveModuleRotationTolerance = 4.5;
+    public static final double kSwerveMotionMagicTolerance = 2.0;
     
     public static final int kCANTimeoutMs = 10; // use for important on the fly updates
     public static final int kLongCANTimeoutMs = 100; // use for constructors
@@ -155,6 +158,7 @@ public class Constants {
         
     }
 
+    public static final double kMaxFalconRotationsPerSecond = 6380.0 / 60.0;
     public static final double kMaxFalconEncoderSpeed = 6380.0 * 2048.0 / 600.0;
     public static final double kFalconMotionMagicFeedForward = 1023.0 / kMaxFalconEncoderSpeed;
 

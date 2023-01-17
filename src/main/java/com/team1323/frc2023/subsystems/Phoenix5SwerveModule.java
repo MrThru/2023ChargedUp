@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import com.team1323.frc2023.Constants;
-import com.team1323.frc2023.Settings;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 import com.team254.lib.geometry.Translation2d;
 
@@ -33,7 +32,6 @@ public class Phoenix5SwerveModule extends SwerveModule {
 		rotationMotor.setNeutralMode(NeutralMode.Brake);
 		rotationMotor.configVoltageCompSaturation(7.0, 10);
 		rotationMotor.enableVoltageCompensation(true);
-		rotationMotor.configAllowableClosedloopError(0, 0, 10);
 		rotationMotor.configMotionAcceleration((int)(Constants.kSwerveRotationMaxSpeed*12.5), 10);
 		rotationMotor.configMotionCruiseVelocity((int)(Constants.kSwerveRotationMaxSpeed), 10);
 		rotationMotor.selectProfileSlot(0, 0);
@@ -106,13 +104,13 @@ public class Phoenix5SwerveModule extends SwerveModule {
     @Override
 	public boolean angleOnTarget(){
 		double error = encUnitsToDegrees(Math.abs(rotationMotor.getClosedLoopError(0)));
-		return error < 4.5;
+		return error < Constants.kSwerveModuleRotationTolerance;
 	}
 
     @Override
 	public boolean drivePositionOnTarget(){
 		if(driveMotor.getControlMode() == ControlMode.MotionMagic) {
-            return encUnitsToInches((int)Math.abs(periodicIO.driveDemand - periodicIO.drivePosition)) < 2.0;
+            return encUnitsToInches(Math.abs(periodicIO.driveDemand - periodicIO.drivePosition)) < Constants.kSwerveMotionMagicTolerance;
         }
 		return false;
 	}
@@ -131,12 +129,9 @@ public class Phoenix5SwerveModule extends SwerveModule {
 	public void readPeriodicInputs() {
 		periodicIO.velocity = driveMotor.getSelectedSensorVelocity(0);
 		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);
-		if(useDriveEncoder) periodicIO.drivePosition = driveMotor.getSelectedSensorPosition(0);
+		periodicIO.drivePosition = driveMotor.getSelectedSensorPosition(0);
 		if (RobotBase.isReal()) {
             periodicIO.absoluteRotation = rotationAbsoluteEncoder.getOutput() * 360.0;
-		}
-		if (Settings.debugSwerve()) {
-			periodicIO.driveVoltage = driveMotor.getMotorOutputVoltage();
 		}
 	}
 	

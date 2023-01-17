@@ -8,7 +8,6 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.Settings;
 import com.team1323.lib.util.Util;
-import com.team254.drivers.LazyPhoenix5TalonFX;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -30,7 +29,6 @@ public abstract class SwerveModule extends Subsystem {
 	int encoderReverseFactor = 1;
 	boolean isRotationEncoderFlipped = false;
 	boolean rotationMotorZeroed = false;
-	boolean useDriveEncoder = true;
 	boolean moduleZeroedWitoutMagEnc = false;
 	private double previousEncDistance = 0;
 	private Translation2d position;
@@ -63,10 +61,6 @@ public abstract class SwerveModule extends Subsystem {
 	
 	public void reverseRotationSensor(boolean reverse){
 		encoderReverseFactor = reverse ? -1 : 1;
-	}
-	
-	public void disableDriveEncoder(){
-		useDriveEncoder = false;
 	}
 
 	public abstract void setDriveNeutralMode(NeutralMode mode);
@@ -275,7 +269,6 @@ public abstract class SwerveModule extends Subsystem {
 				SmartDashboard.putNumber(name + "Absolute Angle", getAbsoluteEncoderDegrees());
 			}
 			SmartDashboard.putNumber(name + "Rotation Encoder", periodicIO.rotationPosition);
-			SmartDashboard.putNumber(name + "Drive Voltage", periodicIO.driveVoltage);
 			SmartDashboard.putNumber(name + "Velocity - in", encVelocityToInchesPerSecond(periodicIO.velocity));
 			SmartDashboard.putNumber(name + "Raw Velocity", periodicIO.velocity);
 		}
@@ -286,7 +279,6 @@ public abstract class SwerveModule extends Subsystem {
 		public double rotationPosition = 0;
 		public double drivePosition = 0;
 		public double velocity = 0;
-		public double driveVoltage = 0.0;
 		public double absoluteRotation = 0.0;
 		
 		
