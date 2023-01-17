@@ -8,11 +8,11 @@ import com.ctre.phoenixpro.controls.ControlRequest;
 import com.ctre.phoenixpro.controls.MotionMagicVoltage;
 import com.ctre.phoenixpro.controls.VelocityVoltage;
 import com.ctre.phoenixpro.controls.VoltageOut;
+import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenixpro.signals.InvertedValue;
 import com.ctre.phoenixpro.signals.NeutralModeValue;
 import com.team1323.frc2023.Constants;
-import com.team254.drivers.LazyPhoenixProTalonFX;
 import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public class PhoenixProSwerveModule extends SwerveModule {
     private static final double kFalconSensorResolution = 2048.0;
 
-    private final LazyPhoenixProTalonFX rotationMotor, driveMotor;
+    private final TalonFX rotationMotor, driveMotor;
 
     private final TalonFXConfiguration rotationConfiguration = new TalonFXConfiguration();
     private final VoltageOut rotationVoltageOutRequest = new VoltageOut(0.0, true, false);
@@ -37,8 +37,8 @@ public class PhoenixProSwerveModule extends SwerveModule {
     public PhoenixProSwerveModule(int rotationPort, int drivePort, int moduleId, 
             double encoderOffset, Translation2d startingPose, boolean flipAbsoluteEncoder) {
         super(moduleId, encoderOffset, startingPose, flipAbsoluteEncoder);
-        rotationMotor = new LazyPhoenixProTalonFX(rotationPort);
-        driveMotor = new LazyPhoenixProTalonFX(drivePort);
+        rotationMotor = new TalonFX(rotationPort);
+        driveMotor = new TalonFX(drivePort);
         configureMotors();
     }
 
@@ -183,7 +183,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
                 break;
         }
 
-        rotationMotor.lazySetControl(currentRotationControlRequest);
-        driveMotor.lazySetControl(currentDriveControlRequest);
+        rotationMotor.setControl(currentRotationControlRequest);
+        driveMotor.setControl(currentDriveControlRequest);
     }
 }
