@@ -6,6 +6,8 @@ package com.team1323.frc2023;
 
 import java.util.Set;
 
+import com.ctre.phoenixpro.controls.ControlRequest;
+import com.ctre.phoenixpro.controls.VoltageOut;
 import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeExecuter;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
@@ -79,6 +81,11 @@ public class Robot extends TimedRobot {
 		AutoModeBase auto = new TestMode();
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
+
+		VoltageOut cr1 = new VoltageOut(12.0, true, false);
+		ControlRequest cr2 = new VoltageOut(12.0, true, false);
+		cr1.Output = 1.0;
+		System.out.println("Are cr1 and cr2 equal? " + (cr1.equals(cr2) ? "true" : "false"));
 	}
 
 	@Override
