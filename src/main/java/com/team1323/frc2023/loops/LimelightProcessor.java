@@ -51,8 +51,8 @@ public class LimelightProcessor implements Loop {
 			double[] robotPoseArray = robotPose.getDoubleArray(zeroArray);
 			// TODO: Find correct values from the pose array, and convert them to the correct coordinate system.
 			if (robotPoseArray.length == 6) {
-				Pose2d estimatedRobotPose = new Pose2d(robotPoseArray[0], robotPoseArray[1], Rotation2d.fromRadians(robotPoseArray[5]));
-				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) - Constants.kImageCaptureLatency;
+				Pose2d estimatedRobotPose = new Pose2d(robotPoseArray[0], robotPoseArray[1], Rotation2d.fromDegrees(robotPoseArray[5]));
+				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
 	
 				//Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds);
 	
