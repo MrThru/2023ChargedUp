@@ -1195,7 +1195,7 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.zeroSensors(startingPose));
 		pose = startingPose;
 		robotState.reset(Timer.getFPGATimestamp(), startingPose, Rotation2d.identity());
-		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(pose));
+		poseEstimator.resetPosition(pigeon.getYaw(), getModulePositions(), Units.inchesToMeters(startingPose));
 		distanceTraveled = 0;
 	}
 	double prevSwerveVelocity = 0;
@@ -1206,10 +1206,10 @@ public class Swerve extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
-		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pigeonAngle.getUnboundedDegrees()});
+		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getDegrees()});
 		SmartDashboard.putNumberArray("Robot Velocity", new double[]{velocity.dx, velocity.dy, velocity.dtheta});
 
-		SmartDashboard.putNumber("Robot Heading", pigeonAngle.getUnboundedDegrees());
+		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getDegrees());
 
 		if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
 			setDriveNeutralMode(NeutralMode.Coast);
