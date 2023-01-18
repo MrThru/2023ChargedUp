@@ -213,8 +213,8 @@ public class Swerve extends Subsystem{
 			Units.inchesToMeters(Constants.kVehicleToModuleThree)
 		);
 		poseEstimator = new SwerveDrivePoseEstimator(kinematics, pigeon.getYaw(), 
-				getModulePositions(), Pose2d.identity(), VecBuilder.fill(0.1, 0.1, 0.1), 
-				VecBuilder.fill(0.1, 0.1, 0.1));
+				getModulePositions(), Pose2d.identity(), VecBuilder.fill(0.2, 0.2, 0.175), 
+				VecBuilder.fill(0.05, 0.05, 0.058));
 		pose = poseEstimator.getEstimatedPosition();
 		distanceTraveled = 0;
 		
