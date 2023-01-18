@@ -31,7 +31,7 @@ public class FieldConversions {
     }
 
     public static Vector3d convertToField(Vector3d centerPoint, Vector3d cord) {
-        return cord.subtract(centerPoint);
+        return cord.add(centerPoint);
     }
 
 }
