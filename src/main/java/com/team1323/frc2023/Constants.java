@@ -78,8 +78,9 @@ public class Constants {
     //Swerve Speed Constants
     public static final double kSwerveDriveMaxSpeed = 22000.0;
     public static final double kSwerveMaxSpeedInchesPerSecond = 12.5 * 12.0;
-    public static final double kSwerveRotationMaxSpeed = 106.33 * 0.46728;
-    public static final double kSwerveRotationMaxAcceleration = kSwerveRotationMaxSpeed * 12.5;
+    public static final double kSwerveRotationMaxSpeedRps = 106.33 * 0.46728;
+    public static final double kSwerveRotationMaxSpeedEncUnits = 12720.0 * 0.8;
+    public static final double kSwerveRotationMaxAcceleration = kSwerveRotationMaxSpeedRps * 12.5;
     public static final double kSwerveRotation10VoltMaxSpeed = 1350.0;
     public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     public static final double kSwerveXInputRate = 0.5;

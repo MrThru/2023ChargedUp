@@ -41,7 +41,7 @@ public class DriverControls implements Loop {
         return instance;
     }
 
-	Xbox driver, coDriver, otherDriver, singleController, testController;
+	Xbox driver, coDriver, singleController, testController;
     //PS4 driver;
 
     private Swerve swerve;
@@ -71,7 +71,6 @@ public class DriverControls implements Loop {
     public DriverControls() {
         driver = new Xbox(0);
 		coDriver = new Xbox(1);
-        otherDriver = new Xbox(2);
         testController = new Xbox(4);
         singleController = new Xbox(5);
         driver.setDeadband(0.0);
@@ -95,7 +94,7 @@ public class DriverControls implements Loop {
             swerve.requireModuleConfiguration();
         }
         swerve.setDriveNeutralMode(NeutralMode.Brake);
-        s.enableCompressor(true);
+        s.enableCompressor(false);
     }
 
     @Override
@@ -106,7 +105,6 @@ public class DriverControls implements Loop {
         } else {
             driver.update();
 			coDriver.update();
-            otherDriver.update();
             //singleController.update();
             //testController.update();
             if(oneControllerMode)
@@ -242,10 +240,6 @@ public class DriverControls implements Loop {
             intake.conformToState(Intake.ControlState.EJECT_CONE);
         } else if(coDriver.leftTrigger.wasReleased()) {
             intake.conformToState(Intake.ControlState.OFF);
-        }
-
-        if(otherDriver.xButton.wasActivated()) {
-            s.setScoringPositionState(ScoringPositions.SIDE_LAUNCH);
         }
 
         if(coDriver.backButton.wasActivated()) {

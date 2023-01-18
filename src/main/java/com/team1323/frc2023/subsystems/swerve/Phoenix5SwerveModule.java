@@ -32,14 +32,14 @@ public class Phoenix5SwerveModule extends SwerveModule {
 		rotationMotor.setNeutralMode(NeutralMode.Brake);
 		rotationMotor.configVoltageCompSaturation(7.0, 10);
 		rotationMotor.enableVoltageCompensation(true);
-		rotationMotor.configMotionAcceleration((int)(Constants.kSwerveRotationMaxSpeed*12.5), 10);
-		rotationMotor.configMotionCruiseVelocity((int)(Constants.kSwerveRotationMaxSpeed), 10);
+		rotationMotor.configMotionAcceleration((int)(Constants.kSwerveRotationMaxSpeedEncUnits*12.5), 10);
+		rotationMotor.configMotionCruiseVelocity((int)(Constants.kSwerveRotationMaxSpeedEncUnits), 10);
 		rotationMotor.selectProfileSlot(0, 0);
 		//Slot 1 is for normal use
 		rotationMotor.config_kP(0, 1.55, 10); // 1.55
 		rotationMotor.config_kI(0, 0.0, 10);
 		rotationMotor.config_kD(0, 5.0, 10); // 5.0
-		rotationMotor.config_kF(0, 1023.0/Constants.kSwerveRotationMaxSpeed, 10);
+		rotationMotor.config_kF(0, 1023.0/Constants.kSwerveRotationMaxSpeedEncUnits, 10);
 		//Slot 2 is reserved for the beginning of auto
 		rotationMotor.config_kP(1, 8.0, 10);
 		rotationMotor.config_kI(1, 0.0, 10);
