@@ -2,6 +2,8 @@ package com.team1323.frc2023.loops;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.lib.math.geometry.Vector3d;
+import com.team1323.lib.util.FieldConversions;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 
@@ -49,9 +51,10 @@ public class LimelightProcessor implements Loop {
 		double currentHeartbeat = heartbeat.getDouble(previousHeartbeat);
 		if (currentHeartbeat > previousHeartbeat && seesTarget()) {
 			double[] robotPoseArray = robotPose.getDoubleArray(zeroArray);
-			// TODO: Find correct values from the pose array, and convert them to the correct coordinate system.
 			if (robotPoseArray.length == 6) {
-				Pose2d estimatedRobotPose = new Pose2d(robotPoseArray[0], robotPoseArray[1], Rotation2d.fromDegrees(robotPoseArray[5]));
+				Vector3d robotPositionInLimelightCoordinates = new Vector3d(robotPoseArray[0], robotPoseArray[1], robotPoseArray[2]);
+				Vector3d robotPositionInOurCoordinates = FieldConversions.convertToField(Constants.kLimelightFieldOrigin, robotPositionInLimelightCoordinates);
+				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), Rotation2d.fromDegrees(robotPoseArray[5]));
 				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
 	
 				//Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds);

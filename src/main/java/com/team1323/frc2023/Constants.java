@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.team1323.frc2023.subsystems.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team1323.frc2023.subsystems.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
+import com.team1323.lib.math.geometry.Vector3d;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
@@ -53,6 +54,9 @@ public class Constants {
     public static final double kVPW = 2.0 * Math.tan(Math.toRadians(kHorizontalFOV / 2.0));
     public static final double kVPH = 2.0 * Math.tan(Math.toRadians(kVerticalFOV / 2.0));
     public static final double kImageCaptureLatency = 11.0 / 1000.0; // seconds
+    // The origin of the limelight's field coordinate system, in terms of our coordinate system.
+    // Units here are meters.
+    public static final Vector3d kLimelightFieldOrigin = new Vector3d(8.270875, 4.00685, 0.0);
     
     //Goal tracker constants
     public static final double kMaxGoalTrackAge = 0.5;
