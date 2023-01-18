@@ -78,8 +78,9 @@ public class Constants {
     //Swerve Speed Constants
     public static final double kSwerveDriveMaxSpeed = 22000.0;
     public static final double kSwerveMaxSpeedInchesPerSecond = 12.5 * 12.0;
-    public static final double kSwerveRotationMaxSpeed = 106.33 * 0.46728;
-    public static final double kSwerveRotationMaxAcceleration = kSwerveRotationMaxSpeed * 12.5;
+    public static final double kSwerveRotationMaxSpeedRps = 106.33 * 0.46728;
+    public static final double kSwerveRotationMaxSpeedEncUnits = 12720.0 * 0.8;
+    public static final double kSwerveRotationMaxAcceleration = kSwerveRotationMaxSpeedRps * 12.5;
     public static final double kSwerveRotation10VoltMaxSpeed = 1350.0;
     public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     public static final double kSwerveXInputRate = 0.5;
@@ -131,7 +132,7 @@ public class Constants {
     /** The number of rotations the swerve rotation motor undergoes for every rotation of the module. */
     public static final double kSwerveRotationReduction = 10.2857;
     /** The number of rotations the swerve drive encoder undergoes for every rotation of the wheel. */
-    public static final double kSwerveEncoderToWheelRatio = 6.55; //7.132867133
+    public static final double kSwerveEncoderToWheelRatio = 3.8671875; //7.132867133
     public static final double kSwerveEncUnitsPerWheelRev = kSwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
     public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
     public static final double kSwerveModuleRotationTolerance = 4.5;

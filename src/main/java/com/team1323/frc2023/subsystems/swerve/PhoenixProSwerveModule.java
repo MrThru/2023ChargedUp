@@ -1,4 +1,4 @@
-package com.team1323.frc2023.subsystems;
+package com.team1323.frc2023.subsystems.swerve;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -47,7 +47,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
         rotationConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         rotationConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         rotationConfiguration.MotorOutput.DutyCycleNeutralDeadband = 0.0;
-        rotationConfiguration.MotionMagic.MotionMagicCruiseVelocity = Constants.kSwerveRotationMaxSpeed;
+        rotationConfiguration.MotionMagic.MotionMagicCruiseVelocity = Constants.kSwerveRotationMaxSpeedRps;
         rotationConfiguration.MotionMagic.MotionMagicAcceleration = Constants.kSwerveRotationMaxAcceleration;
         rotationConfiguration.Slot0.kP = 1.55;
         rotationConfiguration.Slot0.kI = 0.0;

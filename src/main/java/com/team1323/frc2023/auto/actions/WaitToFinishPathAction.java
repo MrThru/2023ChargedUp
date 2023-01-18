@@ -1,6 +1,6 @@
 package com.team1323.frc2023.auto.actions;
 
-import com.team1323.frc2023.subsystems.Swerve;
+import com.team1323.frc2023.subsystems.swerve.Swerve;
 
 import edu.wpi.first.wpilibj.Timer;
 
