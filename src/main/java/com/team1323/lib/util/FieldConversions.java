@@ -8,7 +8,7 @@ import com.team1323.lib.math.geometry.Vector3d;
 
 
 /** Add your docs here. */
-public class WPIFieldConversions {
+public class FieldConversions {
     private final static double xOffset = 0;
     private final static double yOffset = 315.5;
     private final static double zOffset = 0;
@@ -29,4 +29,9 @@ public class WPIFieldConversions {
     public static Vector3d convert3dCordToWPICord(Vector3d cord3d) {
         return cord3d.subtract(new Vector3d(xOffset, yOffset, zOffset));
     }
+
+    public static Vector3d convertToField(Vector3d centerPoint, Vector3d cord) {
+        return cord.subtract(centerPoint);
+    }
+
 }
