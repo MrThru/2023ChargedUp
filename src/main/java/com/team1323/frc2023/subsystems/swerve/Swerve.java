@@ -81,7 +81,7 @@ public class Swerve extends Subsystem{
 	public void temporarilyDisableHeadingController(){
 		headingController.temporarilyDisable();
 	}
-	public double getTargetHeading(){
+	public Rotation2d getTargetHeading(){
 		return headingController.getTargetHeading();
 	}
 	
@@ -95,7 +95,7 @@ public class Swerve extends Subsystem{
 	}
 	Translation2d visionPIDTarget;
 	SynchronousPIDF lateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
-	SynchronousPIDF forwardPID = new SynchronousPIDF(0.02, 0.0, 0.0);
+	SynchronousPIDF forwardPID = new SynchronousPIDF(0.05, 0.0, 0.0);
 	boolean visionTargetReached = false;
 	
 	boolean needsToNotifyDrivers = false;
@@ -213,8 +213,8 @@ public class Swerve extends Subsystem{
 			Units.inchesToMeters(Constants.kVehicleToModuleThree)
 		);
 		poseEstimator = new SwerveDrivePoseEstimator(kinematics, pigeon.getYaw(), 
-				getModulePositions(), Pose2d.identity(), VecBuilder.fill(0.2, 0.2, 0.175), 
-				VecBuilder.fill(0.05, 0.05, 0.058));
+				getModulePositions(), Pose2d.identity(), VecBuilder.fill(0.1, 0.1, 0.1), 
+				VecBuilder.fill(0.1, 0.1, 0.1));
 		pose = poseEstimator.getEstimatedPosition();
 		distanceTraveled = 0;
 		
@@ -379,37 +379,24 @@ public class Swerve extends Subsystem{
 	}
 	
 	//Various methods to control the heading controller
-	public synchronized void rotate(double goalHeading){
+	public synchronized void rotate(Rotation2d goalHeading){
 		if(translationalVector.x() == 0 && translationalVector.y() == 0)
 		rotateInPlace(goalHeading);
 		else
-		headingController.setStabilizationTarget(
-		Util.placeInAppropriate0To360Scope(pigeonAngle.getUnboundedDegrees(), goalHeading));
+		headingController.setStabilizationTarget(goalHeading);
 	}
 	
-	public void rotateInPlace(double goalHeading){
+	public void rotateInPlace(Rotation2d goalHeading){
 		setState(ControlState.ROTATION);
-		headingController.setStationaryTarget(
-		Util.placeInAppropriate0To360Scope(pigeonAngle.getUnboundedDegrees(), goalHeading));
+		headingController.setStationaryTarget(goalHeading);
 	}
 	
-	public void rotateInPlaceAbsolutely(double absoluteHeading){
-		setState(ControlState.ROTATION);
-		headingController.setStationaryTarget(absoluteHeading);
-	}
-	
-	public void setPathHeading(double goalHeading){
-		headingController.setSnapTarget(
-		Util.placeInAppropriate0To360Scope(
-		pigeonAngle.getUnboundedDegrees(), goalHeading));
-	}
-	
-	public void setAbsolutePathHeading(double absoluteHeading){
-		headingController.setSnapTarget(absoluteHeading);
+	public void setPathHeading(Rotation2d goalHeading){
+		headingController.setSnapTarget(goalHeading);
 	}
 
 	public boolean isGoingToPole() {
-		Rotation2d targetHeading = Rotation2d.fromDegrees(headingController.getTargetHeading());
+		Rotation2d targetHeading = getTargetHeading();
 		return targetHeading.equals(Rotation2d.fromDegrees(0.0)) || targetHeading.equals(Rotation2d.fromDegrees(180.0));
 	}
 
@@ -588,7 +575,7 @@ public class Swerve extends Subsystem{
 	* @param rotationScalar Scalar to increase or decrease the robot's rotation speed
 	* @param followingCenter The point (relative to the robot) that will follow the trajectory
 	*/
-	public synchronized void setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, double targetHeading,
+	public synchronized void setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d targetHeading,
 	double rotationScalar, Translation2d followingCenter){
 		hasStartedFollowing = false;
 		hasFinishedPath = false;
@@ -597,22 +584,22 @@ public class Swerve extends Subsystem{
 		motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
 		motionPlanner.setFollowingCenter(followingCenter);
 		inverseKinematics.setCenterOfRotation(followingCenter);
-		setAbsolutePathHeading(targetHeading);
+		setPathHeading(targetHeading);
 		this.rotationScalar = rotationScalar;
 		trajectoryStartTime = Timer.getFPGATimestamp();
 		setState(ControlState.TRAJECTORY);
 	}
 	
-	public synchronized void setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, double targetHeading,
+	public synchronized void setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d targetHeading,
 	double rotationScalar){
 		setTrajectory(trajectory, targetHeading, rotationScalar, Translation2d.identity());
 	}
 	
-	public void setRobotCentricTrajectory(Translation2d relativeEndPos, double targetHeading){
+	public void setRobotCentricTrajectory(Translation2d relativeEndPos, Rotation2d targetHeading){
 		setRobotCentricTrajectory(relativeEndPos, targetHeading, 45.0);
 	}
 	
-	public void setRobotCentricTrajectory(Translation2d relativeEndPos, double targetHeading, double defaultVel){
+	public void setRobotCentricTrajectory(Translation2d relativeEndPos, Rotation2d targetHeading, double defaultVel){
 		modulesReady = true;
 		Translation2d endPos = pose.transformBy(Pose2d.fromTranslation(relativeEndPos)).getTranslation();
 		Rotation2d startHeading = endPos.translateBy(pose.getTranslation().inverse()).direction();
@@ -620,19 +607,17 @@ public class Swerve extends Subsystem{
 		waypoints.add(new Pose2d(pose.getTranslation(), startHeading));	
 		waypoints.add(new Pose2d(pose.transformBy(Pose2d.fromTranslation(relativeEndPos)).getTranslation(), startHeading));
 		Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, defaultVel, 1);
-		double heading = Util.placeInAppropriate0To360Scope(pigeonAngle.getUnboundedDegrees(), targetHeading);
-		setTrajectory(trajectory, heading, 1.0);
+		setTrajectory(trajectory, targetHeading, 1.0);
 	}
 
-	public synchronized void setFieldCentricTrajectory(Translation2d relativeEndPos, double targetHeading, double defaultVel) {
+	public synchronized void setFieldCentricTrajectory(Translation2d relativeEndPos, Rotation2d targetHeading, double defaultVel) {
 		modulesReady = true;
 		Translation2d endPos = pose.getTranslation().translateBy(relativeEndPos);
 		List<Pose2d> waypoints = new ArrayList<>();
 		waypoints.add(new Pose2d(pose.getTranslation(), relativeEndPos.direction()));
 		waypoints.add(new Pose2d(endPos, relativeEndPos.direction()));
 		Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, defaultVel, 1);
-		double heading = Util.placeInAppropriate0To360Scope(pigeonAngle.getUnboundedDegrees(), targetHeading);
-		setTrajectory(trajectory, heading, 1.0);
+		setTrajectory(trajectory, targetHeading, 1.0);
 	}
 	
 	// Vision PID (new, simpler vision tracking system)
@@ -643,7 +628,7 @@ public class Swerve extends Subsystem{
 		visionPIDTarget = desiredFieldPosition;
 		visionTargetReached = false;
 		rotationScalar = 0.5;
-		setPathHeading(targetHeading.getDegrees());
+		setPathHeading(targetHeading);
 		setState(ControlState.VISION_PID);
 	}
 
@@ -661,10 +646,12 @@ public class Swerve extends Subsystem{
 		output = Translation2d.fromPolar(output.direction(), magnitude);
 		output = output.rotateBy(visionApproachAngle);
 		visionTargetHeading = output.direction();
+		/*
 		if (error.norm() <= Constants.kDistanceToTargetTolerance) {
 			visionTargetReached = true;
 			lockDrivePosition();
 		}
+		*/
 		System.out.println("Vision PID output vector: " + output.toString() + ", Error Norm: " + error.norm());
 		
 		return output;
@@ -683,7 +670,7 @@ public class Swerve extends Subsystem{
 		List<Translation2d> modulePositions = Constants.kModulePositions;
 		int evadeClosestIndex = 0;
 		for(int i = 0; i < modulePositions.size(); i++) {
-			Translation2d currentModuleVector = translationalVector.rotateBy(getHeading().inverse());
+			Translation2d currentModuleVector = translationalVector.rotateBy(pose.getRotation().inverse());
 			if(modulePositions.get(i).distance(currentModuleVector) < modulePositions.get(evadeClosestIndex).distance(currentModuleVector)) {
 				evadeClosestIndex = i;
 			}
@@ -825,7 +812,7 @@ public class Swerve extends Subsystem{
 	boolean isDriveLocked = false;
 	/** Called every cycle to update the swerve based on its control state */
 	public synchronized void updateControlCycle(double timestamp){
-		double rotationCorrection = headingController.updateRotationCorrection(getHeading().getUnboundedDegrees(), timestamp);
+		double rotationCorrection = headingController.updateRotationCorrection(pose.getRotation(), timestamp);
 		switch(currentState){
 			case MANUAL:
 			if(evading && evadingToggled){
@@ -1020,7 +1007,7 @@ public class Swerve extends Subsystem{
 		};
 	}
 
-	public Request robotCentricTrajectoryRequest(Translation2d relativeEndPos, double targetHeading, double defaultVel){
+	public Request robotCentricTrajectoryRequest(Translation2d relativeEndPos, Rotation2d targetHeading, double defaultVel){
 		return new Request(){
 			
 			@Override
@@ -1036,7 +1023,7 @@ public class Swerve extends Subsystem{
 		};
 	}
 	
-	public Request startRobotCentricTrajectoryRequest(Translation2d relativeEndPos, double targetHeading, double defaultVel){
+	public Request startRobotCentricTrajectoryRequest(Translation2d relativeEndPos, Rotation2d targetHeading, double defaultVel){
 		return new Request(){
 			
 			@Override
@@ -1047,7 +1034,7 @@ public class Swerve extends Subsystem{
 		};
 	}
 
-	public Request fieldCentricTrajectoryRequest(Translation2d relativeEndPos, double targetHeading, double defaultVel) {
+	public Request fieldCentricTrajectoryRequest(Translation2d relativeEndPos, Rotation2d targetHeading, double defaultVel) {
 		return new Request(){
 			
 			@Override
@@ -1142,7 +1129,7 @@ public class Swerve extends Subsystem{
 	}
 
 	public Rotation2d getHeading() {
-		return pigeonAngle;
+		return pose.getRotation();
 	}
 
 	public void zeroModuleAngles() {
@@ -1225,7 +1212,7 @@ public class Swerve extends Subsystem{
 			SmartDashboard.putNumber("Robot X", pose.getTranslation().x());
 			SmartDashboard.putNumber("Robot Y", pose.getTranslation().y());
 			SmartDashboard.putString("Heading Controller", headingController.getState().toString());
-			SmartDashboard.putNumber("Target Heading", headingController.getTargetHeading());
+			SmartDashboard.putNumber("Target Heading", getTargetHeading().getDegrees());
 			SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
 			SmartDashboard.putString("Robot Velocity", velocity.toString());
 			SmartDashboard.putString("Swerve State", currentState.toString());

@@ -2,16 +2,17 @@ package com.team1323.frc2023.auto.actions;
 
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 
 public class SetTrajectoryAction extends RunOnceAction{
 	Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
-    double goalHeading;
+    Rotation2d goalHeading;
     double rotationScalar;
 	Swerve swerve;
 	
-	public SetTrajectoryAction(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, double goalHeading, double rotationScalar){
+	public SetTrajectoryAction(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d goalHeading, double rotationScalar){
 		this.trajectory = trajectory;
         this.goalHeading = goalHeading;
         this.rotationScalar = rotationScalar;

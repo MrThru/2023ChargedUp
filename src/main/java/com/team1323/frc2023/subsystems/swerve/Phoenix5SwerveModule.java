@@ -71,14 +71,14 @@ public class Phoenix5SwerveModule extends SwerveModule {
 		driveMotor.config_kP(0, 0.18, 10);
 		driveMotor.config_kI(0, 0.0, 10);
 		driveMotor.config_kD(0, 3.6, 10);
-		driveMotor.config_kF(0, 1023.0/Constants.kSwerveDriveMaxSpeed, 10);
-		driveMotor.configMotionCruiseVelocity((int)(Constants.kSwerveDriveMaxSpeed*0.9), 10);
-		driveMotor.configMotionAcceleration((int)(Constants.kSwerveDriveMaxSpeed), 10);
+		driveMotor.config_kF(0, 1023.0/Constants.kMaxFalconEncoderSpeed, 10);
+		driveMotor.configMotionCruiseVelocity(Constants.kMaxFalconEncoderSpeed*0.9, 10);
+		driveMotor.configMotionAcceleration(Constants.kMaxFalconEncoderSpeed, 10);
 		// Slot 1 corresponds to velocity mode
 		driveMotor.config_kP(1, 0.11, 10);
 		driveMotor.config_kI(1, 0.0, 10);
 		driveMotor.config_kD(1, 0.0, 10);
-		driveMotor.config_kF(1, 1023.0/Constants.kSwerveDriveMaxSpeed, 10);
+		driveMotor.config_kF(1, 1023.0/Constants.kMaxFalconEncoderSpeed, 10);
 	}
 
     @Override

@@ -67,7 +67,7 @@ public class Constants {
     public static final double kTrackSwitchingWeight = 0.0;
     public static final double kClosestVisionDistance = 26.0;//36.0
     
-    public static final double kVisionPIDOutputPercent = 0.5;
+    public static final double kVisionPIDOutputPercent = 0.05;
 
     public static final double kPosePredictionTime = 0.125; // seconds 0.25
     
@@ -80,7 +80,6 @@ public class Constants {
     public static final double kPathMinLookaheadDistance = 6.0;  // inches 24.0 (we've been using 3.0)
     
     //Swerve Speed Constants
-    public static final double kSwerveDriveMaxSpeed = 22000.0;
     public static final double kSwerveMaxSpeedInchesPerSecond = 12.5 * 12.0;
     public static final double kSwerveRotationMaxSpeedRps = 106.33 * 0.46728;
     public static final double kSwerveRotationMaxSpeedEncUnits = 12720.0 * 0.8;
@@ -130,7 +129,7 @@ public class Constants {
     };
     
     //Swerve Odometry Constants
-    public static final double kSwerveWheelDiameter = 4.0587; //inches (actual diamter is closer to 3.87, but secondary algorithm prefers 4.0901) 3.76
+    public static final double kSwerveWheelDiameter = 3.85; //inches (actual diamter is closer to 3.87, but secondary algorithm prefers 4.0901) 3.76
     public static final double kSwerveDriveEncoderResolution = 2048.0; //2048.0 for falcon 500
     public static final double kSwerveRotationEncoderResolution = 2048.0;
     /** The number of rotations the swerve rotation motor undergoes for every rotation of the module. */

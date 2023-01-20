@@ -2,6 +2,7 @@ package com.team1323.frc2023.loops;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.lib.math.Units;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team1323.lib.util.FieldConversions;
 import com.team254.lib.geometry.Pose2d;
@@ -10,6 +11,7 @@ import com.team254.lib.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimelightProcessor implements Loop {
 	private static LimelightProcessor instance = new LimelightProcessor();
@@ -26,6 +28,7 @@ public class LimelightProcessor implements Loop {
 	private final NetworkTableEntry latency;
 	private final NetworkTableEntry seesTarget;
 	private final NetworkTableEntry robotPose;
+	private final NetworkTableEntry camPose;
 	private final double[] zeroArray = new double[]{0, 0, 0, 0, 0, 0};
 	private double previousHeartbeat = -1.0;
 	
@@ -39,6 +42,7 @@ public class LimelightProcessor implements Loop {
 		latency = table.getEntry("tl");
 		seesTarget = table.getEntry("tv");
 		robotPose = table.getEntry("botpose");
+		camPose = table.getEntry("campose");
 	}
 	
 	@Override 
@@ -51,13 +55,23 @@ public class LimelightProcessor implements Loop {
 		double currentHeartbeat = heartbeat.getDouble(previousHeartbeat);
 		if (currentHeartbeat > previousHeartbeat && seesTarget()) {
 			double[] robotPoseArray = robotPose.getDoubleArray(zeroArray);
-			if (robotPoseArray.length == 6) {
+			double[] camPoseArray = camPose.getDoubleArray(zeroArray);
+			if (robotPoseArray.length == 6 && camPoseArray.length == 6) {
 				Vector3d robotPositionInLimelightCoordinates = new Vector3d(robotPoseArray[0], robotPoseArray[1], robotPoseArray[2]);
 				Vector3d robotPositionInOurCoordinates = FieldConversions.convertToField(Constants.kLimelightFieldOrigin, robotPositionInLimelightCoordinates);
 				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), Rotation2d.fromDegrees(robotPoseArray[5]));
+
+				Vector3d camPoseVector = new Vector3d(camPoseArray[0], camPoseArray[1], camPoseArray[2]);
+				double camDistanceInches = Units.metersToInches(camPoseVector.magnitude());
+				SmartDashboard.putNumber("Camera Distance", camDistanceInches);
+
 				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
 	
-				//Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds);
+				Pose2d robotPoseInches = Units.metersToInches(estimatedRobotPose);
+				//SmartDashboard.putNumberArray("Path Pose", new double[]{robotPoseInches.getTranslation().x(), robotPoseInches.getTranslation().y(), robotPoseInches.getRotation().getDegrees()});
+				if (camDistanceInches < 130.0) {
+					Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds);
+				}
 	
 				previousHeartbeat = currentHeartbeat;
 			}

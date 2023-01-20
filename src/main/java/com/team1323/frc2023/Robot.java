@@ -79,13 +79,8 @@ public class Robot extends TimedRobot {
 		generator.generateTrajectories();
 
 		AutoModeBase auto = new TestMode();
-		qTransmitter.addPaths(auto.getPaths());
+		//qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
-
-		VoltageOut cr1 = new VoltageOut(12.0, true, false);
-		ControlRequest cr2 = new VoltageOut(12.0, true, false);
-		cr1.Output = 1.0;
-		System.out.println("Are cr1 and cr2 equal? " + (cr1.equals(cr2) ? "true" : "false"));
 	}
 
 	@Override

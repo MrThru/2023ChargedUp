@@ -130,18 +130,19 @@ public class DriverControls implements Loop {
         SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
 
         if (driver.bButton.wasActivated())
-            swerve.rotate(-90);
+            swerve.rotate(Rotation2d.fromDegrees(-90));
             //swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());
         else if (driver.aButton.wasActivated()) 
-            swerve.rotate(180);
+            swerve.rotate(Rotation2d.fromDegrees(180));
         else if (driver.xButton.wasActivated())
-            swerve.rotate(90);
+            swerve.rotate(Rotation2d.fromDegrees(90));
         else if (driver.yButton.wasActivated())
-            swerve.rotate(0);
+            swerve.rotate(Rotation2d.fromDegrees(0));
         
 
         if (driver.startButton.isBeingPressed()) 
-            swerve.setState(Swerve.ControlState.NEUTRAL);
+            swerve.startVisionPID(new Translation2d(569.5, 63.0), Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(0.0));
+            //swerve.setState(Swerve.ControlState.NEUTRAL);
 
         if (driver.backButton.wasActivated()) {
             swerve.temporarilyDisableHeadingController();
