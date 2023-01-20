@@ -66,13 +66,9 @@ public class Constants {
     public static final double kTrackAgeWeight = 1.0;
     public static final double kTrackSwitchingWeight = 0.0;
     public static final double kClosestVisionDistance = 26.0;//36.0
-    
-    public static final double kVisionPIDOutputPercent = 0.05;
 
     public static final double kPosePredictionTime = 0.125; // seconds 0.25
     
-    public static final double kDistanceToTargetTolerance = 1.0;
-
     public static final double kGyroDriftPerRotation = -0.25; // degrees
     
     //Path following constants

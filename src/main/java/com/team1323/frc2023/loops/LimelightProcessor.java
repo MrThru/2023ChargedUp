@@ -2,12 +2,18 @@ package com.team1323.frc2023.loops;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team1323.lib.util.FieldConversions;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -18,6 +24,19 @@ public class LimelightProcessor implements Loop {
 	public static LimelightProcessor getInstance() {
 		return instance;
 	}
+
+	private static final TwoPointRamp translationalStandardDeviationRamp = new TwoPointRamp(
+		new Translation2d(30.0, 0.1),
+		new Translation2d(100.0, 1.0),
+		2.0,
+		false
+	);
+	private static final TwoPointRamp rotationalStandardDeviationRamp = new TwoPointRamp(
+		new Translation2d(30.0, 0.1),
+		new Translation2d(100.0, 1.0),
+		2.0,
+		false
+	);
 
 	private final NetworkTable table;
 	private final NetworkTableEntry ledMode;
@@ -69,9 +88,10 @@ public class LimelightProcessor implements Loop {
 	
 				Pose2d robotPoseInches = Units.metersToInches(estimatedRobotPose);
 				//SmartDashboard.putNumberArray("Path Pose", new double[]{robotPoseInches.getTranslation().x(), robotPoseInches.getTranslation().y(), robotPoseInches.getRotation().getDegrees()});
-				if (camDistanceInches < 130.0) {
-					Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds);
-				}
+				double translationalStdDev = translationalStandardDeviationRamp.calculate(camDistanceInches);
+				double rotationalStdDev = rotationalStandardDeviationRamp.calculate(camDistanceInches);
+				Matrix<N3, N1> standardDeviations = VecBuilder.fill(translationalStdDev, translationalStdDev, rotationalStdDev);
+				Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds, standardDeviations);
 	
 				previousHeartbeat = currentHeartbeat;
 			}

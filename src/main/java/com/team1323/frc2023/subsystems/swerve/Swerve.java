@@ -16,6 +16,7 @@ import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.gyros.Pigeon;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.frc2023.vision.VisionPIDController;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.math.vectors.VectorField;
 import com.team1323.lib.util.DriveSignal;
@@ -23,7 +24,6 @@ import com.team1323.lib.util.Kinematics;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.SwerveHeadingController;
 import com.team1323.lib.util.SwerveInverseKinematics;
-import com.team1323.lib.util.SynchronousPIDF;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -40,8 +40,11 @@ import com.wpilib.SwerveDrivePoseEstimator;
 import com.wpilib.SwerveModulePosition;
 import com.wpilib.SwerveModuleState;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -88,15 +91,10 @@ public class Swerve extends Subsystem{
 	//Vision dependencies
 	RobotState robotState;
 	Rotation2d visionTargetHeading = new Rotation2d();
-	Rotation2d visionApproachAngle = Rotation2d.fromDegrees(0.0);
-	double visionCutoffDistance = Constants.kClosestVisionDistance;
+	VisionPIDController visionPID = new VisionPIDController();
 	public boolean isTracking(){
 		return currentState == ControlState.VISION_PID;
 	}
-	Translation2d visionPIDTarget;
-	SynchronousPIDF lateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
-	SynchronousPIDF forwardPID = new SynchronousPIDF(0.05, 0.0, 0.0);
-	boolean visionTargetReached = false;
 	
 	boolean needsToNotifyDrivers = false;
 	public boolean needsToNotifyDrivers(){
@@ -219,9 +217,6 @@ public class Swerve extends Subsystem{
 		distanceTraveled = 0;
 		
 		generator = TrajectoryGenerator.getInstance();
-		
-		lateralPID.setSetpoint(0.0);
-		forwardPID.setSetpoint(0.0);
 	}
 
 	public void setDriveNeutralMode(NeutralMode mode) {
@@ -622,11 +617,7 @@ public class Swerve extends Subsystem{
 	
 	// Vision PID (new, simpler vision tracking system)
 	public void startVisionPID(Translation2d desiredFieldPosition, Rotation2d approachAngle, Rotation2d targetHeading) {
-		lateralPID.setSetpoint(0.0);
-		forwardPID.setSetpoint(0.0);
-		visionApproachAngle = approachAngle;
-		visionPIDTarget = desiredFieldPosition;
-		visionTargetReached = false;
+		visionPID.start(desiredFieldPosition, approachAngle);
 		rotationScalar = 0.5;
 		setPathHeading(targetHeading);
 		setState(ControlState.VISION_PID);
@@ -634,27 +625,6 @@ public class Swerve extends Subsystem{
 
 	public void startVisionPID(Translation2d endTranslation, Rotation2d approachAngle) {
 		startVisionPID(endTranslation, approachAngle, pose.getRotation());
-	}
-	
-	Translation2d updateVisionPID(double dt) {
-		Translation2d adjustedTarget = visionPIDTarget.rotateBy(visionApproachAngle.inverse());
-		Translation2d adjustedPose = pose.getTranslation().rotateBy(visionApproachAngle.inverse());
-		Translation2d error = adjustedTarget.translateBy(adjustedPose.inverse());
-		Translation2d output = new Translation2d(-forwardPID.calculate(error.x(), dt), -lateralPID.calculate(error.y(), dt));
-		double magnitude = Util.deadBand(output.norm(), 0.01);
-		magnitude = Math.min(magnitude, Constants.kVisionPIDOutputPercent);
-		output = Translation2d.fromPolar(output.direction(), magnitude);
-		output = output.rotateBy(visionApproachAngle);
-		visionTargetHeading = output.direction();
-		/*
-		if (error.norm() <= Constants.kDistanceToTargetTolerance) {
-			visionTargetReached = true;
-			lockDrivePosition();
-		}
-		*/
-		System.out.println("Vision PID output vector: " + output.toString() + ", Error Norm: " + error.norm());
-		
-		return output;
 	}
 	
 	/****************************************************/
@@ -909,7 +879,7 @@ public class Swerve extends Subsystem{
 			}
 			break;
 			case VISION_PID:
-			Translation2d driveVector = updateVisionPID(timestamp - lastUpdateTimestamp);
+			Translation2d driveVector = visionPID.update(pose, timestamp - lastUpdateTimestamp);
 			if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
 				driveVector = lastDriveVector;
 				setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, Util.deadBand(rotationCorrection*rotationScalar, 0.01), pose, false), 0.0);
@@ -963,26 +933,6 @@ public class Swerve extends Subsystem{
 		}
 		
 	};
-	
-	public Request visionPIDRequest(Translation2d desiredFieldPosition, Rotation2d approachAngle, double cutoffDistance) {
-		return new Request(){
-			
-			@Override
-			public void act() {
-				if (!isTracking()) {
-					visionCutoffDistance = cutoffDistance;
-					startVisionPID(desiredFieldPosition, approachAngle);
-					System.out.println("Vision Request started");
-				}
-			}
-			
-			@Override
-			public boolean isFinished(){
-				return getState() == ControlState.VISION_PID && (robotState.distanceToTarget() < visionCutoffDistance);
-			}
-			
-		};
-	}
 
 	public Request visionPIDRequest(Translation2d desiredFieldPosition, Rotation2d approachAngle) {
 		return new Request(){
@@ -997,7 +947,7 @@ public class Swerve extends Subsystem{
 
 			@Override
 			public boolean isFinished() {
-				if (visionTargetReached) {
+				if (visionPID.isDone()) {
 					DriverStation.reportError("Swerve Vision PID Request Finished", false);
 					return true;
 				}
@@ -1140,8 +1090,8 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.setRotationMotorZeroed(isZeroed));
 	}
 
-	public void addVisionMeasurement(Pose2d estimatedRobotPose, double observationTimestamp) {
-		poseEstimator.addVisionMeasurement(estimatedRobotPose, observationTimestamp);
+	public void addVisionMeasurement(Pose2d estimatedRobotPose, double observationTimestamp, Matrix<N3, N1> standardDeviations) {
+		poseEstimator.addVisionMeasurement(estimatedRobotPose, observationTimestamp, standardDeviations);
 	}
 	
 	@Override
