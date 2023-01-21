@@ -26,15 +26,15 @@ public class LimelightProcessor implements Loop {
 	}
 
 	private static final TwoPointRamp translationalStandardDeviationRamp = new TwoPointRamp(
-		new Translation2d(30.0, 0.1),
-		new Translation2d(100.0, 1.0),
-		2.0,
+		new Translation2d(60.0, 0.05),
+		new Translation2d(100.0, 1.5),
+		1.0,
 		false
 	);
 	private static final TwoPointRamp rotationalStandardDeviationRamp = new TwoPointRamp(
-		new Translation2d(30.0, 0.1),
-		new Translation2d(100.0, 1.0),
-		2.0,
+		new Translation2d(60.0, 0.2),
+		new Translation2d(100.0, 1.5),
+		1.0,
 		false
 	);
 
@@ -48,6 +48,7 @@ public class LimelightProcessor implements Loop {
 	private final NetworkTableEntry seesTarget;
 	private final NetworkTableEntry robotPose;
 	private final NetworkTableEntry camPose;
+	private final NetworkTableEntry tx, ty;
 	private final double[] zeroArray = new double[]{0, 0, 0, 0, 0, 0};
 	private double previousHeartbeat = -1.0;
 	
@@ -62,6 +63,8 @@ public class LimelightProcessor implements Loop {
 		seesTarget = table.getEntry("tv");
 		robotPose = table.getEntry("botpose");
 		camPose = table.getEntry("campose");
+		tx = table.getEntry("tx");
+		ty = table.getEntry("ty");
 	}
 	
 	@Override 
@@ -78,7 +81,15 @@ public class LimelightProcessor implements Loop {
 			if (robotPoseArray.length == 6 && camPoseArray.length == 6) {
 				Vector3d robotPositionInLimelightCoordinates = new Vector3d(robotPoseArray[0], robotPoseArray[1], robotPoseArray[2]);
 				Vector3d robotPositionInOurCoordinates = FieldConversions.convertToField(Constants.kLimelightFieldOrigin, robotPositionInLimelightCoordinates);
-				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), Rotation2d.fromDegrees(robotPoseArray[5]));
+				double horizontalAngle = tx.getDouble(0.0);
+				double verticalAngle = ty.getDouble(0.0);
+				boolean isInCorner = Math.abs(horizontalAngle) > 20.0 && Math.abs(verticalAngle) > 10.0;
+				SmartDashboard.putBoolean("Is In Corner", isInCorner);
+				if (isInCorner) {
+					return;
+				}
+				Rotation2d estimatedRobotHeading = isInCorner ? Swerve.getInstance().getHeading() : Rotation2d.fromDegrees(robotPoseArray[5]);
+				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), estimatedRobotHeading);
 
 				Vector3d camPoseVector = new Vector3d(camPoseArray[0], camPoseArray[1], camPoseArray[2]);
 				double camDistanceInches = Units.metersToInches(camPoseVector.magnitude());

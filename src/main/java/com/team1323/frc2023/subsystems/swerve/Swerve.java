@@ -618,7 +618,7 @@ public class Swerve extends Subsystem{
 	// Vision PID (new, simpler vision tracking system)
 	public void startVisionPID(Translation2d desiredFieldPosition, Rotation2d approachAngle, Rotation2d targetHeading) {
 		visionPID.start(desiredFieldPosition, approachAngle);
-		rotationScalar = 0.5;
+		rotationScalar = 0.75;
 		setPathHeading(targetHeading);
 		setState(ControlState.VISION_PID);
 	}

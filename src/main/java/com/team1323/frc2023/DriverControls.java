@@ -141,7 +141,7 @@ public class DriverControls implements Loop {
         
 
         if (driver.startButton.isBeingPressed()) 
-            swerve.startVisionPID(new Translation2d(569.5, 63.0), Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(0.0));
+            swerve.startVisionPID(new Translation2d(574.5, 61.0), Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(0.0));
             //swerve.setState(Swerve.ControlState.NEUTRAL);
 
         if (driver.backButton.wasActivated()) {
