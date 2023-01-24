@@ -6,10 +6,10 @@ package com.team1323.frc2023.vision;
 
 import com.team1323.lib.math.geometry.Pose3d;
 import com.team1323.lib.math.geometry.Vector3d;
+import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 
-
-/** Add your docs here. */
 public class AprilTagTracker {
     private static AprilTagTracker instance = null;
     public AprilTagTracker getInstance() {
@@ -18,28 +18,56 @@ public class AprilTagTracker {
         return instance;
     }
     
-    public enum AprilTags {
-        ZERO(new AprilTag(0, new Pose3d(new Vector3d(), new Rotation2d()))),
-        ONE(new AprilTag(1, new Pose3d(new Vector3d(610.77, 42.19, 18.22), Rotation2d.fromDegrees(180)))),
-        TWO(new AprilTag(2, new Pose3d(new Vector3d(610.77, 108.19, 18.22), Rotation2d.fromDegrees(180)))),
-        THREE(new AprilTag(3, new Pose3d(new Vector3d(610.77, 174.19, 18.22), Rotation2d.fromDegrees(180)))),
-        FOUR(new AprilTag(4, new Pose3d(new Vector3d(636.96, 265.74, 27.38), Rotation2d.fromDegrees(180)))),
-        FIVE(new AprilTag(5, new Pose3d(new Vector3d(14.25, 265.74, 27.38), Rotation2d.fromDegrees(0)))),
-        SIX(new AprilTag(6, new Pose3d(new Vector3d(40.45, 174.19, 18.22), Rotation2d.fromDegrees(0)))),
-        SEVEN(new AprilTag(7, new Pose3d(new Vector3d(40.45, 108.19, 18.22), Rotation2d.fromDegrees(0)))),
-        EIGHT(new AprilTag(8, new Pose3d(new Vector3d(40.45, 42.19, 18.22), Rotation2d.fromDegrees(0))));
+    public enum AprilTag {
+        ZERO(0, new Vector3d(), new Rotation2d()),
+        ONE(1, new Vector3d(610.77, 42.19, 18.22), Rotation2d.fromDegrees(0)),
+        TWO(2, new Vector3d(610.77, 108.19, 18.22), Rotation2d.fromDegrees(0)),
+        THREE(3, new Vector3d(610.77, 174.19, 18.22), Rotation2d.fromDegrees(0)),
+        FOUR(4, new Vector3d(636.96, 265.74, 27.38), Rotation2d.fromDegrees(0)),
+        FIVE(5, new Vector3d(14.25, 265.74, 27.38), Rotation2d.fromDegrees(180)),
+        SIX(6, new Vector3d(40.45, 174.19, 18.22), Rotation2d.fromDegrees(180)),
+        SEVEN(7, new Vector3d(40.45, 108.19, 18.22), Rotation2d.fromDegrees(180)),
+        EIGHT(8, new Vector3d(40.45, 42.19, 18.22), Rotation2d.fromDegrees(180));
 
-        AprilTag tag;
-        AprilTags(AprilTag tag) {
-            this.tag = tag;
+        private final int id;
+        private final Vector3d position;
+        private final Rotation2d orientation;
+
+        private AprilTag(int id, Vector3d tagPosition, Rotation2d tagOrientation) {
+            this.id = id;
+            this.position = tagPosition;
+            this.orientation = tagOrientation;
         }
 
+        private AprilTag(int id, Pose3d pose3d) {
+            this(id, pose3d.getVector3d(), pose3d.getRotation2d());
+        }
+
+        public Rotation2d getRotation() {
+            return this.orientation;
+        }
+
+        public Vector3d getVector3d() {
+            return this.position;
+        }
+
+        public Translation2d getTranslation2d() {
+            return new Translation2d(position.x(), position.y());
+        }
+
+        public Pose2d getPose2d() {
+            return new Pose2d(getTranslation2d(), getRotation());
+        }
+
+        public int getId() {
+            return this.id;
+        }
     }
 
-    private AprilTags currentDetectedAprilTag = AprilTags.ZERO;
+    private AprilTag currentDetectedAprilTag = AprilTag.ZERO;
     
 
-    public AprilTags getCurrentDetectedAprilTag() {
+    public AprilTag getCurrentDetectedAprilTag() {
         return currentDetectedAprilTag;
     }
 
@@ -49,32 +77,5 @@ public class AprilTagTracker {
     
     public void update() {
 
-    }
-
-
-    public static class AprilTag {
-        private Vector3d tagPosition;
-        private Rotation2d tagOrientation;
-        private int id;
-        public AprilTag() {
-            this(0, new Vector3d(), new Rotation2d()); 
-        }
-        public AprilTag(int id, Vector3d tagPosition, Rotation2d tagOrientation) {
-            this.id = id;
-            this.tagPosition = tagPosition;
-            this.tagOrientation = tagOrientation;
-        }
-        public AprilTag(int id, Pose3d pose3d) {
-            this(id, pose3d.getVector3d(), pose3d.getRotation2d());
-        }
-        public Rotation2d getRotation() {
-            return this.tagOrientation;
-        }
-        public Vector3d getPosition() {
-            return this.tagPosition;
-        }
-        public int getId() {
-            return this.id;
-        }
     }
 }

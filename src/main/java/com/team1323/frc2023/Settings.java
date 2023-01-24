@@ -7,6 +7,9 @@
 
 package com.team1323.frc2023;
 
+import com.team1323.frc2023.field.FieldOffsets;
+import com.team1323.frc2023.field.PracticeFieldOffsets;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -19,8 +22,8 @@ public class Settings {
     private static Settings instance = new Settings(); 
 
     public static final boolean kIsUsingCompBot = true;
-	public static final boolean kIsUsingTractionWheels = true;
     public static final boolean kIsUsingPS5Controller = true;
+    public static final FieldOffsets kFieldOffets = new PracticeFieldOffsets();
 
     public static final boolean kSimulate = false;
 	public static final boolean kResetTalons = false;
