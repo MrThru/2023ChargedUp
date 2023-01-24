@@ -23,7 +23,7 @@ public class Settings {
 
     public static final boolean kIsUsingCompBot = true;
     public static final boolean kIsUsingPS5Controller = true;
-    public static final FieldOffsets kFieldOffets = new PracticeFieldOffsets();
+    public static final FieldOffsets kFieldOffsets = new PracticeFieldOffsets();
 
     public static final boolean kSimulate = false;
 	public static final boolean kResetTalons = false;

@@ -64,7 +64,7 @@ public class ScoringPositions {
         ));
         Pose2d scoringPose = nodeTag.getPose2d().transformBy(tagToRobotTransform);
 
-        return Settings.kFieldOffets.applyOffsets(scoringPose, nodeLocation);
+        return Settings.kFieldOffsets.applyOffsets(scoringPose, nodeLocation);
     }
 
     private static AprilTag getNearestAprilTag(Pose2d robotPose) {
