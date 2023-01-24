@@ -15,7 +15,7 @@ import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-public class ScoringPositions {
+public class ScoringPoses {
     // All length measurements are in inches
     private static final double kAprilTagToConeLateralDisplacement = 22.0;
     private static final double kAprilTagToBarrierForwardDisplacement = 13.8;

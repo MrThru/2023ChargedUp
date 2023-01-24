@@ -251,7 +251,8 @@ public class Constants {
             45.0
         );
     }
-    public static enum ScoringPositions {
+
+    public static enum SuperstructurePosition {
         INTAKE(0.25, 0.25,Constants.Wrist.kIntakeAngle), STOW(1, Constants.HorizontalElevator.kStowExtension, Constants.Wrist.kStowAngle),
         LOW_CUBE(0.1, 0.25, Constants.Wrist.kIntakeAngle), MID_CUBE(20, 0.25, 0),
         HIGH_CUBE(30.5, 12, 0),
@@ -262,12 +263,12 @@ public class Constants {
         public final double verticalHeight;
         public final double horizontalExtension;
         public final double wristAngle;
-        private ScoringPositions(double verticalHeight, double horizontalExtension, double wristAngle) {
+        private SuperstructurePosition(double verticalHeight, double horizontalExtension, double wristAngle) {
             this.verticalHeight = verticalHeight;
             this.horizontalExtension = horizontalExtension;
             this.wristAngle = wristAngle;
         }
-        private ScoringPositions(ScoringPositions scoringPos) {
+        private SuperstructurePosition(SuperstructurePosition scoringPos) {
             this.verticalHeight = scoringPos.verticalHeight;
             this.horizontalExtension = scoringPos.horizontalExtension;
             this.wristAngle = scoringPos.wristAngle;

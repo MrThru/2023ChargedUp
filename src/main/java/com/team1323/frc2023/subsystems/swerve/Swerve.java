@@ -616,15 +616,11 @@ public class Swerve extends Subsystem{
 	}
 	
 	// Vision PID (new, simpler vision tracking system)
-	public void startVisionPID(Translation2d desiredFieldPosition, Rotation2d approachAngle, Rotation2d targetHeading) {
-		visionPID.start(desiredFieldPosition, approachAngle);
+	public void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle) {
+		visionPID.start(desiredFieldPose.getTranslation(), approachAngle);
 		rotationScalar = 0.75;
-		setPathHeading(targetHeading);
+		setPathHeading(desiredFieldPose.getRotation());
 		setState(ControlState.VISION_PID);
-	}
-
-	public void startVisionPID(Translation2d endTranslation, Rotation2d approachAngle) {
-		startVisionPID(endTranslation, approachAngle, pose.getRotation());
 	}
 	
 	/****************************************************/
@@ -934,13 +930,13 @@ public class Swerve extends Subsystem{
 		
 	};
 
-	public Request visionPIDRequest(Translation2d desiredFieldPosition, Rotation2d approachAngle) {
+	public Request visionPIDRequest(Pose2d desiredFieldPose, Rotation2d approachAngle) {
 		return new Request(){
 		
 			@Override
 			public void act() {
 				if (!isTracking()) {
-					startVisionPID(desiredFieldPosition, approachAngle);
+					startVisionPID(desiredFieldPose, approachAngle);
 					System.out.println("Vision Request Started");
 				}
 			}

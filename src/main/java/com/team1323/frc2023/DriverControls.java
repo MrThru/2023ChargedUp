@@ -9,9 +9,8 @@ package com.team1323.frc2023;
 
 import java.util.Arrays;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.team1323.frc2023.Constants.ScoringPositions;
+import com.team1323.frc2023.Constants.SuperstructurePosition;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Intake;
@@ -141,7 +140,7 @@ public class DriverControls implements Loop {
         
 
         if (driver.startButton.isBeingPressed()) 
-            swerve.startVisionPID(new Translation2d(574.5, 61.0), Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(0.0));
+            swerve.startVisionPID(new Pose2d(new Translation2d(574.5, 61.0), Rotation2d.fromDegrees(0.0)), Rotation2d.fromDegrees(0.0));
             //swerve.setState(Swerve.ControlState.NEUTRAL);
 
         if (driver.backButton.wasActivated()) {
@@ -198,24 +197,24 @@ public class DriverControls implements Loop {
         }
 
         if (coDriver.aButton.shortReleased()) {
-            s.setScoringPositionState(ScoringPositions.LOW_CUBE);
+            s.setScoringPositionState(SuperstructurePosition.LOW_CUBE);
         } else if (coDriver.aButton.longPressed()) {
-            s.setScoringPositionState(ScoringPositions.LOW_CONE);
+            s.setScoringPositionState(SuperstructurePosition.LOW_CONE);
         }
 
         if (coDriver.xButton.shortReleased()) {
-            s.setScoringPositionState(ScoringPositions.MID_CUBE);
+            s.setScoringPositionState(SuperstructurePosition.MID_CUBE);
         } else if (coDriver.xButton.longPressed()) {
-            s.setScoringPositionState(ScoringPositions.MID_CONE);
+            s.setScoringPositionState(SuperstructurePosition.MID_CONE);
         } 
 
         if (coDriver.yButton.shortReleased()) {
-            s.setScoringPositionState(ScoringPositions.HIGH_CUBE);
+            s.setScoringPositionState(SuperstructurePosition.HIGH_CUBE);
         } else if (coDriver.yButton.longPressed()) {
-            s.setScoringPositionState(ScoringPositions.HIGH_CONE);
+            s.setScoringPositionState(SuperstructurePosition.HIGH_CONE);
         }
         if (coDriver.bButton.wasActivated()) {
-            s.setScoringPositionState(ScoringPositions.STOW);
+            s.setScoringPositionState(SuperstructurePosition.STOW);
         }
 
         if (coDriver.leftBumper.wasActivated()) {
@@ -242,6 +241,20 @@ public class DriverControls implements Loop {
         } else if(coDriver.leftTrigger.wasReleased()) {
             intake.conformToState(Intake.ControlState.OFF);
         }
+
+        // D-pad controls for vision PID
+        /*
+        if (coDriver.POV0.wasActivated()) {
+            Pose2d scoringPose = ScoringPoses.getCenterScoringPose(swerve.getPose());
+            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+        } else if (coDriver.POV90.wasActivated()) {
+            Pose2d scoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
+            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+        } else if (coDriver.POV270.wasActivated()) {
+            Pose2d scoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
+            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+        }
+        */
 
         if(coDriver.backButton.wasActivated()) {
             s.neutralState();

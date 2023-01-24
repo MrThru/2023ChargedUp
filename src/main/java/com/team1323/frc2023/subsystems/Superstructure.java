@@ -7,7 +7,7 @@ import java.util.List;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.RobotState;
-import com.team1323.frc2023.Constants.ScoringPositions;
+import com.team1323.frc2023.Constants.SuperstructurePosition;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.LambdaRequest;
@@ -208,7 +208,7 @@ public class Superstructure extends Subsystem {
 	private void intakeState(Intake.ControlState intakeState) {
 		request(
 			new SequentialRequest(
-				scoringPositionRequest(ScoringPositions.INTAKE),
+				scoringPositionRequest(SuperstructurePosition.INTAKE),
 				intake.stateRequest(intakeState)
 			)
 		);
@@ -229,14 +229,14 @@ public class Superstructure extends Subsystem {
 		);
 	}
 
-	private Request scoringPositionRequest(ScoringPositions scoringPosition) {
+	private Request scoringPositionRequest(SuperstructurePosition scoringPosition) {
 		return new ParallelRequest(
 				horizontalElevator.extensionRequest(scoringPosition.horizontalExtension),
 				verticalElevator.heightRequest(scoringPosition.verticalHeight),
 				wrist.angleRequest(scoringPosition.wristAngle)
 			);
 	}
-	public void setScoringPositionState(ScoringPositions scoringPosition) {
+	public void setScoringPositionState(SuperstructurePosition scoringPosition) {
 		request(scoringPositionRequest(scoringPosition));
 	}
 
