@@ -9,35 +9,35 @@ import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
-    private static Wrist instance = null;
-    public static Wrist getInstance() {
+public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
+    private static Shoulder instance = null;
+    public static Shoulder getInstance() {
         if (instance == null) {
-            instance = new Wrist();
+            instance = new Shoulder();
         }
         return instance;
     }
-
-    public Wrist() {
-        super(Ports.WRIST, null, Constants.Wrist.kEncoderUnitsPerDegree, 
-                Constants.Wrist.kMinControlAngle, Constants.Wrist.kMaxControlAngle, 
-                Constants.Wrist.kAngleTolerance, Constants.Wrist.kVelocityScalar, 
-                Constants.Wrist.kAccelerationScalar, Constants.Wrist.kAbsoluteEncoderInfo);
+    
+    public Shoulder() {
+        super(Ports.SHOULDER, null, Constants.Shoulder.kEncoderUnitsPerDegree, 
+                Constants.Shoulder.kMinControlAngle, Constants.Shoulder.kMaxControlAngle, 
+                Constants.Shoulder.kAngleTolerance, Constants.Shoulder.kVelocityScalar, 
+                Constants.Shoulder.kAccelerationScalar, Constants.Shoulder.kAbsoluteEncoderInfo);
 
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
-        setPIDF(Constants.Wrist.kPIDF);
-        setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
+        setPIDF(Constants.Shoulder.kPIDF);
+        setSupplyCurrentLimit(Constants.Shoulder.kSupplyCurrentLimit);
         zeroPosition();
         stop();
     }
 
     /**
-     * Assumes that the wrist is at 0 degrees when completely horizontal (i.e., when gravity exerts the most
-     * torque on the motor), and that rotating the wrist upward results in a positive angle.
+     * Assumes that the shoulder is at 0 degrees when completely horizontal (i.e., when gravity exerts the most
+     * torque on the motor), and that rotating the shoulder upward results in a positive angle.
      */
     private void updateArbitraryFeedForward() {
         Rotation2d currentAngle = Rotation2d.fromDegrees(getPosition());
-        periodicIO.arbitraryFeedForward = Constants.Wrist.kArbitraryFeedForward * currentAngle.cos();
+        periodicIO.arbitraryFeedForward = Constants.Shoulder.kArbitraryFeedForward * currentAngle.cos();
     }
 
     private Loop loop = new Loop() {
@@ -76,8 +76,8 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putNumber("Wrist Angle", getPosition());
-        SmartDashboard.putNumber("Wrist Encoder Position", periodicIO.position);
-        SmartDashboard.putNumber("Wrist Absolute Encoder", getAbsoluteEncoderDegrees());
+        SmartDashboard.putNumber("Shoulder Angle", getPosition());
+        SmartDashboard.putNumber("Shoulder Encoder Position", periodicIO.position);
+        SmartDashboard.putNumber("Shoulder Absolute Encoder", getAbsoluteEncoderDegrees());
     }
 }

@@ -23,7 +23,7 @@ public class HorizontalElevator extends ServoSubsystem {
                 Constants.HorizontalElevator.kTicksPerInch, Constants.HorizontalElevator.kMinExtension, Constants.HorizontalElevator.kMaxExtension, 
                 Constants.HorizontalElevator.kExtensionTolerance, Constants.HorizontalElevator.kVelocityScalar, Constants.HorizontalElevator.kAccelerationScalar);
 
-        setPIDF(0, Constants.HorizontalElevator.kP, Constants.HorizontalElevator.kI, Constants.HorizontalElevator.kD, Constants.HorizontalElevator.kF);
+        setPIDF(Constants.HorizontalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);
         zeroPosition();
     }

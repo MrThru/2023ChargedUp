@@ -71,6 +71,7 @@ public abstract class ServoSubsystem extends Subsystem {
         leader.config_kD(slotIndex, d, Constants.kCANTimeoutMs);
         leader.config_kF(slotIndex, f, Constants.kCANTimeoutMs);
     }
+
     protected void setPIDF(TalonPIDF talonPIDF) {
         this.setPIDF(talonPIDF.slotIndex, talonPIDF.kP, talonPIDF.kI, talonPIDF.kD, talonPIDF.kF);
     }
@@ -160,11 +161,11 @@ public abstract class ServoSubsystem extends Subsystem {
     }
 
     public static class TalonPIDF {
-        public static int slotIndex;
-        public static double kP;
-        public static double kI;
-        public static double kD;
-        public static double kF;
+        public final int slotIndex;
+        public final double kP;
+        public final double kI;
+        public final double kD;
+        public final double kF;
 
         public TalonPIDF(int slotIndex, double kP, double kI, double kD, double kF) {
             this.slotIndex = slotIndex;

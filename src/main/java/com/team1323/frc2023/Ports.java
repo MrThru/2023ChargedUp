@@ -1,8 +1,6 @@
 package com.team1323.frc2023;
 
 public class Ports {
-    //TODO: Update Ports with IRL Number
-    
     // CAN Devices 
     // Falcons
     public static final int FRONT_RIGHT_ROTATION= 4;
@@ -17,18 +15,18 @@ public class Ports {
     public static final int REAR_RIGHT_ROTATION = 1;
     public static final int REAR_RIGHT_DRIVE    = 5;
     
-
     public static final int VERTICAL_ELEVATOR_LEADER = 40;
-    public static final int VERTICAL_ELEVATOR_FOLLOWER = 50;
 
     public static final int HORIZONTAL_ELEVATOR_LEADER = 41;
 
+    public static final int SHOULDER = 50;
+
     public static final int WRIST = 43;
-    public static final int INTAKE_LEFT = 12;
-    public static final int INTAKE_RIGHT = 3;
 
     public static final int CUBE_INTAKE_WRIST = 0;
     public static final int CUBE_INTAKE = 0;
+
+    public static final int WINCH = 0;
     // MISC CAN
     public static final int PIGEON = 45;
     public static final int CANDLE = 46;
@@ -45,7 +43,7 @@ public class Ports {
         REAR_LEFT_ENCODER, REAR_RIGHT_ENCODER};
 
     public static final int WRIST_ENCODER = 9;
-
+    public static final int SHOULDER_ENCODER = 0;
     public static final int INTAKE_WRIST_ENCODER = 4;
 
     //CANCoders

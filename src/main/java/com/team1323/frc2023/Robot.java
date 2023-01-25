@@ -6,8 +6,6 @@ package com.team1323.frc2023;
 
 import java.util.Set;
 
-import com.ctre.phoenixpro.controls.ControlRequest;
-import com.ctre.phoenixpro.controls.VoltageOut;
 import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeExecuter;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
@@ -16,6 +14,7 @@ import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.Looper;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
 import com.team1323.frc2023.loops.RobotStateEstimator;
+import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
@@ -159,6 +158,7 @@ public class Robot extends TimedRobot {
 			smartDashboardInteractions.output();
 			Settings.update();
 			Swerve.getInstance().zeroModuleAngles();
+			Shoulder.getInstance().zeroPositionWithCounter();
 			Wrist.getInstance().zeroPositionWithCounter();
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);

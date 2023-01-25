@@ -207,10 +207,13 @@ public class Constants {
 
         public static final double kSupplyCurrentLimit = 40.0;
 
-        public static final double kP = 0.0;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-        public static final double kF = 0.0;//kFalconMotionMagicFeedForward;
+        public static final TalonPIDF kPIDF = new TalonPIDF(
+            0,
+            0.0,
+            0.0,
+            0.0,
+            0.0 //kFalconMotionMagicFeedForward
+        );
 
         public static final double kArbitraryFeedForward = 0.0;
     }
@@ -228,15 +231,54 @@ public class Constants {
 
         public static final double kSupplyLimit = 40.0;
 
-        public static final double kP = 0.0;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-        public static final double kF = 0.0;//kFalconMotionMagicFeedForward;
+        public static final TalonPIDF kPIDF = new TalonPIDF(
+            0,
+            0.0,
+            0.0,
+            0.0,
+            0.0 //kFalconMotionMagicFeedForward
+        );
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             0.0,
             100.0,
             0.0
+        );
+    }
+
+    public static class Shoulder {
+        public static final double kMotorRotationsPerShoulderRotation = 1.0;
+        public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
+        public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerShoulderRotation / 360.0;
+
+        public static final double kMinControlAngle = 0.0;
+        public static final double kMaxControlAngle = 270.0;
+
+        public static final double kAngleTolerance = 2.0;
+
+        public static final double kVelocityScalar = 0.25;
+        public static final double kAccelerationScalar = 1.0;
+
+        public static final double kSupplyCurrentLimit = 30.0;
+
+        public static final TalonPIDF kPIDF = new TalonPIDF(
+            0,
+            0.0,
+            0.0,
+            0.0,
+            0.0 //kFalconMotionMagicFeedForward
+        );
+
+        public static final double kArbitraryFeedForward = 0.0;
+
+        public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
+            Ports.SHOULDER_ENCODER, 
+            false, 
+            1.0, 
+            0.0, 
+            0.0, 
+            0.0, 
+            270.0
         );
     }
 
@@ -255,10 +297,13 @@ public class Constants {
 
         public static final double kSupplyCurrentLimit = 30.0;
 
-        public static final double kP = 0.0;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-        public static final double kF = 0.0;//kFalconMotionMagicFeedForward;
+        public static final TalonPIDF kPIDF = new TalonPIDF(
+            0,
+            0.0,
+            0.0,
+            0.0,
+            0.0 //kFalconMotionMagicFeedForward
+        );
 
         public static final double kArbitraryFeedForward = 0.0;
 
@@ -270,6 +315,30 @@ public class Constants {
             0.0, 
             0.0, 
             270.0
+        );
+    }
+
+    public static class Winch {
+        public static final double kMotorRotationsPerWinchRotation = 1.0;
+        public static final double kEncoderUnitsPerWinchRotation = kMotorRotationsPerWinchRotation * 2048.0;
+        public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWinchRotation / 360.0;
+
+        public static final double kMinControlAngle = 0.0;
+        public static final double kMaxControlAngle = 90.0;
+
+        public static final double kAngleTolerance = 2.0;
+
+        public static final double kVelocityScalar = 0.25;
+        public static final double kAccelerationScalar = 1.0;
+
+        public static final double kSupplyCurrentLimit = 30.0;
+
+        public static final TalonPIDF kPIDF = new TalonPIDF(
+            0,
+            0.0,
+            0.0,
+            0.0,
+            0.0 //kFalconMotionMagicFeedForward
         );
     }
 

@@ -20,7 +20,7 @@ public class VerticalElevator extends ServoSubsystem {
                 Constants.VerticalElevator.kMaxControlHeight, Constants.VerticalElevator.kHeightTolerance, 
                 Constants.VerticalElevator.kVelocityScalar, Constants.VerticalElevator.kAccelerationScalar);
 
-        setPIDF(0, Constants.VerticalElevator.kP, Constants.VerticalElevator.kI, Constants.VerticalElevator.kD, Constants.VerticalElevator.kF);
+        setPIDF(Constants.VerticalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.VerticalElevator.kSupplyCurrentLimit);
         periodicIO.arbitraryFeedForward = Constants.VerticalElevator.kArbitraryFeedForward;
         zeroPosition();
