@@ -3,6 +3,7 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team1323.frc2023.subsystems.ServoSubsystem.TalonPIDF;
 import com.team1323.frc2023.subsystems.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team1323.frc2023.subsystems.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
 import com.team1323.lib.math.geometry.Vector3d;
@@ -11,7 +12,8 @@ import com.team254.lib.geometry.Translation2d;
 
 public class Constants {
     /*All distance measurements are in inches, unless otherwise noted.*/
-    
+    public static final String kCanBus = "";
+
     public static final double kLooperDt = 0.01;
     public static final double kAutoAimPredictionTime = 0.14; // 0.14
 
@@ -161,6 +163,36 @@ public class Constants {
     public static final double kMaxFalconRotationsPerSecond = 6380.0 / 60.0;
     public static final double kMaxFalconEncoderSpeed = 6380.0 * 2048.0 / 600.0;
     public static final double kFalconMotionMagicFeedForward = 1023.0 / kMaxFalconEncoderSpeed;
+
+    public static class CubeIntake {
+        public static final double kEncUnitsPerDegree = 0;
+        public static final double kMinControlAngle = 0;
+        public static final double kMaxControlAngle = 150.0;
+
+        public static final double kAngleTolerance = 1.0;
+        public static final double kVelocityScalar = 0.25;
+        public static final double kAccelerationScalar = 0.25;
+        
+        public static final double kSupplyCurrentLimit = 40.0;
+
+        public static final double kArbitraryFeedForward = 0.0;
+        public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
+            Ports.INTAKE_WRIST_ENCODER,
+            false,
+            1,
+            0, 
+            0, 
+            0,
+            0
+        );
+        public static final TalonPIDF kStandardPID = new TalonPIDF(0, 
+            0, 
+            0,
+            0, 
+            0
+        );
+
+    }
 
     public static class VerticalElevator {
         public static final double kTicksPerInch = 1.0;

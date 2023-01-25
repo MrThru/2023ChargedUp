@@ -71,6 +71,9 @@ public abstract class ServoSubsystem extends Subsystem {
         leader.config_kD(slotIndex, d, Constants.kCANTimeoutMs);
         leader.config_kF(slotIndex, f, Constants.kCANTimeoutMs);
     }
+    protected void setPIDF(TalonPIDF talonPIDF) {
+        this.setPIDF(talonPIDF.slotIndex, talonPIDF.kP, talonPIDF.kI, talonPIDF.kD, talonPIDF.kF);
+    }
     
     protected void enableLimits(boolean enable) {
         leader.configForwardSoftLimitEnable(enable, Constants.kCANTimeoutMs);
@@ -145,6 +148,7 @@ public abstract class ServoSubsystem extends Subsystem {
     @Override
     public void stop() {
         setOpenLoop(0.0);
+
     }
 
     public class PeriodicIO {
@@ -153,5 +157,21 @@ public abstract class ServoSubsystem extends Subsystem {
         public double demand = 0.0;
         public ControlMode controlMode = ControlMode.PercentOutput;
         public double arbitraryFeedForward = 0.0;
+    }
+
+    public static class TalonPIDF {
+        public static int slotIndex;
+        public static double kP;
+        public static double kI;
+        public static double kD;
+        public static double kF;
+
+        public TalonPIDF(int slotIndex, double kP, double kI, double kD, double kF) {
+            this.slotIndex = slotIndex;
+            this.kP = kP;
+            this.kI = kI;
+            this.kD = kD;
+            this.kF = kF;
+        }
     }
 }

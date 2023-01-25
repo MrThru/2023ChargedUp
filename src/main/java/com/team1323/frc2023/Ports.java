@@ -26,6 +26,9 @@ public class Ports {
     public static final int WRIST = 43;
     public static final int INTAKE_LEFT = 12;
     public static final int INTAKE_RIGHT = 3;
+
+    public static final int CUBE_INTAKE_WRIST = 0;
+    public static final int CUBE_INTAKE = 0;
     // MISC CAN
     public static final int PIGEON = 45;
     public static final int CANDLE = 46;
@@ -43,11 +46,12 @@ public class Ports {
 
     public static final int WRIST_ENCODER = 9;
 
+    public static final int INTAKE_WRIST_ENCODER = 4;
+
     //CANCoders
     
     // Pneumatics
-    public static final int PNEUMATIC_HUB = 21;
-    public static final int INTAKE_CLAMPER = 0;
+
 
 
     //Canifier
