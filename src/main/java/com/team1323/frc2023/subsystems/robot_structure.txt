@@ -1,10 +1,25 @@
-- Swerve (done)
-- Vertical elevator
-    - 2 falcons
-- Horizontal elevator
-    - 2 falcons
-- Wrist
+- Swerve (reuse)
+- Vertical elevator (reuse)
     - 1 falcon
-- Intake
+    - 24.5 inches of travel
+- Horizontal elevator (reuse)
+    - 1 falcon
+    - 16.75 inches of travel
+- Shoulder (new)
+    - 1 falcon
+    - 270 degrees of travel
+- Wrist (reuse)
+    - 1 falcon
+    - 270 degrees of travel
+- Claw (new)
+    - 1 falcon
+- Cube intake (new)
+    - 1 falcon for rollers
+    - 1 banner at robot entrance
+    - 1 falcon for wrist
+    - 150 degrees of travel
+- Tunnel (new)
     - 2 falcons
-    - 1-2 solenoids
+    - 2 banners
+- Winch (new)
+    - 1 falcon

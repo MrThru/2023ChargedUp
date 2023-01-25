@@ -1,7 +1,5 @@
 package com.team1323.frc2023.subsystems;
 
-import java.util.Arrays;
-
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
@@ -17,8 +15,8 @@ public class VerticalElevator extends ServoSubsystem {
     }
 
     public VerticalElevator() {
-        super(Ports.VERTICAL_ELEVATOR_LEADER, Arrays.asList(Ports.VERTICAL_ELEVATOR_FOLLOWER), 
-                null, Constants.VerticalElevator.kTicksPerInch, Constants.VerticalElevator.kMinControlHeight, 
+        super(Ports.VERTICAL_ELEVATOR_LEADER, null,
+                Constants.VerticalElevator.kTicksPerInch, Constants.VerticalElevator.kMinControlHeight, 
                 Constants.VerticalElevator.kMaxControlHeight, Constants.VerticalElevator.kHeightTolerance, 
                 Constants.VerticalElevator.kVelocityScalar, Constants.VerticalElevator.kAccelerationScalar);
 
