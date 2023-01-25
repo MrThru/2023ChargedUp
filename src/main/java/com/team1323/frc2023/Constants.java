@@ -163,83 +163,72 @@ public class Constants {
     public static final double kFalconMotionMagicFeedForward = 1023.0 / kMaxFalconEncoderSpeed;
 
     public static class VerticalElevator {
-        public static final double kTicksPerInch = 37327.0 / 13.0;
+        public static final double kTicksPerInch = 1.0;
 
         public static final double kMinControlHeight = 0.0;
-        public static final double kMaxControlHeight = 31.0;
+        public static final double kMaxControlHeight = 24.5;
 
         public static final double kHeightTolerance = 1.0;
 
-        public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 2.0;
+        public static final double kVelocityScalar = 0.25;
+        public static final double kAccelerationScalar = 1.0;
 
         public static final double kSupplyCurrentLimit = 40.0;
 
-        public static final double kP = 0.02;
+        public static final double kP = 0.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
-        public static final double kF = kFalconMotionMagicFeedForward;
+        public static final double kF = 0.0;//kFalconMotionMagicFeedForward;
 
-        public static final double kArbitraryFeedForward = 0.03;
-
-        public static final double kIntakeHeight = 2.0;
+        public static final double kArbitraryFeedForward = 0.0;
     }
 
     public static class HorizontalElevator {
-        public static final double kTicksPerInch = 25890.0 / 9.0;
+        public static final double kTicksPerInch = 1.0;
 
         public static final double kMinExtension = 0.0;
-        public static final double kMaxExtension = 12.25;
+        public static final double kMaxExtension = 16.75;
 
         public static final double kExtensionTolerance = 1.0;
 
-        public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 2.0;
+        public static final double kVelocityScalar = 0.25;
+        public static final double kAccelerationScalar = 1.0;
 
         public static final double kSupplyLimit = 40.0;
 
-        public static final double kP = 0.08;
+        public static final double kP = 0.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
-        public static final double kF = kFalconMotionMagicFeedForward;
-
-        public static final double kStowExtension = 0.25;
-        public static final double kIntakeExtension = 1.0;
+        public static final double kF = 0.0;//kFalconMotionMagicFeedForward;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
-            -0.05,
-            1.0,
-            0.25
+            0.0,
+            100.0,
+            0.0
         );
-        
     }
 
     public static class Wrist {
-        public static final double kMotorRotationsPerWristRotation = 81.57;
+        public static final double kMotorRotationsPerWristRotation = 1.0;
         public static final double kEncoderUnitsPerWristRotation = kMotorRotationsPerWristRotation * 2048.0;
-        public static final double kEncoderUnitsPerDegree = 35858.0 / 90.0; // kEncoderUnitsPerWristRotation / 360.0;
+        public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWristRotation / 360.0;
 
-        public static final double kMinControlAngle = -27.0;
-        public static final double kMaxControlAngle = 148.0;
-
-        public static final double kStartingAngle = 148.0;
+        public static final double kMinControlAngle = 0.0;
+        public static final double kMaxControlAngle = 270.0;
 
         public static final double kAngleTolerance = 2.0;
 
-        public static final double kVelocityScalar = 0.5;
+        public static final double kVelocityScalar = 0.25;
         public static final double kAccelerationScalar = 1.0;
 
         public static final double kSupplyCurrentLimit = 30.0;
 
-        public static final double kP = 0.08;
-        public static final double kI = 0.0001;
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
         public static final double kD = 0.0;
-        public static final double kF = kFalconMotionMagicFeedForward;
+        public static final double kF = 0.0;//kFalconMotionMagicFeedForward;
 
-        public static final double kArbitraryFeedForward = 0.05;
-
-        public static final double kStowAngle = kMaxControlAngle - 10;
-        public static final double kIntakeAngle = -20;
+        public static final double kArbitraryFeedForward = 0.0;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             Ports.WRIST_ENCODER, 
@@ -248,30 +237,30 @@ public class Constants {
             0.0, 
             0.0, 
             0.0, 
-            45.0
+            270.0
         );
     }
 
     public static enum SuperstructurePosition {
-        INTAKE(0.25, 0.25,Constants.Wrist.kIntakeAngle), STOW(1, Constants.HorizontalElevator.kStowExtension, Constants.Wrist.kStowAngle),
-        LOW_CUBE(0.1, 0.25, Constants.Wrist.kIntakeAngle), MID_CUBE(20, 0.25, 0),
-        HIGH_CUBE(30.5, 12, 0),
-        LOW_CONE(LOW_CUBE), MID_CONE(30.0, 8.0, 0), 
-        HIGH_CONE(30.5, 12, 25), SIDE_LAUNCH(30.0, 7.0, 30),
-        TEST_PICK_UP(27.3, 6.0, 0); //Wrist Angle = 25 for third pole
+        TEST(0, 0, 0, 0);
 
         public final double verticalHeight;
         public final double horizontalExtension;
+        public final double shoulderAngle;
         public final double wristAngle;
-        private SuperstructurePosition(double verticalHeight, double horizontalExtension, double wristAngle) {
+
+        private SuperstructurePosition(double verticalHeight, double horizontalExtension, double wristAngle, double shoulderAngle) {
             this.verticalHeight = verticalHeight;
             this.horizontalExtension = horizontalExtension;
+            this.shoulderAngle = shoulderAngle;
             this.wristAngle = wristAngle;
         }
-        private SuperstructurePosition(SuperstructurePosition scoringPos) {
-            this.verticalHeight = scoringPos.verticalHeight;
-            this.horizontalExtension = scoringPos.horizontalExtension;
-            this.wristAngle = scoringPos.wristAngle;
+
+        private SuperstructurePosition(SuperstructurePosition position) {
+            this.verticalHeight = position.verticalHeight;
+            this.horizontalExtension = position.horizontalExtension;
+            this.shoulderAngle = position.shoulderAngle;
+            this.wristAngle = position.wristAngle;
         }
     }
 }

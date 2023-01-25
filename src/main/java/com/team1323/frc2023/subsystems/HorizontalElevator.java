@@ -10,8 +10,7 @@ import com.team1323.frc2023.subsystems.requests.Request;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/** Add your docs here. */
-public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
+public class HorizontalElevator extends ServoSubsystem {
     private static HorizontalElevator instance = null;
     public static HorizontalElevator getInstance() {
         if(instance == null)
@@ -22,8 +21,7 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
     public HorizontalElevator() {
         super(Ports.HORIZONTAL_ELEVATOR_LEADER, null, 
                 Constants.HorizontalElevator.kTicksPerInch, Constants.HorizontalElevator.kMinExtension, Constants.HorizontalElevator.kMaxExtension, 
-                Constants.HorizontalElevator.kExtensionTolerance, Constants.HorizontalElevator.kVelocityScalar, Constants.HorizontalElevator.kAccelerationScalar,
-                Constants.HorizontalElevator.kCurrentZeroingConfig);
+                Constants.HorizontalElevator.kExtensionTolerance, Constants.HorizontalElevator.kVelocityScalar, Constants.HorizontalElevator.kAccelerationScalar);
 
         setPIDF(0, Constants.HorizontalElevator.kP, Constants.HorizontalElevator.kI, Constants.HorizontalElevator.kD, Constants.HorizontalElevator.kF);
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);

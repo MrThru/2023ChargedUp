@@ -10,7 +10,6 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.team1323.frc2023.Constants.SuperstructurePosition;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Intake;
@@ -49,12 +48,10 @@ public class DriverControls implements Loop {
     private Wrist wrist;
     private Intake intake;
 
-
     private SubsystemManager subsystems;
     public SubsystemManager getSubsystems(){ return subsystems; }
 
     private Superstructure s;
-
 
     private final boolean oneControllerMode = false;
         
@@ -93,7 +90,6 @@ public class DriverControls implements Loop {
             swerve.requireModuleConfiguration();
         }
         swerve.setDriveNeutralMode(NeutralMode.Brake);
-        s.enableCompressor(false);
     }
 
     @Override
@@ -140,8 +136,8 @@ public class DriverControls implements Loop {
         
 
         if (driver.startButton.isBeingPressed()) 
-            swerve.startVisionPID(new Pose2d(new Translation2d(574.5, 61.0), Rotation2d.fromDegrees(0.0)), Rotation2d.fromDegrees(0.0));
-            //swerve.setState(Swerve.ControlState.NEUTRAL);
+            //swerve.startVisionPID(new Pose2d(new Translation2d(574.5, 61.0), Rotation2d.fromDegrees(0.0)), Rotation2d.fromDegrees(0.0));
+            swerve.setState(Swerve.ControlState.NEUTRAL);
 
         if (driver.backButton.wasActivated()) {
             swerve.temporarilyDisableHeadingController();
@@ -175,72 +171,6 @@ public class DriverControls implements Loop {
 
         verticalElevator.acceptManualInput(verticalElevatorYInput);
         wrist.acceptManualInput(wristAngleYInput);
-
-        if(coDriver.POV0.wasActivated()) {
-            horizontalElevator.acceptManualInput(0.10);
-        } else if(coDriver.POV180.wasActivated()) {
-            horizontalElevator.acceptManualInput(-0.10);
-        } else if(coDriver.POV0.wasReleased() || coDriver.POV180.wasReleased()) {
-            horizontalElevator.acceptManualInput(0);
-        }
-
-        if(coDriver.POV90.wasActivated()) {
-            intake.setSpeed(-0.5);
-        } else if(coDriver.POV90.wasReleased()) {
-            intake.setSpeed(0);
-        }
-
-        if(coDriver.POV270.wasActivated()) {
-            intake.setSpeed(0.75);
-        } else if(coDriver.POV270.wasReleased()) {
-            intake.setSpeed(0.0);
-        }
-
-        if (coDriver.aButton.shortReleased()) {
-            s.setScoringPositionState(SuperstructurePosition.LOW_CUBE);
-        } else if (coDriver.aButton.longPressed()) {
-            s.setScoringPositionState(SuperstructurePosition.LOW_CONE);
-        }
-
-        if (coDriver.xButton.shortReleased()) {
-            s.setScoringPositionState(SuperstructurePosition.MID_CUBE);
-        } else if (coDriver.xButton.longPressed()) {
-            s.setScoringPositionState(SuperstructurePosition.MID_CONE);
-        } 
-
-        if (coDriver.yButton.shortReleased()) {
-            s.setScoringPositionState(SuperstructurePosition.HIGH_CUBE);
-        } else if (coDriver.yButton.longPressed()) {
-            s.setScoringPositionState(SuperstructurePosition.HIGH_CONE);
-        }
-        if (coDriver.bButton.wasActivated()) {
-            s.setScoringPositionState(SuperstructurePosition.STOW);
-        }
-
-        if (coDriver.leftBumper.wasActivated()) {
-            s.intakeConeState();
-        } else if (coDriver.leftBumper.wasReleased()) {
-            intake.conformToState(Intake.ControlState.HOLD_CONE);
-        }
-    
-        if (coDriver.rightBumper.wasActivated()) {
-            s.intakeCubeState();
-        } else if (coDriver.rightBumper.wasReleased()) {
-            intake.conformToState(Intake.ControlState.HOLD_CUBE);
-        }
-        
-
-        if (coDriver.rightTrigger.wasActivated()) {
-            intake.conformToState(Intake.ControlState.EJECT_CUBE);
-        } else if (coDriver.rightTrigger.wasReleased()) {
-            intake.conformToState(Intake.ControlState.INTAKE_CONE);
-            //intake.conformToState(Intake.ControlState.OFF);
-        }
-        if(coDriver.leftTrigger.wasActivated()) {
-            intake.conformToState(Intake.ControlState.EJECT_CONE);
-        } else if(coDriver.leftTrigger.wasReleased()) {
-            intake.conformToState(Intake.ControlState.OFF);
-        }
 
         // D-pad controls for vision PID
         /*

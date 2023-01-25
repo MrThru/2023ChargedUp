@@ -4,31 +4,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.team1323.frc2023.Constants;
-import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.RobotState;
-import com.team1323.frc2023.Constants.SuperstructurePosition;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.LambdaRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
-import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Superstructure extends Subsystem {
-
-	private Compressor compressor;
-	
 	public Swerve swerve;
 	public VerticalElevator verticalElevator;
 	public HorizontalElevator horizontalElevator;
 	public Wrist wrist;
-
 	public Intake intake;
 
 	public RobotState robotState;
@@ -36,8 +26,6 @@ public class Superstructure extends Subsystem {
 
 	
 	public Superstructure(){
-		compressor = new Compressor(Ports.PNEUMATIC_HUB, PneumaticsModuleType.CTREPCM);
-
 		swerve = Swerve.getInstance();
 		verticalElevator = VerticalElevator.getInstance();
 		horizontalElevator = HorizontalElevator.getInstance();
@@ -133,14 +121,6 @@ public class Superstructure extends Subsystem {
 		}
 		
 	};
-	
-	public void enableCompressor(boolean enable){
-		if (enable) {
-			compressor.enableDigital();
-		} else {
-			compressor.disable();
-		}
-	}
 
 	@Override
 	public void stop() {
@@ -178,23 +158,6 @@ public class Superstructure extends Subsystem {
 		};
 	}
 
-	public Request waitForVisionRequest(){
-		return new Request(){
-
-			@Override
-			public void act() {
-
-			}
-
-			@Override
-			public boolean isFinished(){
-				return robotState.seesTarget();
-			}
-
-		};
-	}
-
-
 	private boolean needsToNotifyDrivers = false;
     public boolean needsToNotifyDrivers() {
         if (needsToNotifyDrivers) {
@@ -205,48 +168,12 @@ public class Superstructure extends Subsystem {
     }
 
 	///// States /////
-	private void intakeState(Intake.ControlState intakeState) {
-		request(
-			new SequentialRequest(
-				scoringPositionRequest(SuperstructurePosition.INTAKE),
-				intake.stateRequest(intakeState)
-			)
-		);
-	}
-	public void intakeConeState() {
-		intakeState(Intake.ControlState.INTAKE_CONE);
-	}
-	public void intakeCubeState() {
-		intakeState(Intake.ControlState.INTAKE_CUBE);
-	}
-
-	public void stowObjectState() {
-		request(
-			new ParallelRequest(
-				horizontalElevator.extensionRequest(Constants.HorizontalElevator.kStowExtension),
-				wrist.angleRequest(Constants.Wrist.kStowAngle)
-			)
-		);
-	}
-
-	private Request scoringPositionRequest(SuperstructurePosition scoringPosition) {
-		return new ParallelRequest(
-				horizontalElevator.extensionRequest(scoringPosition.horizontalExtension),
-				verticalElevator.heightRequest(scoringPosition.verticalHeight),
-				wrist.angleRequest(scoringPosition.wristAngle)
-			);
-	}
-	public void setScoringPositionState(SuperstructurePosition scoringPosition) {
-		request(scoringPositionRequest(scoringPosition));
-	}
-
-	
 	public void neutralState() {
 		request(new ParallelRequest(
 			new LambdaRequest(()-> {
 				verticalElevator.stop();
-				wrist.stop();
 				horizontalElevator.stop();
+				wrist.stop();
 				intake.stop();
 			})
 		));

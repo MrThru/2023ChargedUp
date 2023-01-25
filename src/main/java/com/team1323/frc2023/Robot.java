@@ -159,10 +159,7 @@ public class Robot extends TimedRobot {
 			smartDashboardInteractions.output();
 			Settings.update();
 			Swerve.getInstance().zeroModuleAngles();
-			//Wrist.getInstance().zeroPositionWithCounter();
-			if (subsystems.haveEmergency()) {
-				//leds.configLEDs(LEDColors.RED);
-			}
+			Wrist.getInstance().zeroPositionWithCounter();
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
