@@ -341,27 +341,4 @@ public class Constants {
             0.0 //kFalconMotionMagicFeedForward
         );
     }
-
-    public static enum SuperstructurePosition {
-        TEST(0, 0, 0, 0);
-
-        public final double verticalHeight;
-        public final double horizontalExtension;
-        public final double shoulderAngle;
-        public final double wristAngle;
-
-        private SuperstructurePosition(double verticalHeight, double horizontalExtension, double wristAngle, double shoulderAngle) {
-            this.verticalHeight = verticalHeight;
-            this.horizontalExtension = horizontalExtension;
-            this.shoulderAngle = shoulderAngle;
-            this.wristAngle = wristAngle;
-        }
-
-        private SuperstructurePosition(SuperstructurePosition position) {
-            this.verticalHeight = position.verticalHeight;
-            this.horizontalExtension = position.horizontalExtension;
-            this.shoulderAngle = position.shoulderAngle;
-            this.wristAngle = position.wristAngle;
-        }
-    }
 }

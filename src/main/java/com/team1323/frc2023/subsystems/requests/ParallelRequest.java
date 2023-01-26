@@ -7,40 +7,42 @@
 
 package com.team1323.frc2023.subsystems.requests;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Request which takes a list of Requests and executes them in parallel.
  */
 public class ParallelRequest extends Request {
-
-    List<Request> requests;
+    private final Set<Request> idleRequests;
+    private final Set<Request> inProgressRequests;
 
     public ParallelRequest(Request... requests) {
-        this.requests = new ArrayList<>();
-        for(Request request : requests) {
-            this.requests.add(request);
-        }
+        idleRequests = new HashSet<>(Arrays.asList(requests));
+        inProgressRequests = new HashSet<>();
     }
 
-    public ParallelRequest(List<Request> requests) {
-        this.requests = new ArrayList<>();
-        for(Request request : requests) {
-            this.requests.add(request);
+    private void startRequestsIfAllowed() {
+        for (Request request : idleRequests) {
+            if (request.allowed()) {
+                request.act();
+                inProgressRequests.add(request);
+                idleRequests.remove(request);
+            }
         }
     }
 
     @Override
     public void act() {
-        for(Request request : requests) {
-            request.act();
-        }
+        startRequestsIfAllowed();
     }
 
     @Override
     public boolean isFinished() {
-        requests.removeIf((r) -> r.isFinished());
-        return requests.isEmpty();
+        startRequestsIfAllowed();
+        inProgressRequests.removeIf(r -> r.isFinished());
+
+        return idleRequests.isEmpty() && inProgressRequests.isEmpty();
     }
 }

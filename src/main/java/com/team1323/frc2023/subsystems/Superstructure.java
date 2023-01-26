@@ -7,6 +7,7 @@ import java.util.List;
 import com.team1323.frc2023.RobotState;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.SuperstructureCoordinator.SuperstructurePosition;
 import com.team1323.frc2023.subsystems.requests.LambdaRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
@@ -15,31 +16,27 @@ import com.team1323.frc2023.subsystems.swerve.Swerve;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Superstructure extends Subsystem {
-	public Swerve swerve;
-	public VerticalElevator verticalElevator;
-	public HorizontalElevator horizontalElevator;
-	public Wrist wrist;
-
-	public RobotState robotState;
-
-
-	
-	public Superstructure(){
-		swerve = Swerve.getInstance();
-		verticalElevator = VerticalElevator.getInstance();
-		horizontalElevator = HorizontalElevator.getInstance();
-		wrist = Wrist.getInstance();
-
-		robotState = RobotState.getInstance();
-		
-		queuedRequests = new ArrayList<>(0);
-	}
-
 	private static Superstructure instance = null;
 	public static Superstructure getInstance(){
 		if(instance == null)
 			instance = new Superstructure();
 		return instance;
+	}
+
+	public final Swerve swerve;
+	public final VerticalElevator verticalElevator;
+	public final HorizontalElevator horizontalElevator;
+	public final Shoulder shoulder;
+	public final Wrist wrist;
+	
+	public Superstructure() {
+		swerve = Swerve.getInstance();
+		verticalElevator = VerticalElevator.getInstance();
+		horizontalElevator = HorizontalElevator.getInstance();
+		shoulder = Shoulder.getInstance();
+		wrist = Wrist.getInstance();
+		
+		queuedRequests = new ArrayList<>(0);
 	}
 
 	private Request activeRequest = null;

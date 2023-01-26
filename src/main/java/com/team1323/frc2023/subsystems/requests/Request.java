@@ -4,29 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Request {
-	
+
 	public abstract void act();
 	
-	public boolean isFinished(){return true;}
+	public boolean isFinished() {return true;}
 
-	public List<Prerequisite> prerequisites = new ArrayList<>();
+	private final List<Prerequisite> prerequisites = new ArrayList<>();
 
-	public void withPrerequisites(List<Prerequisite> reqs){
-		for(Prerequisite req : reqs){
-			prerequisites.add(req);
+	public Request withPrerequisites(Prerequisite... prereqs) {
+		for(Prerequisite prereq : prereqs){
+			prerequisites.add(prereq);
 		}
+		return this;
 	}
 
-	public void withPrerequisite(Prerequisite req){
-		prerequisites.add(req);
+	public Request withPrerequisite(Prerequisite prereq) {
+		prerequisites.add(prereq);
+		return this;
 	}
 
-	public boolean allowed(){
-		boolean reqsMet = true;
-		for(Prerequisite req : prerequisites){
-			reqsMet &= req.met();
-		}
-		return reqsMet;
+	public boolean allowed() {
+		return prerequisites.stream().allMatch(p -> p.met());
 	}
-	
+
 }
