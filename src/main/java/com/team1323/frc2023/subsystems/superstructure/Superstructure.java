@@ -1,13 +1,16 @@
-package com.team1323.frc2023.subsystems;
+package com.team1323.frc2023.subsystems.superstructure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.team1323.frc2023.RobotState;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
-import com.team1323.frc2023.subsystems.SuperstructureCoordinator.SuperstructurePosition;
+import com.team1323.frc2023.subsystems.HorizontalElevator;
+import com.team1323.frc2023.subsystems.Shoulder;
+import com.team1323.frc2023.subsystems.Subsystem;
+import com.team1323.frc2023.subsystems.VerticalElevator;
+import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.requests.LambdaRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;

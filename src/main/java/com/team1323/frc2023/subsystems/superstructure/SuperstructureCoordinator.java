@@ -1,5 +1,9 @@
-package com.team1323.frc2023.subsystems;
+package com.team1323.frc2023.subsystems.superstructure;
 
+import com.team1323.frc2023.subsystems.HorizontalElevator;
+import com.team1323.frc2023.subsystems.Shoulder;
+import com.team1323.frc2023.subsystems.VerticalElevator;
+import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.requests.EmptyRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
 
@@ -63,20 +67,5 @@ public class SuperstructureCoordinator {
         SuperstructurePosition currentPosition = getPosition();
 
         return new EmptyRequest();
-    }
-    
-    public static class SuperstructurePosition {
-        public final double verticalHeight;
-        public final double horizontalExtension;
-        public final double shoulderAngle;
-        public final double wristAngle;
-
-        public SuperstructurePosition(double verticalHeight, double horizontalExtension,
-                double shoulderAngle, double wristAngle) {
-            this.verticalHeight = verticalHeight;
-            this.horizontalExtension = horizontalExtension;
-            this.shoulderAngle = shoulderAngle;
-            this.wristAngle = wristAngle;
-        }
     }
 }

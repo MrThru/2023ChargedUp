@@ -3,9 +3,9 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 import java.util.List;
 
-import com.team1323.frc2023.subsystems.ServoSubsystem.TalonPIDF;
-import com.team1323.frc2023.subsystems.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
-import com.team1323.frc2023.subsystems.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystem.TalonPIDF;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;

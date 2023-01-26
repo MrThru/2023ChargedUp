@@ -1,4 +1,4 @@
-package com.team1323.frc2023.subsystems;
+package com.team1323.frc2023.subsystems.servo;
 
 import java.util.ArrayList;
 import java.util.List;

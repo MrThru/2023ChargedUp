@@ -1,6 +1,6 @@
 package com.team1323.frc2023.auto.actions;
 
-import com.team1323.frc2023.subsystems.Superstructure;
+import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 
 public class WaitForSuperstructureAction implements Action{
 	private Superstructure superstructure;
