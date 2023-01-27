@@ -1,6 +1,7 @@
 package com.team1323.frc2023;
 
 public class Ports {
+    public static final String CANBUS = "";
     // CAN Devices 
     // Falcons
     public static final int FRONT_RIGHT_ROTATION= 4;
@@ -46,6 +47,7 @@ public class Ports {
     public static final int SHOULDER_ENCODER = 0;
     public static final int INTAKE_WRIST_ENCODER = 4;
 
+    public static final int INTAKE_BANNER = 2;
     //CANCoders
     
     // Pneumatics
