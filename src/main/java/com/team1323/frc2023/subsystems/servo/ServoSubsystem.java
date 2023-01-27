@@ -1,4 +1,4 @@
-package com.team1323.frc2023.subsystems;
+package com.team1323.frc2023.subsystems.servo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1323.frc2023.Constants;
+import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyPhoenix5TalonFX;
@@ -98,7 +99,7 @@ public abstract class ServoSubsystem extends Subsystem {
         leader.setSelectedSensorPosition(0.0);
     }
 
-    protected double getPosition() {
+    public double getPosition() {
         return encoderUnitsToOutputUnits(periodicIO.position);
     }
 

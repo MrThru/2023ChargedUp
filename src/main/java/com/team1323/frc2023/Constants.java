@@ -3,9 +3,9 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 import java.util.List;
 
-import com.team1323.frc2023.subsystems.ServoSubsystem.TalonPIDF;
-import com.team1323.frc2023.subsystems.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
-import com.team1323.frc2023.subsystems.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystem.TalonPIDF;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
@@ -341,28 +341,5 @@ public class Constants {
             0.0,
             0.0 //kFalconMotionMagicFeedForward
         );
-    }
-
-    public static enum SuperstructurePosition {
-        TEST(0, 0, 0, 0);
-
-        public final double verticalHeight;
-        public final double horizontalExtension;
-        public final double shoulderAngle;
-        public final double wristAngle;
-
-        private SuperstructurePosition(double verticalHeight, double horizontalExtension, double wristAngle, double shoulderAngle) {
-            this.verticalHeight = verticalHeight;
-            this.horizontalExtension = horizontalExtension;
-            this.shoulderAngle = shoulderAngle;
-            this.wristAngle = wristAngle;
-        }
-
-        private SuperstructurePosition(SuperstructurePosition position) {
-            this.verticalHeight = position.verticalHeight;
-            this.horizontalExtension = position.horizontalExtension;
-            this.shoulderAngle = position.shoulderAngle;
-            this.wristAngle = position.wristAngle;
-        }
     }
 }

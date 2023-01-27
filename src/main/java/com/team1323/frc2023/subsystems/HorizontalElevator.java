@@ -7,6 +7,7 @@ package com.team1323.frc2023.subsystems;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystem;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
