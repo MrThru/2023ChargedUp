@@ -6,6 +6,8 @@ import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.requests.EmptyRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.lib.util.Util;
+import com.team254.lib.geometry.Rotation2d;
 
 /**
  * This class serves to coordinate movements between the various subsystems
@@ -65,6 +67,12 @@ public class SuperstructureCoordinator {
             0.0
         );
         SuperstructurePosition currentPosition = getPosition();
+
+        // TODO: Handle the case where the shoulder joint is higher than the elevator bar
+        Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
+        if (currentPosition.canShoulderCollideWithElevator() && Util.isInRange(elevatorCollisionAngle.getDegrees(), currentPosition.shoulderAngle, finalPosition.shoulderAngle)) {
+
+        }
 
         return new EmptyRequest();
     }

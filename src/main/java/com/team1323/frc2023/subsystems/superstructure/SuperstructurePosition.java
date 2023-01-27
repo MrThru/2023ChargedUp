@@ -7,10 +7,10 @@ import com.team254.lib.geometry.Translation2d;
 // TODO: Update all of the robot's physical dimensions with CAD
 public class SuperstructurePosition {
     /*
-        * The origin of the superstructure's coordinate system is the center of
-        * the robot, projected onto the ground. +x is forward (toward the front
-        * the robot), and +y is upward.
-        */
+     * The origin of the superstructure's coordinate system is the center of
+     * the robot, projected onto the ground. +x is forward (toward the front
+     * the robot), and +y is upward.
+     */
 
     // The shoulder joint's position in space when both elevators are fully retracted
     private static final Translation2d kShoulderJointRetractedPosition = new Translation2d(6.0, 12.0);
@@ -55,5 +55,25 @@ public class SuperstructurePosition {
                 new Translation2d(kWristLength, 0)));
 
         return wristTipPose.getTranslation();
+    }
+
+    /**
+     * @return Whether or not the shoulder would collide with the top of the elevator
+     * at any point throughout its travel, given the position of the shoulder joint. 
+     */
+    public boolean canShoulderCollideWithElevator() {
+        final double clearanceInches = 2.0;
+
+        return getShoulderJointPosition().distance(kElevatorTopBarPosition) < (kShoulderLength + clearanceInches);
+    }
+
+    /**
+     * @return The angle at which the shoulder would be most likely to collide with
+     * the elevator, if the shoulder were to move from its current position.
+     */
+    public Rotation2d getElevatorCollisionAngle() {
+        Translation2d shoulderJointToElevatorBar = new Translation2d(getShoulderJointPosition(), kElevatorTopBarPosition);
+
+        return shoulderJointToElevatorBar.direction();
     }
 }

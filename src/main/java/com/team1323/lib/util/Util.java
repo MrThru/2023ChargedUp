@@ -120,4 +120,17 @@ public class Util {
             return 0.0;
         return Math.signum(deadbandedValue) * ((Math.abs(deadbandedValue) - deadband) / (maxValue - deadband));
     }
+
+    public static boolean isInRange(double value, double rangeLimit1, double rangeLimit2) {
+        double min, max;
+        if (rangeLimit1 < rangeLimit2) {
+            min = rangeLimit1;
+            max = rangeLimit2;
+        } else {
+            min = rangeLimit2;
+            max = rangeLimit1;
+        }
+
+        return min <= value && value <= max;
+    }
 }
