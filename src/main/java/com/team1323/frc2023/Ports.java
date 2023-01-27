@@ -27,6 +27,9 @@ public class Ports {
     public static final int CUBE_INTAKE_WRIST = 0;
     public static final int CUBE_INTAKE = 0;
 
+    public static final int TUNNEL_FRONT_TALON = 0;
+    public static final int TUNNEL_REAR_TALON = 0;
+
     public static final int CLAW = 0;
 
     public static final int WINCH = 0;
@@ -50,6 +53,10 @@ public class Ports {
     public static final int INTAKE_WRIST_ENCODER = 4;
 
     public static final int INTAKE_BANNER = 2;
+
+    public static final int TUNNEL_FRONT_BANNER = 0;
+    public static final int TUNNEL_REAR_BANNER = 0;
+    
     //CANCoders
     
     // Pneumatics
