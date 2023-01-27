@@ -27,6 +27,8 @@ public class Ports {
     public static final int CUBE_INTAKE_WRIST = 0;
     public static final int CUBE_INTAKE = 0;
 
+    public static final int CLAW = 0;
+
     public static final int WINCH = 0;
     // MISC CAN
     public static final int PIGEON = 45;

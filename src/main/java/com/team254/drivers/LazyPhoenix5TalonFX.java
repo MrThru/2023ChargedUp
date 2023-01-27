@@ -4,6 +4,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Settings;
@@ -104,6 +105,11 @@ public class LazyPhoenix5TalonFX extends TalonFX {
         mLastSetPositionErrorCode = super.setSelectedSensorPosition(sensorPos, pidIdx, timeout);
         return mLastSetPositionErrorCode;
     }
+
+    public void setSupplyCurrentLimit(double amps, double timeout) {
+        super.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, amps, amps, timeout));
+    }
+
 
     @Override
     public double getMotorOutputVoltage(){

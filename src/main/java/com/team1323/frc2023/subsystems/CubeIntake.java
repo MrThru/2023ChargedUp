@@ -26,6 +26,12 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     LazyPhoenix5TalonFX intakeRoller;
     DigitalInput banner;
     
+    private static CubeIntake instance = null;
+    public static CubeIntake getInstance() {
+        if(instance == null)
+            instance = new CubeIntake();
+        return instance;
+    }
 
     
     public CubeIntake() {
