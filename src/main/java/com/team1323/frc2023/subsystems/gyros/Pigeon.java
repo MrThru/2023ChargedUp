@@ -1,6 +1,5 @@
 package com.team1323.frc2023.subsystems.gyros;
 
-import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.team1323.frc2023.Ports;

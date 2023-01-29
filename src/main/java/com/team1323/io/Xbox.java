@@ -2,7 +2,6 @@ package com.team1323.io;
 
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;

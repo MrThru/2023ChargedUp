@@ -16,8 +16,6 @@ import edu.wpi.first.wpilibj.RobotBase;
  * commands. (By default the Talon flushes the Tx buffer on every set call).
  */
 public class LazyPhoenix5TalonFX extends TalonFX {
-    private static final String kDefaultCanBus = "rio";
-
     protected double mLastSet = Double.NaN;
     protected ControlMode mLastControlMode = null;
     protected DemandType mLastDemandType = null;
