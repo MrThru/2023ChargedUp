@@ -1,24 +1,24 @@
 package com.team1323.frc2023;
 
 public class Ports {
-    public static final String CANBUS = "";
+    public static final String CANBUS = "main";
     // CAN Devices 
     // Falcons
-    public static final int FRONT_RIGHT_ROTATION= 4;
-    public static final int FRONT_RIGHT_DRIVE   = 7;
+    public static final int FRONT_RIGHT_ROTATION= 0;
+    public static final int FRONT_RIGHT_DRIVE   = 1;
 
-    public static final int FRONT_LEFT_ROTATION = 11;
-    public static final int FRONT_LEFT_DRIVE    = 16;
+    public static final int FRONT_LEFT_ROTATION = 2;
+    public static final int FRONT_LEFT_DRIVE    = 3;
 
-    public static final int REAR_LEFT_ROTATION  = 8;
-    public static final int REAR_LEFT_DRIVE     = 13;
+    public static final int REAR_LEFT_ROTATION  = 4;
+    public static final int REAR_LEFT_DRIVE     = 5;
 
-    public static final int REAR_RIGHT_ROTATION = 1;
-    public static final int REAR_RIGHT_DRIVE    = 5;
+    public static final int REAR_RIGHT_ROTATION = 6;
+    public static final int REAR_RIGHT_DRIVE    = 7;
     
-    public static final int VERTICAL_ELEVATOR_LEADER = 40;
+    public static final int VERTICAL_ELEVATOR_LEADER = 30;
 
-    public static final int HORIZONTAL_ELEVATOR_LEADER = 41;
+    public static final int HORIZONTAL_ELEVATOR_LEADER = 31;
 
     public static final int SHOULDER = 50;
 
@@ -41,15 +41,15 @@ public class Ports {
 
 
     //Digital Inputs
-    public static final int FRONT_RIGHT_ENCODER = Settings.kIsUsingCompBot ? 3: 30; //30
-    public static final int FRONT_LEFT_ENCODER = Settings.kIsUsingCompBot ? 2: 31; //31
-    public static final int REAR_LEFT_ENCODER = Settings.kIsUsingCompBot ? 1: 32; //32
-    public static final int REAR_RIGHT_ENCODER = Settings.kIsUsingCompBot ? 0: 33; //33
+    public static final int FRONT_RIGHT_ENCODER = Settings.kIsUsingCompBot ? 3: 0; //30
+    public static final int FRONT_LEFT_ENCODER = Settings.kIsUsingCompBot ? 2: 1; //31
+    public static final int REAR_LEFT_ENCODER = Settings.kIsUsingCompBot ? 1: 2; //32
+    public static final int REAR_RIGHT_ENCODER = Settings.kIsUsingCompBot ? 0: 3; //33
     public static final int[] kModuleEncoders = new int[]{FRONT_RIGHT_ENCODER, FRONT_LEFT_ENCODER,
         REAR_LEFT_ENCODER, REAR_RIGHT_ENCODER};
 
     public static final int WRIST_ENCODER = 9;
-    public static final int SHOULDER_ENCODER = 0;
+    public static final int SHOULDER_ENCODER = 6;
     public static final int INTAKE_WRIST_ENCODER = 4;
 
     public static final int INTAKE_BANNER = 2;
