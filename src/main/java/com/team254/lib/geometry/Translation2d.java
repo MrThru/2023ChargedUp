@@ -102,6 +102,11 @@ public class Translation2d implements ITranslation2d<Translation2d> {
         return new Translation2d(x_ * rotation.cos() - y_ * rotation.sin(), x_ * rotation.sin() + y_ * rotation.cos());
     }
 
+    public Translation2d rotateAround(final Rotation2d rotation, final Translation2d centerOfRotation) {
+        // Translate to the origin, rotate around the origin, and then translate back out
+        return this.translateBy(centerOfRotation.inverse()).rotateBy(rotation).translateBy(centerOfRotation);
+    }
+
     public Rotation2d direction() {
         return new Rotation2d(x_, y_, true);
     }

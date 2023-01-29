@@ -10,6 +10,6 @@ package com.team1323.frc2023.subsystems.requests;
 /**
  * A state which must be met before a Request can be acted upon
  */
-public abstract class Prerequisite {
+public interface Prerequisite {
     public abstract boolean met();
 }

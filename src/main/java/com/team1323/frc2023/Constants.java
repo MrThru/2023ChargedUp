@@ -19,8 +19,8 @@ public class Constants {
     public static final double kEpsilon = 0.0001;
     
     //Physical Robot Dimensions (including bumpers)
-    public static final double kRobotWidth = 36.5; //35.5
-    public static final double kRobotLength = 32.25; //35.5
+    public static final double kRobotWidth = 36.625;
+    public static final double kRobotLength = 36.125;
     public static final double kRobotHalfWidth = kRobotWidth / 2.0;
     public static final double kRobotHalfLength = kRobotLength / 2.0;
     

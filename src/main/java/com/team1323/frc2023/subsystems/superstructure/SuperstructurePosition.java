@@ -1,10 +1,10 @@
 package com.team1323.frc2023.subsystems.superstructure;
 
+import com.team1323.frc2023.Constants;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
-// TODO: Update all of the robot's physical dimensions with CAD
 public class SuperstructurePosition {
     /*
      * The origin of the superstructure's coordinate system is the center of
@@ -13,15 +13,17 @@ public class SuperstructurePosition {
      */
 
     // The shoulder joint's position in space when both elevators are fully retracted
-    private static final Translation2d kShoulderJointRetractedPosition = new Translation2d(6.0, 12.0);
+    private static final Translation2d kShoulderJointRetractedPosition = new Translation2d(12.75, 22.626);
     // The length from the shoulder joint to the very end of the shoulder
-    private static final double kShoulderLength = 14.0;
+    private static final double kShoulderLength = 20.625;
     // The length from the shoulder joint to the wrist joint
-    private static final double kShoulderJointToWristJointLength = 12.0;
+    private static final double kShoulderJointToWristJointLength = 19.5;
     // The length from the wrist joint to the very end of the claw
-    private static final double kWristLength = 8.0;
-    // The position in space of the bottom of the elevator's top bar
-    private static final Translation2d kElevatorTopBarPosition = new Translation2d(6.0, 36.0);
+    private static final double kWristLength = 15.0; // TODO: Update this when claw is finalized
+    // The position in space of the center of the bottom of the elevator's top bar (the bar is a 2x1)
+    private static final Translation2d kElevatorTopBarPosition = new Translation2d(6.25, 46.876);
+    // The topmost and forwardmost point of the bumper
+    private static final Translation2d kBumperCornerPosition = new Translation2d(Constants.kRobotHalfLength, 6.75);
 
     public final double verticalHeight;
     public final double horizontalExtension;
@@ -34,6 +36,42 @@ public class SuperstructurePosition {
         this.horizontalExtension = horizontalExtension;
         this.shoulderAngle = shoulderAngle;
         this.wristAngle = wristAngle;
+    }
+
+    public SuperstructurePosition withVerticalHeight(double newVerticalHeight) {
+        return new SuperstructurePosition(
+            newVerticalHeight,
+            this.horizontalExtension,
+            this.shoulderAngle,
+            this.wristAngle
+        );
+    }
+
+    public SuperstructurePosition withHorizontalExtension(double newHorizontalExtension) {
+        return new SuperstructurePosition(
+            this.verticalHeight,
+            newHorizontalExtension,
+            this.shoulderAngle,
+            this.wristAngle
+        );
+    }
+
+    public SuperstructurePosition withShoulderAngle(double newShoulderAngle) {
+        return new SuperstructurePosition(
+            this.verticalHeight,
+            this.horizontalExtension,
+            newShoulderAngle,
+            this.wristAngle
+        );
+    }
+
+    public SuperstructurePosition withWristAngle(double newWristAngle) {
+        return new SuperstructurePosition(
+            this.verticalHeight,
+            this.horizontalExtension,
+            this.shoulderAngle,
+            newWristAngle
+        );
     }
 
     public Translation2d getShoulderJointPosition() {
@@ -75,5 +113,69 @@ public class SuperstructurePosition {
         Translation2d shoulderJointToElevatorBar = new Translation2d(getShoulderJointPosition(), kElevatorTopBarPosition);
 
         return shoulderJointToElevatorBar.direction();
+    }
+
+    public boolean isShoulderJointHigherThanElevatorBar() {
+        return getShoulderJointPosition().y() >= kElevatorTopBarPosition.y();
+    }
+
+    /**
+     * @return Whether or not the shoulder or wrist intersect the bumper or ground
+     * in the current position.
+     */
+    public boolean collidesWithBumperOrGround() {
+        Translation2d wristJointPosition = getWristJointPosition();
+        boolean shoulderCollides = intersectsBumper(wristJointPosition) || intersectsGround(wristJointPosition);
+        Translation2d wristTipPosition = getWristTipPosition();
+        boolean wristCollides = intersectsBumper(wristTipPosition) || intersectsGround(wristTipPosition);
+
+        return shoulderCollides || wristCollides;
+    }
+
+    private boolean intersectsBumper(Translation2d point) {
+        return point.x() <= kBumperCornerPosition.x() &&
+                point.y() <= kBumperCornerPosition.y();
+    }
+
+    private boolean intersectsGround(Translation2d point) {
+        return point.y() <= 0.0;
+    }
+
+    /**
+     * @return Whether or not the wrist can collide with the bumper at any point
+     * throughout the shoulder's travel.
+     */
+    public boolean canWristCollideWithBumper() {
+        Translation2d shoulderJointPosition = getShoulderJointPosition();
+        double shoulderJointToWristTip = shoulderJointPosition.distance(getWristTipPosition());
+        double shoulderJointToBumper = shoulderJointPosition.distance(kBumperCornerPosition);
+
+        return shoulderJointToWristTip >= shoulderJointToBumper;
+    }
+
+    /**
+     * @return The shoulder angle at which the wrist is most likely to collide
+     * with the bumper.
+     */
+    public Rotation2d getBumperCollisionAngle() {
+        Translation2d shoulderJointPosition = getShoulderJointPosition();
+        double shoulderJointToWristTipLength = shoulderJointPosition.distance(getWristTipPosition());
+        Rotation2d shoulderJointToBumperDirection = new Translation2d(shoulderJointPosition, kBumperCornerPosition).direction();
+
+        Rotation2d shoulderAngleDelta = getLawOfCosinesAngle(kWristLength, kShoulderJointToWristJointLength, shoulderJointToWristTipLength);
+        if (wristAngle > 0.0) {
+            shoulderAngleDelta = shoulderAngleDelta.inverse();
+        }
+
+        return shoulderJointToBumperDirection.rotateBy(shoulderAngleDelta);
+    }
+
+    private Rotation2d getLawOfCosinesAngle(double oppositeSideLength, double adjacentSideLength1, double adjacentSideLength2) {
+        double numerator = adjacentSideLength1 * adjacentSideLength1 + adjacentSideLength2 * adjacentSideLength2 -
+                oppositeSideLength * oppositeSideLength;
+        double denominator = 2 * adjacentSideLength1 * adjacentSideLength2;
+        double radians = Math.acos(numerator / denominator);
+
+        return Rotation2d.fromRadians(radians);
     }
 }
