@@ -145,7 +145,7 @@ public class SuperstructurePosition {
      * @return Whether or not the wrist can collide with the bumper at any point
      * throughout the shoulder's travel.
      */
-    public boolean canWristCollideWithBumper() {
+    public boolean canWristCollideWithShoulderRotation() {
         Translation2d shoulderJointPosition = getShoulderJointPosition();
         double shoulderJointToWristTip = shoulderJointPosition.distance(getWristTipPosition());
         double shoulderJointToBumper = shoulderJointPosition.distance(kBumperCornerPosition);
@@ -157,7 +157,7 @@ public class SuperstructurePosition {
      * @return The shoulder angle at which the wrist is most likely to collide
      * with the bumper.
      */
-    public Rotation2d getBumperCollisionAngle() {
+    public Rotation2d getShoulderBumperCollisionAngle() {
         Translation2d shoulderJointPosition = getShoulderJointPosition();
         double shoulderJointToWristTipLength = shoulderJointPosition.distance(getWristTipPosition());
         Rotation2d shoulderJointToBumperDirection = new Translation2d(shoulderJointPosition, kBumperCornerPosition).direction();
@@ -177,5 +177,31 @@ public class SuperstructurePosition {
         double radians = Math.acos(numerator / denominator);
 
         return Rotation2d.fromRadians(radians);
+    }
+
+    /**
+     * @return Whether or not the wrist will collide with the bumper or ground
+     * at any point throughout its own travel.
+     */
+    public boolean canWristCollideWithRotation() {
+        return canWristCollideWithBumper() || canWristCollideWithGround();
+    }
+
+    private boolean canWristCollideWithBumper() {
+        return getShoulderJointPosition().distance(kBumperCornerPosition) < kWristLength;
+    }
+
+    private boolean canWristCollideWithGround() {
+        return getShoulderJointPosition().y() < kWristLength;
+    }
+
+    public Rotation2d getWristCollisionAngle() {
+        if (canWristCollideWithGround()) {
+            // Return the wrist angle that would result in the wrist pointing straight down
+            return Rotation2d.fromDegrees(-90).rotateBy(Rotation2d.fromDegrees(shoulderAngle).inverse());
+        }
+
+        return new Translation2d(getShoulderJointPosition(), kBumperCornerPosition).direction()
+                .rotateBy(Rotation2d.fromDegrees(shoulderAngle).inverse());
     }
 }
