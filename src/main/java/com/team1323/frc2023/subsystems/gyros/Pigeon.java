@@ -30,6 +30,7 @@ public class Pigeon extends Gyro{
 		return imu.getState() == PigeonState.Ready;
 	}
 	
+	@Override
 	public Rotation2d getYaw(){
 		if(RobotBase.isReal()){
 			return Rotation2d.fromDegrees(pigeon.getFusedHeading());
@@ -72,8 +73,5 @@ public class Pigeon extends Gyro{
 		SmartDashboard.putNumber("Pigeon 2 Yaw", secondPigeon.getFusedHeading());*/
 	}
 
-	@Override
-	public Rotation2d getAngle() {
-		return getYaw();
-	}
+
 }

@@ -14,7 +14,9 @@ import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Subsystem;
+import com.team1323.frc2023.subsystems.gyros.Gyro;
 import com.team1323.frc2023.subsystems.gyros.Pigeon;
+import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.vision.VisionPIDController;
 import com.team1323.lib.math.Units;
@@ -79,7 +81,7 @@ public class Swerve extends Subsystem{
 	}
 	
 	//Heading controller methods
-	Pigeon pigeon;
+	Gyro pigeon;
 	SwerveHeadingController headingController = new SwerveHeadingController();
 	public void temporarilyDisableHeadingController(){
 		headingController.temporarilyDisable();
@@ -198,7 +200,7 @@ public class Swerve extends Subsystem{
 		rearRight.invertDriveMotor(TalonFXInvertType.CounterClockwise);
 		modules.forEach(m -> m.invertRotationMotor(TalonFXInvertType.Clockwise));
 		
-		pigeon = Pigeon.getInstance();
+		pigeon = Pigeon2IMU.getInstance();
 		
 		motionPlanner = new DriveMotionPlanner();
 		
@@ -1144,6 +1146,8 @@ public class Swerve extends Subsystem{
 
 		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getDegrees());
 
+
+
 		if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
 			setDriveNeutralMode(NeutralMode.Coast);
 			setRotationNeutralMode(NeutralMode.Coast);
@@ -1163,6 +1167,7 @@ public class Swerve extends Subsystem{
 			SmartDashboard.putString("Robot Velocity", velocity.toString());
 			SmartDashboard.putString("Swerve State", currentState.toString());
 			SmartDashboard.putNumberArray("Pigeon YPR", pigeon.getYPR());
+			SmartDashboard.putNumber("Gyro Yaw", pigeon.getYaw().getDegrees());
 
 			double swerveVelocity =  (Math.sqrt((velocity.dx * velocity.dx) + (velocity.dy * velocity.dy))) / 12;
 			double currentTimestamp = Timer.getFPGATimestamp();

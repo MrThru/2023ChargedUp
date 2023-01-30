@@ -57,7 +57,7 @@ public class TalonFXFactory {
         talon.configVoltageCompSaturation(12.0, Constants.kCANTimeoutMs);
         talon.enableVoltageCompensation(true);
 
-        talon.setNeutralMode(NeutralMode.Brake);
+        talon.setNeutralMode(NeutralMode.Coast);
 
         talon.configClosedloopRamp(0.0, Constants.kCANTimeoutMs);
         talon.configOpenloopRamp(0.0, Constants.kCANTimeoutMs);

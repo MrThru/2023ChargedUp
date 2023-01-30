@@ -1,5 +1,6 @@
 package com.team1323.frc2023.subsystems;
 
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
@@ -16,11 +17,12 @@ public class VerticalElevator extends ServoSubsystem {
     }
 
     public VerticalElevator() {
-        super(Ports.VERTICAL_ELEVATOR_LEADER, null,
+        super(Ports.VERTICAL_ELEVATOR_LEADER, Ports.CANBUS,
                 Constants.VerticalElevator.kTicksPerInch, Constants.VerticalElevator.kMinControlHeight, 
                 Constants.VerticalElevator.kMaxControlHeight, Constants.VerticalElevator.kHeightTolerance, 
                 Constants.VerticalElevator.kVelocityScalar, Constants.VerticalElevator.kAccelerationScalar);
 
+        leader.setInverted(TalonFXInvertType.Clockwise);
         setPIDF(Constants.VerticalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.VerticalElevator.kSupplyCurrentLimit);
         periodicIO.arbitraryFeedForward = Constants.VerticalElevator.kArbitraryFeedForward;

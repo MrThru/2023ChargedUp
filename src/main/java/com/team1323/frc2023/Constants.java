@@ -92,10 +92,10 @@ public class Constants {
     * Enter angle read by the absolute encoder. Insert as degrees and subtract or add 90° to the value
     * based on where the bevel ended up.
     */
-    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 0;
-    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 0;
-    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 5.3 : 0;
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 0;
+    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 106.9;
+    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 106.2;
+    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 5.3 : 274.0;
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 214.4;
     
     //Swerve Module Positions (relative to the center of the drive base)
     public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
@@ -130,9 +130,9 @@ public class Constants {
     public static final double kSwerveDriveEncoderResolution = 2048.0; //2048.0 for falcon 500
     public static final double kSwerveRotationEncoderResolution = 2048.0;
     /** The number of rotations the swerve rotation motor undergoes for every rotation of the module. */
-    public static final double kSwerveRotationReduction = 10.2857;
+    public static final double kSwerveRotationReduction = 15.42857143;
     /** The number of rotations the swerve drive encoder undergoes for every rotation of the wheel. */
-    public static final double kSwerveEncoderToWheelRatio = 3.8671875; //7.132867133
+    public static final double kSwerveEncoderToWheelRatio = 6.75; //7.132867133
     public static final double kSwerveEncUnitsPerWheelRev = kSwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
     public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
     public static final double kSwerveModuleRotationTolerance = 4.5;
@@ -196,7 +196,7 @@ public class Constants {
     }
 
     public static class VerticalElevator {
-        public static final double kTicksPerInch = 1.0;
+        public static final double kTicksPerInch = 97445.0 / 24.0;
 
         public static final double kMinControlHeight = 0.0;
         public static final double kMaxControlHeight = 24.5;
@@ -248,7 +248,7 @@ public class Constants {
     }
 
     public static class Shoulder {
-        public static final double kMotorRotationsPerShoulderRotation = 1.0;
+        public static final double kMotorRotationsPerShoulderRotation = 110.0;
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerShoulderRotation / 360.0;
 
@@ -284,7 +284,7 @@ public class Constants {
     }
 
     public static class Wrist {
-        public static final double kMotorRotationsPerWristRotation = 1.0;
+        public static final double kMotorRotationsPerWristRotation = 40;
         public static final double kEncoderUnitsPerWristRotation = kMotorRotationsPerWristRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWristRotation / 360.0;
 

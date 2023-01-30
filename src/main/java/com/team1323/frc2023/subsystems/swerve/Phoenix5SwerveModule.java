@@ -33,6 +33,8 @@ public class Phoenix5SwerveModule extends SwerveModule {
 		rotationMotor.setNeutralMode(NeutralMode.Brake);
 		rotationMotor.configVoltageCompSaturation(7.0, 10);
 		rotationMotor.enableVoltageCompensation(true);
+		rotationMotor.configForwardSoftLimitEnable(false, 10);
+		rotationMotor.configReverseSoftLimitEnable(false, 10);
 		rotationMotor.configMotionAcceleration((int)(Constants.kSwerveRotationMaxSpeedEncUnits*12.5), 10);
 		rotationMotor.configMotionCruiseVelocity((int)(Constants.kSwerveRotationMaxSpeedEncUnits), 10);
 		rotationMotor.selectProfileSlot(0, 0);
@@ -59,6 +61,8 @@ public class Phoenix5SwerveModule extends SwerveModule {
 		driveMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20, 10);
 		driveMotor.configVelocityMeasurementPeriod(SensorVelocityMeasPeriod.Period_10Ms, 10);
 		driveMotor.configVelocityMeasurementWindow(32, 10);
+		driveMotor.configForwardSoftLimitEnable(false, 10);
+		driveMotor.configReverseSoftLimitEnable(false, 10);
 		driveMotor.configNominalOutputForward(0/12.0, 10);
 		driveMotor.configNominalOutputReverse(0/12.0, 10);
 		driveMotor.configVoltageCompSaturation(12.0, 10);

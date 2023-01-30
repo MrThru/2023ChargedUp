@@ -24,8 +24,8 @@ public class Ports {
 
     public static final int WRIST = 43;
 
-    public static final int CUBE_INTAKE_WRIST = 0;
-    public static final int CUBE_INTAKE = 0;
+    public static final int CUBE_INTAKE_WRIST = 10;
+    public static final int CUBE_INTAKE = 11;
 
     public static final int TUNNEL_FRONT_TALON = 0;
     public static final int TUNNEL_REAR_TALON = 0;
