@@ -1,7 +1,13 @@
 package com.team1323.frc2023.loops;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONString;
+
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.ObjectDetector;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.math.geometry.Vector3d;
@@ -17,13 +23,17 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import netscape.javascript.JSObject;
 
 public class LimelightProcessor implements Loop {
 	private static LimelightProcessor instance = new LimelightProcessor();
 	public static LimelightProcessor getInstance() {
 		return instance;
 	}
+
+	private ObjectDetector objectDetector;
 
 	private static final TwoPointRamp translationalStandardDeviationRamp = new TwoPointRamp(
 		new Translation2d(60.0, 0.05),
@@ -49,6 +59,7 @@ public class LimelightProcessor implements Loop {
 	private final NetworkTableEntry robotPose;
 	private final NetworkTableEntry camPose;
 	private final NetworkTableEntry tx, ty;
+	private final NetworkTableEntry json;
 	private final double[] zeroArray = new double[]{0, 0, 0, 0, 0, 0};
 	private double previousHeartbeat = -1.0;
 	
@@ -65,6 +76,9 @@ public class LimelightProcessor implements Loop {
 		camPose = table.getEntry("campose");
 		tx = table.getEntry("tx");
 		ty = table.getEntry("ty");
+		json = table.getEntry("json");
+
+		objectDetector = new ObjectDetector();
 	}
 	
 	@Override 
@@ -103,9 +117,17 @@ public class LimelightProcessor implements Loop {
 				double rotationalStdDev = rotationalStandardDeviationRamp.calculate(camDistanceInches);
 				Matrix<N3, N1> standardDeviations = VecBuilder.fill(translationalStdDev, translationalStdDev, rotationalStdDev);
 				Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds, standardDeviations);
-	
+				if(json.getString("") != "") {
+					try {
+						JSONObject jsonDump = new JSONObject(json.getString(""));
+						objectDetector.addDetectedObjects(jsonDump);
+					} catch(JSONException error) {
+						DriverStation.reportError(error.getMessage(), null);
+					}
+				}
 				previousHeartbeat = currentHeartbeat;
 			}
+			
 		}
 	}
 	
