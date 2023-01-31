@@ -67,11 +67,18 @@ public class SuperstructureCoordinator {
 		);
 	}
 
+    /**
+     * @return Whether or not the shoulder will collide with the top of the elevator when we
+     * (1) move the shoulder to its final position first, or (2) move the vertical elevator to 
+     * its final position and then move the shoulder.
+     */
     private boolean willCollideWithElevator(SuperstructurePosition currentPosition, SuperstructurePosition finalPosition) {
         final double kShoulderStowAngle = 170.0;
 
+        boolean isShoulderCloseEnoughForCollision = currentPosition.canShoulderCollideWithElevator() ||
+                currentPosition.withVerticalHeight(finalPosition.verticalHeight).canShoulderCollideWithElevator();
         Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
-        boolean willCollideWithElevator = currentPosition.canShoulderCollideWithElevator() && 
+        boolean willCollideWithElevator = isShoulderCloseEnoughForCollision && 
                 Util.isInRange(elevatorCollisionAngle.getDegrees(), currentPosition.shoulderAngle, finalPosition.shoulderAngle);
         willCollideWithElevator |= currentPosition.isShoulderJointHigherThanElevatorBar() &&
                 finalPosition.shoulderAngle >= kShoulderStowAngle;
@@ -153,13 +160,7 @@ public class SuperstructureCoordinator {
         );
     }
 
-    public Request getConeIntakeChoreography() {
-        SuperstructurePosition finalPosition = new SuperstructurePosition(
-            2.0,
-            6.0,
-            -90.0,
-            90.0
-        );
+    private Request getLowChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
 
         if (willCollideWithElevator(currentPosition, finalPosition)) {
@@ -181,6 +182,122 @@ public class SuperstructureCoordinator {
             );
         }
 
-        return new EmptyRequest();
+        if (rotatingWristCausesCollision(currentPosition, finalPosition)) {
+            return new SequentialRequest(
+                new ParallelRequest(
+                    verticalElevator.heightRequest(kVerticalHeightForBumperClearance),
+                    horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
+                ),
+                new ParallelRequest(
+                    wrist.angleRequest(finalPosition.wristAngle),
+                    shoulder.angleRequest(finalPosition.shoulderAngle)
+                ),
+                verticalElevator.heightRequest(finalPosition.verticalHeight)
+            );
+        }
+
+        if (currentPosition.shoulderAngle > kShoulderAngleForHorizontalExtension) {
+            return new ParallelRequest(
+                horizontalElevator.extensionRequest(kHorizontalExtensionForMinShoulderReach),
+                shoulder.angleRequest(finalPosition.shoulderAngle),
+                wrist.angleRequest(finalPosition.wristAngle),
+                verticalElevator.heightRequest(finalPosition.verticalHeight),
+                horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
+                        .withPrerequisite(() -> shoulder.getPosition() < kShoulderAngleForHorizontalExtension)
+            );
+        }
+
+        return new ParallelRequest(
+            verticalElevator.heightRequest(finalPosition.verticalHeight),
+            horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+            shoulder.angleRequest(finalPosition.shoulderAngle),
+            wrist.angleRequest(finalPosition.wristAngle)
+        );
+    }
+
+    public Request getConeIntakeChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            2.0,
+            6.0,
+            -90.0,
+            90.0
+        );
+
+        return getLowChoreography(finalPosition);
+    }
+
+    public Request getCubeIntakeChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            12.0,
+            16.0,
+            -90.0,
+            -90.0
+        );
+        
+        return getLowChoreography(finalPosition);
+    }
+
+    public Request getConeHighScoringChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            20.0,
+            16.0,
+            45.0,
+            -45.0
+        );
+        SuperstructurePosition currentPosition = getPosition();
+
+        if (willCollideWithElevator(currentPosition, finalPosition)) {
+            Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
+            Prerequisite shoulderEscapedPrereq = () -> shoulder.getPosition() < elevatorCollisionAngle.getDegrees();
+
+            return new SequentialRequest(
+                new ParallelRequest(
+                    verticalElevator.heightRequest(kVerticalHeightForTopBarClearance),
+                    horizontalElevator.extensionRequest(kHorizontalExtensionForMinShoulderReach)
+                ),
+                new ParallelRequest(
+                    shoulder.angleRequest(finalPosition.shoulderAngle),
+                    new ParallelRequest(
+                        verticalElevator.heightRequest(finalPosition.verticalHeight),
+                        horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+                        wrist.angleRequest(finalPosition.wristAngle)
+                    ).withPrerequisite(shoulderEscapedPrereq)
+                )
+            );
+        }
+
+        if (rotatingWristCausesCollision(currentPosition, finalPosition)) {
+            return new SequentialRequest(
+                verticalElevator.heightRequest(kVerticalHeightForBumperClearance),
+                new ParallelRequest(
+                    shoulder.angleRequest(finalPosition.shoulderAngle),
+                    wrist.angleRequest(finalPosition.wristAngle),
+                    horizontalElevator.extensionRequest(kHorizontalExtensionForMinShoulderReach)
+                            .withPrerequisite(() -> shoulder.getPosition() > kShoulderAngleForHorizontalRetraction),
+                    new ParallelRequest(
+                        horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+                        verticalElevator.heightRequest(finalPosition.verticalHeight)
+                    ).withPrerequisite(() -> shoulder.getPosition() > kShoulderAngleForHorizontalExtension)
+                )
+            );
+        }
+
+        if (currentPosition.shoulderAngle < kShoulderAngleForHorizontalExtension) {
+            return new ParallelRequest(
+                horizontalElevator.extensionRequest(kHorizontalExtensionForMinShoulderReach),
+                shoulder.angleRequest(finalPosition.shoulderAngle),
+                wrist.angleRequest(finalPosition.wristAngle),
+                verticalElevator.heightRequest(finalPosition.verticalHeight),
+                horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
+                        .withPrerequisite(() -> shoulder.getPosition() > kShoulderAngleForHorizontalExtension)
+            );
+        }
+
+        return new ParallelRequest(
+            verticalElevator.heightRequest(finalPosition.verticalHeight),
+            horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+            shoulder.angleRequest(finalPosition.shoulderAngle),
+            wrist.angleRequest(finalPosition.wristAngle)
+        );
     }
 }
