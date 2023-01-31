@@ -35,7 +35,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
 
     
     public CubeIntake() {
-        super(Ports.CUBE_INTAKE, Ports.CANBUS, Constants.CubeIntake.kEncUnitsPerDegree, 
+        super(Ports.CUBE_INTAKE_WRIST, Ports.CANBUS, Constants.CubeIntake.kEncUnitsPerDegree, 
                 Constants.CubeIntake.kMinControlAngle, Constants.CubeIntake.kMaxControlAngle,
                 Constants.CubeIntake.kAngleTolerance, Constants.CubeIntake.kVelocityScalar, 
                 Constants.CubeIntake.kAccelerationScalar, Constants.CubeIntake.kEncoderInfo);
@@ -47,10 +47,10 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         
         
         intakeRoller = TalonFXFactory.createRollerTalon(Ports.CUBE_INTAKE, Ports.CANBUS);
-        intakeRoller.setInverted(TalonFXInvertType.Clockwise);
+        intakeRoller.setInverted(TalonFXInvertType.CounterClockwise);
         intakeRoller.setNeutralMode(NeutralMode.Brake);
 
-        banner = new DigitalInput(Ports.INTAKE_BANNER);
+        //banner = new DigitalInput(Ports.INTAKE_BANNER);
     }
 
     public static enum State {
@@ -76,7 +76,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         setState(desiredState);
     }
 
-    private void setIntakeSpeed(double intakeSpeed) {
+    public void setIntakeSpeed(double intakeSpeed) {
         intakeRoller.set(ControlMode.PercentOutput, intakeSpeed);   
     }
 

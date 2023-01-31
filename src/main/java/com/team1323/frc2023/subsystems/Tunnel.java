@@ -5,6 +5,7 @@
 package com.team1323.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
@@ -31,11 +32,13 @@ public class Tunnel extends Subsystem {
 
 
     public Tunnel() {
-        frontTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_FRONT_TALON, null);
+        frontTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_FRONT_TALON, Ports.CANBUS);
         rearTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_REAR_TALON, null);
 
-        frontBanner = new DigitalInput(Ports.TUNNEL_FRONT_BANNER);
-        rearBanner = new DigitalInput(Ports.TUNNEL_REAR_BANNER);
+        //frontBanner = new DigitalInput(Ports.TUNNEL_FRONT_BANNER);
+        //rearBanner = new DigitalInput(Ports.TUNNEL_REAR_BANNER);
+
+        frontTalon.setInverted(TalonFXInvertType.CounterClockwise);
     }
 
     public enum State {
@@ -53,7 +56,7 @@ public class Tunnel extends Subsystem {
     private void setRearSpeed(double speed) {
         rearTalon.set(ControlMode.PercentOutput, speed);
     }
-    private void setFrontSpeed(double speed) {
+    public void setFrontSpeed(double speed) {
         frontTalon.set(ControlMode.PercentOutput, speed);
     }
 

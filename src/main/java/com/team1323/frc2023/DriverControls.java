@@ -11,8 +11,10 @@ import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.SubsystemManager;
+import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
@@ -45,6 +47,8 @@ public class DriverControls implements Loop {
     private VerticalElevator verticalElevator;
     private HorizontalElevator horizontalElevator;
     private Wrist wrist;
+    private CubeIntake cubeIntake;
+    private Tunnel tunnel;
 
     private SubsystemManager subsystems;
     public SubsystemManager getSubsystems(){ return subsystems; }
@@ -74,10 +78,12 @@ public class DriverControls implements Loop {
         verticalElevator = VerticalElevator.getInstance();
         horizontalElevator = HorizontalElevator.getInstance();
         wrist = Wrist.getInstance();
+        cubeIntake = CubeIntake.getInstance();
+        tunnel = Tunnel.getInstance();
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, verticalElevator, horizontalElevator, wrist, s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, verticalElevator, horizontalElevator, wrist, tunnel, s));
     }
 
     @Override
@@ -168,6 +174,14 @@ public class DriverControls implements Loop {
 
         verticalElevator.acceptManualInput(verticalElevatorYInput);
         wrist.acceptManualInput(wristAngleYInput);
+
+        if(coDriver.aButton.wasActivated()) {
+            tunnel.setFrontSpeed(0.25);
+            cubeIntake.setIntakeSpeed(0.25);
+        } else if(coDriver.aButton.wasReleased()) {
+            tunnel.setFrontSpeed(0.0);
+            cubeIntake.setIntakeSpeed(0);
+        }
 
         // D-pad controls for vision PID
         /*
