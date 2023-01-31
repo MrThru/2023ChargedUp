@@ -319,6 +319,15 @@ public class Constants {
         );
     }
 
+    public static class Claw {
+        
+        public static final double kIntakeStatorCurrentLimit = 80.0;
+        public static final double kIntakeStatorHoldCurrent = 20.0;
+
+        public static final double kIntakeHoldTargetCurrent = 50.0;
+
+    }
+
     public static class Winch {
         public static final double kMotorRotationsPerWinchRotation = 1.0;
         public static final double kEncoderUnitsPerWinchRotation = kMotorRotationsPerWinchRotation * 2048.0;

@@ -60,6 +60,11 @@ public class Vector3d {
         return this.scale(1.0 / magnitude());
     }
 
+
+    public Rotation3d getRotation3d() {
+        return new Rotation3d(Math.toDegrees(Math.atan2(this.y_, this.x_)), Math.toDegrees(Math.atan2(this.z_, this.x_)), 0);
+    }
+
     public Vector3d crossProduct(Vector3d other) {
         double i_determinant = y_ * other.z_ - z_ * other.y_;
         double j_determinant = x_ * other.z_ - z_ * other.x_;
@@ -79,4 +84,5 @@ public class Vector3d {
 
         return new Vector3d(x / vectors.length, y / vectors.length, z / vectors.length);
     }
+
 }

@@ -3,6 +3,7 @@ package com.team254.drivers;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -106,6 +107,10 @@ public class LazyPhoenix5TalonFX extends TalonFX {
 
     public void setSupplyCurrentLimit(double amps, double timeout) {
         super.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, amps, amps, timeout));
+    }
+
+    public void setStatorCurrentLimit(double amps, double triggerThreshold) {
+        super.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, amps, amps, triggerThreshold));
     }
 
 
