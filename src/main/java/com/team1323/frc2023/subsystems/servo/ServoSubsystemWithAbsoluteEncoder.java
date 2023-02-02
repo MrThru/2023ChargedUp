@@ -14,7 +14,7 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
 
     private DutyCycle absoluteEncoder;
     private AbsoluteEncoderInfo absoluteEncoderInfo;
-    private int numPositionResets = kMaxPositionResets;
+    private int numPositionResets = 0;
 
     public ServoSubsystemWithAbsoluteEncoder(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 

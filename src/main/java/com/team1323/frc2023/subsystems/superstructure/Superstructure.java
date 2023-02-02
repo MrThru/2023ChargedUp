@@ -6,14 +6,17 @@ import java.util.List;
 
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.Subsystem;
+import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.requests.LambdaRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -30,6 +33,8 @@ public class Superstructure extends Subsystem {
 	public final VerticalElevator verticalElevator;
 	public final HorizontalElevator horizontalElevator;
 	public final Shoulder shoulder;
+	public final Tunnel tunnel;
+	public final CubeIntake cubeIntake;
 	public final Wrist wrist;
 	
 	public Superstructure() {
@@ -38,6 +43,8 @@ public class Superstructure extends Subsystem {
 		horizontalElevator = HorizontalElevator.getInstance();
 		shoulder = Shoulder.getInstance();
 		wrist = Wrist.getInstance();
+		cubeIntake = CubeIntake.getInstance();
+		tunnel = Tunnel.getInstance();
 		
 		queuedRequests = new ArrayList<>(0);
 	}
@@ -166,6 +173,21 @@ public class Superstructure extends Subsystem {
     }
 
 	///// States /////
+
+	public void intakeState(Tunnel.State tunnelState) {
+		request(new ParallelRequest(
+			verticalElevator.heightRequest(4.0),
+			tunnel.stateRequest(tunnelState),
+			cubeIntake.stateRequest(CubeIntake.State.INTAKE)
+		));
+	}
+	public void postIntakeState() {
+		request(new ParallelRequest(
+			tunnel.stateRequest(Tunnel.State.OFF),
+			cubeIntake.stateRequest(CubeIntake.State.STOWED)
+		));
+	}
+
 	public void neutralState() {
 		request(new ParallelRequest(
 			new LambdaRequest(()-> {

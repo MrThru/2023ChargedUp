@@ -73,12 +73,12 @@ public class LimelightProcessor implements Loop {
 		latency = table.getEntry("tl");
 		seesTarget = table.getEntry("tv");
 		robotPose = table.getEntry("botpose");
-		camPose = table.getEntry("campose");
+		camPose = table.getEntry("camerapose_targetspace");
 		tx = table.getEntry("tx");
 		ty = table.getEntry("ty");
 		json = table.getEntry("json");
 
-		objectDetector = new ObjectDetector();
+		//objectDetector = new ObjectDetector();
 	}
 	
 	@Override 
@@ -108,6 +108,9 @@ public class LimelightProcessor implements Loop {
 				Vector3d camPoseVector = new Vector3d(camPoseArray[0], camPoseArray[1], camPoseArray[2]);
 				double camDistanceInches = Units.metersToInches(camPoseVector.magnitude());
 				SmartDashboard.putNumber("Camera Distance", camDistanceInches);
+				if (camDistanceInches > 175.0) {
+					return;
+				}
 
 				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
 	
@@ -117,14 +120,14 @@ public class LimelightProcessor implements Loop {
 				double rotationalStdDev = rotationalStandardDeviationRamp.calculate(camDistanceInches);
 				Matrix<N3, N1> standardDeviations = VecBuilder.fill(translationalStdDev, translationalStdDev, rotationalStdDev);
 				Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds, standardDeviations);
-				if(json.getString("") != "") {
+				/*if(json.getString("") != "") {
 					try {
 						JSONObject jsonDump = new JSONObject(json.getString(""));
 						objectDetector.addDetectedObjects(jsonDump);
 					} catch(JSONException error) {
 						DriverStation.reportError(error.getMessage(), null);
 					}
-				}
+				}*/
 				previousHeartbeat = currentHeartbeat;
 			}
 			

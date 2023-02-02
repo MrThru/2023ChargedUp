@@ -50,14 +50,13 @@ public class TalonFXFactory {
 
     private static void configureServoTalon(LazyPhoenix5TalonFX talon) {
         configureTalon(talon);
-        talon.configNeutralDeadband(0.001, Constants.kCANTimeoutMs);
     }
 
     private static void configureTalon(LazyPhoenix5TalonFX talon) {
         talon.configVoltageCompSaturation(12.0, Constants.kCANTimeoutMs);
         talon.enableVoltageCompensation(true);
 
-        talon.setNeutralMode(NeutralMode.Coast);
+        talon.setNeutralMode(NeutralMode.Brake);
 
         talon.configClosedloopRamp(0.0, Constants.kCANTimeoutMs);
         talon.configOpenloopRamp(0.0, Constants.kCANTimeoutMs);
@@ -69,5 +68,6 @@ public class TalonFXFactory {
         talon.configNominalOutputReverse(0.0, Constants.kCANTimeoutMs);
 
         talon.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        talon.configNeutralDeadband(0.001, Constants.kCANTimeoutMs);
     }
 }

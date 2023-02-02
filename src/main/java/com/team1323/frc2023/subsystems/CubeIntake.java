@@ -35,7 +35,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
 
     
     public CubeIntake() {
-        super(Ports.CUBE_INTAKE_WRIST, Ports.CANBUS, Constants.CubeIntake.kEncUnitsPerDegree, 
+        super(Ports.CUBE_INTAKE_WRIST, Ports.CANBUS, Constants.CubeIntake.kEncoderUnitsPerDegree, 
                 Constants.CubeIntake.kMinControlAngle, Constants.CubeIntake.kMaxControlAngle,
                 Constants.CubeIntake.kAngleTolerance, Constants.CubeIntake.kVelocityScalar, 
                 Constants.CubeIntake.kAccelerationScalar, Constants.CubeIntake.kEncoderInfo);
@@ -54,7 +54,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public static enum State {
-        STOWED(Constants.CubeIntake.kStartingAngle, 0);
+        STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.5);
         double intakeAngle;
         double intakeSpeed;
         State(double intakeAngle,double intakeSpeed) {
@@ -140,6 +140,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         SmartDashboard.putNumber("Cube Intake Angle", getPosition());
         SmartDashboard.putNumber("Cube Intake Encoder Position", periodicIO.position);
         SmartDashboard.putNumber("Cube Intake Absolute Encoder", getAbsoluteEncoderDegrees());
+        SmartDashboard.putNumber("Cube Intake RPM", intakeRoller.getSelectedSensorVelocity() * 600 / 2048);
     }
     @Override
     public void stop() {

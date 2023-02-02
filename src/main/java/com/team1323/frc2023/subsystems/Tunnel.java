@@ -14,13 +14,14 @@ import com.team1323.lib.drivers.TalonFXFactory;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Have a single state named "detect" that will handle
  * the tunnels indexing.
  */
 public class Tunnel extends Subsystem {
 
-    LazyPhoenix5TalonFX frontTalon, rearTalon;
+    LazyPhoenix5TalonFX conveyorTalon, rollerTalon;
     DigitalInput frontBanner, rearBanner;
 
     private static Tunnel instance = null;
@@ -32,17 +33,18 @@ public class Tunnel extends Subsystem {
 
 
     public Tunnel() {
-        frontTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_FRONT_TALON, Ports.CANBUS);
-        rearTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_REAR_TALON, null);
+        conveyorTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS);
+        rollerTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS);
 
         //frontBanner = new DigitalInput(Ports.TUNNEL_FRONT_BANNER);
         //rearBanner = new DigitalInput(Ports.TUNNEL_REAR_BANNER);
 
-        frontTalon.setInverted(TalonFXInvertType.CounterClockwise);
+        conveyorTalon.setInverted(TalonFXInvertType.CounterClockwise);
+        rollerTalon.setInverted(TalonFXInvertType.Clockwise);
     }
 
     public enum State {
-        OFF, DETECT;
+        OFF, DETECT, SPIT, HOLD;
     }
     private State currentState = State.OFF;
     public State getState() {
@@ -53,13 +55,16 @@ public class Tunnel extends Subsystem {
     }
 
 
-    private void setRearSpeed(double speed) {
-        rearTalon.set(ControlMode.PercentOutput, speed);
+    private void setRollerSpeed(double speed) {
+        rollerTalon.set(ControlMode.PercentOutput, speed);
     }
-    public void setFrontSpeed(double speed) {
-        frontTalon.set(ControlMode.PercentOutput, speed);
+    public void setConveyorSpeed(double speed) {
+        conveyorTalon.set(ControlMode.PercentOutput, speed);
     }
 
+    public double encUnitsToRPM(double encUnits) {
+        return (encUnits * 600) / 2048.0;
+    }
     Loop loop = new Loop() {
 
         @Override
@@ -72,15 +77,24 @@ public class Tunnel extends Subsystem {
         public void onLoop(double timestamp) {
             if(currentState == State.DETECT) {
                 if(frontBanner.get()) {
-                    setFrontSpeed(0.0);
+                    setConveyorSpeed(0.0);
                 } else {
-                    setFrontSpeed(1.0);
+                    setConveyorSpeed(1.0);
                 }
                 if(rearBanner.get() && frontBanner.get()){
-                    setRearSpeed(0.0);
+                    setRollerSpeed(0.0);
                 } else if(!frontBanner.get()) {
-                    setRearSpeed(1.0);
+                    setRollerSpeed(1.0);
                 }
+            } else if(currentState == State.SPIT) {
+                setRollerSpeed(0.4);
+                setConveyorSpeed(0.2);
+            } else if(currentState == State.HOLD) {
+                setRollerSpeed(-0.1);
+                setConveyorSpeed(0.05);
+            } else if(currentState == State.OFF) {
+                setRollerSpeed(0);
+                setConveyorSpeed(0);
             }
         }
 
@@ -99,7 +113,8 @@ public class Tunnel extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-
+        SmartDashboard.putNumber("Conveyor RPM", encUnitsToRPM(conveyorTalon.getSelectedSensorVelocity()));
+        SmartDashboard.putNumber("Roller RPM", encUnitsToRPM(rollerTalon.getSelectedSensorVelocity()));
     }
 
     public Request stateRequest(State desiredState) {
@@ -113,7 +128,7 @@ public class Tunnel extends Subsystem {
 
     @Override
     public void stop() {
-        setFrontSpeed(0);
-        setRearSpeed(0);        
+        setConveyorSpeed(0);
+        setRollerSpeed(0);        
     }
 }

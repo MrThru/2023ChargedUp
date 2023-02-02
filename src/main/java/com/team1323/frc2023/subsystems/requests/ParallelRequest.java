@@ -9,6 +9,7 @@ package com.team1323.frc2023.subsystems.requests;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -24,11 +25,12 @@ public class ParallelRequest extends Request {
     }
 
     private void startRequestsIfAllowed() {
-        for (Request request : idleRequests) {
+        for (Iterator<Request> iter = idleRequests.iterator(); iter.hasNext();) {
+            Request request = iter.next();
             if (request.allowed()) {
                 request.act();
                 inProgressRequests.add(request);
-                idleRequests.remove(request);
+                iter.remove();
             }
         }
     }

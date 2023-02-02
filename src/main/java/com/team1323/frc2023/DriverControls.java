@@ -10,6 +10,7 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
@@ -21,6 +22,7 @@ import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
+import com.team1323.lib.util.NetworkBuffer;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -72,7 +74,7 @@ public class DriverControls implements Loop {
         testController = new Xbox(4);
         singleController = new Xbox(5);
         driver.setDeadband(0.0);
-		coDriver.setDeadband(0.25);
+		coDriver.setDeadband(0.15);
 
         swerve = Swerve.getInstance();
         verticalElevator = VerticalElevator.getInstance();
@@ -83,7 +85,7 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, verticalElevator, horizontalElevator, wrist, tunnel, s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, horizontalElevator, wrist, s));
     }
 
     @Override
@@ -139,8 +141,8 @@ public class DriverControls implements Loop {
         
 
         if (driver.startButton.isBeingPressed()) 
-            //swerve.startVisionPID(new Pose2d(new Translation2d(574.5, 61.0), Rotation2d.fromDegrees(0.0)), Rotation2d.fromDegrees(0.0));
-            swerve.setState(Swerve.ControlState.NEUTRAL);
+            //swerve.setVelocity(Rotation2d.fromDegrees(180), 36.0);
+            //swerve.setState(Swerve.ControlState.NEUTRAL);
 
         if (driver.backButton.wasActivated()) {
             swerve.temporarilyDisableHeadingController();
@@ -169,33 +171,49 @@ public class DriverControls implements Loop {
         }
 
 
-        double verticalElevatorYInput = -coDriver.getLeftY() * 0.25;
+        double verticalElevatorYInput = -coDriver.getLeftY() * 0.10;
         double wristAngleYInput = -coDriver.getRightY() * 0.25;
 
         verticalElevator.acceptManualInput(verticalElevatorYInput);
-        wrist.acceptManualInput(wristAngleYInput);
+        //wrist.acceptManualInput(wristAngleYInput);
 
+        //cubeIntake.acceptManualInput(verticalElevatorYInput);
+        SmartDashboard.putNumber("Vertical Elevator Manual Input", verticalElevatorYInput);
+
+        if(coDriver.aButton.wasActivated()) {
+            s.intakeState(Tunnel.State.SPIT);
+        } else if(coDriver.aButton.wasReleased()) {
+            s.postIntakeState();
+        }
+
+        if(coDriver.bButton.wasActivated()) {
+            s.intakeState(Tunnel.State.HOLD);
+        } else if(coDriver.bButton.wasReleased()) {
+            s.postIntakeState();
+        }
+        /*s
         if(coDriver.aButton.wasActivated()) {
             tunnel.setFrontSpeed(0.25);
             cubeIntake.setIntakeSpeed(0.25);
         } else if(coDriver.aButton.wasReleased()) {
             tunnel.setFrontSpeed(0.0);
             cubeIntake.setIntakeSpeed(0);
-        }
+        }*/
 
         // D-pad controls for vision PID
-        /*
         if (coDriver.POV0.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getCenterScoringPose(swerve.getPose());
-            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
-        } else if (coDriver.POV90.wasActivated()) {
-            Pose2d scoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
+            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
             swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         } else if (coDriver.POV270.wasActivated()) {
+            Pose2d scoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
+            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
+            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+        } else if (coDriver.POV90.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
+            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
             swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         }
-        */
 
         if(coDriver.backButton.wasActivated()) {
             s.neutralState();

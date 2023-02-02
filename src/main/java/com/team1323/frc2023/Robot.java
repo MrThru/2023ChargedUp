@@ -10,10 +10,12 @@ import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeExecuter;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
 import com.team1323.frc2023.auto.modes.TestMode;
+import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.Looper;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
 import com.team1323.frc2023.loops.RobotStateEstimator;
+import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Wrist;
@@ -118,6 +120,7 @@ public class Robot extends TimedRobot {
 			disabledLooper.stop();
 			enabledLooper.start();
 			SmartDashboard.putBoolean("Auto", false);
+			AllianceChooser.update();
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -160,6 +163,7 @@ public class Robot extends TimedRobot {
 			Swerve.getInstance().zeroModuleAngles();
 			Shoulder.getInstance().zeroPositionWithCounter();
 			Wrist.getInstance().zeroPositionWithCounter();
+			CubeIntake.getInstance().zeroPositionWithCounter();
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;

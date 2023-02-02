@@ -164,33 +164,37 @@ public class Constants {
     public static final double kFalconMotionMagicFeedForward = 1023.0 / kMaxFalconEncoderSpeed;
 
     public static class CubeIntake {
-        public static final double kEncUnitsPerDegree = 0;
-        public static final double kMinControlAngle = 0;
-        public static final double kMaxControlAngle = 150.0;
+        public static final double kMotorRotationsPerWristRotation = 41.66666667;
+        public static final double kEncoderUnitsPerWristRotation = kMotorRotationsPerWristRotation * 2048.0;
+        public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWristRotation / 360.0;
+
+        public static final double kMinControlAngle = -40.0;
+        public static final double kMaxControlAngle = 105;
 
         public static final double kStartingAngle = 0;
+        public static final double kIntakeAngle = -5;
 
         public static final double kAngleTolerance = 1.0;
-        public static final double kVelocityScalar = 0.25;
-        public static final double kAccelerationScalar = 0.25;
+        public static final double kVelocityScalar = 1.0;
+        public static final double kAccelerationScalar = 4.0;
         
-        public static final double kSupplyCurrentLimit = 40.0;
+        public static final double kSupplyCurrentLimit = 25.0;
 
-        public static final double kArbitraryFeedForward = 0.0;
+        public static final double kArbitraryFeedForward = 0.025;
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             Ports.INTAKE_WRIST_ENCODER,
-            false,
+            true,
             1,
+            -122.699847, 
             0, 
-            0, 
-            0,
-            0
+            -45,
+            115
         );
         public static final TalonPIDF kStandardPID = new TalonPIDF(0, 
-            0, 
+            0.0174999237, 
             0,
             0, 
-            0
+            kFalconMotionMagicFeedForward
         );
 
     }
@@ -203,20 +207,20 @@ public class Constants {
 
         public static final double kHeightTolerance = 1.0;
 
-        public static final double kVelocityScalar = 0.25;
-        public static final double kAccelerationScalar = 1.0;
+        public static final double kVelocityScalar = 1.0;
+        public static final double kAccelerationScalar = 2.0;
 
         public static final double kSupplyCurrentLimit = 40.0;
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
+            0.02,
             0.0,
             0.0,
-            0.0,
-            0.0 //kFalconMotionMagicFeedForward
+            kFalconMotionMagicFeedForward
         );
 
-        public static final double kArbitraryFeedForward = 0.0;
+        public static final double kArbitraryFeedForward = 0.025;
     }
 
     public static class HorizontalElevator {
