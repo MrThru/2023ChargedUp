@@ -5,10 +5,11 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystem;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class VerticalElevator extends ServoSubsystem {
+public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
     private static VerticalElevator instance = null;
     public static VerticalElevator getInstance() {
         if(instance == null)
@@ -20,7 +21,8 @@ public class VerticalElevator extends ServoSubsystem {
         super(Ports.VERTICAL_ELEVATOR_LEADER, Ports.CANBUS,
                 Constants.VerticalElevator.kTicksPerInch, Constants.VerticalElevator.kMinControlHeight, 
                 Constants.VerticalElevator.kMaxControlHeight, Constants.VerticalElevator.kHeightTolerance, 
-                Constants.VerticalElevator.kVelocityScalar, Constants.VerticalElevator.kAccelerationScalar);
+                Constants.VerticalElevator.kVelocityScalar, Constants.VerticalElevator.kAccelerationScalar,
+                Constants.VerticalElevator.kCurrentZeroingConfig);
 
         leader.setInverted(TalonFXInvertType.Clockwise);
         setPIDF(Constants.VerticalElevator.kPIDF);

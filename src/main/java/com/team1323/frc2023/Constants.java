@@ -193,7 +193,7 @@ public class Constants {
         public static final TalonPIDF kStandardPID = new TalonPIDF(0, 
             0.0174999237, 
             0,
-            0, 
+            0.6, 
             kFalconMotionMagicFeedForward
         );
 
@@ -221,6 +221,12 @@ public class Constants {
         );
 
         public static final double kArbitraryFeedForward = 0.025;
+
+        public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
+            -0.1,
+            2.0,
+            0.1
+        );
     }
 
     public static class HorizontalElevator {

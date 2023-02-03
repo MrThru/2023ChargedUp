@@ -54,7 +54,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public static enum State {
-        STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.5);
+        STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.75);
         double intakeAngle;
         double intakeSpeed;
         State(double intakeAngle,double intakeSpeed) {

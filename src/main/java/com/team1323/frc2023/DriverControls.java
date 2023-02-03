@@ -85,7 +85,7 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, horizontalElevator, wrist, s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, /*horizontalElevator, wrist,*/ s));
     }
 
     @Override
@@ -139,10 +139,11 @@ public class DriverControls implements Loop {
             swerve.rotate(Rotation2d.fromDegrees(0));
         
 
-        if (driver.startButton.isBeingPressed()) 
+        if (driver.startButton.isBeingPressed()) {
             //swerve.setVelocity(Rotation2d.fromDegrees(180), 36.0);
-            //swerve.setState(Swerve.ControlState.NEUTRAL);
-
+            swerve.setState(Swerve.ControlState.NEUTRAL);
+        } 
+            
         if (driver.backButton.wasActivated()) {
             swerve.temporarilyDisableHeadingController();
             swerve.zeroSensors(new Pose2d());

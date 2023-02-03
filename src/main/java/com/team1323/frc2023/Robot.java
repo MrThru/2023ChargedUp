@@ -22,6 +22,7 @@ import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.lib.util.CrashTracker;
 import com.team1323.lib.util.Logger;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -76,6 +77,8 @@ public class Robot extends TimedRobot {
 		smartDashboardInteractions.initWithDefaults();
 
 		Settings.initializeToggles();
+
+		AllianceChooser.update();
 
 		generator.generateTrajectories();
 

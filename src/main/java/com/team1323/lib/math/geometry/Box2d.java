@@ -25,7 +25,7 @@ public class Box2d {
                     Translation2d position3, Translation2d position4) {
         this.position1 = position1;
         this.position2 = position2;
-        this.position3 = position4;
+        this.position3 = position3;
         this.position4 = position4;
 
         positions = Arrays.asList(this.position1, this.position2, this.position3, this.position4);

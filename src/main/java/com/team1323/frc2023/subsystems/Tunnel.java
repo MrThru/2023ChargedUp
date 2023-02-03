@@ -87,8 +87,8 @@ public class Tunnel extends Subsystem {
                     setRollerSpeed(1.0);
                 }
             } else if(currentState == State.SPIT) {
-                setRollerSpeed(0.4);
-                setConveyorSpeed(0.2);
+                setRollerSpeed(0.75);
+                setConveyorSpeed(0.75);
             } else if(currentState == State.HOLD) {
                 setRollerSpeed(-0.1);
                 setConveyorSpeed(0.05);

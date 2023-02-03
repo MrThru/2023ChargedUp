@@ -106,6 +106,7 @@ public class LimelightProcessor implements Loop {
 				Rotation2d estimatedRobotHeading = isInCorner ? Swerve.getInstance().getHeading() : Rotation2d.fromDegrees(robotPoseArray[5]);
 				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), estimatedRobotHeading);
 				Pose2d estimatedRobotPoseInches = Units.metersToInches(estimatedRobotPose);
+
 				if (!AllianceChooser.getCommunityBoundingBox().pointWithinBox(estimatedRobotPoseInches.getTranslation()) &&
 						!AllianceChooser.getLoadingZoneBoundingBox().pointWithinBox(estimatedRobotPoseInches.getTranslation())) {
 					return;
@@ -116,7 +117,6 @@ public class LimelightProcessor implements Loop {
 
 				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
 	
-				//Pose2d robotPoseInches = Units.metersToInches(estimatedRobotPose);
 				//SmartDashboard.putNumberArray("Path Pose", new double[]{robotPoseInches.getTranslation().x(), robotPoseInches.getTranslation().y(), robotPoseInches.getRotation().getDegrees()});
 				double translationalStdDev = translationalStandardDeviationRamp.calculate(camDistanceInches);
 				double rotationalStdDev = rotationalStandardDeviationRamp.calculate(camDistanceInches);
