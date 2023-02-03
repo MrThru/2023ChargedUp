@@ -911,10 +911,9 @@ public class Swerve extends Subsystem{
 		}
 	}
 
-	public synchronized void updateOdometry(double timestamp) {
+	public synchronized void updateOdometry(double timestamp, double deltaTime) {
 		pose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, pigeon.getYaw(), getModulePositions()));
-		velocity = Units.metersToInches(poseEstimator.getDeltaMeters().scaled(1.0 / (timestamp - lastUpdateTimestamp)));
-		lastUpdateTimestamp = timestamp;
+		velocity = Units.metersToInches(poseEstimator.getDeltaMeters().scaled(1.0 / deltaTime));
 	}
 	
 	private final Loop loop = new Loop(){
