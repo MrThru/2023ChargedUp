@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.team1323.frc2023.Constants;
+import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.ObjectDetector;
 import com.team1323.lib.math.TwoPointRamp;
@@ -104,13 +105,14 @@ public class LimelightProcessor implements Loop {
 				}
 				Rotation2d estimatedRobotHeading = isInCorner ? Swerve.getInstance().getHeading() : Rotation2d.fromDegrees(robotPoseArray[5]);
 				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), estimatedRobotHeading);
+				Pose2d estimatedRobotPoseInches = Units.metersToInches(estimatedRobotPose);
+				if (!AllianceChooser.getCommunityBoundingBox().pointWithinBox(estimatedRobotPoseInches.getTranslation()) &&
+						!AllianceChooser.getLoadingZoneBoundingBox().pointWithinBox(estimatedRobotPoseInches.getTranslation())) {
+					return;
+				}
 
 				Vector3d camPoseVector = new Vector3d(camPoseArray[0], camPoseArray[1], camPoseArray[2]);
 				double camDistanceInches = Units.metersToInches(camPoseVector.magnitude());
-				SmartDashboard.putNumber("Camera Distance", camDistanceInches);
-				if (camDistanceInches > 175.0) {
-					return;
-				}
 
 				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
 	

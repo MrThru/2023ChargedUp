@@ -53,6 +53,8 @@ public class Box2d {
                 new Translation2d(-width / 2, -height / 2), new Translation2d(width / 2, -height / 2));
     }
 
-
-
+    public static Box2d fromRectangleCorners(Translation2d minCorner, Translation2d maxCorner) {
+        return new Box2d(maxCorner, new Translation2d(minCorner.x(), maxCorner.y()), 
+                minCorner, new Translation2d(maxCorner.x(), minCorner.y()));
+    }
 }

@@ -22,7 +22,7 @@ import edu.wpi.first.math.MathUsageId;
 public class SwerveDriveOdometry {
   private final SwerveDriveKinematics m_kinematics;
   private Pose2d m_poseMeters;
-  private Twist2d m_velocity;
+  private Twist2d m_deltaMeters;
 
   private Rotation2d m_gyroOffset;
   private Rotation2d m_previousAngle;
@@ -44,7 +44,7 @@ public class SwerveDriveOdometry {
       Pose2d initialPose) {
     m_kinematics = kinematics;
     m_poseMeters = initialPose;
-    m_velocity = Twist2d.identity();
+    m_deltaMeters = Twist2d.identity();
     m_gyroOffset = m_poseMeters.getRotation().minus(gyroAngle);
     m_previousAngle = initialPose.getRotation();
     m_numModules = modulePositions.length;
@@ -112,8 +112,8 @@ public class SwerveDriveOdometry {
     return m_poseMeters;
   }
 
-  public Twist2d getVelocity() {
-    return m_velocity;
+  public Twist2d getDeltaMeters() {
+    return m_deltaMeters;
   }
 
   /**
@@ -149,7 +149,7 @@ public class SwerveDriveOdometry {
 
     var twist = m_kinematics.toTwist2d(moduleDeltas);
     // Estimate the robot's angular velocity using encoders instead of the gyro
-    m_velocity = twist;
+    m_deltaMeters = twist;
     twist = new Twist2d(twist.dx, twist.dy, angle.minus(m_previousAngle).getRadians());
 
     var newPose = m_poseMeters.wpiExp(twist);

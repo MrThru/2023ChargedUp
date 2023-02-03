@@ -99,7 +99,6 @@ public class DriverControls implements Loop {
 
     @Override
     public void onLoop(double timestamp) {
-        //RobotState.getInstance().outputToSmartDashboard();
         if(inAuto) {
             // Any auto-specific LED controls can go here
         } else {

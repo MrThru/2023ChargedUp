@@ -11,6 +11,7 @@ import com.team1323.frc2023.DriveMotionPlanner;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.RobotState;
 import com.team1323.frc2023.Settings;
+import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Subsystem;
@@ -49,6 +50,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Swerve extends Subsystem{
@@ -280,7 +282,12 @@ public class Swerve extends Subsystem{
 	* @param robotCentric gyro use
 	* @param lowPower scaled down output
 	*/
-	public void sendInput(double x, double y, double rotate, boolean robotCentric, boolean lowPower){
+	public void sendInput(double x, double y, double rotate, boolean robotCentric, boolean lowPower) {
+		if (AllianceChooser.getAlliance() == Alliance.Red && !robotCentric) {
+			x = -x;
+			y = -y;
+		}
+
 		if (updateInputs) {
 			if (useSlewLimiter) {
 				x = xInputLimiter.calculate(x);
@@ -375,15 +382,20 @@ public class Swerve extends Subsystem{
 		}
 	}
 	
-	//Various methods to control the heading controller
-	public synchronized void rotate(Rotation2d goalHeading){
-		if(translationalVector.x() == 0 && translationalVector.y() == 0)
-		rotateInPlace(goalHeading);
-		else
-		headingController.setStabilizationTarget(goalHeading);
+	// Various methods to control the heading controller
+	public synchronized void rotate(Rotation2d goalHeading) {
+		if (AllianceChooser.getAlliance() == Alliance.Red) {
+			goalHeading = goalHeading.rotateBy(Rotation2d.fromDegrees(180.0));
+		}
+
+		if (translationalVector.x() == 0 && translationalVector.y() == 0) {
+			rotateInPlace(goalHeading);
+		} else {
+			headingController.setStabilizationTarget(goalHeading);
+		}
 	}
 	
-	public void rotateInPlace(Rotation2d goalHeading){
+	private void rotateInPlace(Rotation2d goalHeading){
 		setState(ControlState.ROTATION);
 		headingController.setStationaryTarget(goalHeading);
 	}
@@ -898,6 +910,12 @@ public class Swerve extends Subsystem{
 			break;
 		}
 	}
+
+	public synchronized void updateOdometry(double timestamp) {
+		pose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, pigeon.getYaw(), getModulePositions()));
+		velocity = Units.metersToInches(poseEstimator.getDeltaMeters().scaled(1.0 / (timestamp - lastUpdateTimestamp)));
+		lastUpdateTimestamp = timestamp;
+	}
 	
 	private final Loop loop = new Loop(){
 		
@@ -914,13 +932,8 @@ public class Swerve extends Subsystem{
 		
 		@Override
 		public void onLoop(double timestamp) {
-			if(modulesReady || (getState() != ControlState.TRAJECTORY)){
-				pose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, pigeon.getYaw(), getModulePositions()));
-				velocity = Units.metersToInches(poseEstimator.getVelocity());
-			}
 			updateControlCycle(timestamp);
 			lastUpdateTimestamp = timestamp;
-		
 		}
 		
 		@Override
@@ -1169,7 +1182,7 @@ public class Swerve extends Subsystem{
 			SmartDashboard.putNumberArray("Pigeon YPR", pigeon.getYPR());
 			SmartDashboard.putNumber("Gyro Yaw", pigeon.getYaw().getDegrees());
 
-			double swerveVelocity =  (Math.sqrt((velocity.dx * velocity.dx) + (velocity.dy * velocity.dy))) / 12;
+			double swerveVelocity =  velocity.norm() / 12.0;
 			double currentTimestamp = Timer.getFPGATimestamp();
 			SmartDashboard.putNumber("Robot Swerve Velocity", swerveVelocity);
 			SmartDashboard.putNumber("Robot Swerve Acceleration", ((swerveVelocity - prevSwerveVelocity)));

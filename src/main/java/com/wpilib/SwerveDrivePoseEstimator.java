@@ -155,8 +155,8 @@ public class SwerveDrivePoseEstimator {
     return m_odometry.getPoseMeters();
   }
 
-  public Twist2d getVelocity() {
-    return m_odometry.getVelocity();
+  public Twist2d getDeltaMeters() {
+    return m_odometry.getDeltaMeters();
   }
 
   /**
