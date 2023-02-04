@@ -22,10 +22,10 @@ public class AllianceChooser {
             new Translation2d(40.45 + 13.8 + 136.81, 216.03));
     private static final Box2d redCommunityBoundingBox = Box2d.fromRectangleCorners(new Translation2d(610.77 - 13.8 - 136.81, 0.0), 
             new Translation2d(610.77 - 13.8, 216.03));
-    private static final Box2d blueLoadingZoneBoundingBox = Box2d.fromRectangleCorners(new Translation2d(14.25, 216.03), 
-            new Translation2d(14.25 + 118.25, 216.03 + 99.07));
-    private static final Box2d redLoadingZoneBoundingBox = Box2d.fromRectangleCorners(new Translation2d(636.96 - 118.25, 216.03), 
+    private static final Box2d blueLoadingZoneBoundingBox = Box2d.fromRectangleCorners(new Translation2d(636.96 - 118.25, 216.03), 
             new Translation2d(636.96, 216.03 + 99.07));
+    private static final Box2d redLoadingZoneBoundingBox = Box2d.fromRectangleCorners(new Translation2d(14.25, 216.03), 
+            new Translation2d(14.25 + 118.25, 216.03 + 99.07));
 
     public static Alliance getAlliance() {
         return alliance;
