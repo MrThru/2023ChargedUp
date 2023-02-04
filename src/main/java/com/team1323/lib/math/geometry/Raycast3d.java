@@ -24,6 +24,9 @@ public class Raycast3d {
         return this.ray.getRotation3d();
     }
 
+    public Vector3d getRayVector() {
+        return this.ray;
+    }
   
     public static Raycast3d fromVisionDegrees(double xDegrees, double yDegrees) {
         return fromRotation3d(new Rotation3d(xDegrees, yDegrees, 0));
