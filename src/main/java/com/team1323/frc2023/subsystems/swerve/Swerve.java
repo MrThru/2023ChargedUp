@@ -16,7 +16,6 @@ import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.gyros.Gyro;
-import com.team1323.frc2023.subsystems.gyros.Pigeon;
 import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.vision.VisionPIDController;
@@ -49,8 +48,8 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Swerve extends Subsystem{
@@ -283,7 +282,7 @@ public class Swerve extends Subsystem{
 	* @param lowPower scaled down output
 	*/
 	public void sendInput(double x, double y, double rotate, boolean robotCentric, boolean lowPower) {
-		if (AllianceChooser.getAlliance() == Alliance.Red && !robotCentric) {
+		if (AllianceChooser.getAlliance() != Alliance.Blue && !robotCentric) {
 			x = -x;
 			y = -y;
 		}
@@ -384,7 +383,7 @@ public class Swerve extends Subsystem{
 	
 	// Various methods to control the heading controller
 	public synchronized void rotate(Rotation2d goalHeading) {
-		if (AllianceChooser.getAlliance() == Alliance.Red) {
+		if (AllianceChooser.getAlliance() != Alliance.Blue) {
 			goalHeading = goalHeading.rotateBy(Rotation2d.fromDegrees(180.0));
 		}
 
@@ -1135,6 +1134,11 @@ public class Swerve extends Subsystem{
 	@Override
 	public void zeroSensors() {
 		zeroSensors(Constants.kRobotStartingPose);
+	}
+
+	public void zeroSensorsBasedOnAlliance() {
+		double heading = AllianceChooser.getAlliance() == Alliance.Blue ? 0.0 : 180.0;
+		zeroSensors(Pose2d.fromRotation(Rotation2d.fromDegrees(heading)));
 	}
 	
 	/** Zeroes the drive motors, and sets the robot's internal position and heading to match that of the fed pose */
