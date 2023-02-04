@@ -114,6 +114,9 @@ public class LimelightProcessor implements Loop {
 
 				Vector3d camPoseVector = new Vector3d(camPoseArray[0], camPoseArray[1], camPoseArray[2]);
 				double camDistanceInches = Units.metersToInches(camPoseVector.magnitude());
+				if (camPoseVector.z() < 24.0) {
+					return;
+				}
 
 				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
 	
