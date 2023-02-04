@@ -10,6 +10,7 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.CubeIntake;
@@ -141,7 +142,10 @@ public class DriverControls implements Loop {
 
         if (driver.startButton.isBeingPressed()) {
             //swerve.setVelocity(Rotation2d.fromDegrees(180), 36.0);
-            swerve.setState(Swerve.ControlState.NEUTRAL);
+            //swerve.setState(Swerve.ControlState.NEUTRAL);
+            Pose2d scoringPose = ScoringPoses.getScoringPose(NodeLocation.getDashboardLocation());
+            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
+            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         } 
             
         if (driver.backButton.wasActivated()) {
@@ -191,6 +195,7 @@ public class DriverControls implements Loop {
         } else if(coDriver.bButton.wasReleased()) {
             s.postIntakeState();
         }
+        
         /*s
         if(coDriver.aButton.wasActivated()) {
             tunnel.setFrontSpeed(0.25);
