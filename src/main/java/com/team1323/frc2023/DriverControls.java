@@ -195,7 +195,18 @@ public class DriverControls implements Loop {
         } else if(coDriver.bButton.wasReleased()) {
             s.postIntakeState();
         }
-        
+        if(coDriver.yButton.wasActivated()) {
+            cubeIntake.setIntakeCurrent(10.0);
+        }
+        if(coDriver.xButton.wasActivated()) {
+            cubeIntake.setIntakeCurrent(10);
+            cubeIntake.setIntakeSpeed(0.1);
+            cubeIntake.setPosition(Constants.CubeIntake.kIntakeAngle);
+            verticalElevator.setPosition(4.0);
+        } else if(coDriver.xButton.wasReleased()) {
+            //cubeIntake.setIntakeCurrent(120);
+            cubeIntake.setIntakeSpeed(0);
+        }
         /*s
         if(coDriver.aButton.wasActivated()) {
             tunnel.setFrontSpeed(0.25);

@@ -79,6 +79,9 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     public void setIntakeSpeed(double intakeSpeed) {
         intakeRoller.set(ControlMode.PercentOutput, intakeSpeed);   
     }
+    public void setIntakeCurrent(double amps) {
+        intakeRoller.setStatorCurrentLimit(amps, amps);
+    }
 
     public boolean getBanner() {
         return banner.get();
@@ -97,6 +100,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         @Override
         public void onLoop(double timestamp) {
             updateArbitraryFeedForward();
+            
         }
 
         @Override

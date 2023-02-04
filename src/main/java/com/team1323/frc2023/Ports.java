@@ -52,7 +52,7 @@ public class Ports {
     public static final int SHOULDER_ENCODER = 6;
     public static final int INTAKE_WRIST_ENCODER = 5;
 
-    public static final int INTAKE_BANNER = 2;
+    public static final int INTAKE_BANNER = 4;
 
     public static final int TUNNEL_FRONT_BANNER = 0;
     public static final int TUNNEL_REAR_BANNER = 0;

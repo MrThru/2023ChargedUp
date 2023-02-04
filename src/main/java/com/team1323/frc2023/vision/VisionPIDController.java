@@ -12,7 +12,7 @@ public class VisionPIDController {
     private static final double kDistanceToTargetTolerance = 1.0;
 
 	private final SynchronousPIDF lateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
-	private final SynchronousPIDF forwardPID = new SynchronousPIDF(0.05, 0.0, 0.0);
+	private final SynchronousPIDF forwardPID = new SynchronousPIDF(0.02, 0.0, 0.0);
     private final TwoPointRamp decelerationRamp = new TwoPointRamp(
         new Translation2d(1.0, 0.1),
         new Translation2d(60.0, 0.4),

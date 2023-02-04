@@ -13,6 +13,7 @@ import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team1323.lib.util.FieldConversions;
+import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -103,6 +104,9 @@ public class LimelightProcessor implements Loop {
 				if (isInCorner) {
 					return;
 				}
+				if(Netlink.getBooleanValue("Limelight Disabled")) {
+					return;
+				}
 				Rotation2d estimatedRobotHeading = isInCorner ? Swerve.getInstance().getHeading() : Rotation2d.fromDegrees(robotPoseArray[5]);
 				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), estimatedRobotHeading);
 				Pose2d estimatedRobotPoseInches = Units.metersToInches(estimatedRobotPose);
@@ -114,9 +118,6 @@ public class LimelightProcessor implements Loop {
 
 				Vector3d camPoseVector = new Vector3d(camPoseArray[0], camPoseArray[1], camPoseArray[2]);
 				double camDistanceInches = Units.metersToInches(camPoseVector.magnitude());
-				if (camPoseVector.z() < 24.0) {
-					return;
-				}
 
 				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
 	
