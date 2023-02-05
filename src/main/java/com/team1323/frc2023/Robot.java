@@ -16,6 +16,7 @@ import com.team1323.frc2023.loops.Looper;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
 import com.team1323.frc2023.loops.RobotStateEstimator;
 import com.team1323.frc2023.subsystems.CubeIntake;
+import com.team1323.frc2023.subsystems.LEDs;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Wrist;
@@ -151,6 +152,8 @@ public class Robot extends TimedRobot {
 			enabledLooper.stop();
 			subsystems.stop();
 			disabledLooper.start();
+			
+			LEDs.getInstance().configLEDs(LEDs.LEDColors.RAINBOW);;
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;

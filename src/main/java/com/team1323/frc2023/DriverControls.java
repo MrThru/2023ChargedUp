@@ -15,6 +15,7 @@ import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
+import com.team1323.frc2023.subsystems.LEDs;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
@@ -53,6 +54,8 @@ public class DriverControls implements Loop {
     private CubeIntake cubeIntake;
     private Tunnel tunnel;
 
+    private LEDs leds;
+
     private SubsystemManager subsystems;
     public SubsystemManager getSubsystems(){ return subsystems; }
 
@@ -84,9 +87,11 @@ public class DriverControls implements Loop {
         cubeIntake = CubeIntake.getInstance();
         tunnel = Tunnel.getInstance();
 
+        leds = LEDs.getInstance();
+
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, /*horizontalElevator, wrist,*/ s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, leds, /*horizontalElevator, wrist,*/ s));
     }
 
     @Override
