@@ -57,8 +57,6 @@ public class VisionPIDController {
             }
 		}
 
-		System.out.println("Vision PID output vector: " + output.toString() + ", Error Norm: " + error.norm());
-		
 		return output;
     }
 

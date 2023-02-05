@@ -97,13 +97,6 @@ public class LimelightProcessor implements Loop {
 			if (robotPoseArray.length == 6 && camPoseArray.length == 6) {
 				Vector3d robotPositionInLimelightCoordinates = new Vector3d(robotPoseArray[0], robotPoseArray[1], robotPoseArray[2]);
 				Vector3d robotPositionInOurCoordinates = FieldConversions.convertToField(Constants.kLimelightFieldOrigin, robotPositionInLimelightCoordinates);
-				double horizontalAngle = tx.getDouble(0.0);
-				double verticalAngle = ty.getDouble(0.0);
-				boolean isInCorner = Math.abs(horizontalAngle) > 20.0 && Math.abs(verticalAngle) > 10.0;
-				SmartDashboard.putBoolean("Is In Corner", isInCorner);
-				if (isInCorner) {
-					return;
-				}
 				if(Netlink.getBooleanValue("Limelight Disabled")) {
 					return;
 				}
