@@ -107,8 +107,8 @@ public class LimelightProcessor implements Loop {
 				if(Netlink.getBooleanValue("Limelight Disabled")) {
 					return;
 				}
-				Rotation2d estimatedRobotHeading = isInCorner ? Swerve.getInstance().getHeading() : Rotation2d.fromDegrees(robotPoseArray[5]);
-				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), estimatedRobotHeading);
+				//Rotation2d estimatedRobotHeading = isInCorner ? Swerve.getInstance().getHeading() : Rotation2d.fromDegrees(robotPoseArray[5]);
+				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), Rotation2d.fromDegrees(robotPoseArray[5]));
 				Pose2d estimatedRobotPoseInches = Units.metersToInches(estimatedRobotPose);
 
 				if (!AllianceChooser.getCommunityBoundingBox().pointWithinBox(estimatedRobotPoseInches.getTranslation()) &&
@@ -121,11 +121,14 @@ public class LimelightProcessor implements Loop {
 
 				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
 	
-				//SmartDashboard.putNumberArray("Path Pose", new double[]{robotPoseInches.getTranslation().x(), robotPoseInches.getTranslation().y(), robotPoseInches.getRotation().getDegrees()});
 				double translationalStdDev = translationalStandardDeviationRamp.calculate(camDistanceInches);
 				double rotationalStdDev = rotationalStandardDeviationRamp.calculate(camDistanceInches);
 				Matrix<N3, N1> standardDeviations = VecBuilder.fill(translationalStdDev, translationalStdDev, rotationalStdDev);
 				Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds, standardDeviations);
+				if (Swerve.getInstance().getState() == Swerve.ControlState.VISION_PID) {
+					System.out.println("Vision measurement added");
+				}
+				SmartDashboard.putNumberArray("Path Pose", new double[]{estimatedRobotPoseInches.getTranslation().x(), estimatedRobotPoseInches.getTranslation().y(), estimatedRobotPoseInches.getRotation().getDegrees()});
 				/*if(json.getString("") != "") {
 					try {
 						JSONObject jsonDump = new JSONObject(json.getString(""));
