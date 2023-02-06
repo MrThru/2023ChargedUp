@@ -23,7 +23,6 @@ import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.lib.util.CrashTracker;
 import com.team1323.lib.util.Logger;
-import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -79,8 +78,6 @@ public class Robot extends TimedRobot {
 
 		Settings.initializeToggles();
 
-		AllianceChooser.update();
-
 		generator.generateTrajectories();
 
 		AutoModeBase auto = new TestMode();
@@ -102,6 +99,7 @@ public class Robot extends TimedRobot {
 			if (autoModeExecuter != null)
 				autoModeExecuter.stop();
 
+			AllianceChooser.update();
 			driverControls.setAutoMode(true);
 			disabledLooper.stop();
 			enabledLooper.start();
@@ -120,11 +118,11 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopInit() {
 		try {
+			AllianceChooser.update();
 			driverControls.setAutoMode(false);
 			disabledLooper.stop();
 			enabledLooper.start();
 			SmartDashboard.putBoolean("Auto", false);
-			AllianceChooser.update();
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -149,11 +147,12 @@ public class Robot extends TimedRobot {
 		try {
 			if (autoModeExecuter != null)
 				autoModeExecuter.stop();
+			AllianceChooser.update();
 			enabledLooper.stop();
 			subsystems.stop();
 			disabledLooper.start();
 			
-			LEDs.getInstance().configLEDs(LEDs.LEDColors.RAINBOW);;
+			LEDs.getInstance().configLEDs(LEDs.LEDColors.RAINBOW);;;;;;;;;;;;;;
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
