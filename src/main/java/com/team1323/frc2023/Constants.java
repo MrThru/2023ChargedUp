@@ -323,6 +323,20 @@ public class Constants {
 
     }
 
+    public static class Tunnel {
+
+        public static final double kIntakeSpeed = 0.5;
+        public static final double kIntakeConveyorSpeed = 0.1;
+        public static final double kIntakeFrontRollerSpeed = kIntakeConveyorSpeed * -1.5;
+
+        public static final double kHoldConveyorSpeed = 0.05;
+        public static final double kHoldFrontRollerSpeed = kHoldConveyorSpeed * -1.5;
+
+        public static final double kScoreConveyorSpeed = 0.2;
+        public static final double kScoreFrontRollerSpeed = 0.5;
+
+    }
+
     public static class Winch {
         public static final double kMotorRotationsPerWinchRotation = 1.0;
         public static final double kEncoderUnitsPerWinchRotation = kMotorRotationsPerWinchRotation * 2048.0;

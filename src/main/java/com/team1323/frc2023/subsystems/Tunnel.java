@@ -6,6 +6,7 @@ package com.team1323.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
@@ -23,6 +24,8 @@ public class Tunnel extends Subsystem {
 
     LazyPhoenix5TalonFX conveyorTalon, rollerTalon;
     DigitalInput frontBanner, rearBanner;
+
+    private boolean cubeEjected = false;
 
     private static Tunnel instance = null;
     public static Tunnel getInstance() {
@@ -44,7 +47,7 @@ public class Tunnel extends Subsystem {
     }
 
     public enum State {
-        OFF, DETECT, SPIT, HOLD;
+        OFF, DETECT, SPIT, HOLD, EJECT_ONE;
     }
     private State currentState = State.OFF;
     public State getState() {
@@ -61,6 +64,18 @@ public class Tunnel extends Subsystem {
     public void setConveyorSpeed(double speed) {
         conveyorTalon.set(ControlMode.PercentOutput, speed);
     }
+    public void setRollerSpeeds(double frontRoller, double conveyorSpeed) {
+        setRollerSpeed(frontRoller);
+        setConveyorSpeed(conveyorSpeed);
+    }
+
+
+    public boolean getFrontBanner() {
+        return frontBanner.get();
+    }
+    public boolean getRearBanner() {
+        return rearBanner.get();
+    }
 
     public double encUnitsToRPM(double encUnits) {
         return (encUnits * 600) / 2048.0;
@@ -75,26 +90,39 @@ public class Tunnel extends Subsystem {
 
         @Override
         public void onLoop(double timestamp) {
-            if(currentState == State.DETECT) {
-                if(frontBanner.get()) {
-                    setConveyorSpeed(0.0);
-                } else {
-                    setConveyorSpeed(1.0);
-                }
-                if(rearBanner.get() && frontBanner.get()){
-                    setRollerSpeed(0.0);
-                } else if(!frontBanner.get()) {
-                    setRollerSpeed(1.0);
-                }
-            } else if(currentState == State.SPIT) {
-                setRollerSpeed(0.75);
-                setConveyorSpeed(0.75);
-            } else if(currentState == State.HOLD) {
-                setRollerSpeed(-0.1);
-                setConveyorSpeed(0.05);
-            } else if(currentState == State.OFF) {
-                setRollerSpeed(0);
-                setConveyorSpeed(0);
+            switch(currentState) {
+                case DETECT:
+                    if(!getFrontBanner()) {
+                        setRollerSpeeds(Constants.Tunnel.kIntakeFrontRollerSpeed, Constants.Tunnel.kIntakeConveyorSpeed);
+                    } else if(!getRearBanner()) {
+                        setRollerSpeeds(Constants.Tunnel.kHoldFrontRollerSpeed, Constants.Tunnel.kHoldConveyorSpeed);
+                    } else {
+                        setRollerSpeeds(0, 0);
+                    }
+                    break;
+                case EJECT_ONE:
+                    if(!cubeEjected) {
+                        setRollerSpeeds(Constants.Tunnel.kScoreFrontRollerSpeed, Constants.Tunnel.kScoreConveyorSpeed);
+                        cubeEjected = !getFrontBanner();
+                    } else {
+                        if(getFrontBanner()) {
+                            setState(State.OFF);
+                            cubeEjected = false;
+                        }
+                    }
+                    break;
+                case SPIT:
+                    setRollerSpeed(0.75);
+                    setConveyorSpeed(0.75);
+                    break;
+                case HOLD:
+                    setRollerSpeed(-0.1);
+                    setConveyorSpeed(0.05);
+                    break;
+                case OFF:
+                    setRollerSpeed(0);
+                    setConveyorSpeed(0);    
+                break;
             }
         }
 
@@ -110,6 +138,11 @@ public class Tunnel extends Subsystem {
         enabledLooper.register(loop);
     }
 
+
+    
+    public double getCubeCount() {
+        return (frontBanner.get() ? 1 : 0) + (rearBanner.get() ? 1 : 0);
+    }
 
     @Override
     public void outputTelemetry() {
