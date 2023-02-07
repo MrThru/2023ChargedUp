@@ -630,10 +630,13 @@ public class Swerve extends Subsystem{
 	
 	// Vision PID (new, simpler vision tracking system)
 	public void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle) {
-		visionPID.start(desiredFieldPose.getTranslation(), approachAngle);
+		visionPID.start(desiredFieldPose, approachAngle, false);
 		rotationScalar = 0.75;
-		setPathHeading(desiredFieldPose.getRotation());
 		setState(ControlState.VISION_PID);
+	}
+
+	public void addRetroObservation(Translation2d retroPosition, double timestamp) {
+		visionPID.addRetroObservation(retroPosition, timestamp);
 	}
 	
 	/****************************************************/
@@ -888,7 +891,11 @@ public class Swerve extends Subsystem{
 			}
 			break;
 			case VISION_PID:
-			Translation2d driveVector = visionPID.update(pose, timestamp - lastUpdateTimestamp);
+			Pose2d visionPIDOutput = visionPID.update(pose, timestamp - lastUpdateTimestamp);
+			Translation2d driveVector = visionPIDOutput.getTranslation();
+			if (!visionPIDOutput.getRotation().equals(headingController.getTargetHeading())) {
+				setPathHeading(visionPIDOutput.getRotation());
+			}
 			if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
 				driveVector = lastDriveVector;
 				setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, Util.deadBand(rotationCorrection*rotationScalar, 0.01), pose, false), 0.0);
@@ -913,6 +920,10 @@ public class Swerve extends Subsystem{
 	public synchronized void updateOdometry(double timestamp, double deltaTime) {
 		pose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, pigeon.getYaw(), getModulePositions()));
 		velocity = Units.metersToInches(poseEstimator.getDeltaMeters().scaled(1.0 / deltaTime));
+	}
+
+	public Pose2d getPoseAtTime(double timeSeconds) {
+		return Units.metersToInches(poseEstimator.getEstimatedPositionAtTime(timeSeconds));
 	}
 	
 	private final Loop loop = new Loop(){

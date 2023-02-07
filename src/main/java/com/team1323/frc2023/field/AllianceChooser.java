@@ -26,6 +26,8 @@ public class AllianceChooser {
             new Translation2d(636.96, 216.03 + 99.07));
     private static final Box2d redLoadingZoneBoundingBox = Box2d.fromRectangleCorners(new Translation2d(14.25, 216.03), 
             new Translation2d(14.25 + 118.25, 216.03 + 99.07));
+    private static final double blueConePoleX = 40.45 - 18.5;
+    private static final double redConePoleX = 610.77 + 18.5;
 
     public static Alliance getAlliance() {
         return alliance;
@@ -45,5 +47,9 @@ public class AllianceChooser {
 
     public static Box2d getLoadingZoneBoundingBox() {
         return (alliance == Alliance.Blue) ? blueLoadingZoneBoundingBox : redLoadingZoneBoundingBox;
+    }
+
+    public static double getConePoleX() {
+        return (alliance == Alliance.Blue) ? blueConePoleX : redConePoleX;
     }
 }

@@ -1,14 +1,13 @@
 package com.team1323.frc2023.loops;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONString;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
-import com.team1323.frc2023.vision.ObjectDetector;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.math.geometry.Vector3d;
@@ -22,12 +21,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import netscape.javascript.JSObject;
 
 public class LimelightProcessor implements Loop {
 	private static LimelightProcessor instance = new LimelightProcessor();
@@ -35,7 +29,8 @@ public class LimelightProcessor implements Loop {
 		return instance;
 	}
 
-	private ObjectDetector objectDetector;
+	private static final String kLimelightName = "limelight";
+	private static final double kMinFiducialArea = 0.01; // TODO: update this
 
 	private static final TwoPointRamp translationalStandardDeviationRamp = new TwoPointRamp(
 		new Translation2d(60.0, 0.05),
@@ -50,134 +45,107 @@ public class LimelightProcessor implements Loop {
 		false
 	);
 
-	private final NetworkTable table;
-	private final NetworkTableEntry ledMode;
-	private final NetworkTableEntry pipeline;
-	private final NetworkTableEntry camMode;
-	private final NetworkTableEntry stream;
-	private final NetworkTableEntry heartbeat;
-	private final NetworkTableEntry latency;
-	private final NetworkTableEntry seesTarget;
-	private final NetworkTableEntry robotPose;
-	private final NetworkTableEntry camPose;
-	private final NetworkTableEntry tx, ty;
-	private final NetworkTableEntry json;
-	private final double[] zeroArray = new double[]{0, 0, 0, 0, 0, 0};
 	private double previousHeartbeat = -1.0;
 	
-	private LimelightProcessor() {
-		table = NetworkTableInstance.getDefault().getTable("limelight");
-		ledMode = table.getEntry("ledMode");
-		pipeline = table.getEntry("pipeline");
-		camMode = table.getEntry("camMode");
-		stream = table.getEntry("stream");
-		heartbeat = table.getEntry("hb");
-		latency = table.getEntry("tl");
-		seesTarget = table.getEntry("tv");
-		robotPose = table.getEntry("botpose");
-		camPose = table.getEntry("camerapose_targetspace");
-		tx = table.getEntry("tx");
-		ty = table.getEntry("ty");
-		json = table.getEntry("json");
-
-		//objectDetector = new ObjectDetector();
-	}
+	private LimelightProcessor() {}
 	
 	@Override 
-	public void onStart(double timestamp) {
-		setStreamMode(0);
-	}
+	public void onStart(double timestamp) {}
 	
 	@Override 
 	public void onLoop(double timestamp) {
-		double currentHeartbeat = heartbeat.getDouble(previousHeartbeat);
-		if (currentHeartbeat > previousHeartbeat && seesTarget()) {
-			double[] robotPoseArray = robotPose.getDoubleArray(zeroArray);
-			double[] camPoseArray = camPose.getDoubleArray(zeroArray);
-			if (robotPoseArray.length == 6 && camPoseArray.length == 6) {
-				Vector3d robotPositionInLimelightCoordinates = new Vector3d(robotPoseArray[0], robotPoseArray[1], robotPoseArray[2]);
-				Vector3d robotPositionInOurCoordinates = FieldConversions.convertToField(Constants.kLimelightFieldOrigin, robotPositionInLimelightCoordinates);
-				if(Netlink.getBooleanValue("Limelight Disabled")) {
-					return;
-				}
-				//Rotation2d estimatedRobotHeading = isInCorner ? Swerve.getInstance().getHeading() : Rotation2d.fromDegrees(robotPoseArray[5]);
-				Pose2d estimatedRobotPose = new Pose2d(robotPositionInOurCoordinates.x(), robotPositionInOurCoordinates.y(), Rotation2d.fromDegrees(robotPoseArray[5]));
-				Pose2d estimatedRobotPoseInches = Units.metersToInches(estimatedRobotPose);
-
-				if (!AllianceChooser.getCommunityBoundingBox().pointWithinBox(estimatedRobotPoseInches.getTranslation()) &&
-						!AllianceChooser.getLoadingZoneBoundingBox().pointWithinBox(estimatedRobotPoseInches.getTranslation())) {
-					return;
-				}
-
-				Vector3d camPoseVector = new Vector3d(camPoseArray[0], camPoseArray[1], camPoseArray[2]);
-				double camDistanceInches = Units.metersToInches(camPoseVector.magnitude());
-
-				double totalLatencySeconds = (latency.getDouble(0.0) / 1000.0) + Constants.kImageCaptureLatency;
-	
-				double translationalStdDev = translationalStandardDeviationRamp.calculate(camDistanceInches);
-				double rotationalStdDev = rotationalStandardDeviationRamp.calculate(camDistanceInches);
-				Matrix<N3, N1> standardDeviations = VecBuilder.fill(translationalStdDev, translationalStdDev, rotationalStdDev);
-				Swerve.getInstance().addVisionMeasurement(estimatedRobotPose,  timestamp - totalLatencySeconds, standardDeviations);
-				if (Swerve.getInstance().getState() == Swerve.ControlState.VISION_PID) {
-					System.out.println("Vision measurement added");
-				}
-				SmartDashboard.putNumberArray("Path Pose", new double[]{estimatedRobotPoseInches.getTranslation().x(), estimatedRobotPoseInches.getTranslation().y(), estimatedRobotPoseInches.getRotation().getDegrees()});
-				/*if(json.getString("") != "") {
-					try {
-						JSONObject jsonDump = new JSONObject(json.getString(""));
-						objectDetector.addDetectedObjects(jsonDump);
-					} catch(JSONException error) {
-						DriverStation.reportError(error.getMessage(), null);
-					}
-				}*/
-				previousHeartbeat = currentHeartbeat;
-			}
-			
+		double currentHeartbeat = LimelightHelper.getLimelightNTDouble(kLimelightName, "hb");
+		if (currentHeartbeat > previousHeartbeat && !Netlink.getBooleanValue("Limelight Disabled")) {
+			LimelightResults results = LimelightHelper.getLatestResults(kLimelightName);
+			handleFiducialTargets(results, timestamp);
+			handleRetroTargets(results, timestamp);
+			previousHeartbeat = currentHeartbeat;
 		}
 	}
 	
 	@Override
 	public void onStop(double timestamp) {}
-	
-	public void blink() {
-		ledMode.setNumber(2);
-	}
-	
-	public void ledOn(boolean on) {
-		ledMode.setNumber(on ? 0 : 1);
-	}
-	
-	public void setDriverMode() {
-		camMode.setNumber(1);
-	}
-	
-	public void setVisionMode() {
-		camMode.setNumber(0);
+
+	private double getTotalLatencySeconds(LimelightResults results) {
+		return (results.targetingResults.latency_capture + results.targetingResults.latency_pipeline +
+				results.targetingResults.latency_jsonParse) / 1000.0;
 	}
 
-	public void setStreamMode(int id) {
-		stream.setNumber(id);
-	}
-	
-	public void setPipeline(int id) {
-		pipeline.setNumber(id);
-	}
+	private void handleFiducialTargets(LimelightResults results, double timestamp) {
+		if (results.targetingResults.targets_Fiducials.length == 0) {
+			return;
+		}
 
-	public void setPipeline(Pipeline p) {
-		setPipeline(p.id);
-		System.out.println("Pipeline set to " + p.id);
-	}
+		double[] robotPoseArray;
+		double[] cameraPoseArray;
+		List<LimelightTarget_Fiducial> fiducials = Arrays.asList(results.targetingResults.targets_Fiducials);
+		if (fiducials.stream().allMatch(fiducial -> fiducial.ta >= kMinFiducialArea)) {
+			robotPoseArray = LimelightHelper.getBotpose(kLimelightName);
+			cameraPoseArray = LimelightHelper.getCameraPose_TargetSpace(kLimelightName);
+		} else {
+			Comparator<LimelightTarget_Fiducial> areaComparator = (f1, f2) -> Double.compare(f1.ta, f2.ta);
+			LimelightTarget_Fiducial largestFiducial = Collections.max(fiducials, areaComparator);
+			robotPoseArray = largestFiducial.robotPose_FieldSpace;
+			cameraPoseArray = largestFiducial.cameraPose_TargetSpace;
+		}
 
-	public enum Pipeline {
-		APRIL_TAGS(0), GAME_PIECES(1);
+		if (robotPoseArray.length != 6 || cameraPoseArray.length != 6) {
+			return;
+		}
 
-		int id;
-		private Pipeline(int id) {
-			this.id = id;
+		Vector3d robotPositionInLimelightCoordinates = new Vector3d(robotPoseArray[0], robotPoseArray[1], robotPoseArray[2]);
+		Vector3d robotPositionInWpiCoordinates = FieldConversions.convertToField(Constants.kLimelightFieldOrigin, robotPositionInLimelightCoordinates);
+		Pose2d estimatedRobotPoseMeters = new Pose2d(robotPositionInWpiCoordinates.x(), robotPositionInWpiCoordinates.y(), Rotation2d.fromDegrees(robotPoseArray[5]));
+		Pose2d estimatedRobotPoseInches = Units.metersToInches(estimatedRobotPoseMeters);
+
+		// Only accept vision updates if they place the robot within our own community or loading zone
+		if (!AllianceChooser.getCommunityBoundingBox().pointWithinBox(estimatedRobotPoseInches.getTranslation()) &&
+				!AllianceChooser.getLoadingZoneBoundingBox().pointWithinBox(estimatedRobotPoseInches.getTranslation())) {
+			return;
+		}
+
+		Vector3d cameraPoseVector = new Vector3d(cameraPoseArray[0], cameraPoseArray[1], cameraPoseArray[2]);
+		double cameraDistanceInches = Units.metersToInches(cameraPoseVector.magnitude());
+
+		double translationalStdDev = translationalStandardDeviationRamp.calculate(cameraDistanceInches);
+		double rotationalStdDev = rotationalStandardDeviationRamp.calculate(cameraDistanceInches);
+		Matrix<N3, N1> standardDeviations = VecBuilder.fill(translationalStdDev, translationalStdDev, rotationalStdDev);
+		Swerve.getInstance().addVisionMeasurement(estimatedRobotPoseMeters,  timestamp - getTotalLatencySeconds(results), standardDeviations);
+
+		// For debugging purposes
+		if (Swerve.getInstance().getState() == Swerve.ControlState.VISION_PID) {
+			System.out.println("Vision measurement added");
+			SmartDashboard.putNumberArray("Path Pose", new double[]{estimatedRobotPoseInches.getTranslation().x(), estimatedRobotPoseInches.getTranslation().y(), estimatedRobotPoseInches.getRotation().getDegrees()});
 		}
 	}
 
-	private boolean seesTarget() {
-		return seesTarget.getDouble(0.0) == 1.0;
+	private void handleRetroTargets(LimelightResults results, double timestamp) {
+		if (results.targetingResults.targets_Retro.length == 0) {
+			return;
+		}
+
+		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(timestamp - getTotalLatencySeconds(results));
+		double approximateDistanceToTarget = Math.abs(robotPose.getTranslation().x() - AllianceChooser.getConePoleX());
+		Rotation2d rotationToTarget = Rotation2d.fromDegrees(LimelightHelper.getTX(kLimelightName)); // TODO: Check if this needs to be flipped
+
+		Translation2d approximateTargetPosition = robotPose
+				.transformBy(Pose2d.fromRotation(rotationToTarget))
+				.transformBy(Pose2d.fromTranslation(new Translation2d(approximateDistanceToTarget, 0.0)))
+				.getTranslation();
+		Swerve.getInstance().addRetroObservation(approximateTargetPosition, timestamp);
+	}
+
+	public void setPipeline(Pipeline pipeline) {
+		LimelightHelper.setPipelineIndex(kLimelightName, pipeline.index);
+	}
+
+	public enum Pipeline {
+		FIDUCIAL(0), RETRO(1);
+
+		public final int index;
+
+		private Pipeline(int index) {
+			this.index = index;
+		}
 	}
 }

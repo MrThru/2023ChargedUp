@@ -7,6 +7,7 @@ package com.wpilib;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
@@ -153,6 +154,16 @@ public class SwerveDrivePoseEstimator {
    */
   public Pose2d getEstimatedPosition() {
     return m_odometry.getPoseMeters();
+  }
+
+  public Pose2d getEstimatedPositionAtTime(double timeSeconds) {
+    Optional<InterpolationRecord> record = m_poseBuffer.getSample(timeSeconds);
+
+    if (record.isEmpty()) {
+      return Pose2d.identity();
+    }
+
+    return record.get().poseMeters;
   }
 
   public Twist2d getDeltaMeters() {
