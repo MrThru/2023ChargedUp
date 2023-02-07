@@ -1,13 +1,24 @@
 package com.team1323.frc2023.vision;
 
+import com.team1323.frc2023.DriveMotionPlanner;
+import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.Stopwatch;
 import com.team1323.lib.util.SynchronousPIDF;
 import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.trajectory.TimedView;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryGenerator;
+import com.team254.lib.trajectory.TrajectoryIterator;
+import com.team254.lib.trajectory.TrajectoryGenerator.TrajectorySet.MirroredTrajectory;
+import com.team254.lib.trajectory.timing.TimedState;
+
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class VisionPIDController {
     private static final double kOnTargetTime = 1.0;
@@ -24,6 +35,12 @@ public class VisionPIDController {
         true
     );
     private final GoalTrack retroTargetTrack = GoalTrack.makeNewTrack(0.0, Translation2d.identity(), 0);
+    private final DriveMotionPlanner motionPlanner = new DriveMotionPlanner();
+
+    public enum TrackingPhase {
+        TRAJECTORY, VISION_PID, RETRO
+    }
+    private TrackingPhase currentPhase = TrackingPhase.VISION_PID;
 
     private Translation2d targetPosition = Translation2d.identity();
     private Rotation2d targetHeading = Rotation2d.identity();
@@ -32,16 +49,54 @@ public class VisionPIDController {
     private boolean targetReached = false;
     private boolean useRetroTarget = false;
 
-    public void start(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useRetroTarget) {
+    public void start(Pose2d currentPose, Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, boolean useRetroTarget) {
         LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         lateralPID.setSetpoint(0.0);
         forwardPID.setSetpoint(0.0);
         targetPosition = desiredFieldPose.getTranslation();
         targetHeading = desiredFieldPose.getRotation();
         this.approachAngle = approachAngle;
+        this.useRetroTarget = useRetroTarget;
         onTargetStopwatch.reset();
         targetReached = false;
-        this.useRetroTarget = useRetroTarget;
+
+        Trajectory<TimedState<Pose2dWithCurvature>> communitySweepPath = getCommunitySweepPath(currentPose, targetPosition);
+        if (communitySweepPath != null && useTrajectory) {
+            motionPlanner.reset();
+            motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(communitySweepPath)));
+            currentPhase = TrackingPhase.TRAJECTORY;
+        } else {
+            currentPhase = TrackingPhase.VISION_PID;
+        }
+    }
+
+    private boolean canSwitchToVisionPID(Pose2d robotPose, Translation2d scoringPosition) {
+        final double kYTolerance = 6.0;
+        final double kBlueCloseRampX = 40.45 + 13.8 + 60.69;
+        final double kRedCloseRampX = 610.77 - 13.8 - 60.69;
+        boolean isPastRamp = AllianceChooser.getAlliance() == Alliance.Blue ?
+                robotPose.getTranslation().x() < kBlueCloseRampX :
+                robotPose.getTranslation().x() > kRedCloseRampX;
+        boolean isWithinYTolerance = Math.abs(scoringPosition.y() - robotPose.getTranslation().y()) <= kYTolerance;
+        
+        return isPastRamp && isWithinYTolerance;
+    }
+
+    private Trajectory<TimedState<Pose2dWithCurvature>> getCommunitySweepPath(Pose2d robotPose, Translation2d scoringPosition) {
+        if (canSwitchToVisionPID(robotPose, scoringPosition)) {
+            return null;
+        }
+
+        MirroredTrajectory communitySweepPath = TrajectoryGenerator.getInstance().getTrajectorySet().communitySweepPath;
+        if (AllianceChooser.getAlliance() == Alliance.Blue) {
+            return robotPose.getTranslation().y() < scoringPosition.y() ?
+                    communitySweepPath.bottomLeft :
+                    communitySweepPath.topLeft;
+        } else {
+            return robotPose.getTranslation().y() < scoringPosition.y() ?
+                    communitySweepPath.bottomRight :
+                    communitySweepPath.topRight;
+        }
     }
 
     public void addRetroObservation(Translation2d retroPosition, double timestamp) {
@@ -49,17 +104,6 @@ public class VisionPIDController {
     }
 
     private void updateTargetHeading(Pose2d robotPose, Translation2d error) {
-        if (!useRetroTarget) {
-            return;
-        }
-
-        boolean isCloseEnoughForRetro = error.norm() < kDistanceThresholdForRetroSwitch &&
-                Math.abs(error.y()) < kLateralThresholdForRetroSwitch;
-        if (!isCloseEnoughForRetro) {
-            return;
-        }
-
-        LimelightProcessor.getInstance().setPipeline(Pipeline.RETRO);
         retroTargetTrack.emptyUpdate();
         Translation2d retroPosition = retroTargetTrack.getSmoothedPosition();
         if (retroPosition == null) {
@@ -70,27 +114,66 @@ public class VisionPIDController {
         targetHeading = robotToRetro.direction();
     }
 
-    /**
-     * @return A Pose2d whose translation represents a drive vector that should be applied
-     * to the swerve, and whose rotation represents a target heading for the swerve's
-     * heading controller.
-     */
-    public Pose2d update(Pose2d robotPose, double dt) {
-        if (targetReached) {
-            return Pose2d.fromRotation(targetHeading);
-        }
-
+    private Translation2d getPIDError(Pose2d robotPose) {
 		Translation2d adjustedTarget = targetPosition.rotateBy(approachAngle.inverse());
 		Translation2d adjustedPose = robotPose.getTranslation().rotateBy(approachAngle.inverse());
 		Translation2d error = adjustedTarget.translateBy(adjustedPose.inverse());
+
+        return error;
+    }
+
+    private Translation2d getPIDDriveVector(Translation2d error, double dt) {
 		Translation2d driveVector = new Translation2d(-forwardPID.calculate(error.x(), dt), -lateralPID.calculate(error.y(), dt));
 		double adjustedMagnitude = Math.min(driveVector.norm(), decelerationRamp.calculate(error.norm()));
 		driveVector = Translation2d.fromPolar(driveVector.direction(), adjustedMagnitude);
 		driveVector = driveVector.rotateBy(approachAngle);
 
+        return driveVector;
+    }
+
+    private Pose2d getTrajectoryOutput(Pose2d robotPose, double timestamp) {
+        Translation2d driveVector = motionPlanner.update(timestamp, robotPose);
+
+        if (canSwitchToVisionPID(robotPose, targetPosition)) {
+            currentPhase = TrackingPhase.VISION_PID;
+        }
+
+        return new Pose2d(driveVector, targetHeading);
+    }
+
+    private Pose2d getPIDOutput(Pose2d robotPose, double dt) {
+        Translation2d error = getPIDError(robotPose);
+        Translation2d driveVector = getPIDDriveVector(error, dt);
+
+        boolean isCloseEnoughForRetro = error.norm() < kDistanceThresholdForRetroSwitch &&
+                Math.abs(error.y()) < kLateralThresholdForRetroSwitch;
+        if (useRetroTarget && isCloseEnoughForRetro) {
+            LimelightProcessor.getInstance().setPipeline(Pipeline.RETRO);
+            currentPhase = TrackingPhase.RETRO;
+        }
+
+        return new Pose2d(driveVector, targetHeading);
+    }
+
+    private Pose2d getRetroOutput(Pose2d robotPose, double dt) {
+        Translation2d error = getPIDError(robotPose);
+        Translation2d driveVector = getPIDDriveVector(error, dt);
         updateTargetHeading(robotPose, error);
 
-		if (error.norm() <= kDistanceToTargetTolerance) {
+        return new Pose2d(driveVector, targetHeading);
+    }
+
+    /**
+     * @return A Pose2d whose translation represents a drive vector that should be applied
+     * to the swerve, and whose rotation represents a target heading for the swerve's
+     * heading controller.
+     */
+    public Pose2d update(Pose2d robotPose, double timestamp, double dt) {
+        if (targetReached) {
+            return Pose2d.fromRotation(targetHeading);
+        }
+
+		if (getPIDError(robotPose).norm() <= kDistanceToTargetTolerance) {
             onTargetStopwatch.startIfNotRunning();
             if (onTargetStopwatch.getTime() >= kOnTargetTime) {
                 onTargetStopwatch.reset();
@@ -101,7 +184,20 @@ public class VisionPIDController {
             }
 		}
 
-		return new Pose2d(driveVector, targetHeading);
+        Pose2d output = Pose2d.identity();
+        switch (currentPhase) {
+            case TRAJECTORY:
+                output = getTrajectoryOutput(robotPose, timestamp);
+                break;
+            case VISION_PID:
+                output = getPIDOutput(robotPose, dt);
+                break;
+            case RETRO:
+                output = getRetroOutput(robotPose, dt);
+                break;
+        }
+
+        return output;
     }
 
     public boolean isDone() {

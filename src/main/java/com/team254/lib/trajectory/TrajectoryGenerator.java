@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class TrajectoryGenerator {
     private static final double kMaxVelocity = 120.0;
-    private static final double kMaxAccel = 120.0; // 120 
-    private static final double kMaxDecel = 72.0; //72
+    private static final double kMaxAccel = 120.0; 
+    private static final double kMaxDecel = 72.0;
     private static final double kMaxVoltage = 9.0;
     
     private static TrajectoryGenerator mInstance = new TrajectoryGenerator();
@@ -79,32 +79,14 @@ public class TrajectoryGenerator {
     // Origin is the bottom left corner of the field, when viewed from above with the blue alliance on the left side.
     // +x is towards the center of the field.
     // +y is to the left.
-    static final Pose2d autoStartingPose = new Pose2d(new Translation2d(297.7142857142857, 92.85714285714286), Rotation2d.fromDegrees(90));
-    static final Pose2d autoEjectStartingPose = new Pose2d(new Translation2d(233.71428571428572, -40.28571428571429), Rotation2d.fromDegrees(-135.0));
-
-    static final Pose2d firstBallPickupPose = new Pose2d(new Translation2d(297.7142857142857, 133.42857142857144), Rotation2d.fromDegrees(90));
-    static final Pose2d firstOpponentBallPickupPose = new Pose2d(new Translation2d(360.0, 140.42857142857144), Rotation2d.fromDegrees(90));
-    static final Pose2d secondBallPickupPose = new Pose2d(new Translation2d(215.42857142857142, 95.0), Rotation2d.fromDegrees(180));
-    static final Pose2d postTerminalShotPose = new Pose2d(new Translation2d(283.42857142857144, 102), Rotation2d.fromDegrees(0));
-    static final Pose2d secondOpponentBallPickupPose = new Pose2d(new Translation2d(162.0, 30.0), Rotation2d.fromDegrees(-90));
-    static final Pose2d humanPlayerPickupPose = new Pose2d(new Translation2d(54.285714285714285, 104.28571428571428), Rotation2d.fromDegrees(135.0)).transformBy(Pose2d.fromTranslation(new Translation2d(3.0, 0.0))); //(11, 12)
-    static final Pose2d humanPlayerBackupPose = humanPlayerPickupPose.transformBy(Pose2d.fromTranslation(new Translation2d(-24.0, 0)));
-    static final Pose2d thirdBallPickupPose = new Pose2d(new Translation2d(205, -68), Rotation2d.fromDegrees(-90)).transformBy(Pose2d.fromTranslation(Translation2d.fromPolar(Rotation2d.fromDegrees(-135.0), 0.0)));
-    static final Pose2d thirdOpponentBallPickupPose = new Pose2d(new Translation2d(234, -107.71428571428572), Rotation2d.fromDegrees(-90));
-
-    static final Pose2d opponentBallEjectPosition = new Pose2d(new Translation2d(318.0, -130.42857142857143), Rotation2d.fromDegrees(-45.0));
-    static final Pose2d wallRideStartPosition = new Pose2d(new Translation2d(290, -140), Rotation2d.fromDegrees(-50.8263420296 + -90));
-    static final Pose2d wallRideEndPosition = new Pose2d(new Translation2d(180, -103), Rotation2d.fromDegrees(90));
-
-    static final Pose2d closeWallEjectPosition = new Pose2d(new Translation2d(38.285714285714285, -4.0), Rotation2d.fromDegrees(180.0));
-    static final Pose2d backSideEjectPosition = new Pose2d(new Translation2d(246, -30), Rotation2d.fromDegrees(80.0));    
-
-    static final Pose2d leftMidlinePosition = new Pose2d(new Translation2d(247, -116), Rotation2d.fromDegrees(0));
+    private Pose2d communityEntrancePose = new Pose2d(new Translation2d(40.45 + 13.8 + 98.75, 29.695), Rotation2d.fromDegrees(180.0));
+    private Pose2d communitySweepMidPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345, 108.015), Rotation2d.fromDegrees(90.0));
+    private Pose2d communitySweepEndPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345, 174.19 + 22.0), Rotation2d.fromDegrees(90.0));
     
     public class TrajectorySet {
         public class MirroredTrajectory {
             private static final double kXMirror = 325.625;
-            private static final double kYMirror = 108.5;
+            private static final double kYMirror = 108.19;
 
             public MirroredTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> bottomLeft) {
                 this.bottomLeft = bottomLeft;
@@ -130,6 +112,9 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory thirdPieceToAprilTagPath;
         public final MirroredTrajectory frontBridgePath;
         public final MirroredTrajectory thirdPieceToBridgePath;
+
+        // Teleop Paths
+        public final MirroredTrajectory communitySweepPath;
         
         private TrajectorySet() {
             //Test Paths
@@ -142,14 +127,27 @@ public class TrajectoryGenerator {
             thirdPieceToAprilTagPath = new MirroredTrajectory(getThirdPieceToAprilTagPath());
             frontBridgePath = new MirroredTrajectory(getFrontBridgePath());
             thirdPieceToBridgePath = new MirroredTrajectory(getThirdPieceToBridgePath());
+
+            // Teleop paths
+            communitySweepPath = new MirroredTrajectory(getCommunitySweepPath());
         }
         
         private Trajectory<TimedState<Pose2dWithCurvature>> getTestPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(autoStartingPose.getTranslation(), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(new Pose2d(autoStartingPose.getTranslation().translateBy(new Translation2d(60.0, 0.0)), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(new Pose2d());
+            waypoints.add(new Pose2d(new Translation2d(72.0, 0.0), Rotation2d.fromDegrees(0.0)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 12.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getCommunitySweepPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(communityEntrancePose);
+            waypoints.add(communityEntrancePose.transformBy(Pose2d.fromTranslation(new Translation2d(32.0, 0.0))));
+            waypoints.add(communitySweepMidPose);
+            waypoints.add(communitySweepEndPose);
+            
+            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPiecePickupPath() {
