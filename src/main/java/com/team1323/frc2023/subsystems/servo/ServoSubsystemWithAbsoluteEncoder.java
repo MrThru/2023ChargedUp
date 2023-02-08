@@ -3,43 +3,37 @@ package com.team1323.frc2023.subsystems.servo;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.team1323.frc2023.subsystems.encoders.AbsoluteEncoder;
 import com.team1323.lib.util.Util;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DutyCycle;
 
 public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
     private static final int kMaxPositionResets = 50;
 
-    private DutyCycle absoluteEncoder;
-    private AbsoluteEncoderInfo absoluteEncoderInfo;
+    private final AbsoluteEncoder absoluteEncoder;
+    private final AbsoluteEncoderInfo absoluteEncoderInfo;
     private int numPositionResets = 0;
 
     public ServoSubsystemWithAbsoluteEncoder(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
-            double cruiseVelocityScalar, double accelerationScalar, AbsoluteEncoderInfo encoderInfo) {
+            double cruiseVelocityScalar, double accelerationScalar, AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
         this(portNumber, new ArrayList<>(), canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits,
-                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, encoderInfo);
+                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, encoder, encoderInfo);
     }
 
     public ServoSubsystemWithAbsoluteEncoder(int portNumber, List<Integer> followerPortNumbers, String canBus, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, double cruiseVelocityScalar, double accelerationScalar, 
-            AbsoluteEncoderInfo encoderInfo) {
+            AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
         super(portNumber, followerPortNumbers, canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
                 outputUnitTolerance, cruiseVelocityScalar, accelerationScalar);
+        absoluteEncoder = encoder;
         absoluteEncoderInfo = encoderInfo;
-        absoluteEncoder = new DutyCycle(new DigitalInput(absoluteEncoderInfo.digitalInputChannel));
-    }
-
-    protected double getAbsoluteEncoderDegrees() {
-        double sign = absoluteEncoderInfo.isReversed ? -1.0 : 1.0;
-        return sign * absoluteEncoder.getOutput() * 360.0;
     }
 
     @Override
     protected void zeroPosition() {
-        double absoluteEncoderOffset = Util.boundAngle0to360Degrees(getAbsoluteEncoderDegrees() - absoluteEncoderInfo.encoderZeroingAngle);
+        double absoluteEncoderOffset = Util.boundAngle0to360Degrees(absoluteEncoder.getDegrees() - absoluteEncoderInfo.encoderZeroingAngle);
         double absoluteSubsystemAngle = absoluteEncoderInfo.subsystemZeroingAngle + (absoluteEncoderOffset / absoluteEncoderInfo.encoderToOutputRatio);
         if (absoluteSubsystemAngle > absoluteEncoderInfo.maxInitialSubsystemAngle) {
             absoluteEncoderOffset -= 360.0;
