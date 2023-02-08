@@ -1,9 +1,12 @@
 package com.team1323.frc2023.subsystems;
 
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.encoders.CanEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team254.lib.geometry.Rotation2d;
@@ -20,13 +23,14 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public Wrist() {
-        super(Ports.WRIST, null, Constants.Wrist.kEncoderUnitsPerDegree, 
+        super(Ports.WRIST, Ports.CANBUS, Constants.Wrist.kEncoderUnitsPerDegree, 
                 Constants.Wrist.kMinControlAngle, Constants.Wrist.kMaxControlAngle, 
                 Constants.Wrist.kAngleTolerance, Constants.Wrist.kVelocityScalar, 
-                Constants.Wrist.kAccelerationScalar, Constants.Wrist.kAbsoluteEncoderInfo);
+                Constants.Wrist.kAccelerationScalar, new CanEncoder(Ports.WRIST_ENCODER, false), Constants.Wrist.kAbsoluteEncoderInfo);
 
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
-        super.leader.setPIDF(Constants.Wrist.kPIDF);
+        leader.setPIDF(Constants.Wrist.kPIDF);
+        leader.setInverted(TalonFXInvertType.CounterClockwise);
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
         zeroPosition();
         stop();
@@ -79,6 +83,6 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
     public void outputTelemetry() {
         SmartDashboard.putNumber("Wrist Angle", getPosition());
         SmartDashboard.putNumber("Wrist Encoder Position", periodicIO.position);
-        SmartDashboard.putNumber("Wrist Absolute Encoder", getAbsoluteEncoderDegrees());
+        SmartDashboard.putNumber("Wrist Absolute Encoder", absoluteEncoder.getDegrees());
     }
 }

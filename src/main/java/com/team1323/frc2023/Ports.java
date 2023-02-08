@@ -20,7 +20,7 @@ public class Ports {
 
     public static final int HORIZONTAL_ELEVATOR_LEADER = 31;
 
-    public static final int SHOULDER = 50;
+    public static final int SHOULDER = 42;
 
     public static final int WRIST = 43;
     public static final int CLAW = 44;
@@ -48,17 +48,17 @@ public class Ports {
     public static final int[] kModuleEncoders = new int[]{FRONT_RIGHT_ENCODER, FRONT_LEFT_ENCODER,
         REAR_LEFT_ENCODER, REAR_RIGHT_ENCODER};
 
-    public static final int WRIST_ENCODER = 9;
-    public static final int SHOULDER_ENCODER = 6;
     public static final int INTAKE_WRIST_ENCODER = 5;
-
+    
     public static final int INTAKE_BANNER = 4;
-
+    
     public static final int TUNNEL_FRONT_BANNER = 0;
     public static final int TUNNEL_REAR_BANNER = 0;
     
     //CANCoders
     
+    public static final int WRIST_ENCODER = 20;
+    public static final int SHOULDER_ENCODER = 21;
     // Pneumatics
 
 

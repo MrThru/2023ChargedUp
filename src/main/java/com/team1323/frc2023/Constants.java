@@ -167,10 +167,8 @@ public class Constants {
 
         public static final double kArbitraryFeedForward = 0.025;
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
-            Ports.INTAKE_WRIST_ENCODER,
-            true,
             1,
-            -122.699847, 
+            -122.699847, //124.287924 
             0, 
             -45,
             115
@@ -188,7 +186,7 @@ public class Constants {
         public static final double kTicksPerInch = 97445.0 / 24.0;
 
         public static final double kMinControlHeight = 0.0;
-        public static final double kMaxControlHeight = 22.0;
+        public static final double kMaxControlHeight = 20.0;
 
         public static final double kHeightTolerance = 1.0;
 
@@ -199,13 +197,13 @@ public class Constants {
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
-            0.02,
+            0.1,
             0.0,
             0.0,
             kFalconMotionMagicFeedForward
         );
 
-        public static final double kArbitraryFeedForward = 0.025;
+        public static final double kArbitraryFeedForward = 0.035938; //0.025
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.1,
@@ -215,7 +213,7 @@ public class Constants {
     }
 
     public static class HorizontalElevator {
-        public static final double kTicksPerInch = 1.0;
+        public static final double kTicksPerInch = 32938.0 / 15.0;
 
         public static final double kMinExtension = 0.0;
         public static final double kMaxExtension = 31.5;
@@ -268,13 +266,11 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.0;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
-            Ports.SHOULDER_ENCODER, 
-            false, 
             1.0, 
-            0.0, 
-            0.0, 
-            0.0, 
-            270.0
+            154.423828, 
+            -90.0, 
+            185.0, 
+        -95.0
         );
     }
 
@@ -283,8 +279,8 @@ public class Constants {
         public static final double kEncoderUnitsPerWristRotation = kMotorRotationsPerWristRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWristRotation / 360.0;
 
-        public static final double kMinControlAngle = 0.0;
-        public static final double kMaxControlAngle = 270.0;
+        public static final double kMinControlAngle = -147.712908;
+        public static final double kMaxControlAngle = 133.666388;
 
         public static final double kAngleTolerance = 2.0;
 
@@ -304,13 +300,11 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.0;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
-            Ports.WRIST_ENCODER, 
-            false, 
             1.0, 
+            54.140625, 
             0.0, 
-            0.0, 
-            0.0, 
-            270.0
+            -152, 
+            138
         );
     }
 

@@ -16,6 +16,7 @@ import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.LEDs;
+import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
@@ -50,6 +51,7 @@ public class DriverControls implements Loop {
     private Swerve swerve;
     private VerticalElevator verticalElevator;
     private HorizontalElevator horizontalElevator;
+    private Shoulder shoulder;
     private Wrist wrist;
     private CubeIntake cubeIntake;
     private Tunnel tunnel;
@@ -83,6 +85,7 @@ public class DriverControls implements Loop {
         swerve = Swerve.getInstance();
         verticalElevator = VerticalElevator.getInstance();
         horizontalElevator = HorizontalElevator.getInstance();
+        shoulder = Shoulder.getInstance();
         wrist = Wrist.getInstance();
         cubeIntake = CubeIntake.getInstance();
         tunnel = Tunnel.getInstance();
@@ -91,7 +94,7 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, leds, /*horizontalElevator, wrist,*/ s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, leds, horizontalElevator, /*wrist, shoulder, */ s));
     }
 
     @Override
@@ -188,7 +191,17 @@ public class DriverControls implements Loop {
 
         //cubeIntake.acceptManualInput(verticalElevatorYInput);
         SmartDashboard.putNumber("Vertical Elevator Manual Input", verticalElevatorYInput);
-
+        if(coDriver.aButton.wasActivated()) {
+            verticalElevator.setPosition(10.0);     
+        }
+        if(coDriver.bButton.wasActivated()) {
+            verticalElevator.setPosition(1);
+        }
+        if(coDriver.yButton.wasActivated()) {
+            verticalElevator.setPosition(17.5);
+        }
+        
+        /*
         if(coDriver.aButton.wasActivated()) {
             s.intakeState(Tunnel.State.SPIT);
         } else if(coDriver.aButton.wasReleased()) {
@@ -211,7 +224,7 @@ public class DriverControls implements Loop {
         } else if(coDriver.xButton.wasReleased()) {
             //cubeIntake.setIntakeCurrent(120);
             cubeIntake.setIntakeSpeed(0);
-        }
+        }*/
         /*s
         if(coDriver.aButton.wasActivated()) {
             tunnel.setFrontSpeed(0.25);

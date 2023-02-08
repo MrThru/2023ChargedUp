@@ -1,9 +1,11 @@
 package com.team1323.frc2023.subsystems;
 
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.encoders.CanEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team254.lib.geometry.Rotation2d;
@@ -20,13 +22,14 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
     }
     
     public Shoulder() {
-        super(Ports.SHOULDER, null, Constants.Shoulder.kEncoderUnitsPerDegree, 
+        super(Ports.SHOULDER, Ports.CANBUS, Constants.Shoulder.kEncoderUnitsPerDegree, 
                 Constants.Shoulder.kMinControlAngle, Constants.Shoulder.kMaxControlAngle, 
                 Constants.Shoulder.kAngleTolerance, Constants.Shoulder.kVelocityScalar, 
-                Constants.Shoulder.kAccelerationScalar, Constants.Shoulder.kAbsoluteEncoderInfo);
+                Constants.Shoulder.kAccelerationScalar, new CanEncoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
 
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
-        super.leader.setPIDF(Constants.Shoulder.kPIDF);
+        leader.setPIDF(Constants.Shoulder.kPIDF);
+        leader.setInverted(TalonFXInvertType.CounterClockwise);
         setSupplyCurrentLimit(Constants.Shoulder.kSupplyCurrentLimit);
         zeroPosition();
         stop();
@@ -79,6 +82,6 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
     public void outputTelemetry() {
         SmartDashboard.putNumber("Shoulder Angle", getPosition());
         SmartDashboard.putNumber("Shoulder Encoder Position", periodicIO.position);
-        SmartDashboard.putNumber("Shoulder Absolute Encoder", getAbsoluteEncoderDegrees());
+        SmartDashboard.putNumber("Shoulder Absolute Encoder", absoluteEncoder.getDegrees());
     }
 }

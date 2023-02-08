@@ -12,6 +12,7 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.encoders.MagEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team254.drivers.LazyPhoenix5TalonFX;
@@ -38,7 +39,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         super(Ports.CUBE_INTAKE_WRIST, Ports.CANBUS, Constants.CubeIntake.kEncoderUnitsPerDegree, 
                 Constants.CubeIntake.kMinControlAngle, Constants.CubeIntake.kMaxControlAngle,
                 Constants.CubeIntake.kAngleTolerance, Constants.CubeIntake.kVelocityScalar, 
-                Constants.CubeIntake.kAccelerationScalar, Constants.CubeIntake.kEncoderInfo);
+                Constants.CubeIntake.kAccelerationScalar, new MagEncoder(Ports.INTAKE_WRIST_ENCODER, true), Constants.CubeIntake.kEncoderInfo);
         super.leader.setPIDF(Constants.CubeIntake.kStandardPID);
         setSupplyCurrentLimit(Constants.CubeIntake.kSupplyCurrentLimit);
         zeroPosition();
@@ -143,7 +144,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     public void outputTelemetry() {
         SmartDashboard.putNumber("Cube Intake Angle", getPosition());
         SmartDashboard.putNumber("Cube Intake Encoder Position", periodicIO.position);
-        SmartDashboard.putNumber("Cube Intake Absolute Encoder", getAbsoluteEncoderDegrees());
+        SmartDashboard.putNumber("Cube Intake Absolute Encoder", absoluteEncoder.getDegrees());
         SmartDashboard.putNumber("Cube Intake RPM", intakeRoller.getSelectedSensorVelocity() * 600 / 2048);
     }
     @Override

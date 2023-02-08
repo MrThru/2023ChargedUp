@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
     private static final int kMaxPositionResets = 50;
 
-    private final AbsoluteEncoder absoluteEncoder;
+    protected final AbsoluteEncoder absoluteEncoder;
     private final AbsoluteEncoderInfo absoluteEncoderInfo;
     private int numPositionResets = 0;
 
@@ -61,18 +61,14 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
     }
 
     public static class AbsoluteEncoderInfo {
-        public final int digitalInputChannel;
-        public final boolean isReversed;
         public final double encoderToOutputRatio;
         public final double encoderZeroingAngle;
         public final double subsystemZeroingAngle;
         public final double minInitialSubsystemAngle;
         public final double maxInitialSubsystemAngle;
 
-        public AbsoluteEncoderInfo(int digitalInputChannel, boolean isReversed, double encoderToOutputRatio, 
+        public AbsoluteEncoderInfo(double encoderToOutputRatio, 
                 double encoderZeroingAngle, double subsystemZeroingAngle, double minInitialSubsystemAngle, double maxInitialSubsystemAngle) {
-            this.digitalInputChannel = digitalInputChannel;
-            this.isReversed = isReversed;
             this.encoderToOutputRatio = encoderToOutputRatio;
             this.encoderZeroingAngle = encoderZeroingAngle;
             this.subsystemZeroingAngle = subsystemZeroingAngle;

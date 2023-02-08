@@ -4,6 +4,7 @@
 
 package com.team1323.frc2023.subsystems;
 
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
@@ -20,13 +21,14 @@ public class HorizontalElevator extends ServoSubsystem {
     }
 
     public HorizontalElevator() {
-        super(Ports.HORIZONTAL_ELEVATOR_LEADER, null, 
+        super(Ports.HORIZONTAL_ELEVATOR_LEADER, Ports.CANBUS, 
                 Constants.HorizontalElevator.kTicksPerInch, Constants.HorizontalElevator.kMinExtension, Constants.HorizontalElevator.kMaxExtension, 
                 Constants.HorizontalElevator.kExtensionTolerance, Constants.HorizontalElevator.kVelocityScalar, Constants.HorizontalElevator.kAccelerationScalar);
 
-        super.leader.setPIDF(Constants.HorizontalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);
         zeroPosition();
+        leader.setInverted(TalonFXInvertType.Clockwise);
+        leader.setPIDF(Constants.HorizontalElevator.kPIDF);
     }
 
     public Request extensionRequest(double inches) {
