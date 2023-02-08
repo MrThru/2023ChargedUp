@@ -316,10 +316,22 @@ public class Constants {
 
     public static class Claw {
         
-        public static final double kIntakeStatorCurrentLimit = 80.0;
-        public static final double kIntakeStatorHoldCurrent = 20.0;
+        public static final double kIntakeConeStatorCurrentLimit = 50.0;
+        public static final double kIntakeConeStatorHoldCurrent = 10.0;
+        public static final double kIntakeConeAmpThreshold = 10.0;
 
-        public static final double kIntakeHoldTargetCurrent = 50.0;
+
+        public static final double kIntakeCubeStatorCurrentLimit = 15.0;
+        
+        
+        public static final double kIntakeCubeSpeed = 0.25;
+        public static final double kIntakeConeSpeed = 0.80;
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kF = 0.048;
+
 
     }
 

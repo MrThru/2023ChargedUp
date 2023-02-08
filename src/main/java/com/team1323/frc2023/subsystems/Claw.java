@@ -30,31 +30,44 @@ public class Claw extends Subsystem {
     public Claw() {
         claw = TalonFXFactory.createRollerTalon(Ports.CLAW, Ports.CANBUS);
         claw.setSupplyCurrentLimit(120, 0.1);
-        claw.setStatorCurrentLimit(Constants.Claw.kIntakeStatorCurrentLimit, 0.01);
+        claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.01);
         claw.setInverted(TalonFXInvertType.Clockwise);
+        claw.configNeutralDeadband(0);
+
+        claw.config_kP(0, Constants.Claw.kP);
+        claw.config_kI(0, Constants.Claw.kI);
+        claw.config_kD(0, Constants.Claw.kD);
+        claw.config_kF(0, Constants.Claw.kF);
+        claw.selectProfileSlot(0, 0);
     }
 
     public enum ControlState {
-        OFF(0.0), INTAKE(0.5);
+        OFF(0.0), CUBE_INTAKE(-0.5), CUBE_OUTAKE(0.5), CONE_INTAKE(0.5), CONE_OUTAKE(-0.5);
         double speed;
         ControlState(double speed) {
             this.speed = speed;
         }
     }
+
+    private boolean stateChanged = false;
     private ControlState currentState = ControlState.OFF;
     private void setState(ControlState desiredState) {
         currentState = desiredState;
+        stateChanged = true;
     }
     public ControlState getState() {
         return currentState;
     }
 
-    private void setSpeed(double speed) {
-        claw.set(ControlMode.PercentOutput, speed);
+    private void setPercentSpeed(double speed) {
+        setRPM(6380.0 * speed);
+    }
+    private void setRPM(double rpm) {
+        claw.set(ControlMode.Velocity, rpmToEncUnits(rpm));
     }
     public void conformToState(ControlState state) {
         setState(state);
-        setSpeed(state.speed);
+        setPercentSpeed(state.speed);
     }
 
     Loop loop = new Loop() {
@@ -66,16 +79,23 @@ public class Claw extends Subsystem {
 
         @Override
         public void onLoop(double timestamp) {
-            if(currentState == ControlState.INTAKE) {
-                if(claw.getOutputCurrent() > Constants.Claw.kIntakeHoldTargetCurrent) {
-                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeStatorHoldCurrent, 0.01);
+            if(currentState == ControlState.CONE_INTAKE) {
+                if(stateChanged)
+                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.01);
+                if(claw.getOutputCurrent() > Constants.Claw.kIntakeConeAmpThreshold) {
+                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent, 0.01);
                 }
+            } else if(currentState == ControlState.CUBE_INTAKE) {
+                if(stateChanged)
+                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
             }
+            if(stateChanged)
+                stateChanged = false;
         }
 
         @Override
         public void onStop(double timestamp) {
-
+            stop();
         }
 
     };
@@ -84,6 +104,16 @@ public class Claw extends Subsystem {
     public void registerEnabledLoops(ILooper enabledLooper) {
         enabledLooper.register(loop);
     } 
+
+
+
+
+    public double rpmToEncUnits(double rpm) {
+        return (rpm / 600 * 2048.0);
+    }
+    public double encUnitsToRPM(double encUnits) {
+        return (encUnits * 600) / 2048.0;
+    }
 
     @Override
     public void outputTelemetry() {
@@ -100,7 +130,7 @@ public class Claw extends Subsystem {
     }
 
     public void reset() {
-        claw.setStatorCurrentLimit(Constants.Claw.kIntakeStatorCurrentLimit, 0.001);
+        claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.001);
     }
     @Override
     public void stop() {
