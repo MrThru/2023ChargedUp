@@ -221,6 +221,7 @@ public class DriverControls implements Loop {
             cubeIntake.setIntakeSpeed(0);
         }*/
 
+        /*
         // D-pad controls for vision PID
         if (coDriver.POV0.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getCenterScoringPose(swerve.getPose());
@@ -235,6 +236,7 @@ public class DriverControls implements Loop {
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
             swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         }
+        */
 
         if(coDriver.backButton.wasActivated()) {
             s.neutralState();
