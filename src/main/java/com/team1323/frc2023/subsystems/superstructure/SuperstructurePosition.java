@@ -13,13 +13,13 @@ public class SuperstructurePosition {
      */
 
     // The shoulder joint's position in space when both elevators are fully retracted
-    private static final Translation2d kShoulderJointRetractedPosition = new Translation2d(12.75, 22.626);
+    private static final Translation2d kShoulderJointRetractedPosition = new Translation2d(12.75, 25.126);
     // The length from the shoulder joint to the very end of the shoulder
-    private static final double kShoulderLength = 20.625;
+    private static final double kShoulderLength = 18.625;
     // The length from the shoulder joint to the wrist joint
-    private static final double kShoulderJointToWristJointLength = 19.5;
+    private static final double kShoulderJointToWristJointLength = 17.5;
     // The length from the wrist joint to the very end of the claw
-    private static final double kWristLength = 15.0; // TODO: Update this when claw is finalized
+    private static final double kWristLength = 6.5;
     // The position in space of the center of the bottom of the elevator's top bar (the bar is a 2x1)
     private static final Translation2d kElevatorTopBarPosition = new Translation2d(6.25, 46.876);
     // The topmost and forwardmost point of the bumper

@@ -188,7 +188,7 @@ public class Constants {
         public static final double kTicksPerInch = 97445.0 / 24.0;
 
         public static final double kMinControlHeight = 0.0;
-        public static final double kMaxControlHeight = 24.5;
+        public static final double kMaxControlHeight = 22.0;
 
         public static final double kHeightTolerance = 1.0;
 
@@ -218,7 +218,7 @@ public class Constants {
         public static final double kTicksPerInch = 1.0;
 
         public static final double kMinExtension = 0.0;
-        public static final double kMaxExtension = 16.75;
+        public static final double kMaxExtension = 31.5;
 
         public static final double kExtensionTolerance = 1.0;
 
@@ -243,7 +243,7 @@ public class Constants {
     }
 
     public static class Shoulder {
-        public static final double kMotorRotationsPerShoulderRotation = 110.0;
+        public static final double kMotorRotationsPerShoulderRotation = 69.444444;
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerShoulderRotation / 360.0;
 
@@ -279,7 +279,7 @@ public class Constants {
     }
 
     public static class Wrist {
-        public static final double kMotorRotationsPerWristRotation = 40;
+        public static final double kMotorRotationsPerWristRotation = 40.333333;
         public static final double kEncoderUnitsPerWristRotation = kMotorRotationsPerWristRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWristRotation / 360.0;
 
