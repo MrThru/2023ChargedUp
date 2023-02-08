@@ -23,6 +23,7 @@ public class Ports {
     public static final int SHOULDER = 50;
 
     public static final int WRIST = 43;
+    public static final int CLAW = 44;
 
     public static final int CUBE_INTAKE_WRIST = 10;
     public static final int CUBE_INTAKE = 11;
@@ -30,7 +31,6 @@ public class Ports {
     public static final int TUNNEL_CONVEYOR_TALON = 15;
     public static final int TUNNEL_ROLLER_TALON = 16;
 
-    public static final int CLAW = 0;
 
     public static final int WINCH = 0;
     // MISC CAN
