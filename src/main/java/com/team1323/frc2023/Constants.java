@@ -3,7 +3,7 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 import java.util.List;
 
-import com.team1323.frc2023.subsystems.servo.ServoSubsystem.TalonPIDF;
+import com.team254.drivers.LazyPhoenix5TalonFX.TalonPIDF;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
 import com.team1323.lib.math.geometry.Vector3d;
@@ -327,10 +327,13 @@ public class Constants {
         public static final double kIntakeCubeSpeed = 0.25;
         public static final double kIntakeConeSpeed = 0.80;
 
-        public static final double kP = 0.0;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-        public static final double kF = 0.048;
+        public static final TalonPIDF kPID = new TalonPIDF(
+            0, 
+            0.0, 
+            0.0, 
+            0.0, 
+            0.048
+        );
 
 
     }
@@ -347,6 +350,29 @@ public class Constants {
         public static final double kScoreConveyorSpeed = 0.2;
         public static final double kScoreFrontRollerSpeed = 0.5;
 
+        public static final TalonPIDF kConveyorPID = new TalonPIDF(
+            0,
+            0,
+            0,
+            0,
+            0.048
+        );
+
+        public static final TalonPIDF kFrontRollerPID = new TalonPIDF(
+            0,
+            0,
+            0,
+            0,
+            0.048
+        );
+        
+        public static final TalonPIDF kTunnelEntrance = new TalonPIDF(
+            0, 
+            0, 
+            0,
+            0, 
+            0.048
+        );
     }
 
     public static class Winch {

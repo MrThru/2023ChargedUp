@@ -39,7 +39,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
                 Constants.CubeIntake.kMinControlAngle, Constants.CubeIntake.kMaxControlAngle,
                 Constants.CubeIntake.kAngleTolerance, Constants.CubeIntake.kVelocityScalar, 
                 Constants.CubeIntake.kAccelerationScalar, Constants.CubeIntake.kEncoderInfo);
-        setPIDF(Constants.CubeIntake.kStandardPID);
+        super.leader.setPIDF(Constants.CubeIntake.kStandardPID);
         setSupplyCurrentLimit(Constants.CubeIntake.kSupplyCurrentLimit);
         zeroPosition();
         stop();

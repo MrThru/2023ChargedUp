@@ -73,10 +73,6 @@ public abstract class ServoSubsystem extends Subsystem {
         leader.config_kF(slotIndex, f, Constants.kCANTimeoutMs);
     }
 
-    protected void setPIDF(TalonPIDF talonPIDF) {
-        this.setPIDF(talonPIDF.slotIndex, talonPIDF.kP, talonPIDF.kI, talonPIDF.kD, talonPIDF.kF);
-    }
-    
     protected void enableLimits(boolean enable) {
         leader.configForwardSoftLimitEnable(enable, Constants.kCANTimeoutMs);
         leader.configReverseSoftLimitEnable(enable, Constants.kCANTimeoutMs);
@@ -161,19 +157,5 @@ public abstract class ServoSubsystem extends Subsystem {
         public double arbitraryFeedForward = 0.0;
     }
 
-    public static class TalonPIDF {
-        public final int slotIndex;
-        public final double kP;
-        public final double kI;
-        public final double kD;
-        public final double kF;
-
-        public TalonPIDF(int slotIndex, double kP, double kI, double kD, double kF) {
-            this.slotIndex = slotIndex;
-            this.kP = kP;
-            this.kI = kI;
-            this.kD = kD;
-            this.kF = kF;
-        }
-    }
+    
 }

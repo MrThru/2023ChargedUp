@@ -26,7 +26,7 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
                 Constants.Wrist.kAccelerationScalar, Constants.Wrist.kAbsoluteEncoderInfo);
 
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
-        setPIDF(Constants.Wrist.kPIDF);
+        super.leader.setPIDF(Constants.Wrist.kPIDF);
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
         zeroPosition();
         stop();

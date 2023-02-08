@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Tunnel extends Subsystem {
 
-    LazyPhoenix5TalonFX conveyorTalon, rollerTalon;
+    LazyPhoenix5TalonFX conveyorTalon, frontRollerTalon;
     DigitalInput frontBanner, rearBanner;
 
     private boolean cubeEjected = false;
@@ -37,13 +37,17 @@ public class Tunnel extends Subsystem {
 
     public Tunnel() {
         conveyorTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS);
-        rollerTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS);
+        frontRollerTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS);
 
         //frontBanner = new DigitalInput(Ports.TUNNEL_FRONT_BANNER);
         //rearBanner = new DigitalInput(Ports.TUNNEL_REAR_BANNER);
 
         conveyorTalon.setInverted(TalonFXInvertType.CounterClockwise);
-        rollerTalon.setInverted(TalonFXInvertType.Clockwise);
+        frontRollerTalon.setInverted(TalonFXInvertType.Clockwise);
+        
+        conveyorTalon.setPIDF(Constants.Tunnel.kConveyorPID);
+        frontRollerTalon.setPIDF(Constants.Tunnel.kFrontRollerPID);
+        
     }
 
     public enum State {
@@ -59,7 +63,7 @@ public class Tunnel extends Subsystem {
 
 
     private void setRollerSpeed(double speed) {
-        rollerTalon.set(ControlMode.PercentOutput, speed);
+        frontRollerTalon.set(ControlMode.PercentOutput, speed);
     }
     public void setConveyorSpeed(double speed) {
         conveyorTalon.set(ControlMode.PercentOutput, speed);
@@ -79,6 +83,9 @@ public class Tunnel extends Subsystem {
 
     public double encUnitsToRPM(double encUnits) {
         return (encUnits * 600) / 2048.0;
+    }
+    public double rpmToEncUnits(double rpm) {
+        return (rpm / 600) * 2048.0;
     }
     Loop loop = new Loop() {
 
@@ -147,7 +154,7 @@ public class Tunnel extends Subsystem {
     @Override
     public void outputTelemetry() {
         SmartDashboard.putNumber("Conveyor RPM", encUnitsToRPM(conveyorTalon.getSelectedSensorVelocity()));
-        SmartDashboard.putNumber("Roller RPM", encUnitsToRPM(rollerTalon.getSelectedSensorVelocity()));
+        SmartDashboard.putNumber("Roller RPM", encUnitsToRPM(frontRollerTalon.getSelectedSensorVelocity()));
     }
 
     public Request stateRequest(State desiredState) {

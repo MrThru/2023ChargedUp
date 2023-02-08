@@ -25,7 +25,7 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
                 Constants.VerticalElevator.kCurrentZeroingConfig);
 
         leader.setInverted(TalonFXInvertType.Clockwise);
-        setPIDF(Constants.VerticalElevator.kPIDF);
+        super.leader.setPIDF(Constants.VerticalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.VerticalElevator.kSupplyCurrentLimit);
         periodicIO.arbitraryFeedForward = Constants.VerticalElevator.kArbitraryFeedForward;
         zeroPosition();

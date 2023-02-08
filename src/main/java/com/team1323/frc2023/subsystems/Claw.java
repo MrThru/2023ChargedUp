@@ -34,11 +34,7 @@ public class Claw extends Subsystem {
         claw.setInverted(TalonFXInvertType.Clockwise);
         claw.configNeutralDeadband(0);
 
-        claw.config_kP(0, Constants.Claw.kP);
-        claw.config_kI(0, Constants.Claw.kI);
-        claw.config_kD(0, Constants.Claw.kD);
-        claw.config_kF(0, Constants.Claw.kF);
-        claw.selectProfileSlot(0, 0);
+        claw.setPIDF(Constants.Claw.kPID);
     }
 
     public enum ControlState {

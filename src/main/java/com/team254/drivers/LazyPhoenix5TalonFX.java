@@ -113,7 +113,17 @@ public class LazyPhoenix5TalonFX extends TalonFX {
         super.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, amps, amps, triggerThreshold));
     }
 
-
+    public void setPIDF(int slotIndex, double kP, double kI, double kD, double kF) {
+        super.config_kP(slotIndex, kP);
+        super.config_kI(slotIndex, kI);
+        super.config_kD(slotIndex, kD);
+        super.config_kF(slotIndex, kF);
+    }
+    
+    public void setPIDF(TalonPIDF talonPIDF) {
+        this.setPIDF(talonPIDF.slotIndex, talonPIDF.kP, talonPIDF.kI, talonPIDF.kD, talonPIDF.kF);
+    }
+    
     @Override
     public double getMotorOutputVoltage(){
         if(kSimulated) return simVoltage;
@@ -136,5 +146,22 @@ public class LazyPhoenix5TalonFX extends TalonFX {
     public double getSelectedSensorVelocity() {
         if(kSimulated) return 0;
         return super.getSelectedSensorVelocity();
+    }
+
+
+    public static class TalonPIDF {
+        public final int slotIndex;
+        public final double kP;
+        public final double kI;
+        public final double kD;
+        public final double kF;
+
+        public TalonPIDF(int slotIndex, double kP, double kI, double kD, double kF) {
+            this.slotIndex = slotIndex;
+            this.kP = kP;
+            this.kI = kI;
+            this.kD = kD;
+            this.kF = kF;
+        }
     }
 }

@@ -26,7 +26,7 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
                 Constants.Shoulder.kAccelerationScalar, Constants.Shoulder.kAbsoluteEncoderInfo);
 
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
-        setPIDF(Constants.Shoulder.kPIDF);
+        super.leader.setPIDF(Constants.Shoulder.kPIDF);
         setSupplyCurrentLimit(Constants.Shoulder.kSupplyCurrentLimit);
         zeroPosition();
         stop();

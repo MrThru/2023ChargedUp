@@ -22,7 +22,7 @@ public class Winch extends ServoSubsystem {
                 Constants.Winch.kAngleTolerance, Constants.Winch.kVelocityScalar, 
                 Constants.Winch.kAccelerationScalar);
 
-        setPIDF(Constants.Winch.kPIDF);
+        super.leader.setPIDF(Constants.Winch.kPIDF);
         setSupplyCurrentLimit(Constants.Winch.kSupplyCurrentLimit);
         zeroPosition();
         stop();
