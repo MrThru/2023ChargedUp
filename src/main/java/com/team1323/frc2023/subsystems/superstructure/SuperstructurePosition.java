@@ -15,7 +15,7 @@ public class SuperstructurePosition {
     // The shoulder joint's position in space when both elevators are fully retracted
     private static final Translation2d kShoulderJointRetractedPosition = new Translation2d(12.75, 25.126);
     // The length from the shoulder joint to the very end of the shoulder
-    private static final double kShoulderLength = 18.625;
+    private static final double kShoulderLength = 18.625 + 5.0; // 5 inches to account for a cone
     // The length from the shoulder joint to the wrist joint
     private static final double kShoulderJointToWristJointLength = 17.5;
     // The length from the wrist joint to the very end of the claw

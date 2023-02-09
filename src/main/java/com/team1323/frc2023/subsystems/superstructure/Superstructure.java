@@ -18,8 +18,10 @@ import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Superstructure extends Subsystem {
 	private static Superstructure instance = null;
@@ -143,6 +145,8 @@ public class Superstructure extends Subsystem {
 
 	@Override
 	public void outputTelemetry() {
+		Translation2d wristTipPosition = SuperstructureCoordinator.getInstance().getPosition().getWristTipPosition();
+		SmartDashboard.putNumberArray("Wrist Tip Position", new double[]{wristTipPosition.x(), wristTipPosition.y()});
 	}
 	
 	public Request waitRequest(double seconds){

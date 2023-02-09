@@ -62,7 +62,7 @@ public class GoalTrack {
     }
 
     public void forceUpdate(double timestamp, Translation2d new_observation){
-        if(mSmoothedPosition.distance(new_observation) > Constants.kMaxTrackerDistance){
+        if(mSmoothedPosition != null && mSmoothedPosition.distance(new_observation) > Constants.kMaxTrackerDistance){
             mObservedPositions.clear();
         }
         mObservedPositions.put(timestamp, new_observation);

@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.LEDs;
@@ -21,7 +22,9 @@ import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
+import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
+import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
@@ -53,6 +56,7 @@ public class DriverControls implements Loop {
     private HorizontalElevator horizontalElevator;
     private Shoulder shoulder;
     private Wrist wrist;
+    private Claw claw;
     private CubeIntake cubeIntake;
     private Tunnel tunnel;
 
@@ -87,6 +91,7 @@ public class DriverControls implements Loop {
         horizontalElevator = HorizontalElevator.getInstance();
         shoulder = Shoulder.getInstance();
         wrist = Wrist.getInstance();
+        claw = Claw.getInstance();
         cubeIntake = CubeIntake.getInstance();
         tunnel = Tunnel.getInstance();
 
@@ -94,7 +99,7 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, /*tunnel,*/ verticalElevator, leds, horizontalElevator, wrist, shoulder, s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, /*tunnel,*/ verticalElevator, leds, horizontalElevator, wrist, shoulder, claw, s));
     }
 
     @Override
@@ -104,7 +109,6 @@ public class DriverControls implements Loop {
             swerve.requireModuleConfiguration();
         }
         swerve.setDriveNeutralMode(NeutralMode.Brake);
-        swerve.disable();
     }
 
     @Override
@@ -115,7 +119,7 @@ public class DriverControls implements Loop {
             driver.update();
 			coDriver.update();
             //singleController.update();
-            //testController.update();
+            testController.update();
             if(oneControllerMode)
                 singleController.update();
             if(oneControllerMode) oneControllerMode();
@@ -184,34 +188,39 @@ public class DriverControls implements Loop {
         }
 
 
-        double verticalElevatorYInput = -coDriver.getLeftY() * 0.15;
-        double wristAngleYInput = -coDriver.getRightY() * 0.25;
+        double verticalElevatorYInput = -coDriver.getLeftY() * 0.2;
+        double horizontalElevatorYInput = -coDriver.getRightY() * 0.2;
+        double shoulderYInput = -testController.getLeftY() * 0.25;
+        double wristAngleYInput = -testController.getRightY() * 0.25;
 
-        //verticalElevator.acceptManualInput(verticalElevatorYInput);
-        horizontalElevator.acceptManualInput(verticalElevatorYInput);
-        //shoulder.acceptManualInput(verticalElevatorYInput);
-        //wrist.acceptManualInput(verticalElevatorYInput);
+        verticalElevator.acceptManualInput(verticalElevatorYInput);
+        horizontalElevator.acceptManualInput(horizontalElevatorYInput);
+        shoulder.acceptManualInput(shoulderYInput);
+        wrist.acceptManualInput(wristAngleYInput);
 
-        //cubeIntake.acceptManualInput(verticalElevatorYInput);
-        SmartDashboard.putNumber("Wrist Manual Input", verticalElevatorYInput);
-        if(coDriver.aButton.wasActivated()) {
-            //wrist.setPosition(-90);   
-            //shoulder.setPosition(-90);
-            horizontalElevator.setPosition(12.0); 
+        if (coDriver.aButton.wasActivated()) {
+            s.request(SuperstructureCoordinator.getInstance().getConeIntakeChoreography());
         }
-        if(coDriver.bButton.wasActivated()) {
-            //wrist.setPosition(0);
-            //shoulder.setPosition(0);
-            horizontalElevator.setPosition(1.0);
-        }
-        if(coDriver.yButton.wasActivated()) {
-            //wrist.setPosition(90);
-            //shoulder.setPosition(90);
-            horizontalElevator.setPosition(25.0);
+        if (coDriver.bButton.wasActivated()) {
+            s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
+            //SuperstructureCoordinator.getInstance().getConeStowChoreography();
         }
         if (coDriver.xButton.wasActivated()) {
-            //shoulder.setPosition(175);
+            s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
+            //SuperstructureCoordinator.getInstance().getConeMidScoringChoreography();
         }
+
+        if(testController.aButton.wasActivated()) {
+            claw.conformToState(Claw.ControlState.CONE_INTAKE);
+            //claw.setPercentSpeed(0.5);
+        }
+        if(testController.bButton.wasActivated()) {
+            claw.conformToState(Claw.ControlState.CONE_OUTAKE);
+        } else if(testController.bButton.wasReleased()) {
+            claw.conformToState(Claw.ControlState.OFF);
+        }
+
+        //cubeIntake.acceptManualInput(verticalElevatorYInput);
         
         /*
         if(coDriver.aButton.wasActivated()) {

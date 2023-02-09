@@ -92,10 +92,10 @@ public class Constants {
     * Enter angle read by the absolute encoder. Insert as degrees and subtract or add 90° to the value
     * based on where the bevel ended up.
     */
-    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 106.9;
-    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 106.2;
+    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 105.533283;
+    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 106.175118;
     public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 5.3 : 274.0;
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 214.4;
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 212.974817;
     
     //Swerve Module Positions (relative to the center of the drive base)
     public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
@@ -326,7 +326,7 @@ public class Constants {
             0.0, 
             0.0, 
             0.0, 
-            0.048
+            0.045
         );
 
 

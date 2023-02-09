@@ -229,7 +229,7 @@ public abstract class SwerveModule extends Subsystem {
 				DriverStation.reportError("ROTATION FALCON NOT FOUND ON " + name, false);
 				moduleZeroedWitoutMagEnc = true;
 			}
-			if (zeroCount < 50) {
+			if (zeroCount < 500) {
 				zeroCount++;
 			} else {
 				System.out.println("MODULE " + name + " ZEROED");

@@ -14,11 +14,14 @@ import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /** Add your docs here. */
 public class Claw extends Subsystem {
 
     LazyPhoenix5TalonFX claw;
 
+    private double targetRPM = 0;
     private static Claw instance = null;
     public static Claw getInstance() {
         if(instance == null)
@@ -55,10 +58,12 @@ public class Claw extends Subsystem {
         return currentState;
     }
 
-    private void setPercentSpeed(double speed) {
-        setRPM(6380.0 * speed);
+    public void setPercentSpeed(double speed) {
+        claw.set(ControlMode.PercentOutput, speed);
+        //setRPM(6380.0 * speed);
     }
     private void setRPM(double rpm) {
+        targetRPM = rpm;
         claw.set(ControlMode.Velocity, rpmToEncUnits(rpm));
     }
     public void conformToState(ControlState state) {
@@ -91,7 +96,7 @@ public class Claw extends Subsystem {
 
         @Override
         public void onStop(double timestamp) {
-            stop();
+            //stop();
         }
 
     };
@@ -113,7 +118,8 @@ public class Claw extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-
+        SmartDashboard.putNumber("Claw Target RPM", targetRPM);
+        SmartDashboard.putNumber("Claw RPM", encUnitsToRPM(claw.getSelectedSensorVelocity()));
     }
 
     public Request stateRequest(ControlState desiredState) {
@@ -131,7 +137,7 @@ public class Claw extends Subsystem {
     @Override
     public void stop() {
         reset();
-        conformToState(ControlState.OFF);
+        //conformToState(ControlState.OFF);
     }
 
 }
