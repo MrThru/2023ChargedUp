@@ -197,18 +197,18 @@ public class Constants {
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
-            0.1,
-            0.0,
+            0.06,
+            0.0001,
             0.0,
             kFalconMotionMagicFeedForward
         );
 
-        public static final double kArbitraryFeedForward = 0.035938; //0.025
+        public static final double kArbitraryFeedForward = 0.05; //0.035938
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.1,
-            2.0,
-            0.1
+            1.0,
+            0.5
         );
     }
 
@@ -216,27 +216,27 @@ public class Constants {
         public static final double kTicksPerInch = 32938.0 / 15.0;
 
         public static final double kMinExtension = 0.0;
-        public static final double kMaxExtension = 31.5;
+        public static final double kMaxExtension = 29.0;
 
         public static final double kExtensionTolerance = 1.0;
 
-        public static final double kVelocityScalar = 0.25;
+        public static final double kVelocityScalar = 1.0;
         public static final double kAccelerationScalar = 1.0;
 
         public static final double kSupplyLimit = 40.0;
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
+            0.01,
             0.0,
             0.0,
-            0.0,
-            0.0 //kFalconMotionMagicFeedForward
+            kFalconMotionMagicFeedForward
         );
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
-            0.0,
-            100.0,
-            0.0
+            -0.05,
+            0.8,
+            0.25
         );
     }
 
@@ -245,32 +245,32 @@ public class Constants {
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerShoulderRotation / 360.0;
 
-        public static final double kMinControlAngle = 0.0;
-        public static final double kMaxControlAngle = 270.0;
+        public static final double kMinControlAngle = -90.0;
+        public static final double kMaxControlAngle = 180.0;
 
         public static final double kAngleTolerance = 2.0;
 
-        public static final double kVelocityScalar = 0.25;
+        public static final double kVelocityScalar = 1.0;
         public static final double kAccelerationScalar = 1.0;
 
         public static final double kSupplyCurrentLimit = 30.0;
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
+            0.04,
             0.0,
             0.0,
-            0.0,
-            0.0 //kFalconMotionMagicFeedForward
+            kFalconMotionMagicFeedForward
         );
 
-        public static final double kArbitraryFeedForward = 0.0;
+        public static final double kArbitraryFeedForward = 0.03;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            154.423828, 
+            355.605469, 
             -90.0, 
-            185.0, 
-        -95.0
+            -95.0,
+            185.0
         );
     }
 
@@ -284,17 +284,17 @@ public class Constants {
 
         public static final double kAngleTolerance = 2.0;
 
-        public static final double kVelocityScalar = 0.25;
-        public static final double kAccelerationScalar = 1.0;
+        public static final double kVelocityScalar = 1.0;
+        public static final double kAccelerationScalar = 4.0;
 
         public static final double kSupplyCurrentLimit = 30.0;
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
-            0.0,
-            0.0,
-            0.0,
-            0.0 //kFalconMotionMagicFeedForward
+            0.02,
+            0.00005,
+            3,
+            kFalconMotionMagicFeedForward
         );
 
         public static final double kArbitraryFeedForward = 0.0;

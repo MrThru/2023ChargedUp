@@ -94,7 +94,7 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, leds, horizontalElevator, /*wrist, shoulder, */ s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, /*tunnel,*/ verticalElevator, leds, horizontalElevator, wrist, shoulder, s));
     }
 
     @Override
@@ -104,6 +104,7 @@ public class DriverControls implements Loop {
             swerve.requireModuleConfiguration();
         }
         swerve.setDriveNeutralMode(NeutralMode.Brake);
+        swerve.disable();
     }
 
     @Override
@@ -183,22 +184,33 @@ public class DriverControls implements Loop {
         }
 
 
-        double verticalElevatorYInput = -coDriver.getLeftY() * 0.10;
+        double verticalElevatorYInput = -coDriver.getLeftY() * 0.15;
         double wristAngleYInput = -coDriver.getRightY() * 0.25;
 
-        verticalElevator.acceptManualInput(verticalElevatorYInput);
-        //wrist.acceptManualInput(wristAngleYInput);
+        //verticalElevator.acceptManualInput(verticalElevatorYInput);
+        horizontalElevator.acceptManualInput(verticalElevatorYInput);
+        //shoulder.acceptManualInput(verticalElevatorYInput);
+        //wrist.acceptManualInput(verticalElevatorYInput);
 
         //cubeIntake.acceptManualInput(verticalElevatorYInput);
-        SmartDashboard.putNumber("Vertical Elevator Manual Input", verticalElevatorYInput);
+        SmartDashboard.putNumber("Wrist Manual Input", verticalElevatorYInput);
         if(coDriver.aButton.wasActivated()) {
-            verticalElevator.setPosition(10.0);     
+            //wrist.setPosition(-90);   
+            //shoulder.setPosition(-90);
+            horizontalElevator.setPosition(12.0); 
         }
         if(coDriver.bButton.wasActivated()) {
-            verticalElevator.setPosition(1);
+            //wrist.setPosition(0);
+            //shoulder.setPosition(0);
+            horizontalElevator.setPosition(1.0);
         }
         if(coDriver.yButton.wasActivated()) {
-            verticalElevator.setPosition(17.5);
+            //wrist.setPosition(90);
+            //shoulder.setPosition(90);
+            horizontalElevator.setPosition(25.0);
+        }
+        if (coDriver.xButton.wasActivated()) {
+            //shoulder.setPosition(175);
         }
         
         /*
