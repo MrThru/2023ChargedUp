@@ -45,6 +45,8 @@ public class SuperstructureCoordinator {
     private static final double kShoulderAngleForHorizontalExtension = 15.0;
     private static final double kShoulderAngleForEscapingElevator = 45.0;
     private static final double kHorizontalExtensionForMinShoulderReach = 0.25;
+    private static final double kHorizontalExtensionForUprightShoulder = 8.0;
+    private static final double kHorizontalExtensionForGridClearance = 12.0;
 
     private final VerticalElevator verticalElevator;
     private final HorizontalElevator horizontalElevator;
@@ -114,49 +116,41 @@ public class SuperstructureCoordinator {
             horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
         );
 
-        if (!willCollideWithElevator(currentPosition, finalPosition) && 
-                willCollideWithElevator(currentPosition.withHorizontalExtension(finalPosition.horizontalExtension), finalPosition)) {
-            // The superstructure is likely in a scoring position, and it would be dangerous to 
-            // bring the elevator down while everything is extended.
-            System.out.println("Branch 1");
+        Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
+        if (Util.isInRange(currentPosition.shoulderAngle, 0.0, elevatorCollisionAngle.getDegrees())) {
+            System.out.println(String.format("Branch 1, elevator collision angle is %.2f", elevatorCollisionAngle.getDegrees()));
             return new SequentialRequest(
                 new ParallelRequest(
-                    shoulder.angleRequest(finalPosition.shoulderAngle),
-                    wrist.angleRequest(finalPosition.wristAngle)
+                    shoulder.angleRequest(90.0),
+                    horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder),
+                    wrist.angleRequest(finalPosition.wristAngle),
+                    verticalElevator.heightRequest(kVerticalHeightForTopBarClearance)
+                            .withPrerequisite(() -> horizontalElevator.getPosition() < kHorizontalExtensionForGridClearance)
                 ),
-                horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+                new ParallelRequest(
+                    shoulder.angleRequest(finalPosition.shoulderAngle),
+                    horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
+                ),
                 verticalElevator.heightRequest(finalPosition.verticalHeight)
             );
         }
 
         if (willCollideWithElevator(currentPosition, finalPosition)) {
-            Request elevatorClearanceRequest = verticalElevator.heightRequest(kVerticalHeightForTopBarClearance);
-
-            if (currentPosition.shoulderAngle < 0.0) {
-                Prerequisite shoulderEscapedPrereq = () -> shoulder.getPosition() > kShoulderAngleForHorizontalRetraction;
-                System.out.println("Branch 2");
-                return new SequentialRequest(
-                    new ParallelRequest(
-                        shoulder.angleRequest(finalPosition.shoulderAngle),
-                        wrist.angleRequest(finalPosition.wristAngle),
-                        elevatorClearanceRequest.withPrerequisite(shoulderEscapedPrereq)
-                    ),
-                    finalElevatorRequest
-                );
-            }
-
-            System.out.println("Branch 3");
+            System.out.println("Branch 2");
             return new SequentialRequest(
                 new ParallelRequest(
-                    elevatorClearanceRequest,
-                    wrist.angleRequest(finalPosition.wristAngle)
+                    shoulder.angleRequest(finalPosition.shoulderAngle),
+                    wrist.angleRequest(finalPosition.wristAngle),
+                    verticalElevator.heightRequest(kVerticalHeightForTopBarClearance)
+                            .withPrerequisite(() -> shoulder.getPosition() > kShoulderAngleForHorizontalRetraction),
+                    horizontalElevator.extensionRequest(kHorizontalExtensionForMinShoulderReach)
+                            .withPrerequisite(verticalElevator.heightPrerequisite(kVerticalHeightForTopBarClearance))
                 ),
-                shoulder.angleRequest(finalPosition.shoulderAngle),
                 finalElevatorRequest
             );
         }
 
-        System.out.println("Branch 4");
+        System.out.println("Branch 3");
         return new SequentialRequest(
             wrist.angleRequest(finalPosition.wristAngle),
             shoulder.angleRequest(finalPosition.shoulderAngle),

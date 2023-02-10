@@ -120,9 +120,13 @@ public abstract class ServoSubsystem extends Subsystem {
         periodicIO.controlMode = ControlMode.PercentOutput;
     }
 
+    public boolean isAtPosition(double position) {
+        return periodicIO.controlMode == ControlMode.MotionMagic &&
+                Math.abs(position - getPosition()) <= outputUnitTolerance;
+    }
+
     public boolean isOnTarget() {
-        return periodicIO.controlMode == ControlMode.MotionMagic && 
-                Math.abs(encoderUnitsToOutputUnits(periodicIO.demand) - getPosition()) <= outputUnitTolerance;
+        return isAtPosition(encoderUnitsToOutputUnits(periodicIO.demand));
     }
 
     public void acceptManualInput(double input) {

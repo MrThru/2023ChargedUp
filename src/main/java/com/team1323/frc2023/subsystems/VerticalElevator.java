@@ -3,8 +3,8 @@ package com.team1323.frc2023.subsystems;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
-import com.team1323.frc2023.subsystems.servo.ServoSubsystem;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,6 +45,10 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
                 return isOnTarget();
             }
         };
+    }
+
+    public Prerequisite heightPrerequisite(double inches) {
+        return () -> isAtPosition(inches);
     }
 
     @Override
