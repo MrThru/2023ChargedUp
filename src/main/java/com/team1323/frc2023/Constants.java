@@ -183,7 +183,7 @@ public class Constants {
     }
 
     public static class VerticalElevator {
-        public static final double kTicksPerInch = 97445.0 / 24.0;
+        public static final double kTicksPerInch = 81190.0 / 12.75;
 
         public static final double kMinControlHeight = 0.0;
         public static final double kMaxControlHeight = 20.0;
@@ -191,23 +191,23 @@ public class Constants {
         public static final double kHeightTolerance = 1.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 2.0;
+        public static final double kAccelerationScalar = 3.0;
 
         public static final double kSupplyCurrentLimit = 40.0;
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
-            0.06,
-            0.0001,
+            0.01,
+            0.00001,
             0.0,
             kFalconMotionMagicFeedForward
         );
 
-        public static final double kArbitraryFeedForward = 0.05; //0.035938
+        public static final double kArbitraryFeedForward = 0.035938;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.1,
-            1.0,
+            1.3,
             0.5
         );
     }
@@ -221,13 +221,13 @@ public class Constants {
         public static final double kExtensionTolerance = 1.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 1.0;
+        public static final double kAccelerationScalar = 2.0;
 
         public static final double kSupplyLimit = 40.0;
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
-            0.01,
+            0.02,
             0.0,
             0.0,
             kFalconMotionMagicFeedForward
@@ -311,7 +311,7 @@ public class Constants {
     public static class Claw {
         
         public static final double kIntakeConeStatorCurrentLimit = 50.0;
-        public static final double kIntakeConeStatorHoldCurrent = 10.0;
+        public static final double kIntakeConeStatorHoldCurrent = 20.0;
         public static final double kIntakeConeAmpThreshold = 10.0;
 
 

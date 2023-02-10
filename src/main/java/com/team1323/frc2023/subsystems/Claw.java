@@ -12,6 +12,7 @@ import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.TalonFXFactory;
+import com.team1323.lib.util.Stopwatch;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,6 +23,7 @@ public class Claw extends Subsystem {
     LazyPhoenix5TalonFX claw;
 
     private double targetRPM = 0;
+    private Stopwatch stopwatch = new Stopwatch();
     private static Claw instance = null;
     public static Claw getInstance() {
         if(instance == null)
@@ -89,6 +91,13 @@ public class Claw extends Subsystem {
             } else if(currentState == ControlState.CUBE_INTAKE) {
                 if(stateChanged)
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
+            } else if(currentState == ControlState.CONE_OUTAKE) {
+                if(stateChanged)
+                    stopwatch.start();
+                if(stopwatch.getTime() > 1.0) {
+                    conformToState(ControlState.OFF);
+                    stopwatch.reset();
+                }
             }
             if(stateChanged)
                 stateChanged = false;

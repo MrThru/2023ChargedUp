@@ -14,10 +14,11 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ScoringPoses {
     // All length measurements are in inches
-    private static final double kAprilTagToConeLateralDisplacement = 22.0;
+    private static final double kAprilTagToConeLateralDisplacement = 20.5;
     private static final double kAprilTagToBarrierForwardDisplacement = 13.8;
     private static final double kScoringPoseForwardPadding = 2.0;
 
@@ -57,6 +58,7 @@ public class ScoringPoses {
             case CENTER:
                 break;
         }
+        //yTransform += SmartDashboard.getNumber("Cone Left-Right Offset", 0.0);
 
         Pose2d tagToRobotTransform = Pose2d.fromTranslation(new Translation2d(
             -(kAprilTagToBarrierForwardDisplacement + kScoringPoseForwardPadding + Constants.kRobotHalfWidth), 

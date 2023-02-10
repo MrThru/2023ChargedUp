@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Shoulder;
@@ -18,6 +19,7 @@ import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -38,6 +40,7 @@ public class Superstructure extends Subsystem {
 	public final Tunnel tunnel;
 	public final CubeIntake cubeIntake;
 	public final Wrist wrist;
+	public final Claw claw;
 	
 	public Superstructure() {
 		swerve = Swerve.getInstance();
@@ -47,6 +50,7 @@ public class Superstructure extends Subsystem {
 		wrist = Wrist.getInstance();
 		cubeIntake = CubeIntake.getInstance();
 		tunnel = Tunnel.getInstance();
+		claw = Claw.getInstance();
 		
 		queuedRequests = new ArrayList<>(0);
 	}
@@ -199,6 +203,20 @@ public class Superstructure extends Subsystem {
 				horizontalElevator.stop();
 				wrist.stop();
 			})
+		));
+	}
+
+	public void coneMidScoringSequence(Pose2d scoringPose) {
+		request(new SequentialRequest(
+			new ParallelRequest(
+				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()),
+				SuperstructureCoordinator.getInstance().getConeMidScoringChoreography()
+						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 24.0),
+				new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CONE_OUTAKE))
+						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 1.0)
+			),
+			waitRequest(1.0),
+			SuperstructureCoordinator.getInstance().getConeStowChoreography()
 		));
 	}
 		

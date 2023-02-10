@@ -45,6 +45,7 @@ public class VisionPIDController {
     private Translation2d targetPosition = Translation2d.identity();
     private Rotation2d targetHeading = Rotation2d.identity();
     private Rotation2d approachAngle = Rotation2d.identity();
+    private double distanceToTargetPosition = Double.POSITIVE_INFINITY;
     private Stopwatch onTargetStopwatch = new Stopwatch();
     private boolean targetReached = false;
     private boolean useRetroTarget = false;
@@ -56,6 +57,7 @@ public class VisionPIDController {
         targetPosition = desiredFieldPose.getTranslation();
         targetHeading = desiredFieldPose.getRotation();
         this.approachAngle = approachAngle;
+        distanceToTargetPosition = Double.POSITIVE_INFINITY;
         this.useRetroTarget = useRetroTarget;
         onTargetStopwatch.reset();
         targetReached = false;
@@ -173,7 +175,9 @@ public class VisionPIDController {
             return Pose2d.fromRotation(targetHeading);
         }
 
-		if (getPIDError(robotPose).norm() <= kDistanceToTargetTolerance) {
+        Translation2d error = getPIDError(robotPose);
+        distanceToTargetPosition = error.norm();
+		if (distanceToTargetPosition <= kDistanceToTargetTolerance) {
             onTargetStopwatch.startIfNotRunning();
             if (onTargetStopwatch.getTime() >= kOnTargetTime) {
                 onTargetStopwatch.reset();
@@ -198,6 +202,10 @@ public class VisionPIDController {
         }
 
         return output;
+    }
+
+    public double getDistanceToTargetPosition() {
+        return distanceToTargetPosition;
     }
 
     public boolean isDone() {

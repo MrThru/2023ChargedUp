@@ -22,13 +22,14 @@ import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
+import com.team1323.frc2023.subsystems.requests.LambdaRequest;
+import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
-import com.team1323.lib.util.NetworkBuffer;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -198,6 +199,8 @@ public class DriverControls implements Loop {
         shoulder.acceptManualInput(shoulderYInput);
         wrist.acceptManualInput(wristAngleYInput);
 
+        SmartDashboard.putNumber("Vertical Elevator Manual Input", verticalElevatorYInput);
+
         if (coDriver.aButton.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getConeIntakeChoreography());
         }
@@ -215,12 +218,11 @@ public class DriverControls implements Loop {
             //claw.setPercentSpeed(0.5);
         }
         if(testController.bButton.wasActivated()) {
+            claw.reset();
             claw.conformToState(Claw.ControlState.CONE_OUTAKE);
         } else if(testController.bButton.wasReleased()) {
             claw.conformToState(Claw.ControlState.OFF);
         }
-
-        //cubeIntake.acceptManualInput(verticalElevatorYInput);
         
         /*
         if(coDriver.aButton.wasActivated()) {
@@ -255,22 +257,21 @@ public class DriverControls implements Loop {
             cubeIntake.setIntakeSpeed(0);
         }*/
 
-        /*
         // D-pad controls for vision PID
         if (coDriver.POV0.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getCenterScoringPose(swerve.getPose());
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+            //swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         } else if (coDriver.POV270.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+            //swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         } else if (coDriver.POV90.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+            //swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+            s.coneMidScoringSequence(scoringPose);
         }
-        */
 
         if(coDriver.backButton.wasActivated()) {
             s.neutralState();

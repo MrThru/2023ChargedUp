@@ -6,6 +6,7 @@ import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.encoders.CanEncoder;
+import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team254.lib.geometry.Rotation2d;
@@ -76,6 +77,10 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
                 return isOnTarget();
             }
         };
+    }
+
+    public Prerequisite anglePrerequisite(double degrees) {
+        return () -> isAtPosition(degrees);
     }
 
     @Override

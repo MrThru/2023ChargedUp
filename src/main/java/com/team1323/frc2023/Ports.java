@@ -28,6 +28,7 @@ public class Ports {
     public static final int CUBE_INTAKE_WRIST = 10;
     public static final int CUBE_INTAKE = 11;
 
+    public static final int TUNNEL_ENTRANCE = 14;
     public static final int TUNNEL_CONVEYOR_TALON = 15;
     public static final int TUNNEL_ROLLER_TALON = 16;
 

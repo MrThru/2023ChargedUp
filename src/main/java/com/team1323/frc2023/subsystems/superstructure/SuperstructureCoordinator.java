@@ -45,8 +45,8 @@ public class SuperstructureCoordinator {
     private static final double kShoulderAngleForHorizontalExtension = 15.0;
     private static final double kShoulderAngleForEscapingElevator = 45.0;
     private static final double kHorizontalExtensionForMinShoulderReach = 0.25;
-    private static final double kHorizontalExtensionForUprightShoulder = 8.0;
-    private static final double kHorizontalExtensionForGridClearance = 12.0;
+    private static final double kHorizontalExtensionForUprightShoulder = 4.0;
+    private static final double kHorizontalExtensionForGridClearance = 15.0;
 
     private final VerticalElevator verticalElevator;
     private final HorizontalElevator horizontalElevator;
@@ -125,7 +125,8 @@ public class SuperstructureCoordinator {
                     horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder),
                     wrist.angleRequest(finalPosition.wristAngle),
                     verticalElevator.heightRequest(kVerticalHeightForTopBarClearance)
-                            .withPrerequisite(() -> horizontalElevator.getPosition() < kHorizontalExtensionForGridClearance)
+                            .withPrerequisites(() -> horizontalElevator.getPosition() < kHorizontalExtensionForGridClearance,
+                                    shoulder.anglePrerequisite(90.0))
                 ),
                 new ParallelRequest(
                     shoulder.angleRequest(finalPosition.shoulderAngle),
@@ -253,21 +254,18 @@ public class SuperstructureCoordinator {
 
         if (willCollideWithElevator(currentPosition, finalPosition) ||
                 willCollideWithElevator(currentPosition.withVerticalHeight(finalPosition.verticalHeight), finalPosition)) {
-            Prerequisite shoulderEscapedPrereq = () -> shoulder.getPosition() < 90.0;
-
             System.out.println("Branch 1");
             return new SequentialRequest(
+                verticalElevator.heightRequest(kVerticalHeightForTopBarClearance),
                 new ParallelRequest(
-                    verticalElevator.heightRequest(kVerticalHeightForTopBarClearance),
-                    horizontalElevator.extensionRequest(kHorizontalExtensionForMinShoulderReach)
+                    shoulder.angleRequest(90.0),
+                    horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
                 ),
+                verticalElevator.heightRequest(finalPosition.verticalHeight),
                 new ParallelRequest(
+                    horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
                     shoulder.angleRequest(finalPosition.shoulderAngle),
-                    new ParallelRequest(
-                        verticalElevator.heightRequest(finalPosition.verticalHeight),
-                        horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
-                        wrist.angleRequest(finalPosition.wristAngle)
-                    ).withPrerequisite(shoulderEscapedPrereq)
+                    wrist.angleRequest(finalPosition.wristAngle)
                 )
             );
         }
