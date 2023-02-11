@@ -50,12 +50,14 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         intakeRoller = TalonFXFactory.createRollerTalon(Ports.CUBE_INTAKE, Ports.CANBUS);
         intakeRoller.setInverted(TalonFXInvertType.CounterClockwise);
         intakeRoller.setNeutralMode(NeutralMode.Brake);
+        setIntakeCurrent(60.0);
 
-        //banner = new DigitalInput(Ports.INTAKE_BANNER);
+
+        banner = new DigitalInput(Ports.INTAKE_BANNER);
     }
 
     public static enum State {
-        STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.75);
+        STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.7);
         double intakeAngle;
         double intakeSpeed;
         State(double intakeAngle,double intakeSpeed) {
@@ -82,6 +84,10 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
     public void setIntakeCurrent(double amps) {
         intakeRoller.setStatorCurrentLimit(amps, amps);
+    }
+    public void setHoldMode() {
+        intakeRoller.setStatorCurrentLimit(10, 0.01);
+        setIntakeSpeed(0.1);
     }
 
     public boolean getBanner() {
@@ -146,6 +152,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         SmartDashboard.putNumber("Cube Intake Encoder Position", periodicIO.position);
         SmartDashboard.putNumber("Cube Intake Absolute Encoder", absoluteEncoder.getDegrees());
         SmartDashboard.putNumber("Cube Intake RPM", intakeRoller.getSelectedSensorVelocity() * 600 / 2048);
+        SmartDashboard.putNumber("Cube Intake Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));
     }
     @Override
     public void stop() {

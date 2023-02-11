@@ -14,8 +14,10 @@ import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
+import com.team1323.frc2023.subsystems.requests.EmptyRequest;
 import com.team1323.frc2023.subsystems.requests.LambdaRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
+import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
@@ -33,6 +35,7 @@ public class Superstructure extends Subsystem {
 		return instance;
 	}
 
+	private final SuperstructureCoordinator coordinator;
 	public final Swerve swerve;
 	public final VerticalElevator verticalElevator;
 	public final HorizontalElevator horizontalElevator;
@@ -43,6 +46,7 @@ public class Superstructure extends Subsystem {
 	public final Claw claw;
 	
 	public Superstructure() {
+		coordinator = SuperstructureCoordinator.getInstance();
 		swerve = Swerve.getInstance();
 		verticalElevator = VerticalElevator.getInstance();
 		horizontalElevator = HorizontalElevator.getInstance();
@@ -171,6 +175,35 @@ public class Superstructure extends Subsystem {
 		};
 	}
 
+	private Request choreographyRequest(ChoreographyProvider choreoProvider) {
+		return new Request() {
+			private Request choreography = new EmptyRequest();
+
+			@Override
+			public void act() {
+				choreography = choreoProvider.generateChoreography();
+				choreography.act();
+			}
+
+			@Override
+			public boolean isFinished() {
+				return choreography.isFinished();
+			}
+		};
+	}
+
+	private Prerequisite allSubsystemsOnTargetPrerequisite() {
+		return new Prerequisite() {
+			@Override
+			public boolean met() {
+				return verticalElevator.isOnTarget() &&
+						horizontalElevator.isOnTarget() &&
+						shoulder.isOnTarget() &&
+						wrist.isOnTarget();
+			}
+		};
+	}
+
 	private boolean needsToNotifyDrivers = false;
     public boolean needsToNotifyDrivers() {
         if (needsToNotifyDrivers) {
@@ -184,14 +217,14 @@ public class Superstructure extends Subsystem {
 
 	public void intakeState(Tunnel.State tunnelState) {
 		request(new ParallelRequest(
-			verticalElevator.heightRequest(4.0),
+			verticalElevator.heightRequest(1),
 			tunnel.stateRequest(tunnelState),
 			cubeIntake.stateRequest(CubeIntake.State.INTAKE)
 		));
 	}
 	public void postIntakeState() {
 		request(new ParallelRequest(
-			tunnel.stateRequest(Tunnel.State.OFF),
+			//tunnel.stateRequest(Tunnel.State.OFF),
 			cubeIntake.stateRequest(CubeIntake.State.STOWED)
 		));
 	}
@@ -210,13 +243,27 @@ public class Superstructure extends Subsystem {
 		request(new SequentialRequest(
 			new ParallelRequest(
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()),
-				SuperstructureCoordinator.getInstance().getConeMidScoringChoreography()
+				choreographyRequest(coordinator::getConeMidScoringChoreography)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 24.0),
 				new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CONE_OUTAKE))
-						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 1.0)
+						.withPrerequisites(() -> swerve.getDistanceToTargetPosition() < 1.0,
+								allSubsystemsOnTargetPrerequisite())
 			),
 			waitRequest(1.0),
-			SuperstructureCoordinator.getInstance().getConeStowChoreography()
+			choreographyRequest(coordinator::getConeStowChoreography)
+		));
+	}
+
+	public void coneHighScoringSequence(Pose2d scoringPose) {
+		request(new SequentialRequest(
+			new ParallelRequest(
+				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()),
+				choreographyRequest(coordinator::getConeHighScoringChoreography)
+						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 24.0)
+			),
+			new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CONE_OUTAKE)),
+			waitRequest(1.0),
+			choreographyRequest(coordinator::getConeStowChoreography)
 		));
 	}
 		

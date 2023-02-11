@@ -138,7 +138,6 @@ public class LimelightProcessor implements Loop {
 	public void setPipeline(Pipeline pipeline) {
 		LimelightHelper.setPipelineIndex(kLimelightName, pipeline.index);
 	}
-
 	public enum Pipeline {
 		FIDUCIAL(0), RETRO(1);
 

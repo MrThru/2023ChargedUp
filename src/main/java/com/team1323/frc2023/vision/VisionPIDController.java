@@ -21,7 +21,7 @@ import com.team254.lib.trajectory.timing.TimedState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class VisionPIDController {
-    private static final double kOnTargetTime = 1.0;
+    private static final double kOnTargetTime = 0.5;
     private static final double kDistanceToTargetTolerance = 1.0;
     private static final double kLateralThresholdForRetroSwitch = 2.0;
     private static final double kDistanceThresholdForRetroSwitch = 12.0;

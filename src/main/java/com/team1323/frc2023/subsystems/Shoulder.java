@@ -88,5 +88,6 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
         SmartDashboard.putNumber("Shoulder Angle", getPosition());
         SmartDashboard.putNumber("Shoulder Encoder Position", periodicIO.position);
         SmartDashboard.putNumber("Shoulder Absolute Encoder", absoluteEncoder.getDegrees());
+        SmartDashboard.putBoolean("Shoulder Is On Target", isOnTarget());
     }
 }

@@ -221,7 +221,7 @@ public class Constants {
         public static final double kExtensionTolerance = 1.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 2.0;
+        public static final double kAccelerationScalar = 1.5;
 
         public static final double kSupplyLimit = 40.0;
 
@@ -291,9 +291,9 @@ public class Constants {
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
-            0.02,
+            0.01,
             0.00005,
-            3,
+            0.3,
             kFalconMotionMagicFeedForward
         );
 
@@ -335,13 +335,13 @@ public class Constants {
     public static class Tunnel {
 
         public static final double kIntakeSpeed = 0.5;
-        public static final double kIntakeConveyorSpeed = 0.1;
-        public static final double kIntakeFrontRollerSpeed = kIntakeConveyorSpeed * -1.5;
+        public static final double kIntakeConveyorSpeed = 0.2;
+        public static final double kIntakeFrontRollerSpeed = kIntakeConveyorSpeed * -2.0;
 
-        public static final double kHoldConveyorSpeed = 0.05;
-        public static final double kHoldFrontRollerSpeed = kHoldConveyorSpeed * -1.5;
+        public static final double kHoldConveyorSpeed = 0.1;
+        public static final double kHoldFrontRollerSpeed = kHoldConveyorSpeed * -2.0;
 
-        public static final double kScoreConveyorSpeed = 0.2;
+        public static final double kScoreConveyorSpeed = 0.5;
         public static final double kScoreFrontRollerSpeed = 0.5;
 
         public static final TalonPIDF kConveyorPID = new TalonPIDF(

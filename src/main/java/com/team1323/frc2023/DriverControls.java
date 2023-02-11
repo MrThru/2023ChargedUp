@@ -12,7 +12,10 @@ import java.util.Arrays;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
+import com.team1323.frc2023.loops.LimelightHelper;
+import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
@@ -100,7 +103,7 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, /*tunnel,*/ verticalElevator, leds, horizontalElevator, wrist, shoulder, claw, s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, leds, horizontalElevator, wrist, shoulder, claw, s));
     }
 
     @Override
@@ -110,6 +113,7 @@ public class DriverControls implements Loop {
             swerve.requireModuleConfiguration();
         }
         swerve.setDriveNeutralMode(NeutralMode.Brake);
+        cubeIntake.lockPosition();
     }
 
     @Override
@@ -200,18 +204,44 @@ public class DriverControls implements Loop {
         wrist.acceptManualInput(wristAngleYInput);
 
         SmartDashboard.putNumber("Vertical Elevator Manual Input", verticalElevatorYInput);
-
+        
         if (coDriver.aButton.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getConeIntakeChoreography());
+            //SuperstructureCoordinator.getInstance().getConeIntakeChoreography();
         }
         if (coDriver.bButton.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
+            //LimelightHelper.setPipelineIndex("limelight", 3);
+            //s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getCubeStowChoreography());
             //SuperstructureCoordinator.getInstance().getConeStowChoreography();
         }
-        if (coDriver.xButton.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
-            //SuperstructureCoordinator.getInstance().getConeMidScoringChoreography();
+        if(coDriver.yButton.wasActivated()) {
+            s.request(SuperstructureCoordinator.getInstance().getCubeMidScoringChoreography());
         }
+        if (coDriver.xButton.wasActivated()) {
+            s.request(new SequentialRequest(
+                SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
+                new ParallelRequest(
+                    tunnel.stateRequest(Tunnel.State.EJECT_ONE),
+                    claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
+                )
+            ));
+            //SuperstructureCoordinator.getInstance().getCubeIntakeChoreography();
+        } 
+        // if(testController.yButton.wasActivated()) {
+        //     tunnel.setState(Tunnel.State.SPIT);
+        // }
+        /*if(coDriver.aButton.wasActivated()) {
+            s.intakeState(Tunnel.State.DETECT);
+        } else if(coDriver.aButton.wasReleased()) {
+            s.postIntakeState();
+        }
+
+        if(coDriver.bButton.wasActivated()) {
+            s.intakeState(Tunnel.State.COMMUNITY);
+        } else if(coDriver.bButton.wasReleased()) {
+            s.postIntakeState();
+        } */
 
         if(testController.aButton.wasActivated()) {
             claw.conformToState(Claw.ControlState.CONE_INTAKE);
@@ -223,6 +253,25 @@ public class DriverControls implements Loop {
         } else if(testController.bButton.wasReleased()) {
             claw.conformToState(Claw.ControlState.OFF);
         }
+
+        /*if(testController.xButton.wasActivated()) {
+            s.intakeState(Tunnel.State.SPIT);
+        } else if(testController.xButton.wasReleased()) {
+            cubeIntake.setIntakeSpeed(0.0);
+            tunnel.setState(Tunnel.State.OFF);
+        }*/
+
+        if(testController.xButton.wasActivated()) {
+            s.intakeState(Tunnel.State.DETECT);
+        } else if(testController.xButton.wasReleased()) {
+            //cubeIntake.setIntakeSpeed(0.0);
+            s.postIntakeState();
+        }
+        if(testController.yButton.wasActivated()) {
+            s.intakeState(Tunnel.State.COMMUNITY);
+        } else if(testController.yButton.wasReleased()) {
+            s.postIntakeState();
+        }
         
         /*
         if(coDriver.aButton.wasActivated()) {
@@ -232,7 +281,6 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.bButton.wasActivated()) {
-            s.intakeState(Tunnel.State.HOLD);
         } else if(coDriver.bButton.wasReleased()) {
             s.postIntakeState();
         }
@@ -261,7 +309,7 @@ public class DriverControls implements Loop {
         if (coDriver.POV0.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getCenterScoringPose(swerve.getPose());
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            //swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         } else if (coDriver.POV270.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
@@ -270,7 +318,8 @@ public class DriverControls implements Loop {
             Pose2d scoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
             //swerve.startVisionPID(scoringPose, scoringPose.getRotation());
-            s.coneMidScoringSequence(scoringPose);
+            
+            s.coneHighScoringSequence(scoringPose);
         }
 
         if(coDriver.backButton.wasActivated()) {

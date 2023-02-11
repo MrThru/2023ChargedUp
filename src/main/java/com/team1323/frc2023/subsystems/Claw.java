@@ -146,7 +146,7 @@ public class Claw extends Subsystem {
     @Override
     public void stop() {
         reset();
-        //conformToState(ControlState.OFF);
+        conformToState(ControlState.OFF);
     }
 
 }

@@ -45,7 +45,7 @@ public class SuperstructureCoordinator {
     private static final double kShoulderAngleForHorizontalExtension = 15.0;
     private static final double kShoulderAngleForEscapingElevator = 45.0;
     private static final double kHorizontalExtensionForMinShoulderReach = 0.25;
-    private static final double kHorizontalExtensionForUprightShoulder = 4.0;
+    private static final double kHorizontalExtensionForUprightShoulder = 6.0;
     private static final double kHorizontalExtensionForGridClearance = 15.0;
 
     private final VerticalElevator verticalElevator;
@@ -181,6 +181,17 @@ public class SuperstructureCoordinator {
         return getStowChoreography(finalPosition);
     }
 
+    public Request getCubeStowChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            0.5,
+            0.25,
+            158.0,
+            98.0
+        );
+
+        return getStowChoreography(finalPosition);
+    }
+
     private Request getLowChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
 
@@ -229,10 +240,10 @@ public class SuperstructureCoordinator {
 
     public Request getConeIntakeChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            4.4,
-            9.2,
-            -90.0,
-            125.0
+            0.625,
+            0.25,
+            -55.0,
+            90.0
         );
 
         return getLowChoreography(finalPosition);
@@ -240,10 +251,10 @@ public class SuperstructureCoordinator {
 
     public Request getCubeIntakeChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            12.0,
-            16.0,
+            1.0,
+            7.5,
             -90.0,
-            30.0
+            98.0
         );
         
         return getLowChoreography(finalPosition);
@@ -294,9 +305,9 @@ public class SuperstructureCoordinator {
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             20.0,
-            16.0,
-            45.0,
-            -45.0
+            29.0,
+            34.75,
+            -27.0
         );
 
         return getHighChoreography(finalPosition);
@@ -308,6 +319,28 @@ public class SuperstructureCoordinator {
             9.8,
             28.5,
             -21.5
+        );
+
+        return getHighChoreography(finalPosition);
+    }
+
+    public Request getCubeMidScoringChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            6.6,
+            15.5,
+            15.5,
+            98.0
+        );
+
+        return getHighChoreography(finalPosition);
+    }
+
+    public Request getCubeHighScoringChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            20.0,
+            29.0,
+            19.75,
+            98.0
         );
 
         return getHighChoreography(finalPosition);

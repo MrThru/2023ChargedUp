@@ -28,7 +28,7 @@ public class Ports {
     public static final int CUBE_INTAKE_WRIST = 10;
     public static final int CUBE_INTAKE = 11;
 
-    public static final int TUNNEL_ENTRANCE = 14;
+    public static final int TUNNEL_ENTRANCE_TALON = 14;
     public static final int TUNNEL_CONVEYOR_TALON = 15;
     public static final int TUNNEL_ROLLER_TALON = 16;
 
@@ -53,8 +53,8 @@ public class Ports {
     
     public static final int INTAKE_BANNER = 4;
     
-    public static final int TUNNEL_FRONT_BANNER = 0;
-    public static final int TUNNEL_REAR_BANNER = 0;
+    public static final int TUNNEL_FRONT_BANNER = 6;
+    public static final int TUNNEL_REAR_BANNER = 7;
     
     //CANCoders
     

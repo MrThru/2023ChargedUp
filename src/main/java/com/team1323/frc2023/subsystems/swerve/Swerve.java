@@ -963,10 +963,8 @@ public class Swerve extends Subsystem{
 		
 			@Override
 			public void act() {
-				if (!isTracking()) {
-					startVisionPID(desiredFieldPose, approachAngle);
-					System.out.println("Vision Request Started");
-				}
+				startVisionPID(desiredFieldPose, approachAngle);
+				System.out.println("Vision Request Started");
 			}
 
 			@Override

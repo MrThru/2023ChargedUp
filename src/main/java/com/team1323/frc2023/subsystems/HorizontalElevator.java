@@ -51,6 +51,7 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
     public void outputTelemetry() {
        SmartDashboard.putNumber("Horizontal Elevator Height", getPosition());
        SmartDashboard.putNumber("Horizontal Elevator Encoder Position", periodicIO.position); 
+       SmartDashboard.putBoolean("Horizontal Elevator on Target", isOnTarget());
     }
 
 }

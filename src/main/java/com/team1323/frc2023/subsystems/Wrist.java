@@ -28,7 +28,7 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
                 Constants.Wrist.kAngleTolerance, Constants.Wrist.kVelocityScalar, 
                 Constants.Wrist.kAccelerationScalar, new CanEncoder(Ports.WRIST_ENCODER, false), Constants.Wrist.kAbsoluteEncoderInfo);
 
-        leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
+        leader.config_IntegralZone(0, outputUnitsToEncoderUnits(4.0));
         leader.setPIDF(Constants.Wrist.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
@@ -84,5 +84,7 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
         SmartDashboard.putNumber("Wrist Angle", getPosition());
         SmartDashboard.putNumber("Wrist Encoder Position", periodicIO.position);
         SmartDashboard.putNumber("Wrist Absolute Encoder", absoluteEncoder.getDegrees());
+        SmartDashboard.putBoolean("Wrist On Target", isOnTarget());
+        SmartDashboard.putNumber("Wrist Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));
     }
 }
