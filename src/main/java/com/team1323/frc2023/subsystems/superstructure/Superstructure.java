@@ -145,6 +145,7 @@ public class Superstructure extends Subsystem {
 
 	@Override
 	public void stop() {
+		request(new EmptyRequest());
 	}
 
 	@Override
@@ -262,7 +263,7 @@ public class Superstructure extends Subsystem {
 			new ParallelRequest(
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()),
 				choreographyRequest(scoringChoreo)
-						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 24.0)
+						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0)
 			),
 			new LambdaRequest(() -> claw.conformToState(clawScoringState)),
 			waitRequest(1.0),

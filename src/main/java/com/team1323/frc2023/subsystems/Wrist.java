@@ -1,5 +1,6 @@
 package com.team1323.frc2023.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.team1323.frc2023.Constants;
@@ -9,6 +10,7 @@ import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.encoders.CanEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
+import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -78,9 +80,16 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
             }
         };
     }
-
+    private boolean neutralModeIsBrake = true;
     @Override
     public void outputTelemetry() {
+        if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
+			leader.setNeutralMode(NeutralMode.Coast);
+			neutralModeIsBrake = false;
+		} else if(!neutralModeIsBrake && !Netlink.getBooleanValue("Subsystems Coast Mode")) {
+            leader.setNeutralMode(NeutralMode.Brake);
+			neutralModeIsBrake = true;
+		}
         SmartDashboard.putNumber("Wrist Angle", getPosition());
         SmartDashboard.putNumber("Wrist Encoder Position", periodicIO.position);
         SmartDashboard.putNumber("Wrist Absolute Encoder", absoluteEncoder.getDegrees());

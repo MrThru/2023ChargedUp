@@ -213,7 +213,7 @@ public class Constants {
     }
 
     public static class HorizontalElevator {
-        public static final double kTicksPerInch = 32938.0 / 15.0;
+        public static final double kTicksPerInch = 89075.0 / 23.0;
 
         public static final double kMinExtension = 0.0;
         public static final double kMaxExtension = 29.0;
@@ -221,7 +221,7 @@ public class Constants {
         public static final double kExtensionTolerance = 1.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 1.5;
+        public static final double kAccelerationScalar = 2.5;
 
         public static final double kSupplyLimit = 40.0;
 
@@ -282,7 +282,7 @@ public class Constants {
         public static final double kMinControlAngle = -147.712908;
         public static final double kMaxControlAngle = 133.666388;
 
-        public static final double kAngleTolerance = 2.0;
+        public static final double kAngleTolerance = 5.0;
 
         public static final double kVelocityScalar = 1.0;
         public static final double kAccelerationScalar = 4.0;

@@ -150,7 +150,6 @@ public abstract class ServoSubsystem extends Subsystem {
     @Override
     public void stop() {
         setOpenLoop(0.0);
-
     }
 
     public class PeriodicIO {

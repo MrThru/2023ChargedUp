@@ -4,12 +4,14 @@
 
 package com.team1323.frc2023.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystem;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
+import com.team1323.lib.util.Netlink;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -29,7 +31,7 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
 
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);
         zeroPosition();
-        leader.setInverted(TalonFXInvertType.Clockwise);
+        leader.setInverted(TalonFXInvertType.CounterClockwise);
         leader.setPIDF(Constants.HorizontalElevator.kPIDF);
     }
 
@@ -47,8 +49,16 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
         };
     }
 
+    private boolean neutralModeIsBrake = true;
     @Override
     public void outputTelemetry() {
+        if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
+			leader.setNeutralMode(NeutralMode.Coast);
+			neutralModeIsBrake = false;
+		} else if(!neutralModeIsBrake && !Netlink.getBooleanValue("Subsystems Coast Mode")) {
+            leader.setNeutralMode(NeutralMode.Brake);
+			neutralModeIsBrake = true;
+		}
        SmartDashboard.putNumber("Horizontal Elevator Height", getPosition());
        SmartDashboard.putNumber("Horizontal Elevator Encoder Position", periodicIO.position); 
        SmartDashboard.putBoolean("Horizontal Elevator on Target", isOnTarget());

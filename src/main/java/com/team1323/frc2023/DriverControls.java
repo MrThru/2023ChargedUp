@@ -228,7 +228,7 @@ public class DriverControls implements Loop {
             }
         }
         if(coDriver.yButton.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getCubeMidScoringChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
         }
         if (coDriver.xButton.wasActivated()) {
             s.request(new SequentialRequest(
@@ -276,8 +276,8 @@ public class DriverControls implements Loop {
         if(testController.xButton.wasActivated()) {
             s.intakeState(Tunnel.State.DETECT);
         } else if(testController.xButton.wasReleased()) {
-            //cubeIntake.setIntakeSpeed(0.0);
-            s.postIntakeState();
+            cubeIntake.setIntakeSpeed(0.0);
+            //s.postIntakeState();
         }
         if(testController.yButton.wasActivated()) {
             s.intakeState(Tunnel.State.COMMUNITY);
@@ -321,19 +321,18 @@ public class DriverControls implements Loop {
         if (coDriver.POV0.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getCenterScoringPose(swerve.getPose());
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            s.cubeHighScoringSequence(scoringPose);
-            //swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+            //s.cubeHighScoringSequence(scoringPose);
+            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         } else if (coDriver.POV270.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            s.coneMidScoringSequence(scoringPose);
-            //swerve.startVisionPID(scoringPose, scoringPose.getRotation());
+            //s.coneMidScoringSequence(scoringPose);
+            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         } else if (coDriver.POV90.wasActivated()) {
             Pose2d scoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
-            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            //swerve.startVisionPID(scoringPose, scoringPose.getRotation());
-            
-            s.coneHighScoringSequence(scoringPose);
+            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0});
+            //s.coneHighScoringSequence(scoringPose);
+            swerve.startVisionPID(scoringPose, scoringPose.getRotation());
         }
 
         if(coDriver.backButton.wasActivated()) {

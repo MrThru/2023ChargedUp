@@ -15,6 +15,7 @@ import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.encoders.MagEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.TalonFXFactory;
+import com.team1323.lib.util.Netlink;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 
@@ -57,7 +58,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public static enum State {
-        STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.7);
+        STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.5);
         double intakeAngle;
         double intakeSpeed;
         State(double intakeAngle,double intakeSpeed) {
@@ -145,9 +146,16 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
             }
         };
     }
-
+    private boolean neutralModeIsBrake = true;
     @Override
     public void outputTelemetry() {
+        if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
+			leader.setNeutralMode(NeutralMode.Coast);
+			neutralModeIsBrake = false;
+		} else if(!neutralModeIsBrake && !Netlink.getBooleanValue("Subsystems Coast Mode")) {
+            leader.setNeutralMode(NeutralMode.Coast);
+			neutralModeIsBrake = true;
+		}
         SmartDashboard.putNumber("Cube Intake Angle", getPosition());
         SmartDashboard.putNumber("Cube Intake Encoder Position", periodicIO.position);
         SmartDashboard.putNumber("Cube Intake Absolute Encoder", absoluteEncoder.getDegrees());
