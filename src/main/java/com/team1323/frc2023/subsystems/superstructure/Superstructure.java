@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team1323.frc2023.field.NodeLocation;
+import com.team1323.frc2023.field.ScoringPoses;
+import com.team1323.frc2023.field.NodeLocation.Column;
+import com.team1323.frc2023.field.NodeLocation.Row;
 import com.team1323.frc2023.loops.ILooper;
+import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
@@ -239,32 +245,81 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
-	public void coneMidScoringSequence(Pose2d scoringPose) {
+	public void coneStowSequence() {
 		request(new SequentialRequest(
-			new ParallelRequest(
-				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()),
-				choreographyRequest(coordinator::getConeMidScoringChoreography)
-						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 24.0),
-				new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CONE_OUTAKE))
-						.withPrerequisites(() -> swerve.getDistanceToTargetPosition() < 1.0,
-								allSubsystemsOnTargetPrerequisite())
-			),
+			choreographyRequest(coordinator::getConeScanChoreography),
+			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.CONE)),
 			waitRequest(1.0),
+			new LambdaRequest(() -> ScoringPoses.updateConeLateralOffset()),
+			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL)),
 			choreographyRequest(coordinator::getConeStowChoreography)
 		));
 	}
 
-	public void coneHighScoringSequence(Pose2d scoringPose) {
+	private void scoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo, 
+			Claw.ControlState clawScoringState, ChoreographyProvider stowingChoreo) {
 		request(new SequentialRequest(
 			new ParallelRequest(
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()),
-				choreographyRequest(coordinator::getConeHighScoringChoreography)
+				choreographyRequest(scoringChoreo)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 24.0)
 			),
-			new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CONE_OUTAKE)),
+			new LambdaRequest(() -> claw.conformToState(clawScoringState)),
 			waitRequest(1.0),
-			choreographyRequest(coordinator::getConeStowChoreography)
+			choreographyRequest(stowingChoreo)
 		));
 	}
-		
+
+	public void scoringSequence(NodeLocation nodeLocation) {
+		if (nodeLocation.row == Row.BOTTOM) {
+			return;
+		}
+
+		Pose2d scoringPose = ScoringPoses.getScoringPose(nodeLocation);
+		ChoreographyProvider scoringChoreo = coordinator::getConeStowChoreography;
+		ChoreographyProvider stowingChoreo;
+		Claw.ControlState clawScoringState;
+
+		if (nodeLocation.column == Column.CENTER) {
+			stowingChoreo = coordinator::getCubeStowChoreography;
+			clawScoringState = Claw.ControlState.CUBE_OUTAKE;
+
+			if (nodeLocation.row == Row.MIDDLE) {
+				scoringChoreo = coordinator::getCubeMidScoringChoreography;
+			} else if (nodeLocation.row == Row.TOP) {
+				scoringChoreo = coordinator::getCubeHighScoringChoreography;
+			}
+		} else {
+			stowingChoreo = coordinator::getConeStowChoreography;
+			clawScoringState = Claw.ControlState.CONE_OUTAKE;
+
+			if (nodeLocation.row == Row.MIDDLE) {
+				scoringChoreo = coordinator::getConeMidScoringChoreography;
+			} else if (nodeLocation.row == Row.TOP) {
+				scoringChoreo = coordinator::getConeHighScoringChoreography;
+			}
+		}
+
+		scoringSequence(scoringPose, scoringChoreo, clawScoringState, stowingChoreo);
+	}
+
+	public void coneMidScoringSequence(Pose2d scoringPose) {
+		scoringSequence(scoringPose, coordinator::getConeMidScoringChoreography, 
+				Claw.ControlState.CONE_OUTAKE, coordinator::getConeStowChoreography);
+	}
+
+	public void coneHighScoringSequence(Pose2d scoringPose) {
+		scoringSequence(scoringPose, coordinator::getConeHighScoringChoreography,
+				Claw.ControlState.CONE_OUTAKE, coordinator::getConeStowChoreography);
+	}
+
+	public void cubeMidScoringSequence(Pose2d scoringPose) {
+		scoringSequence(scoringPose, coordinator::getCubeMidScoringChoreography,
+				Claw.ControlState.CUBE_OUTAKE, coordinator::getCubeStowChoreography);
+	}
+
+	public void cubeHighScoringSequence(Pose2d scoringPose) {
+		scoringSequence(scoringPose, coordinator::getCubeHighScoringChoreography,
+				Claw.ControlState.CUBE_OUTAKE, coordinator::getCubeStowChoreography);
+	}
 }

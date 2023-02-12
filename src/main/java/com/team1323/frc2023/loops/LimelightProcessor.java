@@ -30,7 +30,7 @@ public class LimelightProcessor implements Loop {
 	}
 
 	private static final String kLimelightName = "limelight";
-	private static final double kMinFiducialArea = 0.01; // TODO: update this
+	private static final double kMinFiducialArea = 0.115;
 
 	private static final TwoPointRamp translationalStandardDeviationRamp = new TwoPointRamp(
 		new Translation2d(60.0, 0.05),
@@ -124,6 +124,15 @@ public class LimelightProcessor implements Loop {
 			return;
 		}
 
+		int pipelineIndex = (int) results.targetingResults.pipelineID;
+		if (pipelineIndex == Pipeline.RETRO.index) {
+			handleConePoleTarget(results, timestamp);
+		} else if (pipelineIndex == Pipeline.CONE.index) {
+
+		}
+	}
+
+	private void handleConePoleTarget(LimelightResults results, double timestamp) {
 		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(timestamp - getTotalLatencySeconds(results));
 		double approximateDistanceToTarget = Math.abs(robotPose.getTranslation().x() - AllianceChooser.getConePoleX());
 		Rotation2d rotationToTarget = Rotation2d.fromDegrees(LimelightHelper.getTX(kLimelightName)); // TODO: Check if this needs to be flipped
@@ -138,8 +147,9 @@ public class LimelightProcessor implements Loop {
 	public void setPipeline(Pipeline pipeline) {
 		LimelightHelper.setPipelineIndex(kLimelightName, pipeline.index);
 	}
+
 	public enum Pipeline {
-		FIDUCIAL(0), RETRO(1);
+		FIDUCIAL(0), RETRO(1), CONE(3);
 
 		public final int index;
 

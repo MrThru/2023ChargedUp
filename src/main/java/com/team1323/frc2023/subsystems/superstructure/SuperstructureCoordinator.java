@@ -302,6 +302,17 @@ public class SuperstructureCoordinator {
         );
     }
 
+    public Request getConeScanChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            0.625,
+            0.25,
+            37.0,
+            90.0
+        );
+
+        return getHighChoreography(finalPosition);
+    }
+
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             20.0,

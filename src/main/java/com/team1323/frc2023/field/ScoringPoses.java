@@ -21,6 +21,7 @@ public class ScoringPoses {
     private static final double kAprilTagToConeLateralDisplacement = 20.5;
     private static final double kAprilTagToBarrierForwardDisplacement = 13.8;
     private static final double kScoringPoseForwardPadding = 2.0;
+    private static double coneLateralOffset = 0.0;
 
     private static final Map<Alliance, Map<Grid, AprilTag>> kGridToAprilTagMap = Map.of(
         Alliance.Red, Map.of(
@@ -44,21 +45,24 @@ public class ScoringPoses {
         AprilTag.SIX, Grid.RIGHT
     );
 
+    public static void updateConeLateralOffset() {
+        coneLateralOffset = SmartDashboard.getNumber("Cone Left-Right Offset", 0.0);
+    }
+
     public static Pose2d getScoringPose(NodeLocation nodeLocation) {
         AprilTag nodeTag = kGridToAprilTagMap.get(AllianceChooser.getAlliance()).get(nodeLocation.grid);
 
-        double yTransform = 0.0;
+        double yTransform = -coneLateralOffset;
         switch (nodeLocation.column) {
             case LEFT:
-                yTransform = kAprilTagToConeLateralDisplacement;
+                yTransform += kAprilTagToConeLateralDisplacement;
                 break;
             case RIGHT:
-                yTransform = -kAprilTagToConeLateralDisplacement;
+                yTransform -= kAprilTagToConeLateralDisplacement;
                 break;
             case CENTER:
                 break;
         }
-        //yTransform += SmartDashboard.getNumber("Cone Left-Right Offset", 0.0);
 
         Pose2d tagToRobotTransform = Pose2d.fromTranslation(new Translation2d(
             -(kAprilTagToBarrierForwardDisplacement + kScoringPoseForwardPadding + Constants.kRobotHalfWidth), 
