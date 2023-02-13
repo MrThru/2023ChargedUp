@@ -155,7 +155,7 @@ public class Robot extends TimedRobot {
 			subsystems.stop();
 			disabledLooper.start();
 			
-			LEDs.getInstance().configLEDs(LEDs.LEDColors.RAINBOW);;;;;;;;;;;;;;
+			LEDs.getInstance().configLEDs(LEDs.LEDColors.TWINKLE);;;;;;;;;;;;;;
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;

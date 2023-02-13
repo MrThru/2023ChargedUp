@@ -41,6 +41,7 @@ public class SuperstructureCoordinator {
 
     private static final double kVerticalHeightForTopBarClearance = 0.5;
     private static final double kVerticalHeightForBumperClearance = 16.0;
+    private static final double kVerticalHeightForStow = 4.25;
     private static final double kShoulderAngleForHorizontalRetraction = -60.0;
     private static final double kShoulderAngleForHorizontalExtension = 15.0;
     private static final double kShoulderAngleForEscapingElevator = 45.0;
@@ -126,11 +127,11 @@ public class SuperstructureCoordinator {
                     wrist.angleRequest(finalPosition.wristAngle),
                     verticalElevator.heightRequest(kVerticalHeightForTopBarClearance)
                             .withPrerequisites(() -> horizontalElevator.getPosition() < kHorizontalExtensionForGridClearance,
-                                    shoulder.anglePrerequisite(90.0))
-                ),
-                new ParallelRequest(
-                    shoulder.angleRequest(finalPosition.shoulderAngle),
-                    horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
+                                    shoulder.anglePrerequisite(90.0)),
+                    new ParallelRequest(
+                        shoulder.angleRequest(finalPosition.shoulderAngle),
+                        horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
+                    ).withPrerequisite(() -> verticalElevator.getPosition() < kVerticalHeightForStow)
                 ),
                 verticalElevator.heightRequest(finalPosition.verticalHeight)
             );
@@ -265,12 +266,16 @@ public class SuperstructureCoordinator {
 
         if (willCollideWithElevator(currentPosition, finalPosition) ||
                 willCollideWithElevator(currentPosition.withVerticalHeight(finalPosition.verticalHeight), finalPosition)) {
+            double clearanceHeight = finalPosition.verticalHeight > kVerticalHeightForStow ? 
+                    kVerticalHeightForStow : kVerticalHeightForTopBarClearance;
             System.out.println("Branch 1");
             return new SequentialRequest(
-                verticalElevator.heightRequest(kVerticalHeightForTopBarClearance),
                 new ParallelRequest(
-                    shoulder.angleRequest(90.0),
-                    horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
+                    verticalElevator.heightRequest(clearanceHeight),
+                    new ParallelRequest(
+                        shoulder.angleRequest(90.0),
+                        horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
+                    ).withPrerequisite(() -> verticalElevator.getPosition() <= kVerticalHeightForStow)
                 ),
                 verticalElevator.heightRequest(finalPosition.verticalHeight),
                 new ParallelRequest(

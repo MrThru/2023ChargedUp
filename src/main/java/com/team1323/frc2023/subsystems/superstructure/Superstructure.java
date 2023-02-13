@@ -267,7 +267,9 @@ public class Superstructure extends Subsystem {
 			),
 			new LambdaRequest(() -> claw.conformToState(clawScoringState)),
 			waitRequest(1.0),
-			choreographyRequest(stowingChoreo)
+			choreographyRequest(stowingChoreo),
+			new LambdaRequest(() -> swerve.stop()),
+			new LambdaRequest(() -> swerve.resetVisionPID())
 		));
 	}
 

@@ -630,9 +630,13 @@ public class Swerve extends Subsystem{
 	
 	// Vision PID (new, simpler vision tracking system)
 	public void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle) {
-		visionPID.start(pose, desiredFieldPose, approachAngle, false, false);
+		visionPID.start(pose, desiredFieldPose, approachAngle, true, false);
 		rotationScalar = 0.75;
 		setState(ControlState.VISION_PID);
+	}
+
+	public void resetVisionPID() {
+		visionPID.resetDistanceToTargetPosition();
 	}
 
 	public double getDistanceToTargetPosition() {
@@ -897,6 +901,7 @@ public class Swerve extends Subsystem{
 			case VISION_PID:
 			Pose2d visionPIDOutput = visionPID.update(pose, timestamp, timestamp - lastUpdateTimestamp);
 			Translation2d driveVector = visionPIDOutput.getTranslation();
+			SmartDashboard.putString("Swerve Vision PID Output", driveVector.toString());
 			if (!visionPIDOutput.getRotation().equals(headingController.getTargetHeading())) {
 				setPathHeading(visionPIDOutput.getRotation());
 			}

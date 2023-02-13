@@ -36,11 +36,8 @@ public class LEDs extends Subsystem {
     }
 
     public LEDs() {
-
         candle = new CANdle(Ports.CANDLE);
-        candle.configLEDType(LEDStripType.RGB);
-        CANdleConfiguration config = new CANdleConfiguration();
-        candle.configAllSettings(config);
+        candle.configLEDType(LEDStripType.GRB);
         configLEDs(LEDColors.RAINBOW);
     }
     public enum LEDMode {
@@ -93,13 +90,14 @@ public class LEDs extends Subsystem {
         } else if(selectedLEDType == LEDMode.STROBE) {
             candle.animate(new StrobeAnimation(100, 100, 100, 50, 0.25, 1690));
         }
-        
+        SmartDashboard.putString("LED Mode", selectedLEDType.toString());
+        SmartDashboard.putNumberArray("LED Colors", new double[]{mRed, mGreen, mBlue});
     }
 
   
     @Override
     public void outputTelemetry() {
-
+        
     }
 
     public Request ledModeRequest(LEDColors desiredColor) {

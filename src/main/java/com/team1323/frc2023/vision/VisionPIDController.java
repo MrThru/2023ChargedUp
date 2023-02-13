@@ -4,6 +4,8 @@ import com.team1323.frc2023.DriveMotionPlanner;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
+import com.team1323.frc2023.subsystems.LEDs;
+import com.team1323.frc2023.subsystems.LEDs.LEDColors;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.Stopwatch;
 import com.team1323.lib.util.SynchronousPIDF;
@@ -64,16 +66,22 @@ public class VisionPIDController {
 
         Trajectory<TimedState<Pose2dWithCurvature>> communitySweepPath = getCommunitySweepPath(currentPose, targetPosition);
         if (communitySweepPath != null && useTrajectory) {
+            LEDs.getInstance().configLEDs(LEDColors.BLUE);
             motionPlanner.reset();
             motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(communitySweepPath)));
             currentPhase = TrackingPhase.TRAJECTORY;
         } else {
+            LEDs.getInstance().configLEDs(LEDColors.GREEN);
             currentPhase = TrackingPhase.VISION_PID;
         }
     }
 
+    public void resetDistanceToTargetPosition() {
+        distanceToTargetPosition = Double.POSITIVE_INFINITY;
+    }
+
     private boolean canSwitchToVisionPID(Pose2d robotPose, Translation2d scoringPosition) {
-        final double kYTolerance = 6.0;
+        final double kYTolerance = 36.0;
         final double kBlueCloseRampX = 40.45 + 13.8 + 60.69;
         final double kRedCloseRampX = 610.77 - 13.8 - 60.69;
         boolean isPastRamp = AllianceChooser.getAlliance() == Alliance.Blue ?
@@ -137,6 +145,7 @@ public class VisionPIDController {
         Translation2d driveVector = motionPlanner.update(timestamp, robotPose);
 
         if (canSwitchToVisionPID(robotPose, targetPosition)) {
+            LEDs.getInstance().configLEDs(LEDColors.GREEN);
             currentPhase = TrackingPhase.VISION_PID;
         }
 

@@ -22,6 +22,7 @@ import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
+import com.team1323.frc2023.subsystems.LEDs.LEDColors;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
@@ -110,6 +111,7 @@ public class DriverControls implements Loop {
         }
         swerve.setDriveNeutralMode(NeutralMode.Brake);
         cubeIntake.lockPosition();
+        leds.configLEDs(LEDColors.TWINKLE);
     }
 
     @Override
@@ -276,8 +278,8 @@ public class DriverControls implements Loop {
         if(testController.xButton.wasActivated()) {
             s.intakeState(Tunnel.State.DETECT);
         } else if(testController.xButton.wasReleased()) {
-            cubeIntake.setIntakeSpeed(0.0);
-            //s.postIntakeState();
+            //cubeIntake.setIntakeSpeed(0.0);
+            s.postIntakeState();
         }
         if(testController.yButton.wasActivated()) {
             s.intakeState(Tunnel.State.COMMUNITY);
