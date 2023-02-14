@@ -303,7 +303,8 @@ public class Superstructure extends Subsystem {
 			}
 		}
 
-		scoringSequence(scoringPose, scoringChoreo, clawScoringState, stowingChoreo);
+		//scoringSequence(scoringPose, scoringChoreo, clawScoringState, stowingChoreo);
+		request(swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()));
 	}
 
 	public void coneMidScoringSequence(Pose2d scoringPose) {

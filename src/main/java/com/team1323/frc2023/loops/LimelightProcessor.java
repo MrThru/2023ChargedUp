@@ -135,7 +135,7 @@ public class LimelightProcessor implements Loop {
 	private void handleConePoleTarget(LimelightResults results, double timestamp) {
 		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(timestamp - getTotalLatencySeconds(results));
 		double approximateDistanceToTarget = Math.abs(robotPose.getTranslation().x() - AllianceChooser.getConePoleX());
-		Rotation2d rotationToTarget = Rotation2d.fromDegrees(LimelightHelper.getTX(kLimelightName)); // TODO: Check if this needs to be flipped
+		Rotation2d rotationToTarget = Rotation2d.fromDegrees(-LimelightHelper.getTX(kLimelightName));
 
 		Translation2d approximateTargetPosition = robotPose
 				.transformBy(Pose2d.fromRotation(rotationToTarget))

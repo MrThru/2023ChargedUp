@@ -80,8 +80,8 @@ public class TrajectoryGenerator {
     // +x is towards the center of the field.
     // +y is to the left.
     private Pose2d communityEntrancePose = new Pose2d(new Translation2d(40.45 + 13.8 + 98.75, 29.695), Rotation2d.fromDegrees(180.0));
-    private Pose2d communitySweepMidPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345, 108.015), Rotation2d.fromDegrees(90.0));
-    private Pose2d communitySweepEndPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345, 174.19 + 22.0), Rotation2d.fromDegrees(90.0));
+    private Pose2d communitySweepMidPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345 + 6.0, 108.015), Rotation2d.fromDegrees(90.0));
+    private Pose2d communitySweepEndPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345 + 6.0, 174.19 + 22.0), Rotation2d.fromDegrees(90.0));
     
     public class TrajectorySet {
         public class MirroredTrajectory {
@@ -147,7 +147,7 @@ public class TrajectoryGenerator {
             waypoints.add(communitySweepMidPose);
             waypoints.add(communitySweepEndPose);
             
-            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 48.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPiecePickupPath() {

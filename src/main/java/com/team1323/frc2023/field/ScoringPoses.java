@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ScoringPoses {
     // All length measurements are in inches
-    private static final double kAprilTagToConeLateralDisplacement = 20.5;
+    private static final double kAprilTagToConeLateralDisplacement = 22.0;
     private static final double kAprilTagToBarrierForwardDisplacement = 13.8;
     private static final double kScoringPoseForwardPadding = 2.0;
     private static double coneLateralOffset = 0.0;
