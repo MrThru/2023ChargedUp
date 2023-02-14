@@ -175,6 +175,7 @@ public class Claw extends Subsystem {
     public void outputTelemetry() {
         SmartDashboard.putNumber("Claw Target RPM", targetRPM);
         SmartDashboard.putNumber("Claw RPM", encUnitsToRPM(claw.getSelectedSensorVelocity()));
+        SmartDashboard.putString("Current Holding Object", getCurrentHoldingObject().toString());
     }
 
     public Request stateRequest(ControlState desiredState) {

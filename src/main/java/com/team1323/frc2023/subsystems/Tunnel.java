@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * the tunnels indexing.
  */
 public class Tunnel extends Subsystem {
+    CubeIntake cubeIntake;
 
     LazyPhoenix5TalonFX tunnelEntrance, conveyorTalon, frontRollerTalon;
     DigitalInput frontBanner, rearBanner;
@@ -37,6 +38,8 @@ public class Tunnel extends Subsystem {
 
 
     public Tunnel() {
+        cubeIntake = CubeIntake.getInstance();
+
         tunnelEntrance = TalonFXFactory.createRollerTalon(Ports.TUNNEL_ENTRANCE_TALON, Ports.CANBUS);
         conveyorTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS);
         frontRollerTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS);
@@ -55,7 +58,7 @@ public class Tunnel extends Subsystem {
     }
 
     public enum State {
-        OFF, DETECT, SPIT, HOLD, EJECT_ONE, COMMUNITY;
+        OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE;
     }
     private State currentState = State.OFF;
     public State getState() {
@@ -79,12 +82,22 @@ public class Tunnel extends Subsystem {
         setConveyorSpeed(conveyorSpeed);
     }
 
-
+    private boolean pendingShutdown = false;//Shuts down a state if the states requirement(s) have been met
+    public void queueShutdown(boolean pendingShutdown) {
+        this.pendingShutdown = pendingShutdown;
+    }
     public boolean getFrontBanner() {
         return frontBanner.get();
     }
     public boolean getRearBanner() {
         return rearBanner.get();
+    }
+    public boolean getCubeIntakeBanner() {
+        return cubeIntake.getBanner();
+    }
+
+    public boolean allowSingleIntakeMode() {
+        return !(getFrontBanner() || getRearBanner() || getCubeIntakeBanner());
     }
 
     public double encUnitsToRPM(double encUnits) {
@@ -108,12 +121,13 @@ public class Tunnel extends Subsystem {
         @Override
         public void onLoop(double timestamp) {
             switch(currentState) {
-                case DETECT:
+                //ToDo: Send straight through to claw, if the claw is empty
+                case DETECT: //Used for the community
                     if(!getFrontBanner()) {
-                        setRollerSpeeds(Constants.Tunnel.kHoldFrontRollerSpeed, Constants.Tunnel.kHoldConveyorSpeed);
+                        setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
                         setTunnelEntranceSpeed(0.50);
                     } else if(!getRearBanner()) {
-                        setRollerSpeeds(Constants.Tunnel.kHoldFrontRollerSpeed, Constants.Tunnel.kHoldConveyorSpeed);
+                        setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
                         setTunnelEntranceSpeed(0.50);
                     } else {
                         if(CubeIntake.getInstance().getBanner() && Double.isInfinite(lastCubeDetectedtimestamp)) {
@@ -130,6 +144,18 @@ public class Tunnel extends Subsystem {
                         }
                         
                     }
+                    break;
+                case SINGLE_INTAKE:
+                    if(pendingShutdown) {
+                        if(allowSingleIntakeMode()) {
+                            setState(State.HOLD);
+                            pendingShutdown = false;
+                        } else if(getFrontBanner()) {
+                            setState(State.HOLD);
+                            pendingShutdown = false;
+                        }
+                    }
+                    setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
                     break;
                 case EJECT_ONE:
                     if(!cubeEjected) {
@@ -150,17 +176,8 @@ public class Tunnel extends Subsystem {
                     setTunnelEntranceSpeed(0.5);
                     break;
                 case HOLD:
-                    setRollerSpeed(-0.1);
-                    setConveyorSpeed(0.05);
-                    break;
-                case COMMUNITY:
-                    boolean cubeIntakeBanner = CubeIntake.getInstance().getBanner();
-                    if(!getFrontBanner() && !getRearBanner()) {
-                        if(cubeIntakeBanner) {
-                            setTunnelEntranceSpeed(0.4);
-                        }
-
-                    }
+                    setRollerSpeed(Constants.Tunnel.kHoldFrontRollerSpeed);
+                    setConveyorSpeed(Constants.Tunnel.kHoldConveyorSpeed);
                     break;
                 case OFF:
                     setRollerSpeed(0);
@@ -205,7 +222,14 @@ public class Tunnel extends Subsystem {
             }
         };
     }
-
+    public Request queueShutdownRequest() {
+        return new Request() {  
+            @Override
+            public void act() {
+                queueShutdown(true);
+            }
+        };
+    }
     @Override
     public void stop() {
         setState(State.OFF);

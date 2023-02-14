@@ -191,6 +191,33 @@ public class DriverControls implements Loop {
             swerve.setCenterOfRotation(new Translation2d());
         }
 
+        if(coDriver.aButton.wasActivated()) {
+            if(tunnel.allowSingleIntakeMode()) {
+                s.intakeState(Tunnel.State.SINGLE_INTAKE);
+            }
+        } else if(coDriver.aButton.wasReleased()) {
+            s.postIntakeState();
+        }
+
+        
+        if (coDriver.bButton.shortReleased()) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
+                s.coneStowSequence();
+            } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
+                s.request(SuperstructureCoordinator.getInstance().getCubeStowChoreography());
+            } else {
+                s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography());
+            }
+        } else if(coDriver.bButton.longPressed()) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+                s.coneIntakeSequence();
+            }
+        }
+
+
+    }
+
+    private void manualMode() {
 
         double verticalElevatorYInput = -coDriver.getLeftY() * 0.2;
         double horizontalElevatorYInput = -coDriver.getRightY() * 0.2;
@@ -281,11 +308,6 @@ public class DriverControls implements Loop {
             //cubeIntake.setIntakeSpeed(0.0);
             s.postIntakeState();
         }
-        if(testController.yButton.wasActivated()) {
-            s.intakeState(Tunnel.State.COMMUNITY);
-        } else if(testController.yButton.wasReleased()) {
-            s.postIntakeState();
-        }
         
         /*
         if(coDriver.aButton.wasActivated()) {
@@ -340,6 +362,7 @@ public class DriverControls implements Loop {
         if(coDriver.backButton.wasActivated()) {
             s.neutralState();
         }
+
     }
     
     private void oneControllerMode() {}

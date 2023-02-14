@@ -231,9 +231,13 @@ public class Superstructure extends Subsystem {
 	}
 	public void postIntakeState() {
 		request(new ParallelRequest(
-			//tunnel.stateRequest(Tunnel.State.OFF),
+			tunnel.queueShutdownRequest(),
 			cubeIntake.stateRequest(CubeIntake.State.STOWED)
 		));
+	}
+
+	public void reverseSubsystemsState() {
+
 	}
 
 	public void neutralState() {
@@ -246,15 +250,26 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
-	public void coneStowSequence() {
+	public void coneIntakeSequence() {
 		request(new SequentialRequest(
+			SuperstructureCoordinator.getInstance().getConeIntakeChoreography(),
+			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
+			getConeStowSequence().withPrerequisite(() -> (claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone))
+		));
+	}
+	public void coneStowSequence() {
+		request(getConeStowSequence());
+	}
+
+	private Request getConeStowSequence() {
+		return new SequentialRequest(
 			choreographyRequest(coordinator::getConeScanChoreography),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.CONE)),
 			waitRequest(1.0),
 			new LambdaRequest(() -> ScoringPoses.updateConeLateralOffset()),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL)),
 			choreographyRequest(coordinator::getConeStowChoreography)
-		));
+		);
 	}
 
 	private void scoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo, 
