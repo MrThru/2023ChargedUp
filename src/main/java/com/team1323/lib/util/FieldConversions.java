@@ -5,6 +5,8 @@
 package com.team1323.lib.util;
 
 import com.team1323.lib.math.geometry.Vector3d;
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Translation2d;
 
 
 /** Add your docs here. */
@@ -32,6 +34,11 @@ public class FieldConversions {
 
     public static Vector3d convertToField(Vector3d centerPoint, Vector3d cord) {
         return cord.add(centerPoint);
+    }
+
+    public static Pose2d convertToField(Vector3d centerPoint, Pose2d pose) {
+        return new Pose2d(pose.getTranslation().translateBy(new Translation2d(centerPoint.x(), centerPoint.y())), 
+                pose.getRotation());
     }
 
 }

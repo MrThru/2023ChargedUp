@@ -7,10 +7,11 @@ import java.util.List;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.field.AllianceChooser;
+import com.team1323.frc2023.loops.LimelightHelpers.LimelightResults;
+import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Fiducial;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
-import com.team1323.lib.math.geometry.Vector3d;
 import com.team1323.lib.util.FieldConversions;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Pose2d;
@@ -19,6 +20,7 @@ import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,9 +56,9 @@ public class LimelightProcessor implements Loop {
 	
 	@Override 
 	public void onLoop(double timestamp) {
-		double currentHeartbeat = LimelightHelper.getLimelightNTDouble(kLimelightName, "hb");
+		double currentHeartbeat = LimelightHelpers.getLimelightNTDouble(kLimelightName, "hb");
 		if (currentHeartbeat > previousHeartbeat && !Netlink.getBooleanValue("Limelight Disabled")) {
-			LimelightResults results = LimelightHelper.getLatestResults(kLimelightName);
+			LimelightResults results = LimelightHelpers.getLatestResults(kLimelightName);
 			handleFiducialTargets(results, timestamp);
 			handleRetroTargets(results, timestamp);
 			previousHeartbeat = currentHeartbeat;
@@ -76,26 +78,24 @@ public class LimelightProcessor implements Loop {
 			return;
 		}
 
-		double[] robotPoseArray;
-		double[] cameraPoseArray;
+		Pose2d robotPoseInLimelightCoordinates;
+		Pose3d cameraPose;
 		List<LimelightTarget_Fiducial> fiducials = Arrays.asList(results.targetingResults.targets_Fiducials);
 		if (fiducials.stream().allMatch(fiducial -> fiducial.ta >= kMinFiducialArea)) {
-			robotPoseArray = LimelightHelper.getBotpose(kLimelightName);
-			cameraPoseArray = LimelightHelper.getCameraPose_TargetSpace(kLimelightName);
+			robotPoseInLimelightCoordinates = LimelightHelpers.getBotPose2d(kLimelightName);
+			cameraPose = LimelightHelpers.getCameraPose3d_TargetSpace(kLimelightName);
 		} else {
 			Comparator<LimelightTarget_Fiducial> areaComparator = (f1, f2) -> Double.compare(f1.ta, f2.ta);
 			LimelightTarget_Fiducial largestFiducial = Collections.max(fiducials, areaComparator);
-			robotPoseArray = largestFiducial.robotPose_FieldSpace;
-			cameraPoseArray = largestFiducial.cameraPose_TargetSpace;
+			robotPoseInLimelightCoordinates = largestFiducial.getRobotPose_FieldSpace2D();
+			cameraPose = LimelightHelpers.getCameraPose3d_TargetSpace(kLimelightName);
 		}
 
-		if (robotPoseArray.length != 6 || cameraPoseArray.length != 6) {
+		if (robotPoseInLimelightCoordinates.equals(Pose2d.identity()) || cameraPose.equals(new Pose3d())) {
 			return;
 		}
 
-		Vector3d robotPositionInLimelightCoordinates = new Vector3d(robotPoseArray[0], robotPoseArray[1], robotPoseArray[2]);
-		Vector3d robotPositionInWpiCoordinates = FieldConversions.convertToField(Constants.kLimelightFieldOrigin, robotPositionInLimelightCoordinates);
-		Pose2d estimatedRobotPoseMeters = new Pose2d(robotPositionInWpiCoordinates.x(), robotPositionInWpiCoordinates.y(), Rotation2d.fromDegrees(robotPoseArray[5]));
+		Pose2d estimatedRobotPoseMeters = FieldConversions.convertToField(Constants.kLimelightFieldOrigin, robotPoseInLimelightCoordinates);
 		Pose2d estimatedRobotPoseInches = Units.metersToInches(estimatedRobotPoseMeters);
 
 		// Only accept vision updates if they place the robot within our own community or loading zone
@@ -104,8 +104,7 @@ public class LimelightProcessor implements Loop {
 			return;
 		}
 
-		Vector3d cameraPoseVector = new Vector3d(cameraPoseArray[0], cameraPoseArray[1], cameraPoseArray[2]);
-		double cameraDistanceInches = Units.metersToInches(cameraPoseVector.magnitude());
+		double cameraDistanceInches = Units.metersToInches(cameraPose.getTranslation().getNorm());
 
 		double translationalStdDev = translationalStandardDeviationRamp.calculate(cameraDistanceInches);
 		double rotationalStdDev = rotationalStandardDeviationRamp.calculate(cameraDistanceInches);
@@ -114,7 +113,6 @@ public class LimelightProcessor implements Loop {
 
 		// For debugging purposes
 		if (Swerve.getInstance().getState() == Swerve.ControlState.VISION_PID) {
-			System.out.println("Vision measurement added");
 			SmartDashboard.putNumberArray("Path Pose", new double[]{estimatedRobotPoseInches.getTranslation().x(), estimatedRobotPoseInches.getTranslation().y(), estimatedRobotPoseInches.getRotation().getDegrees()});
 		}
 	}
@@ -126,16 +124,16 @@ public class LimelightProcessor implements Loop {
 
 		int pipelineIndex = (int) results.targetingResults.pipelineID;
 		if (pipelineIndex == Pipeline.RETRO.index) {
-			handleConePoleTarget(results, timestamp);
+			handleConePoleTargets(results, timestamp);
 		} else if (pipelineIndex == Pipeline.CONE.index) {
 
 		}
 	}
 
-	private void handleConePoleTarget(LimelightResults results, double timestamp) {
+	private void handleConePoleTargets(LimelightResults results, double timestamp) {
 		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(timestamp - getTotalLatencySeconds(results));
 		double approximateDistanceToTarget = Math.abs(robotPose.getTranslation().x() - AllianceChooser.getConePoleX());
-		Rotation2d rotationToTarget = Rotation2d.fromDegrees(-LimelightHelper.getTX(kLimelightName));
+		Rotation2d rotationToTarget = Rotation2d.fromDegrees(-LimelightHelpers.getTX(kLimelightName));
 
 		Translation2d approximateTargetPosition = robotPose
 				.transformBy(Pose2d.fromRotation(rotationToTarget))
@@ -145,7 +143,7 @@ public class LimelightProcessor implements Loop {
 	}
 
 	public void setPipeline(Pipeline pipeline) {
-		LimelightHelper.setPipelineIndex(kLimelightName, pipeline.index);
+		LimelightHelpers.setPipelineIndex(kLimelightName, pipeline.index);
 	}
 
 	public enum Pipeline {
