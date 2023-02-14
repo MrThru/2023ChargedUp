@@ -2,6 +2,8 @@ package com.team1323.frc2023.field;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.vision.AprilTagTracker.AprilTag;
@@ -27,8 +29,18 @@ public class AllianceChooser {
             new Translation2d(636.96, 216.03 + 99.07));
     private static final Box2d redLoadingZoneBoundingBox = Box2d.fromRectangleCorners(new Translation2d(14.25, 216.03), 
             new Translation2d(14.25 + 118.25, 216.03 + 99.07));
-    private static final double blueConePoleX = 40.45 - 18.5;
-    private static final double redConePoleX = 610.77 + 18.5;
+    private static final double blueMidConePoleX = 40.45 - 8.913;
+    private static final double blueHighConePoleX = 40.45 - 25.926;
+    private static final double redMidConePoleX = 610.77 + 8.913;
+    private static final double redHighConePoleX = 610.77 + 25.926;
+    private static Function<AprilTag, Stream<Double>> aprilTagToConePoleYs = aprilTag -> {
+        double kAprilTagToConePoleLateralDisplacement = 22.0;
+        double aprilTagY = aprilTag.getTranslation2d().y();
+
+        return Stream.of(aprilTagY + kAprilTagToConePoleLateralDisplacement, aprilTagY - kAprilTagToConePoleLateralDisplacement);
+    };
+    private static final List<Double> blueConePoleYs = blueCommunityAprilTags.stream().flatMap(aprilTagToConePoleYs).toList();
+    private static final List<Double> redConePoleYs = redCommunityAprilTags.stream().flatMap(aprilTagToConePoleYs).toList();
 
     public static Alliance getAlliance() {
         return alliance;
@@ -50,7 +62,21 @@ public class AllianceChooser {
         return (alliance == Alliance.Blue) ? blueLoadingZoneBoundingBox : redLoadingZoneBoundingBox;
     }
 
-    public static double getConePoleX() {
-        return (alliance == Alliance.Blue) ? blueConePoleX : redConePoleX;
+    public static double getMidConePoleX() {
+        return (alliance == Alliance.Blue) ? blueMidConePoleX : redMidConePoleX;
+    }
+
+    public static double getHighConePoleX() {
+        return (alliance == Alliance.Blue) ? blueHighConePoleX : redHighConePoleX;
+    }
+
+    public static double getAverageConePoleX() {
+        return (alliance == Alliance.Blue) ?
+                (blueMidConePoleX + blueHighConePoleX) / 2.0 :
+                (redMidConePoleX + redHighConePoleX) / 2.0;
+    }
+
+    public static List<Double> getConePoleYs() {
+        return (alliance == Alliance.Blue) ? blueConePoleYs : redConePoleYs;
     }
 }

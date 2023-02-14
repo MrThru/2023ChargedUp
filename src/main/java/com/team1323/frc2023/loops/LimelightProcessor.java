@@ -9,6 +9,7 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightResults;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Fiducial;
+import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Retro;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
@@ -124,15 +125,15 @@ public class LimelightProcessor implements Loop {
 
 		int pipelineIndex = (int) results.targetingResults.pipelineID;
 		if (pipelineIndex == Pipeline.RETRO.index) {
-			handleConePoleTargets(results, timestamp);
+			updateRobotPoseWithConePoles(results, timestamp);
 		} else if (pipelineIndex == Pipeline.CONE.index) {
 
 		}
 	}
 
-	private void handleConePoleTargets(LimelightResults results, double timestamp) {
+	private void updateConePolePosition(LimelightResults results, double timestamp) {
 		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(timestamp - getTotalLatencySeconds(results));
-		double approximateDistanceToTarget = Math.abs(robotPose.getTranslation().x() - AllianceChooser.getConePoleX());
+		double approximateDistanceToTarget = Math.abs(robotPose.getTranslation().x() - AllianceChooser.getAverageConePoleX());
 		Rotation2d rotationToTarget = Rotation2d.fromDegrees(-LimelightHelpers.getTX(kLimelightName));
 
 		Translation2d approximateTargetPosition = robotPose
@@ -140,6 +141,51 @@ public class LimelightProcessor implements Loop {
 				.transformBy(Pose2d.fromTranslation(new Translation2d(approximateDistanceToTarget, 0.0)))
 				.getTranslation();
 		Swerve.getInstance().addRetroObservation(approximateTargetPosition, timestamp);
+	}
+
+	private void updateRobotPoseWithConePoles(LimelightResults results, double timestamp) {
+		final double kTYDecisionValue = 10.0;
+
+		double observationTimestamp = timestamp - getTotalLatencySeconds(results);
+		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(observationTimestamp);
+
+		List<LimelightTarget_Retro> retroTargets;
+		if (results.targetingResults.targets_Retro.length > 2) {
+			Comparator<LimelightTarget_Retro> areaComparator = (r1, r2) -> Double.compare(r2.ta, r1.ta);
+			retroTargets = Arrays.stream(results.targetingResults.targets_Retro)
+					.sorted(areaComparator)
+					.limit(2)
+					.toList();
+		} else {
+			retroTargets = Arrays.asList(results.targetingResults.targets_Retro);
+		}
+
+		double conePoleY = getNearestConePoleY(robotPose);
+		for (LimelightTarget_Retro retroTarget : retroTargets) {
+			double conePoleX = retroTarget.ty > kTYDecisionValue ? AllianceChooser.getHighConePoleX() : AllianceChooser.getMidConePoleX();
+			Translation2d polePosition = new Translation2d(conePoleX, conePoleY);
+			updateRobotPoseWithConePole(retroTarget, polePosition, robotPose, observationTimestamp);
+		}
+	}
+
+	private void updateRobotPoseWithConePole(LimelightTarget_Retro retroTarget, Translation2d polePosition, Pose2d robotPose, double observationTimestamp) {
+		// TODO: Implement this
+		// Calculate the position of the retro target in the robot's coordinate system.
+		// Use the difference between the calculated position and the true position to
+		// estimate what the robot pose should actually be. Add this estimated robot
+		// pose as a vision measurement to the swerve. Remember to use the same heading
+		// as the current robot pose; retro targets don't provide good heading approximations.
+	}
+
+	private double getNearestConePoleY(Pose2d robotPose) {
+		Comparator<Double> distanceToRobotComparator = (y1, y2) -> {
+			double y1Distance = Math.abs(y1 - robotPose.getTranslation().y());
+			double y2Distance = Math.abs(y2 - robotPose.getTranslation().y());
+
+			return Double.compare(y1Distance, y2Distance);
+		};
+
+		return Collections.min(AllianceChooser.getConePoleYs(), distanceToRobotComparator);
 	}
 
 	public void setPipeline(Pipeline pipeline) {
