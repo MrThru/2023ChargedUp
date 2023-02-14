@@ -57,6 +57,10 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         banner = new DigitalInput(Ports.INTAKE_BANNER);
     }
 
+    public static enum GameObject {
+        
+    }
+
     public static enum State {
         STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.5);
         double intakeAngle;

@@ -42,6 +42,24 @@ public class Claw extends Subsystem {
         claw.setPIDF(Constants.Claw.kPID);
     }
 
+    public enum HoldingObject {
+        Cone(ControlState.CONE_INTAKE, ControlState.CONE_OUTAKE), Cube(ControlState.CUBE_INTAKE, ControlState.CUBE_OUTAKE), 
+                None(ControlState.OFF, ControlState.OFF);
+        ControlState intakeState;
+        ControlState outtakeState;
+        HoldingObject(ControlState intakeState, ControlState outtakeState) {
+            this.intakeState = intakeState;
+            this.outtakeState = outtakeState;
+        }
+    }
+    private HoldingObject currentHoldingObject = HoldingObject.None;
+    public HoldingObject getCurrentHoldingObject() {
+        return currentHoldingObject;
+    }
+    private void setCurrentHoldingObject(HoldingObject holdingObject) {
+        currentHoldingObject = holdingObject;
+    }
+
     public enum ControlState {
         OFF(0.0), CUBE_INTAKE(-0.5), CUBE_OUTAKE(0.5), CONE_INTAKE(0.5), CONE_OUTAKE(-0.5);
         double speed;
@@ -73,38 +91,59 @@ public class Claw extends Subsystem {
         setPercentSpeed(state.speed);
     }
 
+    private double looperStartTime = 0;
     Loop loop = new Loop() {
 
         @Override
         public void onStart(double timestamp) {
-            reset();            
+            conformToState(getCurrentHoldingObject().intakeState);
+            looperStartTime = timestamp;
         }
 
         @Override
         public void onLoop(double timestamp) {
+            if((timestamp - looperStartTime) > 2.0 && ((timestamp - looperStartTime) < 3.0) && claw.getOutputCurrent() < 5 && 
+                        (currentState == ControlState.CONE_INTAKE || currentState == ControlState.CUBE_INTAKE)) {
+                conformToState(ControlState.OFF);
+            }
+
             if(currentState == ControlState.CONE_INTAKE) {
                 if(stateChanged)
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.01);
                 if(claw.getOutputCurrent() > Constants.Claw.kIntakeConeAmpThreshold) {
+                    setCurrentHoldingObject(HoldingObject.Cone);
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent, 0.01);
                 }
+
             } else if(currentState == ControlState.CUBE_INTAKE) {
                 if(stateChanged)
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
+                if(claw.getOutputCurrent() > Constants.Claw.kIntakeCubeAmpThreshold) {
+                    setCurrentHoldingObject(HoldingObject.Cube);
+                }
+
+                
             } else if(currentState == ControlState.CONE_OUTAKE) {
                 if(stateChanged)
                     stopwatch.start();
                 if(stopwatch.getTime() > 1.0) {
                     conformToState(ControlState.OFF);
                     stopwatch.reset();
+                    setCurrentHoldingObject(HoldingObject.None);
                 }
+
             } else if(currentState == ControlState.CUBE_OUTAKE) {
                 if(stateChanged)
                     stopwatch.start();
                 if(stopwatch.getTime() > 1.0) {
                     conformToState(ControlState.OFF);
                     stopwatch.reset();
+                    setCurrentHoldingObject(HoldingObject.None);
                 }
+
+            } else if(currentState == ControlState.OFF) {
+                conformToState(ControlState.OFF);
+                setCurrentHoldingObject(HoldingObject.None);
             }
             if(stateChanged)
                 stateChanged = false;
@@ -152,8 +191,9 @@ public class Claw extends Subsystem {
     }
     @Override
     public void stop() {
-        reset();
-        conformToState(ControlState.OFF);
+        if(getCurrentHoldingObject() == HoldingObject.None) {
+            conformToState(ControlState.OFF);
+        }
     }
 
 }
