@@ -20,6 +20,7 @@ import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
+import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.requests.EmptyRequest;
 import com.team1323.frc2023.subsystems.requests.LambdaRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
@@ -283,6 +284,22 @@ public class Superstructure extends Subsystem {
 	}
 	public void handOffCubeState() {
 		request(getHandOffCubeSequence());
+	}
+
+	public void shelfSequence(boolean left) {
+		Pose2d shelfPose = ScoringPoses.getShelfPose(left);
+		swerve.startVisionPID(shelfPose, shelfPose.getRotation());
+
+		request(new SequentialRequest(
+			choreographyRequest(coordinator::getShelfChoreography)
+					.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 24.0),
+			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
+			swerve.startRobotCentricTrajectoryRequest(new Translation2d(-36.0, 0.0), shelfPose.getRotation(), 24.0)
+					.withPrerequisite(() -> claw.getCurrentHoldingObject() == HoldingObject.Cone),
+			new LambdaRequest(() -> swerve.resetVisionPID()),
+			waitRequest(2.0),
+			choreographyRequest(coordinator::getConeStowChoreography)
+		));
 	}
 
 	private void scoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo, 

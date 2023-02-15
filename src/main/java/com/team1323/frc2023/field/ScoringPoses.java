@@ -24,6 +24,8 @@ public class ScoringPoses {
     private static final double kAprilTagToConeLateralDisplacement = 22.0;
     private static final double kAprilTagToBarrierForwardDisplacement = 13.8;
     private static final double kScoringPoseForwardPadding = 2.0;
+    private static final double kAprilTagToShelfLateralDisplacement = 24.0;
+    private static final double kShelfPoseForwardPadding = 6.0;
     private static double coneLateralOffset = 0.0;
 
     private static final Map<Alliance, Map<Grid, AprilTag>> kGridToAprilTagMap = Map.of(
@@ -49,7 +51,10 @@ public class ScoringPoses {
     );
 
     public static void updateConeLateralOffset() {
-        coneLateralOffset = SmartDashboard.getNumber("Cone Left-Right Offset", 0.0);
+        double offset = SmartDashboard.getNumber("Cone Left-Right Offset", 0.0);
+        if (!Double.isNaN(offset)) {
+            coneLateralOffset = offset;
+        }
     }
 
     public static Pose2d getScoringPose(NodeLocation nodeLocation) {
@@ -68,12 +73,22 @@ public class ScoringPoses {
         }
 
         Pose2d tagToRobotTransform = Pose2d.fromTranslation(new Translation2d(
-            -(kAprilTagToBarrierForwardDisplacement + kScoringPoseForwardPadding + Constants.kRobotHalfWidth), 
+            -(kAprilTagToBarrierForwardDisplacement + kScoringPoseForwardPadding + Constants.kRobotHalfLength), 
             yTransform
         ));
         Pose2d scoringPose = nodeTag.getPose2d().transformBy(tagToRobotTransform);
 
         return Settings.kFieldOffsets.applyOffsets(scoringPose, nodeLocation);
+    }
+
+    public static Pose2d getShelfPose(boolean left) {
+        double yTransform = left ? kAprilTagToShelfLateralDisplacement : -kAprilTagToShelfLateralDisplacement;
+        Pose2d tagToRobotTransform = Pose2d.fromTranslation(new Translation2d(
+            -(kShelfPoseForwardPadding + Constants.kRobotHalfLength),
+            yTransform
+        ));
+
+        return AllianceChooser.getLoadingZoneAprilTag().getPose2d().transformBy(tagToRobotTransform);
     }
 
     private static AprilTag getNearestAprilTag(Pose2d robotPose) {

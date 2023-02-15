@@ -21,6 +21,8 @@ public class AllianceChooser {
     private static Alliance alliance;
     private static final List<AprilTag> redCommunityAprilTags = Arrays.asList(AprilTag.ONE, AprilTag.TWO, AprilTag.THREE);
     private static final List<AprilTag> blueCommunityAprilTags = Arrays.asList(AprilTag.SIX, AprilTag.SEVEN, AprilTag.EIGHT);
+    private static final AprilTag redLoadingZoneAprilTag = AprilTag.FIVE;
+    private static final AprilTag blueLoadingZoneAprilTag = AprilTag.FOUR;
     private static final Box2d blueCommunityBoundingBox = Box2d.fromRectangleCorners(new Translation2d(40.45 + 13.8 + Constants.kRobotHalfLength, 0.0), 
             new Translation2d(40.45 + 13.8 + 136.81, 216.03));
     private static final Box2d redCommunityBoundingBox = Box2d.fromRectangleCorners(new Translation2d(610.77 - 13.8 - 136.81, 0.0), 
@@ -52,6 +54,10 @@ public class AllianceChooser {
 
     public static List<AprilTag> getCommunityAprilTags() {
         return (alliance == Alliance.Blue) ? blueCommunityAprilTags : redCommunityAprilTags;
+    }
+
+    public static AprilTag getLoadingZoneAprilTag() {
+        return (alliance == Alliance.Blue) ? blueLoadingZoneAprilTag : redLoadingZoneAprilTag;
     }
 
     public static Box2d getCommunityBoundingBox() {

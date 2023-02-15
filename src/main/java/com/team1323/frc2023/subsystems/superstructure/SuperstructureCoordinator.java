@@ -318,6 +318,17 @@ public class SuperstructureCoordinator {
         return getHighChoreography(finalPosition);
     }
 
+    public Request getShelfChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            10.0,
+            4.0,
+            45.0,
+            -10.0
+        );
+
+        return getHighChoreography(finalPosition);
+    }
+
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             20.0,
