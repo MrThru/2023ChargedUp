@@ -79,6 +79,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     private void conformToState(State desiredState) {
+        setIntakeCurrent(60.0);
         setPosition(desiredState.intakeAngle);
         setIntakeSpeed(desiredState.intakeSpeed);
         setState(desiredState);

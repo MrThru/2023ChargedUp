@@ -10,6 +10,7 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.Loop;
@@ -80,7 +81,7 @@ public class DriverControls implements Loop {
         return inAuto;
     }
 
-    private boolean highScoreSet = false;
+    private String scoringHeight = "low";
 
     public DriverControls() {
         driver = new Xbox(0);
@@ -179,24 +180,25 @@ public class DriverControls implements Loop {
                 Pose2d leftScoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
                 Pose2d rightScoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
                 Pose2d closestScoringPose = rightScoringPose;
-                if(leftScoringPose.distance(swerve.getPose()) < rightScoringPose.distance(swerve.getPose())) {
+                if(leftScoringPose.getTranslation().distance(swerve.getPose().getTranslation()) < rightScoringPose.getTranslation().distance(swerve.getPose().getTranslation())) {
                     closestScoringPose = leftScoringPose;
                 }
-                if(highScoreSet) {
+                if(scoringHeight == "high") {
                     s.coneHighScoringSequence(closestScoringPose);
-                } else {
+                } else if(scoringHeight == "mid") {
                     s.coneMidScoringSequence(closestScoringPose);
                 }
             } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube || !tunnel.allowSingleIntakeMode()) {
                 if(!tunnel.allowSingleIntakeMode() && claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
                     s.intakeCubeAndScore(null, null, null);
-                    return;
-                }
-                if(highScoreSet) {
+                } else if(scoringHeight == "high") {
                     s.cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()));
-                } else {
+                } else if(scoringHeight == "mid") {
                     s.cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()));
                 }
+            }
+            if(scoringHeight == "low") {
+                tunnel.setState(Tunnel.State.EJECT_ONE);
             }
         }
 
@@ -229,7 +231,7 @@ public class DriverControls implements Loop {
         }
 
         
-        if (coDriver.bButton.shortReleased()) {
+        if (coDriver.bButton.wasReleased()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
                 s.coneStowSequence();
             } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
@@ -244,19 +246,38 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.xButton.wasActivated()) {
-            highScoreSet = false;
+            scoringHeight = "mid";
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
                 s.handOffCubeState();
             }
         }
         if(coDriver.yButton.wasActivated()) {
-            highScoreSet = true;
+            scoringHeight = "high";
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
                 s.handOffCubeState();
             }
         }
-        
+        if(coDriver.rightTrigger.wasActivated()) {
+            scoringHeight = "low";
+        }
 
+        if(coDriver.leftTrigger.wasActivated() && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+                s.request(
+                    SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
+                    claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
+                );
+            }
+            tunnel.setState(Tunnel.State.COMMUNITY);
+        } else if(coDriver.leftTrigger.wasReleased()) {
+            s.postIntakeState();
+        }
+
+        if(coDriver.rightBumper.wasActivated()) {
+            tunnel.setState(Tunnel.State.SPIT);
+        } else if(coDriver.rightBumper.wasReleased()) {
+            tunnel.setState(Tunnel.State.HOLD);
+        }
 
     }
 

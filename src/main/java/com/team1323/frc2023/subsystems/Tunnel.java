@@ -58,7 +58,7 @@ public class Tunnel extends Subsystem {
     }
 
     public enum State {
-        OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE;
+        OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY;
     }
     private State currentState = State.OFF;
     public State getState() {
@@ -122,7 +122,33 @@ public class Tunnel extends Subsystem {
         public void onLoop(double timestamp) {
             switch(currentState) {
                 //ToDo: Send straight through to claw, if the claw is empty
-                case DETECT: //Used for the community
+                case COMMUNITY:
+                    if(Claw.getInstance().getCurrentHoldingObject() == Claw.HoldingObject.None) {
+                        setRollerSpeeds(-Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
+                        setTunnelEntranceSpeed(0.50);
+                    } else if(!getFrontBanner()) {
+                        setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
+                        setTunnelEntranceSpeed(0.50);
+                    } else if(!getRearBanner()) {
+                        setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
+                        setTunnelEntranceSpeed(0.50);
+                    } else {
+                        if(CubeIntake.getInstance().getBanner() && Double.isInfinite(lastCubeDetectedtimestamp)) {
+                            lastCubeDetectedtimestamp = timestamp;
+                        } else if(Double.isInfinite(lastCubeDetectedtimestamp)) {
+                            setRollerSpeeds(0, 0);
+                            setTunnelEntranceSpeed(0.05);
+                        }
+                        if(timestamp - lastCubeDetectedtimestamp > 0.5) {
+                            setTunnelEntranceSpeed(0.0);
+                            lastCubeDetectedtimestamp = Double.POSITIVE_INFINITY;
+                            CubeIntake.getInstance().setHoldMode();
+                            setState(State.OFF);
+                        }
+                        
+                    }
+                    break;
+                case DETECT:
                     if(!getFrontBanner()) {
                         setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
                         setTunnelEntranceSpeed(0.50);
