@@ -80,6 +80,8 @@ public class DriverControls implements Loop {
         return inAuto;
     }
 
+    private boolean highScoreSet = false;
+
     public DriverControls() {
         driver = new Xbox(0);
 		coDriver = new Xbox(1);
@@ -180,9 +182,21 @@ public class DriverControls implements Loop {
                 if(leftScoringPose.distance(swerve.getPose()) < rightScoringPose.distance(swerve.getPose())) {
                     closestScoringPose = leftScoringPose;
                 }
-                swerve.startVisionPID(closestScoringPose, closestScoringPose.getRotation());
+                if(highScoreSet) {
+                    s.coneHighScoringSequence(closestScoringPose);
+                } else {
+                    s.coneMidScoringSequence(closestScoringPose);
+                }
             } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube || !tunnel.allowSingleIntakeMode()) {
-                swerve.startVisionPID(ScoringPoses.getCenterScoringPose(swerve.getPose()), swerve.getPose().getRotation());
+                if(!tunnel.allowSingleIntakeMode() && claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+                    s.intakeCubeAndScore(null, null, null);
+                    return;
+                }
+                if(highScoreSet) {
+                    s.cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()));
+                } else {
+                    s.cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()));
+                }
             }
         }
 
@@ -206,6 +220,10 @@ public class DriverControls implements Loop {
             if(tunnel.allowSingleIntakeMode()) {
                 s.intakeState(Tunnel.State.SINGLE_INTAKE);
             }
+        } else if(coDriver.aButton.isBeingPressed()) {
+            if(tunnel.getFrontBanner()) {
+                s.postIntakeState();
+            } 
         } else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState();
         }
@@ -226,41 +244,19 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.xButton.wasActivated()) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
-                
-                s.setSuperstructureScorePositions(SuperstructureCoordinator.getInstance()::getConeMidScoringChoreography, Claw.ControlState.CONE_OUTAKE, 
-                        SuperstructureCoordinator.getInstance()::getFullStowChoreography);
-
-            } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
-                s.setSuperstructureScorePositions(SuperstructureCoordinator.getInstance()::getCubeMidScoringChoreography, Claw.ControlState.CONE_OUTAKE, 
-                        SuperstructureCoordinator.getInstance()::getFullStowChoreography);
-            } else {
-                if(!tunnel.allowSingleIntakeMode()) {
-                    s.intakeCubeAndScore(SuperstructureCoordinator.getInstance()::getCubeMidScoringChoreography, Claw.ControlState.CONE_OUTAKE, 
-                            SuperstructureCoordinator.getInstance()::getFullStowChoreography);   
-                }
+            highScoreSet = false;
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
+                s.handOffCubeState();
             }
         }
-
-
         if(coDriver.yButton.wasActivated()) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
-                
-                s.setSuperstructureScorePositions(SuperstructureCoordinator.getInstance()::getConeHighScoringChoreography, Claw.ControlState.CONE_OUTAKE, 
-                        SuperstructureCoordinator.getInstance()::getFullStowChoreography);
-
-            } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
-                s.setSuperstructureScorePositions(SuperstructureCoordinator.getInstance()::getCubeHighScoringChoreography, Claw.ControlState.CONE_OUTAKE, 
-                        SuperstructureCoordinator.getInstance()::getFullStowChoreography);
-            } else {
-                if(!tunnel.allowSingleIntakeMode()) {
-                    s.intakeCubeAndScore(SuperstructureCoordinator.getInstance()::getCubeHighScoringChoreography, Claw.ControlState.CONE_OUTAKE, 
-                            SuperstructureCoordinator.getInstance()::getFullStowChoreography);   
-                }
+            highScoreSet = true;
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
+                s.handOffCubeState();
             }
         }
-
         
+
 
     }
 
