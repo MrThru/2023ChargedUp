@@ -272,6 +272,19 @@ public class Superstructure extends Subsystem {
 		);
 	}
 
+	private Request getHandOffCubeSequence() {
+		return new SequentialRequest(
+			SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
+			new ParallelRequest(
+				tunnel.stateRequest(Tunnel.State.EJECT_ONE),
+				claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
+			)
+		);
+	}
+	public void handOffCubeState() {
+		request(getHandOffCubeSequence());
+	}
+
 	private void scoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo, 
 			Claw.ControlState clawScoringState, ChoreographyProvider stowingChoreo) {
 		request(new SequentialRequest(
@@ -288,6 +301,32 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
+
+	private Request getSuperstructureScorePositions(ChoreographyProvider scoringChoreo, 
+			Claw.ControlState clawScoringState, ChoreographyProvider stowingChoreo) {
+		return new SequentialRequest(
+			choreographyRequest(scoringChoreo),
+			new LambdaRequest(() -> claw.conformToState(clawScoringState)),
+			waitRequest(1.0),
+			choreographyRequest(stowingChoreo)
+		);
+	}
+	public void setSuperstructureScorePositions(ChoreographyProvider scoringChoreo, 
+			Claw.ControlState clawScoringState, ChoreographyProvider stowingChoreo) {
+		request(getSuperstructureScorePositions(scoringChoreo, clawScoringState, stowingChoreo));
+	}
+	
+
+	public void intakeCubeAndScore(ChoreographyProvider scoringChoreo,
+			Claw.ControlState clawScoringState, ChoreographyProvider stowingChoreo) {
+			request(new SequentialRequest(
+				getHandOffCubeSequence(),
+				getSuperstructureScorePositions(scoringChoreo, clawScoringState, stowingChoreo).
+						withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube)
+			));
+
+	}
+	
 	public void scoringSequence(NodeLocation nodeLocation) {
 		if (nodeLocation.row == Row.BOTTOM) {
 			return;
