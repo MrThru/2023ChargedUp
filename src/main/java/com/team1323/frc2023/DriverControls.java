@@ -160,7 +160,7 @@ public class DriverControls implements Loop {
             swerve.rotate(Rotation2d.fromDegrees(0));
         
 
-        if (driver.startButton.wasActivated()) {
+        if (driver.rightTrigger.wasActivated()) {
             //swerve.setVelocity(Rotation2d.fromDegrees(180), 36.0);
             //swerve.setState(Swerve.ControlState.NEUTRAL);
             NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
