@@ -11,6 +11,7 @@ import com.team1323.frc2023.loops.LimelightHelpers.LimelightResults;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Fiducial;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Retro;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.TargetInfo;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.util.FieldConversions;
@@ -47,6 +48,13 @@ public class LimelightProcessor implements Loop {
 		1.0,
 		false
 	);
+
+	private static final Pose2d kRobotToCameraTransform = new Pose2d(new Translation2d(Constants.kCameraXOffset, Constants.kCameraYOffset),
+			Rotation2d.identity());
+	private static final Rotation2d kCameraPitchCorrection = Rotation2d.fromDegrees(Constants.kCameraPitchAngleDegrees);
+	private static final Rotation2d kCameraYawCorrection = Rotation2d.fromDegrees(Constants.kCameraYawAngleDegrees);
+	private static final double kMidConePoleHeight = 24.125;
+	private static final double kHighConePoleHeight = 43.875;
 
 	private double previousHeartbeat = -1.0;
 	
@@ -162,19 +170,28 @@ public class LimelightProcessor implements Loop {
 
 		double conePoleY = getNearestConePoleY(robotPose);
 		for (LimelightTarget_Retro retroTarget : retroTargets) {
-			double conePoleX = retroTarget.ty > kTYDecisionValue ? AllianceChooser.getHighConePoleX() : AllianceChooser.getMidConePoleX();
+			boolean isHighPole = retroTarget.ty > kTYDecisionValue;
+			double conePoleX = isHighPole ? AllianceChooser.getHighConePoleX() : AllianceChooser.getMidConePoleX();
+			double conePoleHeight = isHighPole ? kHighConePoleHeight : kMidConePoleHeight;
 			Translation2d polePosition = new Translation2d(conePoleX, conePoleY);
-			updateRobotPoseWithConePole(retroTarget, polePosition, robotPose, observationTimestamp);
+			updateRobotPoseWithConePole(retroTarget, polePosition, conePoleHeight, robotPose, observationTimestamp);
 		}
 	}
 
-	private void updateRobotPoseWithConePole(LimelightTarget_Retro retroTarget, Translation2d polePosition, Pose2d robotPose, double observationTimestamp) {
-		// TODO: Implement this
-		// Calculate the position of the retro target in the robot's coordinate system.
-		// Use the difference between the calculated position and the true position to
-		// estimate what the robot pose should actually be. Add this estimated robot
-		// pose as a vision measurement to the swerve. Remember to use the same heading
-		// as the current robot pose; retro targets don't provide good heading approximations.
+	private void updateRobotPoseWithConePole(LimelightTarget_Retro retroTarget, Translation2d truePolePosition, 
+			double poleHeight, Pose2d robotPose, double observationTimestamp) {
+		TargetInfo targetInfo = new TargetInfo(Rotation2d.fromDegrees(-retroTarget.tx).tan(), Rotation2d.fromDegrees(retroTarget.ty).tan());
+		Translation2d estimatedPolePosition = getRetroTargetPosition(targetInfo, poleHeight, robotPose);
+		Translation2d positionCorrection = new Translation2d(estimatedPolePosition, truePolePosition);
+		Pose2d correctedRobotPose = new Pose2d(robotPose.getTranslation().translateBy(positionCorrection), robotPose.getRotation());
+		Matrix<N3, N1> standardDeviations = VecBuilder.fill(0.1, 0.1, 0.1);
+
+		//Swerve.getInstance().addVisionMeasurement(Units.inchesToMeters(correctedRobotPose), observationTimestamp, standardDeviations);
+
+		// For debugging purposes
+		if (poleHeight == kMidConePoleHeight) {
+			SmartDashboard.putString("Cone Pole Position", new Translation2d(robotPose.getTranslation(), estimatedPolePosition).toString());
+		}
 	}
 
 	private double getNearestConePoleY(Pose2d robotPose) {
@@ -186,6 +203,31 @@ public class LimelightProcessor implements Loop {
 		};
 
 		return Collections.min(AllianceChooser.getConePoleYs(), distanceToRobotComparator);
+	}
+
+	private Translation2d getRetroTargetPosition(TargetInfo target, double physicalTargetHeight, Pose2d robotPose) {
+		final double differentialHeight = Constants.kCameraZOffset - physicalTargetHeight;
+		final Pose2d cameraPose = robotPose.transformBy(kRobotToCameraTransform);
+
+		double ydeadband = target.getY();
+		
+		// Compensate for camera yaw
+		double xyaw = target.getX() * kCameraYawCorrection.cos() + ydeadband * kCameraYawCorrection.sin();
+		double yyaw = ydeadband * kCameraYawCorrection.cos() - target.getX() * kCameraYawCorrection.sin();
+		double zyaw = target.getZ();
+		
+		// Compensate for camera pitch
+		double xr = zyaw * kCameraPitchCorrection.sin() + xyaw * kCameraPitchCorrection.cos();
+		double yr = yyaw;
+		double zr = zyaw * kCameraPitchCorrection.cos() - xyaw * kCameraPitchCorrection.sin();
+		
+		// find intersection with the goal
+		double scaling = differentialHeight / zr;
+		double distance = Math.hypot(xr, yr) * scaling;
+		Rotation2d angle = new Rotation2d(xr, yr, true);
+
+		return cameraPose.transformBy(Pose2d.fromTranslation(new Translation2d(distance * angle.cos(), distance * angle.sin())))
+				.getTranslation();
 	}
 
 	public void setPipeline(Pipeline pipeline) {

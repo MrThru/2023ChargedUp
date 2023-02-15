@@ -43,11 +43,11 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants (X and Y are with respect to the turret's center)
-    public static final double kCameraYOffset = 0.0;//0.25
-    public static final double kCameraXOffset = 7.236; //8.5 //9.586
-    public static final double kCameraZOffset = 44.467; //26.776 24.524 //42.095
-    public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = Settings.kIsUsingCompBot ? 39.5 : 36.5; //37.5
+    public static final double kCameraYOffset = 0.0;
+    public static final double kCameraXOffset = 3.86;
+    public static final double kCameraZOffset = 52.614;
+    public static final double kCameraYawAngleDegrees = 0.0;
+    public static final double kCameraPitchAngleDegrees = Settings.kIsUsingCompBot ? 29.5 : 29.5;
 
     //Limelight
     public static final double kHorizontalFOV = 59.6; // degrees
