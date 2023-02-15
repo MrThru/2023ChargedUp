@@ -1,7 +1,9 @@
 package com.team1323.frc2023.field;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import com.team1323.frc2023.Constants;
@@ -9,6 +11,7 @@ import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.field.NodeLocation.Column;
 import com.team1323.frc2023.field.NodeLocation.Grid;
 import com.team1323.frc2023.field.NodeLocation.Row;
+import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.AprilTagTracker.AprilTag;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
@@ -91,6 +94,20 @@ public class ScoringPoses {
         NodeLocation nodeLocation = new NodeLocation(kAprilTagToGridMap.get(nearestAprilTag), Row.TOP, column);
 
         return getScoringPose(nodeLocation);
+    }
+
+    public static Pose2d getClosestScoringPosition(Pose2d robotPose) {
+        List<Pose2d> getScoringPositions = Arrays.asList(ScoringPoses.getLeftScoringPose(Swerve.getInstance().getPose()), ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()),
+                ScoringPoses.getRightScoringPose(Swerve.getInstance().getPose()));
+        Pose2d closestPosition = getScoringPositions.get(0);
+        Translation2d robotPosition = robotPose.getTranslation();
+        for(int i = 0; i < getScoringPositions.size(); i++) {
+            if(closestPosition.getTranslation().distance(robotPosition) > 
+                        getScoringPositions.get(i).getTranslation().distance(robotPosition)) {
+                closestPosition = getScoringPositions.get(i);
+            }
+        }
+        return closestPosition;
     }
 
     public static Pose2d getLeftScoringPose(Pose2d robotPose) {

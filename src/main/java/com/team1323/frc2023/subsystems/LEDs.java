@@ -38,7 +38,7 @@ public class LEDs extends Subsystem {
     public LEDs() {
         candle = new CANdle(Ports.CANDLE);
         candle.configLEDType(LEDStripType.GRB);
-        configLEDs(LEDColors.RAINBOW);
+        configLEDs(disabledLEDColorsMode);
     }
     public enum LEDMode {
         SOLID, RAINBOW, FIRE, TWINKLE, STROBE;
@@ -47,6 +47,11 @@ public class LEDs extends Subsystem {
     public LEDMode getLEDType() {
         return selectedLEDType;
     }
+    private LEDColors selectedLEDColors = LEDColors.OFF;
+    public LEDColors getSelectedLEDColors() {
+        return selectedLEDColors;
+    }
+
     public enum LEDColors {
         OFF(0,0,0, LEDMode.SOLID), RED(255,0,0, LEDMode.SOLID), GREEN(0,255,0, LEDMode.SOLID), BLUE(0,0,255, LEDMode.SOLID),
         DISABLED(255,0,0, LEDMode.SOLID), ENABLED(0,0,255, LEDMode.SOLID),
@@ -63,7 +68,9 @@ public class LEDs extends Subsystem {
             this.ledMode = ledMode;
         }
     }
-    private LEDColors currentLEDMode = LEDColors.RED;
+
+    private LEDColors disabledLEDColorsMode = LEDColors.RAINBOW;
+    private LEDColors currentLEDMode = LEDColors.OFF;
     public LEDColors getLEDMode() {
         return currentLEDMode;
     }
@@ -72,6 +79,7 @@ public class LEDs extends Subsystem {
         this.mGreen = ledColors.g;
         this.mBlue = ledColors.b;
         this.selectedLEDType = ledColors.ledMode;
+        currentLEDMode = ledColors;
     }
     
     @Override
@@ -113,6 +121,6 @@ public class LEDs extends Subsystem {
     
     @Override
     public void stop() {
-        
+        configLEDs(disabledLEDColorsMode);
     }
 }

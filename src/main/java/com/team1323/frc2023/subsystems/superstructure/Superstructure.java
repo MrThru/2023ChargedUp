@@ -371,6 +371,13 @@ public class Superstructure extends Subsystem {
 				Claw.ControlState.CONE_OUTAKE, coordinator::getConeStowChoreography);
 	}
 
+	public void cubeLowScoringSequence(Pose2d scoringPose) {
+		request(new SequentialRequest(
+			swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()),
+			tunnel.stateRequest(Tunnel.State.EJECT_ONE)
+		));
+	}
+
 	public void cubeMidScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getCubeMidScoringChoreography,
 				Claw.ControlState.CUBE_OUTAKE, coordinator::getCubeStowChoreography);

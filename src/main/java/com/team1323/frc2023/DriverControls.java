@@ -8,6 +8,7 @@
 package com.team1323.frc2023;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.field.AllianceChooser;
@@ -198,7 +199,7 @@ public class DriverControls implements Loop {
                 }
             }
             if(scoringHeight == "low") {
-                tunnel.setState(Tunnel.State.EJECT_ONE);
+                s.cubeLowScoringSequence(ScoringPoses.getClosestScoringPosition(swerve.getPose()));
             }
         }
 
