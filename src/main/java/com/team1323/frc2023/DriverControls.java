@@ -126,7 +126,7 @@ public class DriverControls implements Loop {
             if(oneControllerMode)
                 singleController.update();
             if(oneControllerMode) oneControllerMode();
-            else twoControllerMode();
+            else manualMode();
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }
@@ -218,6 +218,22 @@ public class DriverControls implements Loop {
     }
 
     private void manualMode() {
+        double swerveYInput = -driver.getLeftX();
+        double swerveXInput = -driver.getLeftY();
+        double swerveRotationInput = -(driver.getRightX() + (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0));
+        
+        swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, (Netlink.getBooleanValue("Slow Driving Enabled") || driver.leftTrigger.isBeingPressed()));
+        
+        SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
+
+        if (driver.startButton.wasActivated()) {
+            //swerve.setVelocity(Rotation2d.fromDegrees(180), 36.0);
+            //swerve.setState(Swerve.ControlState.NEUTRAL);
+            NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
+            Pose2d scoringPose = ScoringPoses.getScoringPose(dashboardNodeLocation);
+            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
+            s.scoringSequence(dashboardNodeLocation);
+        }
 
         double verticalElevatorYInput = -coDriver.getLeftY() * 0.2;
         double horizontalElevatorYInput = -coDriver.getRightY() * 0.2;
