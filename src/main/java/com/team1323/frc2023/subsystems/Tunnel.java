@@ -131,7 +131,7 @@ public class Tunnel extends Subsystem {
                         setTunnelEntranceSpeed(0.50);
                     } else if(!getRearBanner()) {
                         setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
-                        setTunnelEntranceSpeed(0.50);
+                        setTunnelEntranceSpeed(0.30);
                     } else {
                         if(CubeIntake.getInstance().getBanner() && Double.isInfinite(lastCubeDetectedtimestamp)) {
                             lastCubeDetectedtimestamp = timestamp;
@@ -182,6 +182,7 @@ public class Tunnel extends Subsystem {
                         }
                     }
                     setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
+                    setTunnelEntranceSpeed(0.25);
                     break;
                 case EJECT_ONE:
                     if(!cubeEjected) {
@@ -190,7 +191,10 @@ public class Tunnel extends Subsystem {
                         cubeEjectedStopwatch.start();
                     } else {
                         if(getFrontBanner() || cubeEjectedStopwatch.getTime() > 2.0) {
-                            setState(State.OFF);
+                            if(!allowSingleIntakeMode())
+                                setState(State.HOLD);
+                            else
+                                setState(State.OFF);
                             cubeEjected = false;
                             cubeEjectedStopwatch.reset();
                         }
@@ -199,11 +203,12 @@ public class Tunnel extends Subsystem {
                 case SPIT:
                     setRollerSpeed(0.25);
                     setConveyorSpeed(0.25);
-                    setTunnelEntranceSpeed(0.5);
+                    setTunnelEntranceSpeed(0.25);
                     break;
                 case HOLD:
                     setRollerSpeed(Constants.Tunnel.kHoldFrontRollerSpeed);
                     setConveyorSpeed(Constants.Tunnel.kHoldConveyorSpeed);
+                    setTunnelEntranceSpeed(0.10);
                     break;
                 case OFF:
                     setRollerSpeed(0);

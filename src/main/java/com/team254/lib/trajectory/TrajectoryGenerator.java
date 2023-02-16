@@ -147,7 +147,7 @@ public class TrajectoryGenerator {
             waypoints.add(communitySweepMidPose);
             waypoints.add(communitySweepEndPose);
             
-            return generateTrajectory(false, waypoints, Arrays.asList(), 48.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPiecePickupPath() {

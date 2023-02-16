@@ -54,7 +54,8 @@ public class LEDs extends Subsystem {
 
     public enum LEDColors {
         OFF(0,0,0, LEDMode.SOLID), RED(255,0,0, LEDMode.SOLID), GREEN(0,255,0, LEDMode.SOLID), BLUE(0,0,255, LEDMode.SOLID),
-        DISABLED(255,0,0, LEDMode.SOLID), ENABLED(0,0,255, LEDMode.SOLID),
+        DISABLED(255,0,0, LEDMode.SOLID), ENABLED(0,0,255, LEDMode.SOLID), ORANGE(255, 102, 0, LEDMode.SOLID), YELLOW(255, 255, 0, LEDMode.SOLID),
+        PURPLE(255, 0, 255, LEDMode.SOLID),
         RAINBOW(0,0,0, LEDMode.RAINBOW), FIRE(0,0,0, LEDMode.FIRE), TWINKLE(0,0,0, LEDMode.TWINKLE), STROBE(0,0,0, LEDMode.STROBE),
         REDFIRE(255,0,0, LEDMode.FIRE);
         int r;

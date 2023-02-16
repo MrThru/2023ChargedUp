@@ -10,6 +10,7 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.LEDs.LEDColors;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Stopwatch;
@@ -31,7 +32,7 @@ public class Claw extends Subsystem {
         return instance;
     }
     
-
+     
     public Claw() {
         claw = TalonFXFactory.createRollerTalon(Ports.CLAW, Ports.CANBUS);
         claw.setSupplyCurrentLimit(120, 0.1);
@@ -61,7 +62,7 @@ public class Claw extends Subsystem {
     }
 
     public enum ControlState {
-        OFF(0.0), CUBE_INTAKE(-0.5), CUBE_OUTAKE(0.5), CONE_INTAKE(0.5), CONE_OUTAKE(-0.5);
+        OFF(0.0), CUBE_INTAKE(-0.5), CUBE_OUTAKE(1.0), CONE_INTAKE(0.5), CONE_OUTAKE(-0.5);
         double speed;
         ControlState(double speed) {
             this.speed = speed;
@@ -87,6 +88,9 @@ public class Claw extends Subsystem {
         claw.set(ControlMode.Velocity, rpmToEncUnits(rpm));
     }
     public void conformToState(ControlState state) {
+        if(state == ControlState.CUBE_OUTAKE) {
+            claw.setStatorCurrentLimit(100, 0.001);
+        }
         setState(state);
         setPercentSpeed(state.speed);
     }
@@ -112,6 +116,7 @@ public class Claw extends Subsystem {
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.01);
                 if(claw.getOutputCurrent() > Constants.Claw.kIntakeConeAmpThreshold) {
                     setCurrentHoldingObject(HoldingObject.Cone);
+                    LEDs.getInstance().configLEDs(LEDColors.YELLOW);
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent, 0.01);
                 }
 
@@ -120,6 +125,8 @@ public class Claw extends Subsystem {
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
                 if(claw.getOutputCurrent() > Constants.Claw.kIntakeCubeAmpThreshold) {
                     setCurrentHoldingObject(HoldingObject.Cube);
+                    LEDs.getInstance().configLEDs(LEDColors.PURPLE);
+
                 }
 
                 
@@ -176,6 +183,7 @@ public class Claw extends Subsystem {
         SmartDashboard.putNumber("Claw Target RPM", targetRPM);
         SmartDashboard.putNumber("Claw RPM", encUnitsToRPM(claw.getSelectedSensorVelocity()));
         SmartDashboard.putString("Current Holding Object", getCurrentHoldingObject().toString());
+        SmartDashboard.putNumber("Claw Current", claw.getOutputCurrent());
     }
 
     public Request stateRequest(ControlState desiredState) {
@@ -189,6 +197,9 @@ public class Claw extends Subsystem {
 
     public void reset() {
         claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.001);
+    }
+    public void resetCurrentHolding() {
+        setCurrentHoldingObject(HoldingObject.None);
     }
     @Override
     public void stop() {

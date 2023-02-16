@@ -66,6 +66,8 @@ public class Superstructure extends Subsystem {
 		queuedRequests = new ArrayList<>(0);
 	}
 
+	public boolean coneIntakingSequence = false;
+
 	private Request activeRequest = null;
 	private List<Request> queuedRequests = new ArrayList<>();
 	
@@ -236,6 +238,17 @@ public class Superstructure extends Subsystem {
 			cubeIntake.stateRequest(CubeIntake.State.STOWED)
 		));
 	}
+	public void postCubeIntakeState() {
+		request(new ParallelRequest(
+			tunnel.stateRequest(Tunnel.State.HOLD),
+			cubeIntake.stateRequest(CubeIntake.State.STOWED),
+			new LambdaRequest(() -> {
+				if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+					claw.conformToState(Claw.ControlState.OFF);
+				}
+			})
+		));
+	}
 
 	public void reverseSubsystemsState() {
 
@@ -255,11 +268,24 @@ public class Superstructure extends Subsystem {
 		request(new SequentialRequest(
 			SuperstructureCoordinator.getInstance().getConeIntakeChoreography(),
 			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
-			getConeStowSequence().withPrerequisite(() -> (claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone))
+			new ParallelRequest(
+				getConeStowSequence(),
+				new LambdaRequest(() -> {coneIntakingSequence = true;})
+			).withPrerequisite(() -> (claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)),
+			new LambdaRequest(() -> {coneIntakingSequence = false;})
 		));
 	}
 	public void coneStowSequence() {
 		request(getConeStowSequence());
+	}
+	public Request objectAwareStow() {
+		if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
+			return coordinator.getConeStowChoreography();
+		} else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
+			return coordinator.getCubeStowChoreography();
+		} else  {
+			return coordinator.getFullStowChoreography();
+		}
 	}
 
 	private Request getConeStowSequence() {
@@ -288,7 +314,7 @@ public class Superstructure extends Subsystem {
 
 	public void shelfSequence(boolean left) {
 		Pose2d shelfPose = ScoringPoses.getShelfPose(left);
-		swerve.startVisionPID(shelfPose, shelfPose.getRotation());
+		swerve.startVisionPID(shelfPose, shelfPose.getRotation(), false);
 
 		request(new SequentialRequest(
 			choreographyRequest(coordinator::getShelfChoreography)
@@ -302,19 +328,27 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
+	public void shuttleIntakeSequence() {
+		request(new SequentialRequest(
+			coordinator.getShuttleChoreography(),
+			claw.stateRequest(Claw.ControlState.CONE_INTAKE)
+			//getConeStowSequence().withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
+		));
+	}
+
 	private void scoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo, 
-			Claw.ControlState clawScoringState, ChoreographyProvider stowingChoreo) {
+			Claw.ControlState clawScoringState, boolean useTrajectory) {
 		request(new SequentialRequest(
 			new ParallelRequest(
-				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()),
+				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory),
 				choreographyRequest(scoringChoreo)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0)
 			),
 			new LambdaRequest(() -> claw.conformToState(clawScoringState)),
 			waitRequest(1.0),
-			choreographyRequest(stowingChoreo),
 			new LambdaRequest(() -> swerve.stop()),
-			new LambdaRequest(() -> swerve.resetVisionPID())
+			new LambdaRequest(() -> swerve.resetVisionPID()),
+			choreographyRequest(this::objectAwareStow)
 		));
 	}
 
@@ -351,11 +385,15 @@ public class Superstructure extends Subsystem {
 
 		Pose2d scoringPose = ScoringPoses.getScoringPose(nodeLocation);
 		ChoreographyProvider scoringChoreo = coordinator::getConeStowChoreography;
-		ChoreographyProvider stowingChoreo;
 		Claw.ControlState clawScoringState;
+		boolean useTrajectory = true;
+		
+		if (Math.abs(swerve.getPose().getTranslation().y() - scoringPose.getTranslation().y()) < 36.0 &&
+				nodeLocation.isEdgeColumn()) {
+			useTrajectory = false;
+		}
 
 		if (nodeLocation.column == Column.CENTER) {
-			stowingChoreo = coordinator::getCubeStowChoreography;
 			clawScoringState = Claw.ControlState.CUBE_OUTAKE;
 
 			if (nodeLocation.row == Row.MIDDLE) {
@@ -364,7 +402,6 @@ public class Superstructure extends Subsystem {
 				scoringChoreo = coordinator::getCubeHighScoringChoreography;
 			}
 		} else {
-			stowingChoreo = coordinator::getConeStowChoreography;
 			clawScoringState = Claw.ControlState.CONE_OUTAKE;
 
 			if (nodeLocation.row == Row.MIDDLE) {
@@ -374,34 +411,37 @@ public class Superstructure extends Subsystem {
 			}
 		}
 
-		//scoringSequence(scoringPose, scoringChoreo, clawScoringState, stowingChoreo);
-		request(swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()));
+		scoringSequence(scoringPose, scoringChoreo, clawScoringState, useTrajectory);
+		//request(swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory));
 	}
 
 	public void coneMidScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getConeMidScoringChoreography, 
-				Claw.ControlState.CONE_OUTAKE, coordinator::getConeStowChoreography);
+				Claw.ControlState.CONE_OUTAKE, false);
 	}
 
 	public void coneHighScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getConeHighScoringChoreography,
-				Claw.ControlState.CONE_OUTAKE, coordinator::getConeStowChoreography);
+				Claw.ControlState.CONE_OUTAKE, false);
 	}
 
 	public void cubeLowScoringSequence(Pose2d scoringPose) {
 		request(new SequentialRequest(
-			swerve.visionPIDRequest(scoringPose, scoringPose.getRotation()),
-			tunnel.stateRequest(Tunnel.State.EJECT_ONE)
+			swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), false),
+			tunnel.stateRequest(Tunnel.State.EJECT_ONE),
+			waitRequest(1.0),
+			new LambdaRequest(() -> swerve.stop()),
+			new LambdaRequest(() -> swerve.resetVisionPID())
 		));
 	}
 
 	public void cubeMidScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getCubeMidScoringChoreography,
-				Claw.ControlState.CUBE_OUTAKE, coordinator::getCubeStowChoreography);
+				Claw.ControlState.CUBE_OUTAKE, false);
 	}
 
 	public void cubeHighScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getCubeHighScoringChoreography,
-				Claw.ControlState.CUBE_OUTAKE, coordinator::getCubeStowChoreography);
+				Claw.ControlState.CUBE_OUTAKE, false);
 	}
 }

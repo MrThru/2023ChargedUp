@@ -118,7 +118,10 @@ public class SuperstructureCoordinator {
         );
 
         Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
-        if (Util.isInRange(currentPosition.shoulderAngle, 0.0, elevatorCollisionAngle.getDegrees())) {
+        if (Util.isInRange(currentPosition.shoulderAngle, 0.0, elevatorCollisionAngle.getDegrees()) &&
+                (willCollideWithElevator(currentPosition, finalPosition) || 
+                        willCollideWithElevator(currentPosition.withHorizontalExtension(finalPosition.horizontalExtension), finalPosition)) ||
+                        currentPosition.horizontalExtension >= kHorizontalExtensionForUprightShoulder) {
             System.out.println(String.format("Branch 1, elevator collision angle is %.2f", elevatorCollisionAngle.getDegrees()));
             return new SequentialRequest(
                 new ParallelRequest(
@@ -127,11 +130,11 @@ public class SuperstructureCoordinator {
                     wrist.angleRequest(finalPosition.wristAngle),
                     verticalElevator.heightRequest(kVerticalHeightForTopBarClearance)
                             .withPrerequisites(() -> horizontalElevator.getPosition() < kHorizontalExtensionForGridClearance,
-                                    shoulder.anglePrerequisite(90.0)),
-                    new ParallelRequest(
-                        shoulder.angleRequest(finalPosition.shoulderAngle),
-                        horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
-                    ).withPrerequisite(() -> verticalElevator.getPosition() < kVerticalHeightForStow)
+                                    shoulder.anglePrerequisite(90.0))
+                ),
+                new ParallelRequest(
+                    shoulder.angleRequest(finalPosition.shoulderAngle),
+                    horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
                 ),
                 verticalElevator.heightRequest(finalPosition.verticalHeight)
             );
@@ -176,7 +179,7 @@ public class SuperstructureCoordinator {
             0.5,
             0.25,
             147.0,
-            90.0
+            95.0
         );
 
         return getStowChoreography(finalPosition);
@@ -312,7 +315,7 @@ public class SuperstructureCoordinator {
             0.625,
             0.25,
             37.0,
-            90.0
+            95.0
         );
 
         return getHighChoreography(finalPosition);
@@ -326,6 +329,15 @@ public class SuperstructureCoordinator {
             -10.0
         );
 
+        return getHighChoreography(finalPosition);
+    }
+    public Request getShuttleChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            0.50,
+            0.25,
+            0.75,
+            104.5
+        );
         return getHighChoreography(finalPosition);
     }
 
@@ -353,10 +365,10 @@ public class SuperstructureCoordinator {
 
     public Request getCubeMidScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            6.6,
-            15.5,
-            15.5,
-            98.0
+            1,
+            18.5,
+            79.9,
+            90.0
         );
 
         return getHighChoreography(finalPosition);
@@ -365,9 +377,9 @@ public class SuperstructureCoordinator {
     public Request getCubeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             20.0,
-            29.0,
-            19.75,
-            98.0
+            31.0,
+            60.0,
+            90.0
         );
 
         return getHighChoreography(finalPosition);

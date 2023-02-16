@@ -78,7 +78,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         currentState = desiredState;
     }
 
-    private void conformToState(State desiredState) {
+    public void conformToState(State desiredState) {
         setIntakeCurrent(60.0);
         setPosition(desiredState.intakeAngle);
         setIntakeSpeed(desiredState.intakeSpeed);
@@ -158,7 +158,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
 			leader.setNeutralMode(NeutralMode.Coast);
 			neutralModeIsBrake = false;
 		} else if(!neutralModeIsBrake && !Netlink.getBooleanValue("Subsystems Coast Mode")) {
-            leader.setNeutralMode(NeutralMode.Coast);
+            leader.setNeutralMode(NeutralMode.Brake);
 			neutralModeIsBrake = true;
 		}
         SmartDashboard.putNumber("Cube Intake Angle", getPosition());
@@ -166,6 +166,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         SmartDashboard.putNumber("Cube Intake Absolute Encoder", absoluteEncoder.getDegrees());
         SmartDashboard.putNumber("Cube Intake RPM", intakeRoller.getSelectedSensorVelocity() * 600 / 2048);
         SmartDashboard.putNumber("Cube Intake Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));
+        SmartDashboard.putBoolean("Cube Intake Banner", getBanner());
     }
     @Override
     public void stop() {

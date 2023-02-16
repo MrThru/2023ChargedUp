@@ -216,7 +216,7 @@ public class Constants {
         public static final double kTicksPerInch = 89075.0 / 23.0;
 
         public static final double kMinExtension = 0.0;
-        public static final double kMaxExtension = 29.0;
+        public static final double kMaxExtension = 31.3;
 
         public static final double kExtensionTolerance = 1.0;
 
@@ -282,7 +282,7 @@ public class Constants {
         public static final double kMinControlAngle = -147.712908;
         public static final double kMaxControlAngle = 133.666388;
 
-        public static final double kAngleTolerance = 5.0;
+        public static final double kAngleTolerance = 10.0;
 
         public static final double kVelocityScalar = 1.0;
         public static final double kAccelerationScalar = 4.0;
@@ -312,11 +312,11 @@ public class Constants {
         
         public static final double kIntakeConeStatorCurrentLimit = 50.0;
         public static final double kIntakeConeStatorHoldCurrent = 20.0;
-        public static final double kIntakeConeAmpThreshold = 10.0;
+        public static final double kIntakeConeAmpThreshold = 15.0;
 
 
         public static final double kIntakeCubeStatorCurrentLimit = 15.0;
-        public static final double kIntakeCubeAmpThreshold = 10.0;
+        public static final double kIntakeCubeAmpThreshold = 5.0;
         
         
         public static final double kIntakeCubeSpeed = 0.25;
@@ -339,8 +339,8 @@ public class Constants {
         public static final double kIntakeConveyorSpeed = 0.2;
         public static final double kIntakeFrontRollerSpeed = kIntakeConveyorSpeed * -2.0;
 
-        public static final double kFeedConveyorSpeed = 0.2;
-        public static final double kFeedFrontRollerSpeed = kFeedConveyorSpeed * -2.0;
+        public static final double kFeedConveyorSpeed = 0.4;
+        public static final double kFeedFrontRollerSpeed = kFeedConveyorSpeed * -1.5;
 
         public static final double kHoldConveyorSpeed = 0.1;
         public static final double kHoldFrontRollerSpeed = kHoldConveyorSpeed * -2.0;

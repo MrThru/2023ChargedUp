@@ -60,20 +60,23 @@ public class ScoringPoses {
     public static Pose2d getScoringPose(NodeLocation nodeLocation) {
         AprilTag nodeTag = kGridToAprilTagMap.get(AllianceChooser.getAlliance()).get(nodeLocation.grid);
 
+        double xTransform = kScoringPoseForwardPadding;
         double yTransform = -coneLateralOffset;
         switch (nodeLocation.column) {
             case LEFT:
                 yTransform += kAprilTagToConeLateralDisplacement;
+                xTransform -= 3.5;
                 break;
             case RIGHT:
                 yTransform -= kAprilTagToConeLateralDisplacement;
+                xTransform -= 3.25;
                 break;
             case CENTER:
                 break;
         }
 
         Pose2d tagToRobotTransform = Pose2d.fromTranslation(new Translation2d(
-            -(kAprilTagToBarrierForwardDisplacement + kScoringPoseForwardPadding + Constants.kRobotHalfLength), 
+            -(kAprilTagToBarrierForwardDisplacement + xTransform + Constants.kRobotHalfLength), 
             yTransform
         ));
         Pose2d scoringPose = nodeTag.getPose2d().transformBy(tagToRobotTransform);

@@ -43,6 +43,11 @@ public class NodeLocation {
         return new NodeLocation(gridArray[locationIntArray[0]], rowArray[locationIntArray[1]], columnArray[locationIntArray[2]]);
     }
 
+    public boolean isEdgeColumn() {
+        return (grid == Grid.RIGHT && column == Column.RIGHT) ||
+                (grid == Grid.LEFT && column == Column.LEFT);
+    }
+
     /**
      * Positions are from the robot's perspective when scoring.
      */
