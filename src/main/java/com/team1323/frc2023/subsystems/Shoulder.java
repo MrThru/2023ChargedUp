@@ -38,6 +38,10 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
         stop();
     }
 
+    public void setAccelerationScalar(double scalar) {
+        leader.configMotionAcceleration(kMaxFalconEncoderVelocity * scalar);
+    }
+
     /**
      * Assumes that the shoulder is at 0 degrees when completely horizontal (i.e., when gravity exerts the most
      * torque on the motor), and that rotating the shoulder upward results in a positive angle.

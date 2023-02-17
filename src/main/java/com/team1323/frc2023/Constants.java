@@ -252,6 +252,7 @@ public class Constants {
 
         public static final double kVelocityScalar = 1.0;
         public static final double kAccelerationScalar = 2.0;
+        public static final double kFastAccelerationScalar = 3.0;
 
         public static final double kSupplyCurrentLimit = 40.0; //30.0 - 40
 

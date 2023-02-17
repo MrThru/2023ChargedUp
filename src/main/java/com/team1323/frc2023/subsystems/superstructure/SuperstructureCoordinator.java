@@ -1,5 +1,6 @@
 package com.team1323.frc2023.subsystems.superstructure;
 
+import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.VerticalElevator;
@@ -43,7 +44,7 @@ public class SuperstructureCoordinator {
     private static final double kVerticalHeightForBumperClearance = 16.0;
     private static final double kVerticalHeightForStow = 4.25;
     private static final double kShoulderAngleForHorizontalRetraction = -60.0;
-    private static final double kShoulderAngleForHorizontalExtension = 0.0;
+    private static final double kShoulderAngleForHorizontalExtension = 15.0;
     private static final double kShoulderAngleForEscapingElevator = 45.0;
     private static final double kHorizontalExtensionForMinShoulderReach = 0.25;
     private static final double kHorizontalExtensionForUprightShoulder = 6.0;
@@ -110,12 +111,22 @@ public class SuperstructureCoordinator {
         return wristRotationCausesCollision;
     }
 
+    private void updateShoulderAcceleration(SuperstructurePosition currentPosition, SuperstructurePosition finalPosition) {
+        if (Math.abs(currentPosition.horizontalExtension - finalPosition.horizontalExtension) < 1.0) {
+            shoulder.setAccelerationScalar(Constants.Shoulder.kFastAccelerationScalar);
+        } else {
+            shoulder.setAccelerationScalar(Constants.Shoulder.kAccelerationScalar);
+        }
+    }
+
     private Request getStowChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
         Request finalElevatorRequest = new ParallelRequest(
             verticalElevator.heightRequest(finalPosition.verticalHeight),
             horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
         );
+
+        updateShoulderAcceleration(currentPosition, finalPosition);
 
         Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
         if (Util.isInRange(currentPosition.shoulderAngle, 0.0, elevatorCollisionAngle.getDegrees()) &&
@@ -198,6 +209,8 @@ public class SuperstructureCoordinator {
     private Request getLowChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
 
+        updateShoulderAcceleration(currentPosition, finalPosition);
+
         Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
         if (currentPosition.shoulderAngle >= elevatorCollisionAngle.getDegrees()) {
             Prerequisite shoulderEscapedPrereq = () -> shoulder.getPosition() < kShoulderAngleForEscapingElevator;
@@ -265,6 +278,8 @@ public class SuperstructureCoordinator {
 
     private Request getHighChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
+
+        updateShoulderAcceleration(currentPosition, finalPosition);
 
         Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
         if (currentPosition.shoulderAngle >= elevatorCollisionAngle.getDegrees() &&

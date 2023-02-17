@@ -18,7 +18,7 @@ import com.team254.drivers.LazyPhoenix5TalonFX;
  * with MotionMagic running on a Talon FX.
  */
 public abstract class ServoSubsystem extends Subsystem {
-    private static final double kMaxFalconEncoderVelocity = 6380.0 * 2048.0 / 600.0;
+    protected static final double kMaxFalconEncoderVelocity = 6380.0 * 2048.0 / 600.0;
 
     protected LazyPhoenix5TalonFX leader;
     protected List<LazyPhoenix5TalonFX> allMotors;
