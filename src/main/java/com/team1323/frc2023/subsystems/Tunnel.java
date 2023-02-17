@@ -58,7 +58,7 @@ public class Tunnel extends Subsystem {
     }
 
     public enum State {
-        OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY;
+        OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY, MANUAL;
     }
     private State currentState = State.OFF;
     public State getState() {
@@ -67,11 +67,13 @@ public class Tunnel extends Subsystem {
     public void setState(State state) {
         currentState = state;
     }
-
+    public void setConveyorSpeedOfTopRoller(double percent) {
+        setConveyorSpeed(frontRollerTalon.getMotorOutputPercent() * Constants.Tunnel.kTopRollerRatio / Constants.Tunnel.kFloorRatio);
+    }
     public void setTunnelEntranceSpeed(double speed) {
         tunnelEntrance.set(ControlMode.PercentOutput, speed);
     }
-    private void setRollerSpeed(double speed) {
+    public void setRollerSpeed(double speed) {
         frontRollerTalon.set(ControlMode.PercentOutput, speed);
     }
     public void setConveyorSpeed(double speed) {
@@ -210,6 +212,8 @@ public class Tunnel extends Subsystem {
                     setConveyorSpeed(Constants.Tunnel.kHoldConveyorSpeed);
                     setTunnelEntranceSpeed(0.10);
                     break;
+                case MANUAL:
+                    break;
                 case OFF:
                     setRollerSpeed(0);
                     setConveyorSpeed(0); 
@@ -240,9 +244,11 @@ public class Tunnel extends Subsystem {
     public void outputTelemetry() {
         SmartDashboard.putNumber("Conveyor RPM", encUnitsToRPM(conveyorTalon.getSelectedSensorVelocity()));
         SmartDashboard.putNumber("Roller RPM", encUnitsToRPM(frontRollerTalon.getSelectedSensorVelocity()));
+        SmartDashboard.putNumber("Cube Entrance RPM", encUnitsToRPM(tunnelEntrance.getSelectedSensorVelocity()));
         SmartDashboard.putBoolean("Tunnel Front Banner", getFrontBanner());
         SmartDashboard.putBoolean("Tunnel Rear Banner", getRearBanner());
         SmartDashboard.putString("Tunnel Control State", currentState.toString());
+
     }
 
     public Request stateRequest(State desiredState) {

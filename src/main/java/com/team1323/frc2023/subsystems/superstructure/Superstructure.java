@@ -336,6 +336,13 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
+	/*public void flipGroundCone() {
+		request(new SequentialRequest(
+			coordinator.getConeIntakeChoreography(),
+			 
+		));
+	}*/
+
 	private void scoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo, 
 			Claw.ControlState clawScoringState, boolean useTrajectory) {
 		request(new SequentialRequest(

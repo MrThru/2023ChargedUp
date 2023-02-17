@@ -251,9 +251,9 @@ public class Constants {
         public static final double kAngleTolerance = 2.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 1.0;
+        public static final double kAccelerationScalar = 2.0;
 
-        public static final double kSupplyCurrentLimit = 30.0;
+        public static final double kSupplyCurrentLimit = 40.0; //30.0 - 40
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
@@ -337,6 +337,11 @@ public class Constants {
 
         public static final double kIntakeSpeed = 0.5;
         public static final double kIntakeConveyorSpeed = 0.2;
+
+        public static final double kFloorRatio = 9.722222222;
+        public static final double kTopRollerRatio = 2.333333333;
+        public static final double kTunnelEntranceRatio = 2.333333333;
+
         public static final double kIntakeFrontRollerSpeed = kIntakeConveyorSpeed * -2.0;
 
         public static final double kFeedConveyorSpeed = 0.4;

@@ -131,7 +131,7 @@ public class DriverControls implements Loop {
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
-                twoControllerMode(); 
+                manualMode(); 
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }
@@ -397,9 +397,11 @@ public class DriverControls implements Loop {
             ));
             //SuperstructureCoordinator.getInstance().getCubeIntakeChoreography();
         } 
-        // if(testController.yButton.wasActivated()) {
-        //     tunnel.setState(Tunnel.State.SPIT);
-        // }
+        if(testController.yButton.wasActivated()) {
+            shoulder.setPosition(0);
+        }
+
+        
         /*if(coDriver.aButton.wasActivated()) {
             s.intakeState(Tunnel.State.DETECT);
         } else if(coDriver.aButton.wasReleased()) {
@@ -412,7 +414,7 @@ public class DriverControls implements Loop {
             s.postIntakeState();
         } */
 
-        if(testController.aButton.wasActivated()) {
+        /*if(testController.aButton.wasActivated()) {
             claw.conformToState(Claw.ControlState.CONE_INTAKE);
             //claw.setPercentSpeed(0.5);
         }
@@ -421,6 +423,18 @@ public class DriverControls implements Loop {
             claw.conformToState(Claw.ControlState.CONE_OUTAKE);
         } else if(testController.bButton.wasReleased()) {
             claw.conformToState(Claw.ControlState.OFF);
+        }*/
+        
+        if(testController.aButton.wasActivated()) {
+            tunnel.setConveyorSpeed(Netlink.getNumberValue("Tunnel Manual Conveyor Speed"));
+        } else if(testController.aButton.wasReleased()) {
+            tunnel.setConveyorSpeed(0);
+        }
+
+        if(testController.bButton.wasActivated()) {
+            tunnel.setRollerSpeed(Netlink.getNumberValue("Tunnel Manual Top Roller Speed"));
+        } else if(testController.bButton.wasReleased()) {
+            tunnel.setRollerSpeed(0);
         }
 
         /*if(testController.xButton.wasActivated()) {
@@ -430,12 +444,12 @@ public class DriverControls implements Loop {
             tunnel.setState(Tunnel.State.OFF);
         }*/
 
-        if(testController.xButton.wasActivated()) {
+        /*if(testController.xButton.wasActivated()) {
             s.intakeState(Tunnel.State.DETECT);
         } else if(testController.xButton.wasReleased()) {
             //cubeIntake.setIntakeSpeed(0.0);
             s.postIntakeState();
-        }
+        }*/
         
         /*
         if(coDriver.aButton.wasActivated()) {
@@ -468,6 +482,16 @@ public class DriverControls implements Loop {
             tunnel.setFrontSpeed(0.0);
             cubeIntake.setIntakeSpeed(0);
         }*/
+
+        if (testController.POV0.wasActivated()) {
+            s.request(SuperstructureCoordinator.getInstance().getShuttleChoreography());
+        } else if (testController.POV90.wasActivated()) {
+            s.request(SuperstructureCoordinator.getInstance().getConeScanChoreography());
+        } else if (testController.POV180.wasActivated()) {
+            s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography());
+        } else if (testController.POV270.wasActivated()) {
+            s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
+        }
 
         // D-pad controls for vision PID
         if (coDriver.POV0.wasActivated()) {
