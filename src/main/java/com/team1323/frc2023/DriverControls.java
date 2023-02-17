@@ -131,7 +131,7 @@ public class DriverControls implements Loop {
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
-                manualMode(); 
+                twoControllerMode(); 
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }
@@ -176,6 +176,10 @@ public class DriverControls implements Loop {
             swerve.resetAveragedDirection();
         }
 
+        if (driver.startButton.wasActivated()) {
+            swerve.stop();
+        }
+
         if (driver.leftTrigger.wasActivated()) {
             if(!s.coneIntakingSequence) {
                 if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
@@ -218,8 +222,8 @@ public class DriverControls implements Loop {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None)
                 s.shuttleIntakeSequence();
         } else if(coDriver.startButton.wasReleased()) {
-            s.request(s.objectAwareStow());
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+                s.request(s.objectAwareStow());
                 claw.conformToState(Claw.ControlState.OFF);       
             }
         }
@@ -249,6 +253,12 @@ public class DriverControls implements Loop {
             } 
         } else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState();
+        }
+
+        if(coDriver.leftBumper.wasActivated()) {
+            claw.conformToState(Claw.ControlState.CONE_OUTAKE);
+        } else if(coDriver.leftBumper.wasReleased()) {
+            claw.conformToState(Claw.ControlState.OFF);
         }
 
         
@@ -426,12 +436,14 @@ public class DriverControls implements Loop {
         }*/
         
         if(testController.aButton.wasActivated()) {
+            tunnel.setState(Tunnel.State.MANUAL);
             tunnel.setConveyorSpeed(Netlink.getNumberValue("Tunnel Manual Conveyor Speed"));
         } else if(testController.aButton.wasReleased()) {
             tunnel.setConveyorSpeed(0);
         }
 
         if(testController.bButton.wasActivated()) {
+            tunnel.setState(Tunnel.State.MANUAL);
             tunnel.setRollerSpeed(Netlink.getNumberValue("Tunnel Manual Top Roller Speed"));
         } else if(testController.bButton.wasReleased()) {
             tunnel.setRollerSpeed(0);
@@ -486,11 +498,11 @@ public class DriverControls implements Loop {
         if (testController.POV0.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getShuttleChoreography());
         } else if (testController.POV90.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getConeScanChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getCubeIntakeChoreography());
         } else if (testController.POV180.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography());
         } else if (testController.POV270.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getCubeMidScoringChoreography());
         }
 
         // D-pad controls for vision PID

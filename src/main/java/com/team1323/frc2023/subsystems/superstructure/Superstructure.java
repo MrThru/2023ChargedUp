@@ -342,8 +342,8 @@ public class Superstructure extends Subsystem {
 	public void shuttleIntakeSequence() {
 		request(new SequentialRequest(
 			coordinator.getShuttleChoreography(),
-			claw.stateRequest(Claw.ControlState.CONE_INTAKE)
-			//getConeStowSequence().withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
+			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
+			getConeStowSequence().withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
 		));
 	}
 

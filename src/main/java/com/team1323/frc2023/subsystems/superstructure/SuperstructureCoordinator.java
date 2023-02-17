@@ -44,8 +44,8 @@ public class SuperstructureCoordinator {
     private static final double kVerticalHeightForBumperClearance = 16.0;
     private static final double kVerticalHeightForStow = 4.25;
     private static final double kShoulderAngleForHorizontalRetraction = -60.0;
-    private static final double kShoulderAngleForHorizontalExtension = 15.0;
-    private static final double kShoulderAngleForEscapingElevator = 45.0;
+    private static final double kShoulderAngleForHorizontalExtension = 20.0;
+    private static final double kShoulderAngleForEscapingElevator = 90.0;
     private static final double kHorizontalExtensionForMinShoulderReach = 0.25;
     private static final double kHorizontalExtensionForUprightShoulder = 6.0;
     private static final double kHorizontalExtensionForGridClearance = 15.0;
@@ -256,10 +256,10 @@ public class SuperstructureCoordinator {
 
     public Request getConeIntakeChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            0.625,
-            0.25,
-            -55.0,
-            90.0
+            0.25, //0.875
+            0.25, //0.25  230.26
+            -50.26, //-55
+            85.26 //90 38.6 35
         );
 
         return getLowChoreography(finalPosition);
@@ -367,7 +367,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             kVerticalHeightForStow,
             kHorizontalExtensionForUprightShoulder,
-            90.0,
+            124.0,
             95.0
         );
 

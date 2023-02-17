@@ -251,7 +251,7 @@ public class Constants {
         public static final double kAngleTolerance = 2.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 2.0;
+        public static final double kAccelerationScalar = 1.0;
         public static final double kFastAccelerationScalar = 3.0;
 
         public static final double kSupplyCurrentLimit = 40.0; //30.0 - 40
@@ -311,8 +311,8 @@ public class Constants {
 
     public static class Claw {
         
-        public static final double kIntakeConeStatorCurrentLimit = 50.0;
-        public static final double kIntakeConeStatorHoldCurrent = 20.0;
+        public static final double kIntakeConeStatorCurrentLimit = 200.0;
+        public static final double kIntakeConeStatorHoldCurrent = 30.0;
         public static final double kIntakeConeAmpThreshold = 15.0;
 
 

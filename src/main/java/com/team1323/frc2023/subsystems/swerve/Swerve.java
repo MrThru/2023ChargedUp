@@ -1118,6 +1118,9 @@ public class Swerve extends Subsystem{
 	}
 
 	public void addVisionMeasurement(Pose2d estimatedRobotPose, double observationTimestamp, Matrix<N3, N1> standardDeviations) {
+		if (Math.abs(estimatedRobotPose.getRotation().distance(pose.getRotation())) > Math.toRadians(45.0)) {
+			temporarilyDisableHeadingController();
+		}
 		poseEstimator.addVisionMeasurement(estimatedRobotPose, observationTimestamp, standardDeviations);
 	}
 	

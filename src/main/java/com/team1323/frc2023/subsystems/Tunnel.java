@@ -60,7 +60,7 @@ public class Tunnel extends Subsystem {
     public enum State {
         OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY, MANUAL;
     }
-    private State currentState = State.OFF;
+    private State currentState = State.MANUAL;
     public State getState() {
         return currentState;
     }
@@ -70,6 +70,10 @@ public class Tunnel extends Subsystem {
     public void setConveyorSpeedOfTopRoller(double percent) {
         setConveyorSpeed(frontRollerTalon.getMotorOutputPercent() * Constants.Tunnel.kTopRollerRatio / Constants.Tunnel.kFloorRatio);
     }
+    public void setTopRollerSpeedOfConveyor(double perecent) {
+        setRollerSpeed(conveyorTalon.getMotorOutputPercent() * Constants.Tunnel.kFloorRatio / Constants.Tunnel.kTopRollerRatio);
+    }
+
     public void setTunnelEntranceSpeed(double speed) {
         tunnelEntrance.set(ControlMode.PercentOutput, speed);
     }
@@ -218,7 +222,9 @@ public class Tunnel extends Subsystem {
                     setRollerSpeed(0);
                     setConveyorSpeed(0); 
                     setTunnelEntranceSpeed(0);   
-                break;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -248,6 +254,7 @@ public class Tunnel extends Subsystem {
         SmartDashboard.putBoolean("Tunnel Front Banner", getFrontBanner());
         SmartDashboard.putBoolean("Tunnel Rear Banner", getRearBanner());
         SmartDashboard.putString("Tunnel Control State", currentState.toString());
+        SmartDashboard.putNumber("Tunnel Top Roller Current", frontRollerTalon.getStatorCurrent());
 
     }
 
