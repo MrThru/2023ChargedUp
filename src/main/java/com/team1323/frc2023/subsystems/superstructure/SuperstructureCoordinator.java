@@ -43,7 +43,7 @@ public class SuperstructureCoordinator {
     private static final double kVerticalHeightForBumperClearance = 16.0;
     private static final double kVerticalHeightForStow = 4.25;
     private static final double kShoulderAngleForHorizontalRetraction = -60.0;
-    private static final double kShoulderAngleForHorizontalExtension = 15.0;
+    private static final double kShoulderAngleForHorizontalExtension = 0.0;
     private static final double kShoulderAngleForEscapingElevator = 45.0;
     private static final double kHorizontalExtensionForMinShoulderReach = 0.25;
     private static final double kHorizontalExtensionForUprightShoulder = 6.0;
@@ -119,9 +119,8 @@ public class SuperstructureCoordinator {
 
         Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
         if (Util.isInRange(currentPosition.shoulderAngle, 0.0, elevatorCollisionAngle.getDegrees()) &&
-                (willCollideWithElevator(currentPosition, finalPosition) || 
-                        willCollideWithElevator(currentPosition.withHorizontalExtension(finalPosition.horizontalExtension), finalPosition)) ||
-                        currentPosition.horizontalExtension >= kHorizontalExtensionForUprightShoulder) {
+                (currentPosition.verticalHeight >= kVerticalHeightForStow || 
+                        currentPosition.horizontalExtension >= kHorizontalExtensionForUprightShoulder)) {
             System.out.println(String.format("Branch 1, elevator collision angle is %.2f", elevatorCollisionAngle.getDegrees()));
             return new SequentialRequest(
                 new ParallelRequest(
@@ -199,8 +198,8 @@ public class SuperstructureCoordinator {
     private Request getLowChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
 
-        if (willCollideWithElevator(currentPosition, finalPosition) ||
-                willCollideWithElevator(currentPosition.withVerticalHeight(finalPosition.verticalHeight), finalPosition)) {
+        Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
+        if (currentPosition.shoulderAngle >= elevatorCollisionAngle.getDegrees()) {
             Prerequisite shoulderEscapedPrereq = () -> shoulder.getPosition() < kShoulderAngleForEscapingElevator;
 
             System.out.println("Branch 1");
@@ -267,8 +266,9 @@ public class SuperstructureCoordinator {
     private Request getHighChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
 
-        if (willCollideWithElevator(currentPosition, finalPosition) ||
-                willCollideWithElevator(currentPosition.withVerticalHeight(finalPosition.verticalHeight), finalPosition)) {
+        Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
+        if (currentPosition.shoulderAngle >= elevatorCollisionAngle.getDegrees() &&
+                (currentPosition.verticalHeight >= kVerticalHeightForStow || finalPosition.verticalHeight >= kVerticalHeightForStow)) {
             double clearanceHeight = finalPosition.verticalHeight > kVerticalHeightForStow ? 
                     kVerticalHeightForStow : kVerticalHeightForTopBarClearance;
             System.out.println("Branch 1");
@@ -289,8 +289,19 @@ public class SuperstructureCoordinator {
             );
         }
 
-        if (currentPosition.shoulderAngle < kShoulderAngleForHorizontalExtension) {
+        if (currentPosition.shoulderAngle >= elevatorCollisionAngle.getDegrees()) {
             System.out.println("Branch 2");
+            return new ParallelRequest(
+                verticalElevator.heightRequest(finalPosition.verticalHeight),
+                horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+                shoulder.angleRequest(finalPosition.shoulderAngle),
+                wrist.angleRequest(finalPosition.wristAngle)
+                        .withPrerequisite(() -> shoulder.getPosition() < 135.0)
+            );
+        }
+
+        if (currentPosition.shoulderAngle < kShoulderAngleForHorizontalExtension) {
+            System.out.println("Branch 3");
             return new ParallelRequest(
                 horizontalElevator.extensionRequest(kHorizontalExtensionForMinShoulderReach),
                 shoulder.angleRequest(finalPosition.shoulderAngle),
@@ -301,7 +312,23 @@ public class SuperstructureCoordinator {
             );
         }
 
-        System.out.println("Branch 3");
+        if (currentPosition.shoulderAngle >= kShoulderAngleForHorizontalExtension) {
+            System.out.println("Branch 4");
+            return new SequentialRequest(
+                new ParallelRequest(
+                    shoulder.angleRequest(90.0),
+                    horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
+                ),
+                verticalElevator.heightRequest(finalPosition.verticalHeight),
+                new ParallelRequest(
+                    horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+                    shoulder.angleRequest(finalPosition.shoulderAngle),
+                    wrist.angleRequest(finalPosition.wristAngle)
+                )
+            );
+        }
+
+        System.out.println("Branch 5");
         return new ParallelRequest(
             verticalElevator.heightRequest(finalPosition.verticalHeight),
             horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
