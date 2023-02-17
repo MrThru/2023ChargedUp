@@ -363,6 +363,17 @@ public class SuperstructureCoordinator {
         return getHighChoreography(finalPosition);
     }
 
+    public Request getCommunityConeHoldChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            kVerticalHeightForStow,
+            kHorizontalExtensionForUprightShoulder,
+            90.0,
+            95.0
+        );
+
+        return getHighChoreography(finalPosition);
+    }
+
     public Request getShelfChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             10.0,

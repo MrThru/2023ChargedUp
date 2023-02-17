@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.field.NodeLocation.Column;
@@ -275,9 +276,11 @@ public class Superstructure extends Subsystem {
 			new LambdaRequest(() -> {coneIntakingSequence = false;})
 		));
 	}
+
 	public void coneStowSequence() {
 		request(getConeStowSequence());
 	}
+
 	public Request objectAwareStow() {
 		if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
 			return coordinator.getConeStowChoreography();
@@ -288,6 +291,14 @@ public class Superstructure extends Subsystem {
 		}
 	}
 
+	private Request conditionalConeStow() {
+		if (AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())) {
+			return coordinator.getCommunityConeHoldChoreography();
+		}
+
+		return coordinator.getConeStowChoreography();
+	}
+
 	private Request getConeStowSequence() {
 		return new SequentialRequest(
 			choreographyRequest(coordinator::getConeScanChoreography),
@@ -295,7 +306,7 @@ public class Superstructure extends Subsystem {
 			waitRequest(1.0),
 			new LambdaRequest(() -> ScoringPoses.updateConeLateralOffset()),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL)),
-			choreographyRequest(coordinator::getConeStowChoreography)
+			choreographyRequest(this::conditionalConeStow)
 		);
 	}
 
