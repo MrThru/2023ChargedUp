@@ -8,7 +8,7 @@ import com.team1323.frc2023.loops.Loop;
 
 public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
     private final CurrentZeroingConfig zeroingConfig;
-    private boolean isZeroed = false;
+    protected boolean isZeroed = false;
 
     public ServoSubsystemWithCurrentZeroing(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
@@ -25,12 +25,22 @@ public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
         this.zeroingConfig = zeroingConfig;
     }
 
+    @Override
+    protected void zeroPosition() {
+        leader.setSelectedSensorPosition(outputUnitsToEncoderUnits(zeroingConfig.homingOutputUnits));
+    }
+
+    public void startCurrentZeroing() {
+        isZeroed = false;
+        enableLimits(false);
+        super.setOpenLoop(zeroingConfig.outputPercent);
+    }
+
     private Loop zeroingLoop = new Loop() {
         @Override
         public void onStart(double timestamp) {
             if (!isZeroed) {
-                enableLimits(false);
-                ServoSubsystemWithCurrentZeroing.super.setOpenLoop(zeroingConfig.outputPercent);
+                startCurrentZeroing();
             }
         }
 
@@ -40,7 +50,7 @@ public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
                 zeroPosition();
                 enableLimits(true);
                 isZeroed = true;
-                setPosition(zeroingConfig.targetOutputAfterZeroing);
+                setPosition(zeroingConfig.targetOutputUnitsAfterZeroing);
             }
         }
 
@@ -79,12 +89,15 @@ public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
     public static class CurrentZeroingConfig {
         public final double outputPercent;
         public final double triggerSupplyCurrent;
-        public final double targetOutputAfterZeroing;
+        public final double homingOutputUnits;
+        public final double targetOutputUnitsAfterZeroing;
 
-        public CurrentZeroingConfig(double outputPercent, double triggerSupplyCurrent, double targetOutputAfterZeroing) {
+        public CurrentZeroingConfig(double outputPercent, double triggerSupplyCurrent, 
+                double homingOutputUnits, double targetOutputUnitsAfterZeroing) {
             this.outputPercent = outputPercent;
             this.triggerSupplyCurrent = triggerSupplyCurrent;
-            this.targetOutputAfterZeroing = targetOutputAfterZeroing;
+            this.homingOutputUnits = homingOutputUnits;
+            this.targetOutputUnitsAfterZeroing = targetOutputUnitsAfterZeroing;
         }
     }
 }

@@ -169,9 +169,9 @@ public class Robot extends TimedRobot {
 			smartDashboardInteractions.output();
 			Settings.update();
 			Swerve.getInstance().zeroModuleAngles();
-			Shoulder.getInstance().zeroPositionWithCounter();
-			Wrist.getInstance().zeroPositionWithCounter();
-			CubeIntake.getInstance().zeroPositionWithCounter();
+			Shoulder.getInstance().setAbsolutePositionWithCounter();
+			Wrist.getInstance().setAbsolutePositionWithCounter();
+			CubeIntake.getInstance().setAbsolutePositionWithCounter();
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;

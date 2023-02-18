@@ -325,12 +325,20 @@ public class DriverControls implements Loop {
         if(coDriver.POV180.wasActivated()) {
             claw.resetCurrentHolding();
         }
+
+        if (coDriver.backButton.wasActivated()) {
+            verticalElevator.startCurrentZeroing();
+            horizontalElevator.startCurrentZeroing();
+            shoulder.startCurrentZeroing();
+            wrist.startCurrentZeroing();
+            cubeIntake.startCurrentZeroing();
+        }
+
         /*if(s.coneIntakingSequence) {
             wrist.acceptManualInput(-coDriver.getLeftY() * 0.25);
         } else {
             wrist.lockPosition();
         }*/
-
     }
 
     private void manualMode() {

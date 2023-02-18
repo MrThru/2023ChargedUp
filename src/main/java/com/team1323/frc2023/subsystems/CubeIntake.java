@@ -40,10 +40,11 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         super(Ports.CUBE_INTAKE_WRIST, Ports.CANBUS, Constants.CubeIntake.kEncoderUnitsPerDegree, 
                 Constants.CubeIntake.kMinControlAngle, Constants.CubeIntake.kMaxControlAngle,
                 Constants.CubeIntake.kAngleTolerance, Constants.CubeIntake.kVelocityScalar, 
-                Constants.CubeIntake.kAccelerationScalar, new MagEncoder(Ports.INTAKE_WRIST_ENCODER, true), Constants.CubeIntake.kEncoderInfo);
+                Constants.CubeIntake.kAccelerationScalar, Constants.CubeIntake.kCurrentZeroingConfig, 
+                new MagEncoder(Ports.INTAKE_WRIST_ENCODER, true), Constants.CubeIntake.kEncoderInfo);
         super.leader.setPIDF(Constants.CubeIntake.kStandardPID);
         setSupplyCurrentLimit(Constants.CubeIntake.kSupplyCurrentLimit);
-        zeroPosition();
+        setPositionToAbsolute();
         stop();
 
         
@@ -119,8 +120,10 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         @Override
         public void onStop(double timestamp) {}
     };
+
     @Override
     public void registerEnabledLoops(ILooper enabledLooper) {
+        super.registerEnabledLoops(enabledLooper);
         enabledLooper.register(loop);
     }
 

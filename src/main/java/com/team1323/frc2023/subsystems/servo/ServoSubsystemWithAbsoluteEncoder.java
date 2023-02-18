@@ -8,7 +8,7 @@ import com.team1323.lib.util.Util;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
+public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystemWithCurrentZeroing {
     private static final int kMaxPositionResets = 50;
 
     protected final AbsoluteEncoder absoluteEncoder;
@@ -17,22 +17,23 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
 
     public ServoSubsystemWithAbsoluteEncoder(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
-            double cruiseVelocityScalar, double accelerationScalar, AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
+            double cruiseVelocityScalar, double accelerationScalar, CurrentZeroingConfig currentZeroingConfig, 
+            AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
         this(portNumber, new ArrayList<>(), canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits,
-                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, encoder, encoderInfo);
+                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, currentZeroingConfig, encoder, encoderInfo);
     }
 
     public ServoSubsystemWithAbsoluteEncoder(int portNumber, List<Integer> followerPortNumbers, String canBus, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, double cruiseVelocityScalar, double accelerationScalar, 
-            AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
+            CurrentZeroingConfig currentZeroingConfig, AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
         super(portNumber, followerPortNumbers, canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
-                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar);
+                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, currentZeroingConfig);
         absoluteEncoder = encoder;
         absoluteEncoderInfo = encoderInfo;
+        isZeroed = true;
     }
 
-    @Override
-    protected void zeroPosition() {
+    protected void setPositionToAbsolute() {
         double absoluteEncoderOffset = Util.boundAngle0to360Degrees(absoluteEncoder.getDegrees() - absoluteEncoderInfo.encoderZeroingAngle);
         double absoluteSubsystemAngle = absoluteEncoderInfo.subsystemZeroingAngle + (absoluteEncoderOffset / absoluteEncoderInfo.encoderToOutputRatio);
         if (absoluteSubsystemAngle > absoluteEncoderInfo.maxInitialSubsystemAngle) {
@@ -53,9 +54,9 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystem {
         leader.setSelectedSensorPosition(outputUnitsToEncoderUnits(absoluteSubsystemAngle));
     }
 
-    public void zeroPositionWithCounter() {
+    public void setAbsolutePositionWithCounter() {
         if (numPositionResets < kMaxPositionResets) {
-            zeroPosition();
+            setPositionToAbsolute();
             numPositionResets++;
         }
     }

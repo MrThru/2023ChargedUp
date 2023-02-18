@@ -180,6 +180,12 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
 
+        public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
+            0.1,
+            100.0,
+            109.0,
+            108.0
+        );
     }
 
     public static class VerticalElevator {
@@ -208,6 +214,7 @@ public class Constants {
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.1,
             1.3,
+            0.0,
             0.5
         );
     }
@@ -236,6 +243,7 @@ public class Constants {
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.05,
             0.8,
+            0.0,
             0.25
         );
     }
@@ -273,6 +281,13 @@ public class Constants {
             -95.0,
             185.0
         );
+
+        public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
+            0.1,
+            100.0,
+            176.0,
+            175.0
+        );
     }
 
     public static class Wrist {
@@ -306,6 +321,13 @@ public class Constants {
             0.0, 
             -152, 
             138
+        );
+
+        public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
+            -0.1,
+            100.0,
+            -148.0,
+            -147.0
         );
     }
 

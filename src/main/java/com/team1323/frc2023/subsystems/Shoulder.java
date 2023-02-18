@@ -28,13 +28,14 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
         super(Ports.SHOULDER, Ports.CANBUS, Constants.Shoulder.kEncoderUnitsPerDegree, 
                 Constants.Shoulder.kMinControlAngle, Constants.Shoulder.kMaxControlAngle, 
                 Constants.Shoulder.kAngleTolerance, Constants.Shoulder.kVelocityScalar, 
-                Constants.Shoulder.kAccelerationScalar, new CanEncoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
+                Constants.Shoulder.kAccelerationScalar, Constants.Shoulder.kCurrentZeroingConfig, 
+                new CanEncoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
 
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
         leader.setPIDF(Constants.Shoulder.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
         setSupplyCurrentLimit(Constants.Shoulder.kSupplyCurrentLimit);
-        zeroPosition();
+        setPositionToAbsolute();
         stop();
     }
 
@@ -68,6 +69,7 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
 
     @Override
     public void registerEnabledLoops(ILooper enabledLooper) {
+        super.registerEnabledLoops(enabledLooper);
         enabledLooper.register(loop);
     }
 
