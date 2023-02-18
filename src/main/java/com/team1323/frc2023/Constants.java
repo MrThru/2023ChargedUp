@@ -335,11 +335,11 @@ public class Constants {
         
         public static final double kIntakeConeStatorCurrentLimit = 200.0;
         public static final double kIntakeConeStatorHoldCurrent = 30.0;
-        public static final double kIntakeConeAmpThreshold = 15.0;
+        public static final double kIntakeConeVelocityThreshold = 900.0;
 
 
         public static final double kIntakeCubeStatorCurrentLimit = 15.0;
-        public static final double kIntakeCubeAmpThreshold = 5.0;
+        public static final double kIntakeCubeVelocityThreshold = 600.0;
         
         
         public static final double kIntakeCubeSpeed = 0.25;

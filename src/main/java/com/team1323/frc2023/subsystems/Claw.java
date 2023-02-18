@@ -16,6 +16,7 @@ import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Stopwatch;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
@@ -54,6 +55,8 @@ public class Claw extends Subsystem {
             this.outtakeState = outtakeState;
         }
     }
+
+    private PeriodicIO periodicIO = new PeriodicIO();
     private HoldingObject currentHoldingObject = HoldingObject.None;
     public HoldingObject getCurrentHoldingObject() {
         return currentHoldingObject;
@@ -97,6 +100,7 @@ public class Claw extends Subsystem {
     }
 
     private double looperStartTime = 0;
+
     Loop loop = new Loop() {
 
         @Override
@@ -118,7 +122,7 @@ public class Claw extends Subsystem {
                     stopwatch.start();
                     stopwatch2.reset();
                 }
-                if(claw.getOutputCurrent() > Constants.Claw.kIntakeConeAmpThreshold  && stopwatch.getTime() > 0.25) {
+                if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 0.25) {
                     stopwatch2.startIfNotRunning();
                     if(stopwatch2.getTime() > 0.25) {
                         setCurrentHoldingObject(HoldingObject.Cone);
@@ -132,7 +136,7 @@ public class Claw extends Subsystem {
                 if(stateChanged) {
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
                 }
-                if(claw.getOutputCurrent() > Constants.Claw.kIntakeCubeAmpThreshold) {
+                if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeCubeVelocityThreshold && periodicIO.dv < 0) {
                     setCurrentHoldingObject(HoldingObject.Cube);
                     LEDs.getInstance().configLEDs(LEDColors.PURPLE);
                 }
@@ -186,6 +190,18 @@ public class Claw extends Subsystem {
         return (encUnits * 600) / 2048.0;
     }
 
+    private double previousTimestamp = 0;
+
+    @Override
+    public void readPeriodicInputs() {
+        double currentVelocity = claw.getSelectedSensorVelocity();
+        periodicIO.dv = (currentVelocity - periodicIO.velocity) / (Timer.getFPGATimestamp() - previousTimestamp);        
+        periodicIO.velocity = currentVelocity;
+        
+        periodicIO.supplyCurrent = claw.getSupplyCurrent();
+        periodicIO.statorCurrent = claw.getStatorCurrent();
+    }
+
     @Override
     public void outputTelemetry() {
         SmartDashboard.putNumber("Claw Target RPM", targetRPM);
@@ -217,6 +233,13 @@ public class Claw extends Subsystem {
         if(getCurrentHoldingObject() == HoldingObject.None) {
             conformToState(ControlState.OFF);
         }
+    }
+
+    private class PeriodicIO {
+        double velocity = 0;
+        double dv = 0;
+        double supplyCurrent = 0;
+        double statorCurrent = 0;
     }
 
 }
