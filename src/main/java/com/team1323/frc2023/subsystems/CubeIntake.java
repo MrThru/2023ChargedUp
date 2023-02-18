@@ -80,7 +80,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public void conformToState(State desiredState) {
-        setIntakeCurrent(60.0);
+        setIntakeCurrent(30.0);
         setPosition(desiredState.intakeAngle);
         setIntakeSpeed(desiredState.intakeSpeed);
         setState(desiredState);
@@ -101,6 +101,16 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         return banner.get();
     }
 
+    private boolean isCurrentLimited = false;
+    @Override
+    public void setPosition(double outputUnits) {
+        if (isCurrentLimited) {
+            disableStatorCurrentLimit();
+            isCurrentLimited = false;
+        }
+        super.setPosition(outputUnits);
+    }
+
     private void updateArbitraryFeedForward() {
         periodicIO.arbitraryFeedForward = Math.cos(Math.toRadians(getPosition())) * Constants.CubeIntake.kArbitraryFeedForward;
     }
@@ -114,7 +124,10 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         @Override
         public void onLoop(double timestamp) {
             updateArbitraryFeedForward();
-            
+            if (isOnTarget() && !isCurrentLimited) {
+                setStatorCurrentLimit(10.0);
+                isCurrentLimited = true;
+            }
         }
 
         @Override
@@ -170,6 +183,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         SmartDashboard.putNumber("Cube Intake RPM", intakeRoller.getSelectedSensorVelocity() * 600 / 2048);
         SmartDashboard.putNumber("Cube Intake Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));
         SmartDashboard.putBoolean("Cube Intake Banner", getBanner());
+        SmartDashboard.putNumber("Cube Intake Stator Current", leader.getStatorCurrent());
     }
     @Override
     public void stop() {

@@ -157,7 +157,7 @@ public class Constants {
         public static final double kMaxControlAngle = 105;
 
         public static final double kStartingAngle = 0;
-        public static final double kIntakeAngle = -5;
+        public static final double kIntakeAngle = -2.5;
 
         public static final double kAngleTolerance = 1.0;
         public static final double kVelocityScalar = 1.0;
@@ -335,7 +335,7 @@ public class Constants {
         
         public static final double kIntakeConeStatorCurrentLimit = 200.0;
         public static final double kIntakeConeStatorHoldCurrent = 30.0;
-        public static final double kIntakeConeVelocityThreshold = 900.0;
+        public static final double kIntakeConeVelocityThreshold = 200.0;
 
 
         public static final double kIntakeCubeStatorCurrentLimit = 15.0;

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.subsystems.Subsystem;
@@ -81,6 +82,16 @@ public abstract class ServoSubsystem extends Subsystem {
     protected void setSupplyCurrentLimit(double amps) {
         SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(true, amps, amps, 0.25);
         allMotors.forEach(m -> m.configSupplyCurrentLimit(currentLimitConfiguration, Constants.kCANTimeoutMs));
+    }
+
+    protected void setStatorCurrentLimit(double amps) {
+        StatorCurrentLimitConfiguration currentLimitConfiguration = new StatorCurrentLimitConfiguration(true, amps, amps, 0.1);
+        allMotors.forEach(m -> m.configStatorCurrentLimit(currentLimitConfiguration));
+    }
+
+    protected void disableStatorCurrentLimit() {
+        StatorCurrentLimitConfiguration currentLimitConfiguration = new StatorCurrentLimitConfiguration(false, 200.0, 200.0, 0.1);
+        allMotors.forEach(m -> m.configStatorCurrentLimit(currentLimitConfiguration));
     }
 
     protected double encoderUnitsToOutputUnits(double encoderUnits) {

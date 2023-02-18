@@ -105,16 +105,16 @@ public class Claw extends Subsystem {
 
         @Override
         public void onStart(double timestamp) {
-            conformToState(getCurrentHoldingObject().intakeState);
+            //conformToState(getCurrentHoldingObject().intakeState);
             looperStartTime = timestamp;
         }
 
         @Override
         public void onLoop(double timestamp) {
-            if((timestamp - looperStartTime) > 2.0 && ((timestamp - looperStartTime) < 3.0) && claw.getOutputCurrent() < 5 && 
-                        (currentState == ControlState.CONE_INTAKE || currentState == ControlState.CUBE_INTAKE)) {
-                conformToState(ControlState.OFF);
-            }
+            // if((timestamp - looperStartTime) > 2.0 && ((timestamp - looperStartTime) < 3.0) && claw.getOutputCurrent() < 5 && 
+            //             (currentState == ControlState.CONE_INTAKE || currentState == ControlState.CUBE_INTAKE)) {
+            //     conformToState(ControlState.OFF);
+            // }
 
             if(currentState == ControlState.CONE_INTAKE) {
                 if(stateChanged) {
@@ -124,7 +124,7 @@ public class Claw extends Subsystem {
                 }
                 if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 0.25) {
                     stopwatch2.startIfNotRunning();
-                    if(stopwatch2.getTime() > 0.25) {
+                    if(stopwatch2.getTime() > 1.0) {
                         setCurrentHoldingObject(HoldingObject.Cone);
                         LEDs.getInstance().configLEDs(LEDColors.YELLOW);
                         claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent, 0.01);
@@ -230,9 +230,7 @@ public class Claw extends Subsystem {
     }
     @Override
     public void stop() {
-        if(getCurrentHoldingObject() == HoldingObject.None) {
-            conformToState(ControlState.OFF);
-        }
+        conformToState(ControlState.OFF);
     }
 
     private class PeriodicIO {

@@ -247,11 +247,11 @@ public class DriverControls implements Loop {
             if(tunnel.allowSingleIntakeMode()) {
                 s.intakeState(Tunnel.State.SINGLE_INTAKE);
             }
-        } else if(coDriver.aButton.isBeingPressed()) {
+        } /*else if(coDriver.aButton.isBeingPressed()) {
             if(tunnel.getFrontBanner()) {
                 s.postIntakeState();
-            } 
-        } else if(coDriver.aButton.wasReleased()) {
+            }
+        } */ else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState();
         }
 
@@ -295,13 +295,13 @@ public class DriverControls implements Loop {
             targetScoringRow = NodeLocation.Row.BOTTOM;
         }
 
-        if(coDriver.leftTrigger.wasActivated() && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+        if(coDriver.leftTrigger.wasActivated() /*&& AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation()) */) {
+            /*if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
                 s.request(new SequentialRequest(
                     SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
                     claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
                 )); 
-            }
+            }*/
             cubeIntake.conformToState(CubeIntake.State.INTAKE);
             tunnel.setState(Tunnel.State.COMMUNITY);
         } else if(coDriver.leftTrigger.wasReleased()) {

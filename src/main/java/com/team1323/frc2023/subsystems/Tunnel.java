@@ -53,7 +53,7 @@ public class Tunnel extends Subsystem {
         conveyorTalon.setPIDF(Constants.Tunnel.kConveyorPID);
         frontRollerTalon.setPIDF(Constants.Tunnel.kFrontRollerPID);
 
-        tunnelEntrance.setInverted(TalonFXInvertType.CounterClockwise);
+        tunnelEntrance.setInverted(TalonFXInvertType.Clockwise);
         
     }
 
@@ -61,11 +61,13 @@ public class Tunnel extends Subsystem {
         OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY, MANUAL;
     }
     private State currentState = State.MANUAL;
+    private boolean stateChanged = false;
     public State getState() {
         return currentState;
     }
     public void setState(State state) {
         currentState = state;
+        stateChanged = true;
     }
     public void setConveyorSpeedOfTopRoller(double percent) {
         setConveyorSpeed(frontRollerTalon.getMotorOutputPercent() * Constants.Tunnel.kTopRollerRatio / Constants.Tunnel.kFloorRatio);
@@ -115,6 +117,7 @@ public class Tunnel extends Subsystem {
 
     Stopwatch cubeEjectedStopwatch = new Stopwatch();
     private double lastCubeDetectedtimestamp = Double.POSITIVE_INFINITY;
+    private boolean frontBannerActivated = false;
     
     Loop loop = new Loop() {
 
@@ -129,15 +132,15 @@ public class Tunnel extends Subsystem {
             switch(currentState) {
                 //ToDo: Send straight through to claw, if the claw is empty
                 case COMMUNITY:
-                    if(Claw.getInstance().getCurrentHoldingObject() == Claw.HoldingObject.None) {
+                    if(/*Claw.getInstance().getCurrentHoldingObject() == Claw.HoldingObject.None*/false) {
                         setRollerSpeeds(-Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
                         setTunnelEntranceSpeed(0.50);
                     } else if(!getFrontBanner()) {
                         setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
-                        setTunnelEntranceSpeed(0.50);
+                        setTunnelEntranceSpeed(0.65);
                     } else if(!getRearBanner()) {
                         setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
-                        setTunnelEntranceSpeed(0.30);
+                        setTunnelEntranceSpeed(0.65);
                     } else {
                         if(CubeIntake.getInstance().getBanner() && Double.isInfinite(lastCubeDetectedtimestamp)) {
                             lastCubeDetectedtimestamp = timestamp;
@@ -178,7 +181,8 @@ public class Tunnel extends Subsystem {
                     }
                     break;
                 case SINGLE_INTAKE:
-                    if(pendingShutdown) {
+                    
+                    /*if(pendingShutdown) {
                         if(allowSingleIntakeMode()) {
                             setState(State.HOLD);
                             pendingShutdown = false;
@@ -186,9 +190,22 @@ public class Tunnel extends Subsystem {
                             setState(State.HOLD);
                             pendingShutdown = false;
                         }
+                    }*/
+                    if(!frontBannerActivated) {
+                        setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
+                        setTunnelEntranceSpeed(0.25);
                     }
-                    setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
-                    setTunnelEntranceSpeed(0.25);
+
+                    if(stateChanged) {
+                        frontBannerActivated = false;
+                    }
+                    if(getFrontBanner() && !frontBannerActivated) {
+                        frontBannerActivated = true;
+                        setRollerSpeeds(0.25, Constants.Tunnel.kFeedConveyorSpeed);
+                    } else if(!getFrontBanner() && frontBannerActivated) {
+                        setState(State.OFF);
+                    }
+
                     break;
                 case EJECT_ONE:
                     if(!cubeEjected) {
@@ -226,6 +243,7 @@ public class Tunnel extends Subsystem {
                 default:
                     break;
             }
+            stateChanged = false;
         }
 
         @Override

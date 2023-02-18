@@ -241,7 +241,7 @@ public class Superstructure extends Subsystem {
 	}
 	public void postCubeIntakeState() {
 		request(new ParallelRequest(
-			tunnel.stateRequest(Tunnel.State.HOLD),
+			tunnel.stateRequest(Tunnel.State.SPIT),
 			cubeIntake.stateRequest(CubeIntake.State.STOWED),
 			new LambdaRequest(() -> {
 				if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
