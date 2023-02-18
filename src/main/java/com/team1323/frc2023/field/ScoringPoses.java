@@ -52,9 +52,7 @@ public class ScoringPoses {
 
     public static void updateConeLateralOffset() {
         double offset = SmartDashboard.getNumber("Cone Left-Right Offset", 0.0);
-        if (!Double.isNaN(offset)) {
-            coneLateralOffset = offset;
-        }
+        coneLateralOffset = Double.isNaN(offset) ? 0.0 : offset;
     }
 
     public static Pose2d getScoringPose(NodeLocation nodeLocation) {
