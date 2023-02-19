@@ -170,7 +170,6 @@ public class Tunnel extends Subsystem {
                             CubeIntake.getInstance().setHoldMode();
                             setState(State.OFF);
                         }
-                        
                     }
                     break;
                 case DETECT:

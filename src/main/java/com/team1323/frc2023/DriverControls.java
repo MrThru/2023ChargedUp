@@ -293,14 +293,14 @@ public class DriverControls implements Loop {
 
         if(coDriver.xButton.wasActivated()) {
             targetScoringRow = NodeLocation.Row.MIDDLE;
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (!tunnel.allowSingleIntakeMode() || tunnel.cubeOnBumper())) {
                 s.handOffCubeState();
             }
             leds.configLEDs(LEDs.LEDColors.ORANGE);
         }
         if(coDriver.yButton.wasActivated()) {
             targetScoringRow = NodeLocation.Row.TOP;
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (!tunnel.allowSingleIntakeMode() || tunnel.cubeOnBumper())) {
                 s.handOffCubeState();
             }
             leds.configLEDs(LEDs.LEDColors.RED);
