@@ -179,6 +179,7 @@ public class LimelightProcessor implements Loop {
 					Rotation2d.fromDegrees(LimelightHelpers.getTY(kLimelightName)).tan());
 			Translation2d conePosition = getRetroTargetPosition(targetInfo, kConeHeight, robotPose);
 			coneGoalTrack.forceUpdate(timestamp, conePosition);
+			SmartDashboard.putNumberArray("Cone Position", new double[]{conePosition.x(), conePosition.y()});
 		}
 	}
 
@@ -196,23 +197,22 @@ public class LimelightProcessor implements Loop {
 
 	private void updateRobotPoseWithConePoles(LimelightResults results, double timestamp) {
 		final double kTYDecisionValue = 10.0;
+		final double kMaxTXDifference = 7.0;
 
 		double observationTimestamp = timestamp - getTotalLatencySeconds(results);
 		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(observationTimestamp);
 
-		List<LimelightTarget_Retro> retroTargets;
-		if (results.targetingResults.targets_Retro.length > 2) {
-			Comparator<LimelightTarget_Retro> areaComparator = (r1, r2) -> Double.compare(r2.ta, r1.ta);
-			retroTargets = Arrays.stream(results.targetingResults.targets_Retro)
-					.sorted(areaComparator)
-					.limit(2)
-					.toList();
-		} else {
-			retroTargets = Arrays.asList(results.targetingResults.targets_Retro);
-		}
-		retroTargets = retroTargets.stream()
+		Comparator<LimelightTarget_Retro> areaComparator = (r1, r2) -> Double.compare(r2.ta, r1.ta);
+		List<LimelightTarget_Retro> retroTargets = Arrays.stream(results.targetingResults.targets_Retro)
 				.filter(r -> r.ta >= kMinRetroArea)
+				.sorted(areaComparator)
+				.limit(2)
 				.toList();
+		if (retroTargets.size() == 2 && Math.abs(retroTargets.get(0).tx - retroTargets.get(1).tx) > kMaxTXDifference) {
+			LimelightTarget_Retro centeredTarget = Math.abs(retroTargets.get(0).tx) < Math.abs(retroTargets.get(1).tx) ?
+					retroTargets.get(0) : retroTargets.get(1);
+			retroTargets = Arrays.asList(centeredTarget);
+		}
 
 		double conePoleY = getNearestConePoleY(robotPose);
 		for (LimelightTarget_Retro retroTarget : retroTargets) {

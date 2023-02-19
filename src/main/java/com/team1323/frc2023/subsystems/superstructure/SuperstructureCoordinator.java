@@ -206,6 +206,17 @@ public class SuperstructureCoordinator {
         return getStowChoreography(finalPosition);
     }
 
+    public Request getCommunityConeHoldChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            0.5,
+            0.25,
+            124.0,
+            95.0
+        );
+
+        return getStowChoreography(finalPosition);
+    }
+
     private Request getLowChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
 
@@ -357,17 +368,6 @@ public class SuperstructureCoordinator {
             0.625,
             0.25,
             37.0,
-            95.0
-        );
-
-        return getHighChoreography(finalPosition);
-    }
-
-    public Request getCommunityConeHoldChoreography() {
-        SuperstructurePosition finalPosition = new SuperstructurePosition(
-            0.5,
-            0.25,
-            124.0,
             95.0
         );
 

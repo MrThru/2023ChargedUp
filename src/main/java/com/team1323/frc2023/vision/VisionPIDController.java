@@ -53,7 +53,7 @@ public class VisionPIDController {
     private boolean useRetroTarget = false;
 
     public void start(Pose2d currentPose, Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, boolean useRetroTarget) {
-        //LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         lateralPID.setSetpoint(0.0);
         forwardPID.setSetpoint(0.0);
         targetPosition = desiredFieldPose.getTranslation();
@@ -194,7 +194,7 @@ public class VisionPIDController {
             onTargetStopwatch.startIfNotRunning();
             if (onTargetStopwatch.getTime() >= kOnTargetTime) {
                 onTargetStopwatch.reset();
-                //LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+                LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
                 targetReached = true;
 
                 return Pose2d.fromRotation(targetHeading);

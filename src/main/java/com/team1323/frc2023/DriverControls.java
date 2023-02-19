@@ -14,7 +14,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
+import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
@@ -187,6 +189,7 @@ public class DriverControls implements Loop {
 
         if (driver.startButton.wasActivated()) {
             swerve.stop();
+            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         }
 
         if (driver.leftTrigger.wasActivated()) {
@@ -344,9 +347,9 @@ public class DriverControls implements Loop {
         if (coDriver.backButton.wasActivated()) {
             verticalElevator.startCurrentZeroing();
             horizontalElevator.startCurrentZeroing();
-            shoulder.startCurrentZeroing();
-            wrist.startCurrentZeroing();
-            cubeIntake.startCurrentZeroing();
+            //shoulder.startCurrentZeroing();
+            //wrist.startCurrentZeroing();
+            //cubeIntake.startCurrentZeroing();
         }
 
         /*if(s.coneIntakingSequence) {
