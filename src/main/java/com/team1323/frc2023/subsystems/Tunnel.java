@@ -90,6 +90,12 @@ public class Tunnel extends Subsystem {
         setConveyorSpeed(conveyorSpeed);
     }
 
+    public void setAllSpeeds(double speed) {
+        setRollerSpeed(speed);
+        setConveyorSpeed(speed);
+        setTunnelEntranceSpeed(speed);
+    }
+
     private boolean pendingShutdown = false;//Shuts down a state if the states requirement(s) have been met
     public void queueShutdown(boolean pendingShutdown) {
         this.pendingShutdown = pendingShutdown;
@@ -103,7 +109,7 @@ public class Tunnel extends Subsystem {
     public boolean getCubeIntakeBanner() {
         return cubeIntake.getBanner();
     }
-
+    /*True if all the banners(front, rear, and entrance) are false*/
     public boolean allowSingleIntakeMode() {
         return !(getFrontBanner() || getRearBanner() || getCubeIntakeBanner());
     }
@@ -118,6 +124,10 @@ public class Tunnel extends Subsystem {
     Stopwatch cubeEjectedStopwatch = new Stopwatch();
     private double lastCubeDetectedtimestamp = Double.POSITIVE_INFINITY;
     private boolean frontBannerActivated = false;
+    public boolean cubeOnBumper() {
+        return frontBannerActivated;
+    }
+    private boolean cubeStuckOnBumper = false;
     
     Loop loop = new Loop() {
 
@@ -132,9 +142,15 @@ public class Tunnel extends Subsystem {
             switch(currentState) {
                 //ToDo: Send straight through to claw, if the claw is empty
                 case COMMUNITY:
-                    if(/*Claw.getInstance().getCurrentHoldingObject() == Claw.HoldingObject.None*/false) {
-                        setRollerSpeeds(-Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
-                        setTunnelEntranceSpeed(0.50);
+                    if(Claw.getInstance().getCurrentHoldingObject() == Claw.HoldingObject.None) {
+                        if(Claw.getInstance().getState() == Claw.ControlState.CUBE_INTAKE) {
+                            setRollerSpeeds(-Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
+                            System.out.println("Tunnel Outtaking");
+                        } else {
+                            setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
+                            System.out.println("Tunnel Holding");
+                        }
+                        setTunnelEntranceSpeed(0.65);
                     } else if(!getFrontBanner()) {
                         setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
                         setTunnelEntranceSpeed(0.65);
@@ -181,31 +197,26 @@ public class Tunnel extends Subsystem {
                     }
                     break;
                 case SINGLE_INTAKE:
-                    
-                    /*if(pendingShutdown) {
-                        if(allowSingleIntakeMode()) {
-                            setState(State.HOLD);
-                            pendingShutdown = false;
-                        } else if(getFrontBanner()) {
-                            setState(State.HOLD);
-                            pendingShutdown = false;
-                        }
-                    }*/
-                    if(!frontBannerActivated) {
-                        setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
+                    if(frontBannerActivated && allowSingleIntakeMode()) {
+                        setAllSpeeds(0);
+                    } else if(frontBannerActivated) {
+                        setRollerSpeeds(0.25, 0.4);
+                        setTunnelEntranceSpeed(0.25);
+                    } else if(allowSingleIntakeMode()) {
+                        setRollerSpeeds(-0.6, 0.4);
+                        setTunnelEntranceSpeed(0.65);
+                    } else if(getRearBanner()) {
+                        setRollerSpeeds(-0.6, 0.55);
+                        setTunnelEntranceSpeed(0.25);
+                    } else if(getFrontBanner()) {
+                        setRollerSpeeds(-0.25, 0.4);
                         setTunnelEntranceSpeed(0.25);
                     }
 
-                    if(stateChanged) {
-                        frontBannerActivated = false;
-                    }
                     if(getFrontBanner() && !frontBannerActivated) {
                         frontBannerActivated = true;
-                        setRollerSpeeds(0.25, Constants.Tunnel.kFeedConveyorSpeed);
-                    } else if(!getFrontBanner() && frontBannerActivated) {
-                        setState(State.OFF);
                     }
-
+                    
                     break;
                 case EJECT_ONE:
                     if(!cubeEjected) {
@@ -227,6 +238,7 @@ public class Tunnel extends Subsystem {
                     setRollerSpeed(0.25);
                     setConveyorSpeed(0.25);
                     setTunnelEntranceSpeed(0.25);
+                    frontBannerActivated = false;
                     break;
                 case HOLD:
                     setRollerSpeed(Constants.Tunnel.kHoldFrontRollerSpeed);

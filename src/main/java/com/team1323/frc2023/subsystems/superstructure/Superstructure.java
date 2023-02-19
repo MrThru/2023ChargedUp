@@ -302,6 +302,7 @@ public class Superstructure extends Subsystem {
 	private Request getConeStowSequence() {
 		return new SequentialRequest(
 			choreographyRequest(coordinator::getConeScanChoreography),
+			new LambdaRequest(() -> LimelightProcessor.getInstance().clearConeOffsetBuffer()),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.CONE)),
 			waitRequest(1.0),
 			new LambdaRequest(() -> ScoringPoses.updateConeLateralOffset()),
@@ -355,17 +356,23 @@ public class Superstructure extends Subsystem {
 	}*/
 
 	private void scoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo, 
-			Claw.ControlState clawScoringState, boolean useTrajectory) {
+			Claw.ControlState clawScoringState, boolean useTrajectory, boolean useRetro) {
+		Request switchToRetroRequest = useRetro ? 
+				new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.RETRO))
+						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 18.0) :
+				new EmptyRequest();
+
 		request(new SequentialRequest(
 			new ParallelRequest(
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory),
+				switchToRetroRequest,
 				choreographyRequest(scoringChoreo)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0)
 			),
 			new LambdaRequest(() -> claw.conformToState(clawScoringState)),
-			waitRequest(1.0),
 			new LambdaRequest(() -> swerve.stop()),
 			new LambdaRequest(() -> swerve.resetVisionPID()),
+			waitRequest(1.0),
 			choreographyRequest(this::objectAwareStow)
 		));
 	}
@@ -405,6 +412,7 @@ public class Superstructure extends Subsystem {
 		ChoreographyProvider scoringChoreo = coordinator::getConeStowChoreography;
 		Claw.ControlState clawScoringState;
 		boolean useTrajectory = true;
+		boolean useRetro = true;
 		
 		if (Math.abs(swerve.getPose().getTranslation().y() - scoringPose.getTranslation().y()) < 36.0 &&
 				nodeLocation.isEdgeColumn()) {
@@ -413,6 +421,7 @@ public class Superstructure extends Subsystem {
 
 		if (nodeLocation.column == Column.CENTER) {
 			clawScoringState = Claw.ControlState.CUBE_OUTAKE;
+			useRetro = false;
 
 			if (nodeLocation.row == Row.MIDDLE) {
 				scoringChoreo = coordinator::getCubeMidScoringChoreography;
@@ -429,18 +438,18 @@ public class Superstructure extends Subsystem {
 			}
 		}
 
-		scoringSequence(scoringPose, scoringChoreo, clawScoringState, useTrajectory);
+		scoringSequence(scoringPose, scoringChoreo, clawScoringState, useTrajectory, useRetro);
 		//request(swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory));
 	}
 
 	public void coneMidScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getConeMidScoringChoreography, 
-				Claw.ControlState.CONE_OUTAKE, false);
+				Claw.ControlState.CONE_OUTAKE, false, true);
 	}
 
 	public void coneHighScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getConeHighScoringChoreography,
-				Claw.ControlState.CONE_OUTAKE, false);
+				Claw.ControlState.CONE_OUTAKE, false, true);
 	}
 
 	public void cubeLowScoringSequence(Pose2d scoringPose) {
@@ -455,11 +464,11 @@ public class Superstructure extends Subsystem {
 
 	public void cubeMidScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getCubeMidScoringChoreography,
-				Claw.ControlState.CUBE_OUTAKE, false);
+				Claw.ControlState.CUBE_OUTAKE, false, false);
 	}
 
 	public void cubeHighScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getCubeHighScoringChoreography,
-				Claw.ControlState.CUBE_OUTAKE, false);
+				Claw.ControlState.CUBE_OUTAKE, false, false);
 	}
 }

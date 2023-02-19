@@ -6,8 +6,10 @@ import java.util.List;
 import com.team254.drivers.LazyPhoenix5TalonFX.TalonPIDF;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
+import com.team1323.lib.math.geometry.Pose3d;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 public class Constants {
@@ -48,6 +50,7 @@ public class Constants {
     public static final double kCameraZOffset = 52.614;
     public static final double kCameraYawAngleDegrees = 0.0;
     public static final double kCameraPitchAngleDegrees = Settings.kIsUsingCompBot ? 29.5 : 29.5;
+    public static final Pose3d kCameraPose = new Pose3d(new Vector3d(kCameraXOffset, kCameraYOffset, kCameraZOffset), Rotation2d.fromDegrees(kCameraPitchAngleDegrees));
 
     //Limelight
     public static final double kHorizontalFOV = 59.6; // degrees
@@ -339,7 +342,7 @@ public class Constants {
 
 
         public static final double kIntakeCubeStatorCurrentLimit = 15.0;
-        public static final double kIntakeCubeVelocityThreshold = 600.0;
+        public static final double kIntakeCubeVelocityThreshold = 200.0;
         
         
         public static final double kIntakeCubeSpeed = 0.25;

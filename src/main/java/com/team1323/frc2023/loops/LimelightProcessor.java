@@ -10,10 +10,14 @@ import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightResults;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Fiducial;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Retro;
+import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
+import com.team1323.frc2023.subsystems.superstructure.SuperstructurePosition;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.TargetInfo;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
+import com.team1323.lib.math.geometry.Vector3d;
+import com.team1323.lib.util.CircularBuffer;
 import com.team1323.lib.util.FieldConversions;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Pose2d;
@@ -35,6 +39,7 @@ public class LimelightProcessor implements Loop {
 
 	private static final String kLimelightName = "limelight";
 	private static final double kMinFiducialArea = 0.115;
+	private static final double kMinRetroArea = 0.0007;
 
 	private static final TwoPointRamp translationalStandardDeviationRamp = new TwoPointRamp(
 		new Translation2d(60.0, 0.05),
@@ -126,6 +131,14 @@ public class LimelightProcessor implements Loop {
 		}
 	}
 
+	private double coneLeftRightOffset = 0;
+	private CircularBuffer coneLeftRightBuffer = new CircularBuffer(100);
+	
+	public void clearConeOffsetBuffer() {
+		coneLeftRightBuffer.clear();
+		coneLeftRightOffset = 0;
+	}
+
 	private void handleRetroTargets(LimelightResults results, double timestamp) {
 		if (results.targetingResults.targets_Retro.length == 0) {
 			return;
@@ -135,8 +148,14 @@ public class LimelightProcessor implements Loop {
 		if (pipelineIndex == Pipeline.RETRO.index) {
 			updateRobotPoseWithConePoles(results, timestamp);
 		} else if (pipelineIndex == Pipeline.CONE.index) {
-
+			Translation2d wristTipPosition = SuperstructureCoordinator.getInstance().getPosition().getWristTipPosition();
+			double distanceFromLimelight = Constants.kCameraPose.getVector3d().add(new Vector3d(wristTipPosition.x(),0,wristTipPosition.y()).inverse()).magnitude();
+			double currentFrameLeftRightOffset = -Math.tan(Math.toRadians(LimelightHelpers.getTX(kLimelightName))) * 
+									distanceFromLimelight;
+			coneLeftRightBuffer.addValue(currentFrameLeftRightOffset);
+			coneLeftRightOffset = coneLeftRightBuffer.getAverage();	
 		}
+		
 	}
 
 	private void updateConePolePosition(LimelightResults results, double timestamp) {
@@ -167,6 +186,9 @@ public class LimelightProcessor implements Loop {
 		} else {
 			retroTargets = Arrays.asList(results.targetingResults.targets_Retro);
 		}
+		retroTargets = retroTargets.stream()
+				.filter(r -> r.ta >= kMinRetroArea)
+				.toList();
 
 		double conePoleY = getNearestConePoleY(robotPose);
 		for (LimelightTarget_Retro retroTarget : retroTargets) {
@@ -184,12 +206,12 @@ public class LimelightProcessor implements Loop {
 		Translation2d estimatedPolePosition = getRetroTargetPosition(targetInfo, poleHeight, robotPose);
 		Translation2d positionCorrection = new Translation2d(estimatedPolePosition, truePolePosition);
 		Pose2d correctedRobotPose = new Pose2d(robotPose.getTranslation().translateBy(positionCorrection), robotPose.getRotation());
-		Matrix<N3, N1> standardDeviations = VecBuilder.fill(0.1, 0.1, 0.1);
+		Matrix<N3, N1> standardDeviations = VecBuilder.fill(1.0, 1.0, 100.0);
 
-		//Swerve.getInstance().addVisionMeasurement(Units.inchesToMeters(correctedRobotPose), observationTimestamp, standardDeviations);
+		Swerve.getInstance().addVisionMeasurement(Units.inchesToMeters(correctedRobotPose), observationTimestamp, standardDeviations);
 
 		// For debugging purposes
-		if (poleHeight == kMidConePoleHeight) {
+		if (poleHeight == kHighConePoleHeight) {
 			SmartDashboard.putString("Cone Pole Position", new Translation2d(robotPose.getTranslation(), estimatedPolePosition).toString());
 		}
 	}
@@ -206,7 +228,7 @@ public class LimelightProcessor implements Loop {
 	}
 
 	private Translation2d getRetroTargetPosition(TargetInfo target, double physicalTargetHeight, Pose2d robotPose) {
-		final double differentialHeight = Constants.kCameraZOffset - physicalTargetHeight;
+		final double differentialHeight = physicalTargetHeight - Constants.kCameraZOffset;
 		final Pose2d cameraPose = robotPose.transformBy(kRobotToCameraTransform);
 
 		double ydeadband = target.getY();
@@ -228,6 +250,10 @@ public class LimelightProcessor implements Loop {
 
 		return cameraPose.transformBy(Pose2d.fromTranslation(new Translation2d(distance * angle.cos(), distance * angle.sin())))
 				.getTranslation();
+	}
+
+	public double getRetroConeLeftRightOffset() {
+		return coneLeftRightOffset;
 	}
 
 	public void setPipeline(Pipeline pipeline) {

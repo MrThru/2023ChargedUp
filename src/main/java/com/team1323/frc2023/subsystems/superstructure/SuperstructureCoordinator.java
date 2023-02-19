@@ -365,8 +365,8 @@ public class SuperstructureCoordinator {
 
     public Request getCommunityConeHoldChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            kVerticalHeightForStow,
-            kHorizontalExtensionForUprightShoulder,
+            0.5,
+            0.25,
             124.0,
             95.0
         );

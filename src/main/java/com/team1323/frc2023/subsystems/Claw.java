@@ -135,10 +135,12 @@ public class Claw extends Subsystem {
             } else if(currentState == ControlState.CUBE_INTAKE) {
                 if(stateChanged) {
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
+                    stopwatch.start();
                 }
-                if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeCubeVelocityThreshold && periodicIO.dv < 0) {
+                if(encUnitsToRPM(periodicIO.velocity) > -Constants.Claw.kIntakeCubeVelocityThreshold && stopwatch.getTime() > 0.25) {
                     setCurrentHoldingObject(HoldingObject.Cube);
                     LEDs.getInstance().configLEDs(LEDColors.PURPLE);
+                    stopwatch.reset();
                 }
 
                 
@@ -190,6 +192,9 @@ public class Claw extends Subsystem {
         return (encUnits * 600) / 2048.0;
     }
 
+    public double getRPM() {
+        return encUnitsToRPM(periodicIO.velocity);
+    }
     private double previousTimestamp = 0;
 
     @Override
@@ -206,6 +211,7 @@ public class Claw extends Subsystem {
     public void outputTelemetry() {
         SmartDashboard.putNumber("Claw Target RPM", targetRPM);
         SmartDashboard.putNumber("Claw RPM", encUnitsToRPM(claw.getSelectedSensorVelocity()));
+        SmartDashboard.putNumber("Claw RPM detla", periodicIO.dv);
         SmartDashboard.putString("Current Holding Object", getCurrentHoldingObject().toString());
         SmartDashboard.putNumber("Claw Current", claw.getOutputCurrent());
         SmartDashboard.putString("Claw State", getState().toString());

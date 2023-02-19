@@ -162,8 +162,6 @@ public class DriverControls implements Loop {
         
 
         if (driver.rightTrigger.wasActivated()) {
-            //swerve.setVelocity(Rotation2d.fromDegrees(180), 36.0);
-            //swerve.setState(Swerve.ControlState.NEUTRAL);
             NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
             Pose2d scoringPose = ScoringPoses.getScoringPose(dashboardNodeLocation);
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
@@ -244,14 +242,17 @@ public class DriverControls implements Loop {
 
 
         if(coDriver.aButton.wasActivated()) {
-            if(tunnel.allowSingleIntakeMode()) {
+            if(tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
                 s.intakeState(Tunnel.State.SINGLE_INTAKE);
             }
-        } /*else if(coDriver.aButton.isBeingPressed()) {
-            if(tunnel.getFrontBanner()) {
+        } else if(coDriver.aButton.isBeingPressed()) {
+            if(tunnel.getFrontBanner() || tunnel.getRearBanner()) {
                 s.postIntakeState();
             }
-        } */ else if(coDriver.aButton.wasReleased()) {
+            if(tunnel.getCubeIntakeBanner()) {
+                cubeIntake.setPosition(Constants.CubeIntake.kMaxControlAngle);
+            }
+        } else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState();
         }
 
@@ -260,10 +261,13 @@ public class DriverControls implements Loop {
         } else if(coDriver.leftBumper.wasReleased()) {
             claw.conformToState(Claw.ControlState.OFF);
         }
+        /*if(coDriver.leftBumper.wasActivated()) {
+            s.handOffCubeState();
+        }*/
 
         
         if (coDriver.bButton.wasReleased()) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && claw.getRPM() > 2000) {
                 s.request(new ParallelRequest(
                     SuperstructureCoordinator.getInstance().getFullStowChoreography(),
                     claw.stateRequest(Claw.ControlState.OFF)
@@ -295,13 +299,13 @@ public class DriverControls implements Loop {
             targetScoringRow = NodeLocation.Row.BOTTOM;
         }
 
-        if(coDriver.leftTrigger.wasActivated() /*&& AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation()) */) {
-            /*if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+        if(coDriver.leftTrigger.wasActivated() && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
                 s.request(new SequentialRequest(
                     SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
                     claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
                 )); 
-            }*/
+            }
             cubeIntake.conformToState(CubeIntake.State.INTAKE);
             tunnel.setState(Tunnel.State.COMMUNITY);
         } else if(coDriver.leftTrigger.wasReleased()) {

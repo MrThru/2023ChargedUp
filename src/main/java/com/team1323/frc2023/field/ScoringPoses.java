@@ -11,6 +11,7 @@ import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.field.NodeLocation.Column;
 import com.team1323.frc2023.field.NodeLocation.Grid;
 import com.team1323.frc2023.field.NodeLocation.Row;
+import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.AprilTagTracker.AprilTag;
 import com.team254.lib.geometry.Pose2d;
@@ -51,7 +52,8 @@ public class ScoringPoses {
     );
 
     public static void updateConeLateralOffset() {
-        double offset = SmartDashboard.getNumber("Cone Left-Right Offset", 0.0);
+        double offset = LimelightProcessor.getInstance().getRetroConeLeftRightOffset();
+        SmartDashboard.putNumber("Cone Left-Right offset", offset);
         coneLateralOffset = Double.isNaN(offset) ? 0.0 : offset;
     }
 
@@ -63,11 +65,11 @@ public class ScoringPoses {
         switch (nodeLocation.column) {
             case LEFT:
                 yTransform += kAprilTagToConeLateralDisplacement;
-                xTransform -= 3.5;
+                xTransform -= 2.5; // 3.5
                 break;
             case RIGHT:
                 yTransform -= kAprilTagToConeLateralDisplacement;
-                xTransform -= 3.25;
+                xTransform -= 2.5; // 3.25
                 break;
             case CENTER:
                 break;
