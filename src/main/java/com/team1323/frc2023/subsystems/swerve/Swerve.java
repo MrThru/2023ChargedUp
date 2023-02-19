@@ -635,6 +635,10 @@ public class Swerve extends Subsystem{
 		setState(ControlState.VISION_PID);
 	}
 
+	public void setVisionPIDTarget(Translation2d targetPosition) {
+		visionPID.setTargetPosition(targetPosition);
+	}
+
 	public void resetVisionPID() {
 		visionPID.resetDistanceToTargetPosition();
 	}
@@ -870,13 +874,13 @@ public class Swerve extends Subsystem{
 					double rotationInput = Util.deadBand(Util.limit(rotationCorrection*rotationScalar*driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
 					if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
 						driveVector = lastTrajectoryVector;
-						/*setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-						rotationInput, pose, false), 0.0);*/
-						setVelocityDriveOutput(Kinematics.inverseKinematics(driveVector.x(), driveVector.y(), rotationInput, true), 0.0);
+						setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+								rotationInput, pose, false), 0.0);
+						//setVelocityDriveOutput(Kinematics.inverseKinematics(driveVector.x(), driveVector.y(), rotationInput, true), 0.0);
 					}else{
-						/*setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-						rotationInput, pose, false));*/
-						setVelocityDriveOutput(Kinematics.inverseKinematics(driveVector.x(), driveVector.y(), rotationInput, true));
+						setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+								rotationInput, pose, false));
+						//setVelocityDriveOutput(Kinematics.inverseKinematics(driveVector.x(), driveVector.y(), rotationInput, true));
 					}
 				}else if(!moduleConfigRequested){
 					setModuleAngles(Kinematics.inverseKinematics(driveVector.x(), driveVector.y(), 0.0, true));

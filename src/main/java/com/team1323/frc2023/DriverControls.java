@@ -111,7 +111,6 @@ public class DriverControls implements Loop {
     @Override
     public void onStart(double timestamp) {
         if(inAuto) {
-            swerve.zeroSensors();
             swerve.requireModuleConfiguration();
         }
         swerve.setDriveNeutralMode(NeutralMode.Brake);
@@ -161,11 +160,23 @@ public class DriverControls implements Loop {
             swerve.rotate(Rotation2d.fromDegrees(0));
         
 
-        if (driver.rightTrigger.wasActivated()) {
+        /*if (driver.rightTrigger.wasActivated()) {
             NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
             Pose2d scoringPose = ScoringPoses.getScoringPose(dashboardNodeLocation);
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
             s.scoringSequence(dashboardNodeLocation);
+        }*/
+
+        if (driver.rightTrigger.wasActivated()) {
+            double[] conePoseArray = SmartDashboard.getNumberArray("Cone Intaking Field Position", new double[2]);
+            Pose2d transform = new Pose2d(new Translation2d(conePoseArray[0], conePoseArray[1]), Rotation2d.identity());
+            Pose2d conePose = swerve.getPose().transformBy(transform);
+            swerve.startVisionPID(conePose, conePose.getRotation(), false);
+        } else if (driver.rightTrigger.isBeingPressed()) {
+            double[] conePoseArray = SmartDashboard.getNumberArray("Cone Intaking Field Position", new double[2]);
+            Pose2d transform = new Pose2d(new Translation2d(conePoseArray[0], conePoseArray[1]), Rotation2d.identity());
+            Pose2d conePose = swerve.getPose().transformBy(transform);
+            swerve.setVisionPIDTarget(conePose.getTranslation());
         }
             
         if (driver.backButton.wasActivated()) {

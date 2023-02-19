@@ -15,7 +15,7 @@ import com.team254.lib.trajectory.timing.TimingConstraint;
 import edu.wpi.first.wpilibj.Timer;
 
 public class TrajectoryGenerator {
-    private static final double kMaxVelocity = 120.0;
+    private static final double kMaxVelocity = 48.0;
     private static final double kMaxAccel = 120.0; 
     private static final double kMaxDecel = 72.0;
     private static final double kMaxVoltage = 9.0;
@@ -82,6 +82,9 @@ public class TrajectoryGenerator {
     private Pose2d communityEntrancePose = new Pose2d(new Translation2d(40.45 + 13.8 + 98.75, 29.695), Rotation2d.fromDegrees(180.0));
     private Pose2d communitySweepMidPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345 + 6.0, 108.015), Rotation2d.fromDegrees(90.0));
     private Pose2d communitySweepEndPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345 + 6.0, 174.19 + 22.0), Rotation2d.fromDegrees(90.0));
+
+    private Pose2d secondConePickupPose = new Pose2d(new Translation2d(269.5, 22.5), Rotation2d.fromDegrees(20))
+        .transformBy(Pose2d.fromTranslation(new Translation2d(6.0, 0.0)));
     
     public class TrajectorySet {
         public class MirroredTrajectory {
@@ -107,6 +110,7 @@ public class TrajectoryGenerator {
         
         // Auto Paths
         public final MirroredTrajectory secondPiecePickupPath;
+        public final MirroredTrajectory secondConeHighScorePath;
         public final MirroredTrajectory secondPieceToAprilTag;
         public final MirroredTrajectory thirdPiecePickupPath;
         public final MirroredTrajectory thirdPieceToAprilTagPath;
@@ -122,6 +126,7 @@ public class TrajectoryGenerator {
 
             // Auto Paths
             secondPiecePickupPath = new MirroredTrajectory(getSecondPiecePickupPath());
+            secondConeHighScorePath = new MirroredTrajectory(getSecondConeHighScorePath());
             secondPieceToAprilTag = new MirroredTrajectory(getSecondPieceToAprilTagPath());
             thirdPiecePickupPath = new MirroredTrajectory(getThirdPiecePickupPath());
             thirdPieceToAprilTagPath = new MirroredTrajectory(getThirdPieceToAprilTagPath());
@@ -152,8 +157,17 @@ public class TrajectoryGenerator {
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPiecePickupPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(74, 22.25), Rotation2d.fromDegrees(0)));
-            waypoints.add(new Pose2d(new Translation2d(260, 38.25), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(71, 20), Rotation2d.fromDegrees(20)));
+            waypoints.add(secondConePickupPose);
+            
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getSecondConeHighScorePath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(secondConePickupPose.getTranslation(), Rotation2d.fromDegrees(-160)));
+            waypoints.add(new Pose2d(new Translation2d(129.0, 31.5), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(71.0, 64.0), Rotation2d.fromDegrees(140)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }

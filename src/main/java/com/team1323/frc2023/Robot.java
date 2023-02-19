@@ -9,7 +9,8 @@ import java.util.Set;
 import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeExecuter;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
-import com.team1323.frc2023.auto.modes.TestMode;
+import com.team1323.frc2023.auto.SmartDashboardInteractions.StartingSide;
+import com.team1323.frc2023.auto.modes.TwoConesAndRampMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.Looper;
@@ -24,7 +25,6 @@ import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.lib.util.CrashTracker;
 import com.team1323.lib.util.Logger;
 import com.team1323.lib.util.Netlink;
-import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -82,8 +82,8 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new TestMode();
-		//qTransmitter.addPaths(auto.getPaths());
+		AutoModeBase auto = new TwoConesAndRampMode(StartingSide.LEFT);
+		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}
 
