@@ -278,7 +278,7 @@ public class DriverControls implements Loop {
 
         
         if (coDriver.bButton.wasReleased()) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && claw.getRPM() > 2000) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
                 s.request(new ParallelRequest(
                     SuperstructureCoordinator.getInstance().getFullStowChoreography(),
                     claw.stateRequest(Claw.ControlState.OFF)

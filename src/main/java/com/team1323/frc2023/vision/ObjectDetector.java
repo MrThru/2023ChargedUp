@@ -57,6 +57,7 @@ public class ObjectDetector {
         }
         Raycast3d raycast = Raycast3d.fromVisionDegrees(detectedTarget.tx, detectedTarget.ty);
         Vector3d ray = raycast.getRayVector().scale(100);
+        
     }
 
     public abstract class GameObject {
