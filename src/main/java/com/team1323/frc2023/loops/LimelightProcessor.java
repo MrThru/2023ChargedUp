@@ -11,9 +11,8 @@ import com.team1323.frc2023.loops.LimelightHelpers.LimelightResults;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Fiducial;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Retro;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
-import com.team1323.frc2023.subsystems.superstructure.SuperstructurePosition;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
-import com.team1323.frc2023.vision.GridTracker;
+import com.team1323.frc2023.vision.GoalTrack;
 import com.team1323.frc2023.vision.TargetInfo;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
@@ -61,6 +60,9 @@ public class LimelightProcessor implements Loop {
 	private static final Rotation2d kCameraYawCorrection = Rotation2d.fromDegrees(Constants.kCameraYawAngleDegrees);
 	private static final double kMidConePoleHeight = 24.125;
 	private static final double kHighConePoleHeight = 43.875;
+	private static final double kConeHeight = 7.5;
+
+	private final GoalTrack coneGoalTrack = GoalTrack.makeNewTrack(0.0, Translation2d.identity(), 0);
 
 	private double previousHeartbeat = -1.0;
 	
@@ -159,15 +161,27 @@ public class LimelightProcessor implements Loop {
 		}
 		
 	}
-	Translation2d coneIntakingRobotPosition = new Translation2d();
+
 	private void handleDetectorTargets(LimelightResults results, double timestamp) {
+		if (results.targetingResults.targets_Detector.length == 0) {
+			return;
+		}
+
+		double observationTime = timestamp - getTotalLatencySeconds(results);
+		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(observationTime);
+
 		if(results.targetingResults.pipelineID == Pipeline.DETECTOR.index) {
 			/*for(int i = 0; i < results.targetingResults.targets_Detector.length; i++) {
 				GridTracker.getInstance().addDetectedObject(results.targetingResults.targets_Detector[i]);
 			}*/
-			
+
+			TargetInfo targetInfo = new TargetInfo(Rotation2d.fromDegrees(-LimelightHelpers.getTX(kLimelightName)).tan(), 
+					Rotation2d.fromDegrees(LimelightHelpers.getTY(kLimelightName)).tan());
+			Translation2d conePosition = getRetroTargetPosition(targetInfo, kConeHeight, robotPose);
+			coneGoalTrack.forceUpdate(timestamp, conePosition);
 		}
 	}
+
 	private void updateConePolePosition(LimelightResults results, double timestamp) {
 		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(timestamp - getTotalLatencySeconds(results));
 		double approximateDistanceToTarget = Math.abs(robotPose.getTranslation().x() - AllianceChooser.getAverageConePoleX());
@@ -264,6 +278,17 @@ public class LimelightProcessor implements Loop {
 
 	public double getRetroConeLeftRightOffset() {
 		return coneLeftRightOffset;
+	}
+
+	public Translation2d getConePosition() {
+		coneGoalTrack.emptyUpdate();
+		Translation2d conePosition = coneGoalTrack.getSmoothedPosition();
+
+		if (conePosition == null) {
+			return new Translation2d();
+		}
+
+		return conePosition;
 	}
 
 	public void setPipeline(Pipeline pipeline) {
