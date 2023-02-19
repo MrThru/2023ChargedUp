@@ -23,19 +23,8 @@ public class ObjectDetector {
 
     }
 
-    public void addDetectedObjects(JSONObject jsonDump) {
-        JSONArray results = null;
-        try {
-            jsonDump.getJSONObject("results").toJSONArray(results);
-            for(int i = 0; i < results.length(); i++) {
-                JSONArray result = results.getJSONArray(i);
-                
-            }
-        } catch(JSONException error) {
-            DriverStation.reportError(error.getMessage(), null);
-        }
+    public void addDetectedObjects() {
         
-
     }
 
 

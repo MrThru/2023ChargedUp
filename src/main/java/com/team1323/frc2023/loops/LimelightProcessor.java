@@ -13,6 +13,7 @@ import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Retro;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructurePosition;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.GridTracker;
 import com.team1323.frc2023.vision.TargetInfo;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
@@ -75,6 +76,7 @@ public class LimelightProcessor implements Loop {
 			LimelightResults results = LimelightHelpers.getLatestResults(kLimelightName);
 			handleFiducialTargets(results, timestamp);
 			handleRetroTargets(results, timestamp);
+			handleDetectorTargets(results, timestamp);
 			previousHeartbeat = currentHeartbeat;
 		}
 	}
@@ -157,7 +159,15 @@ public class LimelightProcessor implements Loop {
 		}
 		
 	}
-
+	Translation2d coneIntakingRobotPosition = new Translation2d();
+	private void handleDetectorTargets(LimelightResults results, double timestamp) {
+		if(results.targetingResults.pipelineID == Pipeline.DETECTOR.index) {
+			/*for(int i = 0; i < results.targetingResults.targets_Detector.length; i++) {
+				GridTracker.getInstance().addDetectedObject(results.targetingResults.targets_Detector[i]);
+			}*/
+			
+		}
+	}
 	private void updateConePolePosition(LimelightResults results, double timestamp) {
 		Pose2d robotPose = Swerve.getInstance().getPoseAtTime(timestamp - getTotalLatencySeconds(results));
 		double approximateDistanceToTarget = Math.abs(robotPose.getTranslation().x() - AllianceChooser.getAverageConePoleX());
@@ -261,7 +271,7 @@ public class LimelightProcessor implements Loop {
 	}
 
 	public enum Pipeline {
-		FIDUCIAL(0), RETRO(1), CONE(3);
+		FIDUCIAL(0), RETRO(1), CONE(3), DETECTOR(4);
 
 		public final int index;
 
