@@ -7,6 +7,7 @@ package com.team1323.frc2023.vision;
 import java.util.List;
 
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Detector;
+import com.team1323.frc2023.vision.ObjectDetector.Cube;
 import com.team1323.frc2023.vision.ObjectDetector.GameObject;
 import com.team1323.lib.math.geometry.Vector3d;
 
@@ -34,10 +35,7 @@ public class GridTracker {
         
     }
 
-    public void addDetectedObject(LimelightTarget_Detector detectedTarget) {
-        
-    }
-
+   
 
     public class PieceLocations {
         int id = 0;

@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Detector;
+import com.team1323.lib.math.geometry.Raycast3d;
 import com.team1323.lib.math.geometry.Vector3d;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -46,6 +48,16 @@ public class ObjectDetector {
         }
     }
 
+    public void addDetectedObject(LimelightTarget_Detector detectedTarget) {
+        GameObject detectedGameObject;
+        if(detectedTarget.className == "cube") {
+            detectedGameObject = new Cube();
+        } else if(detectedTarget.className == "cone") {
+            detectedGameObject = new Cone();
+        }
+        Raycast3d raycast = Raycast3d.fromVisionDegrees(detectedTarget.tx, detectedTarget.ty);
+        Vector3d ray = raycast.getRayVector().scale(100);
+    }
 
     public abstract class GameObject {
         public double width = 0;
