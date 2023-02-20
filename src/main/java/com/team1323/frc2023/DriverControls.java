@@ -146,9 +146,9 @@ public class DriverControls implements Loop {
     private void twoControllerMode() {
         double swerveYInput = -driver.getLeftX();
         double swerveXInput = -driver.getLeftY();
-        double swerveRotationInput = -(driver.getRightX() + (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0));
+        double swerveRotationInput = -driver.getRightX(); //+ (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0));
         
-        swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, (Netlink.getBooleanValue("Slow Driving Enabled") || driver.leftTrigger.isBeingPressed()));
+        swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, (Netlink.getBooleanValue("Slow Driving Enabled")/* || driver.leftTrigger.isBeingPressed()*/));
         
         SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
 
@@ -162,7 +162,9 @@ public class DriverControls implements Loop {
         else if (driver.yButton.wasActivated())
             swerve.rotate(Rotation2d.fromDegrees(0));
         
-
+        if(driver.leftBumper.wasActivated()) {
+            swerve.rotate(Rotation2d.fromDegrees(151.0));
+        }
         /*if (driver.rightTrigger.wasActivated()) {
             NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
             Pose2d scoringPose = ScoringPoses.getScoringPose(dashboardNodeLocation);
@@ -194,6 +196,7 @@ public class DriverControls implements Loop {
         }
 
         if (driver.leftTrigger.wasActivated()) {
+            System.out.println("Cone Intaking Sequence" + s.coneIntakingSequence);
             if(!s.coneIntakingSequence) {
                 if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
                     Pose2d leftScoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
@@ -205,6 +208,7 @@ public class DriverControls implements Loop {
                     } else {
                         System.out.println("Right Scoring Pose");
                     }
+                    System.out.println("Target scoring row: " + targetScoringRow.toString());
                     if(targetScoringRow == NodeLocation.Row.TOP) {
                         s.coneHighScoringSequence(closestScoringPose);
                     } else if(targetScoringRow == NodeLocation.Row.MIDDLE) {
@@ -357,10 +361,12 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.leftCenterClick.wasActivated() && coDriver.bButton.isBeingPressed()) {
+            wrist.setStatorCurrentLimit(200);
             wrist.setPosition(0);
             claw.conformToState(Claw.ControlState.OFF);
         } else if(coDriver.leftCenterClick.wasReleased() && coDriver.bButton.isBeingPressed()) {
             wrist.setPosition(90);
+            wrist.setCurrentAtTarget(Constants.Wrist.kLowCurrentMode);
             claw.conformToState(Claw.ControlState.CONE_INTAKE);
         }
 

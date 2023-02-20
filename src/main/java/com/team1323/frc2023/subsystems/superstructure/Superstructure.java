@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
@@ -271,12 +272,21 @@ public class Superstructure extends Subsystem {
 	public void coneIntakeSequence() {
 		request(new SequentialRequest(
 			SuperstructureCoordinator.getInstance().getConeIntakeChoreography(),
+			wrist.setCurrentAtTargetRequest(Constants.Wrist.kLowCurrentMode),
+			wrist.enableCoastModeRequest(true),
 			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
 			new ParallelRequest(
+				wrist.setCurrentAtTargetRequest(200),
+				wrist.enableCoastModeRequest(false),
 				getConeStowSequence(),
 				new LambdaRequest(() -> {coneIntakingSequence = true;})
 			).withPrerequisite(() -> (claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)),
 			new LambdaRequest(() -> {coneIntakingSequence = false;})
+		).withCleanup(() -> {
+			wrist.setStatorCurrentLimit(200);
+			wrist.enableCoastMode(false);
+			coneIntakingSequence = false;
+		}
 		));
 	}
 
@@ -345,8 +355,10 @@ public class Superstructure extends Subsystem {
 
 	public void shuttleIntakeSequence() {
 		request(new SequentialRequest(
-			coordinator.getShuttleChoreography(),
-			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
+			new ParallelRequest(
+				coordinator.getShuttleChoreography(),
+				claw.stateRequest(Claw.ControlState.CONE_INTAKE)
+			),
 			getConeStowSequence().withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
 		));
 	}

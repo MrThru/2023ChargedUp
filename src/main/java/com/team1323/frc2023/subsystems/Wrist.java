@@ -11,6 +11,7 @@ import com.team1323.frc2023.subsystems.encoders.CanEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team1323.lib.util.Netlink;
+import com.team1323.lib.util.Stopwatch;
 import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -48,15 +49,31 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
         periodicIO.arbitraryFeedForward = Constants.Wrist.kArbitraryFeedForward * currentAngle.cos();
     }
 
+    private Stopwatch onTargetStopWatch = new Stopwatch();
+    private double targetAmpsOnTarget = 0;
+    public void setCurrentAtTarget(double amps) {
+        targetAmpsOnTarget = amps;
+    }
+
     private Loop loop = new Loop() {
         @Override
         public void onStart(double timestamp) {
             updateArbitraryFeedForward();
+            setStatorCurrentLimit(200);
         }
 
         @Override
         public void onLoop(double timestamp) {
             updateArbitraryFeedForward();
+            if(targetAmpsOnTarget != 0 && isOnTarget()) {
+                onTargetStopWatch.startIfNotRunning();
+                if(onTargetStopWatch.getTime() > 0.25) {
+                    setStatorCurrentLimit(targetAmpsOnTarget);
+                    targetAmpsOnTarget = 0;
+                }
+            } else {
+                onTargetStopWatch.reset();
+            }
         }
 
         @Override
@@ -67,6 +84,13 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
     public void registerEnabledLoops(ILooper enabledLooper) {
         super.registerEnabledLoops(enabledLooper);
         enabledLooper.register(loop);
+    }
+    @Override
+    public void setStatorCurrentLimit(double amps) {
+        super.setStatorCurrentLimit(amps);
+    }
+    public void enableCoastMode(boolean enable) {
+        leader.setNeutralMode((enable) ? NeutralMode.Brake : NeutralMode.Coast);
     }
 
     public Request angleRequest(double degrees) {
@@ -82,6 +106,41 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
             }
         };
     }
+    public Request enableCoastModeRequest(boolean enable) {
+        return new Request() {
+            @Override
+            public void act() {
+                enableCoastMode(enable);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return true;
+            }
+        };
+    }
+    public Request setStatorCurrentLimitRequest(double amps) {
+        return new Request() {
+            @Override
+            public void act() {
+                setStatorCurrentLimit(amps);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return true;
+            }
+        };
+    }
+    public Request setCurrentAtTargetRequest(double amps) {
+        return new Request() {
+            @Override
+            public void act() {
+                setCurrentAtTarget(amps);
+            }
+        };
+    }
+
     private boolean neutralModeIsBrake = true;
     @Override
     public void outputTelemetry() {

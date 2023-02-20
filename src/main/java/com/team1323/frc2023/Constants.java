@@ -308,6 +308,8 @@ public class Constants {
 
         public static final double kSupplyCurrentLimit = 30.0;
 
+        public static final double kLowCurrentMode = 3.5;
+
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
             0.01,
