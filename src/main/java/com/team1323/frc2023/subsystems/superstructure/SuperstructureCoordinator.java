@@ -396,21 +396,24 @@ public class SuperstructureCoordinator {
 
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            20.0,
-            29.0,
+            16.0,
+            26.5,
             34.75,
-            -27.0
+            -4.75
         );
 
-        return getHighChoreography(finalPosition);
+        return new SequentialRequest(
+            getHighChoreography(finalPosition),
+            Superstructure.getInstance().waitRequest(0.5)
+        );
     }
 
     public Request getConeMidScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            8.4,
-            9.8,
-            28.5,
-            -21.5
+            0.5,
+            12.0,
+            49.5,
+            -19.4
         );
 
         return getHighChoreography(finalPosition);

@@ -234,7 +234,7 @@ public class DriverControls implements Loop {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None)
                 s.shuttleIntakeSequence();
         } else if(coDriver.startButton.wasReleased()) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
                 s.request(s.objectAwareStow());
                 claw.conformToState(Claw.ControlState.OFF);       
             }

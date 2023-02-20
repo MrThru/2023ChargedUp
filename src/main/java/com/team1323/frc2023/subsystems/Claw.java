@@ -124,7 +124,7 @@ public class Claw extends Subsystem {
                 }
                 if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 0.25) {
                     stopwatch2.startIfNotRunning();
-                    if(stopwatch2.getTime() > 1.0) {
+                    if(stopwatch2.getTime() > 0.125) {
                         setCurrentHoldingObject(HoldingObject.Cone);
                         LEDs.getInstance().configLEDs(LEDColors.YELLOW);
                         claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent, 0.01);

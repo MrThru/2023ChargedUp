@@ -304,7 +304,7 @@ public class Superstructure extends Subsystem {
 			choreographyRequest(coordinator::getConeScanChoreography),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().clearConeOffsetBuffer()),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.CONE)),
-			waitRequest(1.0),
+			waitRequest(0.375),
 			new LambdaRequest(() -> ScoringPoses.updateConeLateralOffset()),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL)),
 			choreographyRequest(this::conditionalConeStow)
