@@ -39,6 +39,7 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -253,10 +254,24 @@ public class DriverControls implements Loop {
             swerve.setCenterOfRotation(new Translation2d());
         }*/
         if(driver.POV270.wasActivated()) {
-
+            double sign = AllianceChooser.getAlliance() == Alliance.Blue ? 1.0 : -1.0;
+            double offset = sign * 3.0;
+            if (swerve.isVisionPIDDone()) {
+                Pose2d robotPose = swerve.getPose();
+                swerve.startVisionPID(new Pose2d(robotPose.getTranslation().translateBy(new Translation2d(0.0, offset)), robotPose.getRotation()), robotPose.getRotation(), false);
+            } else {
+                swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
+            }
         }
         if(driver.POV90.wasActivated()) {
-
+            double sign = AllianceChooser.getAlliance() == Alliance.Blue ? -1.0 : 1.0;
+            double offset = sign * 3.0;
+            if (swerve.isVisionPIDDone()) {
+                Pose2d robotPose = swerve.getPose();
+                swerve.startVisionPID(new Pose2d(robotPose.getTranslation().translateBy(new Translation2d(0.0, offset)), robotPose.getRotation()), robotPose.getRotation(), false);
+            } else {
+                swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
+            }
         }
         if(driver.bButton.wasActivated()) {
             swerve.zukLockDrivePosition();

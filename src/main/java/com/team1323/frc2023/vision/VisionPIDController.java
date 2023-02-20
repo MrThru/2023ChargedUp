@@ -76,6 +76,10 @@ public class VisionPIDController {
         }
     }
 
+    public Translation2d getTargetPosition() {
+        return targetPosition;
+    }
+
     public void setTargetPosition(Translation2d targetPosition) {
         this.targetPosition = targetPosition;
     }

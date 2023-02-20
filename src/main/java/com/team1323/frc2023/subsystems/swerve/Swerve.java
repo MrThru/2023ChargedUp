@@ -636,6 +636,10 @@ public class Swerve extends Subsystem{
 		setState(ControlState.VISION_PID);
 	}
 
+	public Translation2d getVisionPIDTarget() {
+		return visionPID.getTargetPosition();
+	}
+
 	public void setVisionPIDTarget(Translation2d targetPosition) {
 		visionPID.setTargetPosition(targetPosition);
 	}
@@ -646,6 +650,10 @@ public class Swerve extends Subsystem{
 
 	public double getDistanceToTargetPosition() {
 		return visionPID.getDistanceToTargetPosition();
+	}
+
+	public boolean isVisionPIDDone() {
+		return getState() != ControlState.VISION_PID || visionPID.isDone();
 	}
 
 	public void addRetroObservation(Translation2d retroPosition, double timestamp) {
