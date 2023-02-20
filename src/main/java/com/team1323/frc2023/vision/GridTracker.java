@@ -32,10 +32,7 @@ public class GridTracker {
     }
 
     public void constructGridLocations() {
-        /*for(int i = 0; i < 27;i++) {
-            GameObject gameObject;
-            gridPositions.add(new PieceLocations(i, new Vector3d(), gameObject));       
-        }*/
+        
     }
 
    

@@ -260,6 +260,8 @@ public class DriverControls implements Loop {
         }
         if(driver.bButton.wasActivated()) {
             swerve.zukLockDrivePosition();
+        } else if(driver.bButton.wasReleased()) {
+            swerve.stop();
         }
 
         if(coDriver.aButton.wasActivated()) {
