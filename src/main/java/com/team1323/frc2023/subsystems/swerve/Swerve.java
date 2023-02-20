@@ -430,6 +430,7 @@ public class Swerve extends Subsystem{
 	}
 
 	public void atomicLockDrivePosition() {
+		setState(ControlState.NEUTRAL);
 		modules.get(0).setModuleAngle(-45.0);
 		modules.get(1).setModuleAngle(45.0);
 		modules.get(2).setModuleAngle(-45.0);
