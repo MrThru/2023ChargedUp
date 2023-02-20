@@ -240,7 +240,7 @@ public class DriverControls implements Loop {
             }
         }
 
-        if(driver.POV0.wasActivated()) {
+        /*if(driver.POV0.wasActivated()) {
             swerve.setCenterOfRotation(new Translation2d(0, Math.hypot(Constants.kWheelbaseLength, Constants.kWheelbaseWidth) + 8).rotateBy(Rotation2d.fromDegrees(-90).rotateBy(swerve.getHeading().inverse())));
         } else if(driver.POV90.wasActivated()) {
             swerve.setCenterOfRotation(new Translation2d(0, Math.hypot(Constants.kWheelbaseLength, Constants.kWheelbaseWidth) + 8).rotateBy(Rotation2d.fromDegrees(0).rotateBy(swerve.getHeading().inverse())));
@@ -248,12 +248,16 @@ public class DriverControls implements Loop {
             swerve.setCenterOfRotation(new Translation2d(0, Math.hypot(Constants.kWheelbaseLength, Constants.kWheelbaseWidth) + 8).rotateBy(Rotation2d.fromDegrees(90).rotateBy(swerve.getHeading().inverse())));
         } else if(driver.POV270.wasActivated()) {
             swerve.setCenterOfRotation(new Translation2d(0, Math.hypot(Constants.kWheelbaseLength, Constants.kWheelbaseWidth) + 8).rotateBy(Rotation2d.fromDegrees(180).rotateBy(swerve.getHeading().inverse())));
-        }  
+        }
         if((!driver.POV0.isBeingPressed() && !driver.POV90.isBeingPressed() && !driver.POV180.isBeingPressed() && !driver.POV270.isBeingPressed())) {
             swerve.setCenterOfRotation(new Translation2d());
+        }*/
+        if(driver.POV270.wasActivated()) {
+
         }
+        if(driver.POV90.wasActivated()) {
 
-
+        }
 
         if(coDriver.aButton.wasActivated()) {
             if(tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
