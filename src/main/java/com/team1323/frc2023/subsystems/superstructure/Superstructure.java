@@ -77,6 +77,9 @@ public class Superstructure extends Subsystem {
 	public boolean requestsCompleted(){ return allRequestsCompleted; }
 	
 	private void setActiveRequest(Request request){
+		if (activeRequest != null) {
+			activeRequest.cleanup();
+		}
 		activeRequest = request;
 		newRequest = true;
 		allRequestsCompleted = false;

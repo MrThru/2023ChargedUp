@@ -3,6 +3,8 @@ package com.team1323.frc2023.subsystems.requests;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.team1323.frc2023.subsystems.requests.LambdaRequest.VoidInterface;
+
 public abstract class Request {
 
 	public abstract void act();
@@ -25,6 +27,17 @@ public abstract class Request {
 
 	public boolean allowed() {
 		return prerequisites.stream().allMatch(p -> p.met());
+	}
+
+	private VoidInterface cleanupFunction = () -> {};
+
+	public Request withCleanup(VoidInterface cleanupFunction) {
+		this.cleanupFunction = cleanupFunction;
+		return this;
+	}
+
+	public void cleanup() {
+		cleanupFunction.f();
 	}
 
 }

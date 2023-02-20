@@ -24,6 +24,13 @@ public class ParallelRequest extends Request {
         inProgressRequests = new HashSet<>();
     }
 
+    @Override
+    public void cleanup() {
+        inProgressRequests.forEach(r -> r.cleanup());
+        idleRequests.forEach(r -> r.cleanup());
+        super.cleanup();
+    }
+
     private void startRequestsIfAllowed() {
         for (Iterator<Request> iter = idleRequests.iterator(); iter.hasNext();) {
             Request request = iter.next();

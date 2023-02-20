@@ -25,6 +25,12 @@ public class SequentialRequest extends Request {
         }
     }
 
+    @Override
+    public void cleanup() {
+        requests.forEach(r -> r.cleanup());
+        super.cleanup();
+    }
+
     private void startRequestIfAllowed() {
         if (currentRequest.allowed()) {
             currentRequest.act();
