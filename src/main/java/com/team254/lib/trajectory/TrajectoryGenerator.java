@@ -15,7 +15,7 @@ import com.team254.lib.trajectory.timing.TimingConstraint;
 import edu.wpi.first.wpilibj.Timer;
 
 public class TrajectoryGenerator {
-    private static final double kMaxVelocity = 48.0;
+    private static final double kMaxVelocity = 120.0;
     private static final double kMaxAccel = 120.0; 
     private static final double kMaxDecel = 72.0;
     private static final double kMaxVoltage = 9.0;
@@ -83,8 +83,8 @@ public class TrajectoryGenerator {
     private Pose2d communitySweepMidPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345 + 6.0, 108.015), Rotation2d.fromDegrees(90.0));
     private Pose2d communitySweepEndPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345 + 6.0, 174.19 + 22.0), Rotation2d.fromDegrees(90.0));
 
-    private Pose2d secondConePickupPose = new Pose2d(new Translation2d(269.5, 22.5), Rotation2d.fromDegrees(20))
-        .transformBy(Pose2d.fromTranslation(new Translation2d(6.0, 0.0)));
+    private Pose2d secondConePickupPose = new Pose2d(new Translation2d(269.5, 30.5), Rotation2d.fromDegrees(20))
+        .transformBy(Pose2d.fromTranslation(new Translation2d(0.0, 0.0)));
     
     public class TrajectorySet {
         public class MirroredTrajectory {

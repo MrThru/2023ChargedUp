@@ -172,17 +172,15 @@ public class DriverControls implements Loop {
             s.scoringSequence(dashboardNodeLocation);
         }*/
 
-        if (driver.rightTrigger.wasActivated()) {
-            double[] conePoseArray = SmartDashboard.getNumberArray("Cone Intaking Field Position", new double[2]);
-            Pose2d transform = new Pose2d(new Translation2d(conePoseArray[0], conePoseArray[1]), Rotation2d.identity());
-            Pose2d conePose = swerve.getPose().transformBy(transform);
-            swerve.startVisionPID(conePose, conePose.getRotation(), false);
-        } else if (driver.rightTrigger.isBeingPressed()) {
-            double[] conePoseArray = SmartDashboard.getNumberArray("Cone Intaking Field Position", new double[2]);
-            Pose2d transform = new Pose2d(new Translation2d(conePoseArray[0], conePoseArray[1]), Rotation2d.identity());
-            Pose2d conePose = swerve.getPose().transformBy(transform);
-            swerve.setVisionPIDTarget(conePose.getTranslation());
-        }
+        /*if (driver.rightTrigger.wasActivated()) {
+            Translation2d conePosition = LimelightProcessor.getInstance().getConePosition();
+            if (!conePosition.equals(Translation2d.identity())) {
+                s.coneIntakeSequence();
+                Pose2d intakingPose = new Pose2d(conePosition, swerve.getPose().getRotation())
+                        .transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength, 0.0)));
+                swerve.startVisionPID(intakingPose, intakingPose.getRotation(), false);
+            }
+        }*/
             
         if (driver.backButton.wasActivated()) {
             swerve.temporarilyDisableHeadingController();
@@ -291,11 +289,9 @@ public class DriverControls implements Loop {
             if(tunnel.getFrontBanner() || tunnel.getRearBanner()) {
                 s.postIntakeState();
             }
-            if(tunnel.getCubeIntakeBanner()) {
-                cubeIntake.setPosition(Constants.CubeIntake.kMaxControlAngle);
-            }
         } else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState();
+            tunnel.queueShutdown(true);
         }
 
         if(coDriver.leftBumper.wasActivated()) {
@@ -313,6 +309,10 @@ public class DriverControls implements Loop {
                 s.request(new ParallelRequest(
                     SuperstructureCoordinator.getInstance().getFullStowChoreography(),
                     claw.stateRequest(Claw.ControlState.OFF)
+                ));
+            }else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube && claw.getState() == Claw.ControlState.CUBE_INTAKE) {
+                s.request(new ParallelRequest(
+                    s.objectAwareStow()
                 ));
             }
         } else if(coDriver.bButton.longPressed()) {

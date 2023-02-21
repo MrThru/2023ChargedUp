@@ -232,14 +232,14 @@ public class Superstructure extends Subsystem {
 
 	public void intakeState(Tunnel.State tunnelState) {
 		request(new ParallelRequest(
-			verticalElevator.heightRequest(1),
+			verticalElevator.heightRequest(0.25),
 			tunnel.stateRequest(tunnelState),
 			cubeIntake.stateRequest(CubeIntake.State.INTAKE)
 		));
 	}
 	public void postIntakeState() {
 		request(new ParallelRequest(
-			tunnel.queueShutdownRequest(),
+			//tunnel.queueShutdownRequest(),
 			cubeIntake.stateRequest(CubeIntake.State.STOWED)
 		));
 	}
@@ -290,6 +290,14 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
+	public void coneIntakeWithoutScanSequence() {
+		request(new SequentialRequest(
+			SuperstructureCoordinator.getInstance().getConeIntakeChoreography(),
+			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
+			choreographyRequest(this::objectAwareStow).withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
+		));
+	}
+
 	public void coneStowSequence() {
 		request(getConeStowSequence());
 	}
@@ -302,6 +310,10 @@ public class Superstructure extends Subsystem {
 		} else  {
 			return coordinator.getFullStowChoreography();
 		}
+	}
+
+	public void objectAwareStowSequence() {
+		request(objectAwareStow());
 	}
 
 	private Request conditionalConeStow() {
@@ -334,7 +346,17 @@ public class Superstructure extends Subsystem {
 		);
 	}
 	public void handOffCubeState() {
-		request(getHandOffCubeSequence());
+		request(new SequentialRequest(	
+			getHandOffCubeSequence(),
+			tunnel.stateRequest(Tunnel.State.SPIT),
+			new ParallelRequest(
+				tunnel.stateRequest(Tunnel.State.OFF),
+				coordinator.getHalfCubeStowChoreography()
+			).withPrerequisite(
+				() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube
+			)
+
+		));
 	}
 
 	public void shelfSequence(boolean left) {
@@ -486,4 +508,12 @@ public class Superstructure extends Subsystem {
 		scoringSequence(scoringPose, coordinator::getCubeHighScoringChoreography,
 				Claw.ControlState.CUBE_OUTAKE, false, false);
 	}
+	public void coneHighScoreManual() {
+		request(new SequentialRequest(
+			coordinator.getConeHighScoringChoreography(),
+			claw.stateRequest(Claw.ControlState.CONE_OUTAKE),
+			waitRequest(0.5)
+		));
+	}
+
 }

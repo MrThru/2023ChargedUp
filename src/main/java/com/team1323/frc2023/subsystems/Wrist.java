@@ -49,7 +49,7 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
         periodicIO.arbitraryFeedForward = Constants.Wrist.kArbitraryFeedForward * currentAngle.cos();
     }
 
-    private Stopwatch onTargetStopWatch = new Stopwatch();
+    
     private double targetAmpsOnTarget = 0;
     public void setCurrentAtTarget(double amps) {
         targetAmpsOnTarget = amps;
@@ -65,14 +65,9 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
         @Override
         public void onLoop(double timestamp) {
             updateArbitraryFeedForward();
-            if(targetAmpsOnTarget != 0 && isOnTarget()) {
-                onTargetStopWatch.startIfNotRunning();
-                if(onTargetStopWatch.getTime() > 0.25) {
-                    setStatorCurrentLimit(targetAmpsOnTarget);
-                    targetAmpsOnTarget = 0;
-                }
-            } else {
-                onTargetStopWatch.reset();
+            if(targetAmpsOnTarget != 0 && isWithinTolerance(2.0)) {
+                setStatorCurrentLimit(targetAmpsOnTarget);
+                targetAmpsOnTarget = 0;
             }
         }
 

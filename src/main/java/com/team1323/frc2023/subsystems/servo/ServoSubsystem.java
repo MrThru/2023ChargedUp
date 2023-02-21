@@ -139,6 +139,10 @@ public abstract class ServoSubsystem extends Subsystem {
     public boolean isOnTarget() {
         return isAtPosition(encoderUnitsToOutputUnits(periodicIO.demand));
     }
+    public boolean isWithinTolerance(double tolerance) {
+        return Math.abs(encoderUnitsToOutputUnits(periodicIO.demand) - getPosition()) <= tolerance &&
+            periodicIO.controlMode == ControlMode.MotionMagic;
+    }
 
     public void acceptManualInput(double input) {
         if (input != 0.0) {

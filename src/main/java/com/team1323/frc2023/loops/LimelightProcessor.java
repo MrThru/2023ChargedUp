@@ -291,6 +291,16 @@ public class LimelightProcessor implements Loop {
 		return conePosition;
 	}
 
+	public Pose2d getRobotConePickupPosition() {
+		Translation2d conePosition = LimelightProcessor.getInstance().getConePosition();
+        Pose2d intakingPose = Pose2d.identity();    
+		if (!conePosition.equals(Translation2d.identity())) {
+			intakingPose = new Pose2d(conePosition, Swerve.getInstance().getPose().getRotation())
+					.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength, 0.0)));
+		}
+		return intakingPose;
+	}
+
 	public void setPipeline(Pipeline pipeline) {
 		LimelightHelpers.setPipelineIndex(kLimelightName, pipeline.index);
 	}

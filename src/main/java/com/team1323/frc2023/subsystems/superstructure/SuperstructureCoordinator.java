@@ -269,7 +269,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.25, //0.875
             0.25, //0.25  230.26
-            -50.26, //-55
+            -50.76, //-55
             85.26 //90 38.6 35
         );
 
@@ -278,7 +278,7 @@ public class SuperstructureCoordinator {
 
     public Request getCubeIntakeChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            1.0,
+            0.5,
             7.5,
             -90.0,
             98.0
@@ -374,6 +374,17 @@ public class SuperstructureCoordinator {
         return getHighChoreography(finalPosition);
     }
 
+    public Request getHalfCubeStowChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            0.5,
+            0.25,
+            97.0,
+            98.0
+        );
+
+        return getHighChoreography(finalPosition);
+    }
+
     public Request getShelfChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             10.0,
@@ -432,7 +443,7 @@ public class SuperstructureCoordinator {
 
     public Request getCubeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            20.0,
+            16.0,
             31.0,
             60.0,
             90.0

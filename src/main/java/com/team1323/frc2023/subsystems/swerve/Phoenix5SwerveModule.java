@@ -67,7 +67,7 @@ public class Phoenix5SwerveModule extends SwerveModule {
 		driveMotor.configNominalOutputReverse(0/12.0, 10);
 		driveMotor.configVoltageCompSaturation(12.0, 10);
 		driveMotor.enableVoltageCompensation(true);
-		driveMotor.configOpenloopRamp(0.5, 10);
+		driveMotor.configOpenloopRamp(0.3, 10);
 		driveMotor.configClosedloopRamp(0.0);
 		driveMotor.configAllowableClosedloopError(0, 0, 10);
 		driveMotor.setNeutralMode(NeutralMode.Brake);

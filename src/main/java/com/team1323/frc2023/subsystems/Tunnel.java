@@ -5,6 +5,7 @@
 package com.team1323.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
@@ -54,6 +55,8 @@ public class Tunnel extends Subsystem {
         frontRollerTalon.setPIDF(Constants.Tunnel.kFrontRollerPID);
 
         tunnelEntrance.setInverted(TalonFXInvertType.Clockwise);
+
+        frontRollerTalon.setNeutralMode(NeutralMode.Brake);
         
     }
 
@@ -122,12 +125,12 @@ public class Tunnel extends Subsystem {
     }
 
     Stopwatch cubeEjectedStopwatch = new Stopwatch();
+    Stopwatch queueShutdownStopwatch = new Stopwatch();
     private double lastCubeDetectedtimestamp = Double.POSITIVE_INFINITY;
     private boolean frontBannerActivated = false;
     public boolean cubeOnBumper() {
         return frontBannerActivated;
     }
-    private boolean cubeStuckOnBumper = false;
     
     Loop loop = new Loop() {
 
@@ -139,6 +142,9 @@ public class Tunnel extends Subsystem {
 
         @Override
         public void onLoop(double timestamp) {
+            if(stateChanged) {
+                pendingShutdown = false;
+            }
             switch(currentState) {
                 //ToDo: Send straight through to claw, if the claw is empty
                 case COMMUNITY:
@@ -151,7 +157,14 @@ public class Tunnel extends Subsystem {
                             System.out.println("Tunnel Holding");
                         }
                         setTunnelEntranceSpeed(0.65);
-                    } else if(!getFrontBanner()) {
+                    } else {
+                        setRollerSpeeds(0, 0);
+                        setTunnelEntranceSpeed(0.65);
+                    }
+                    
+                    
+                    
+                    /*else if(!getFrontBanner()) {
                         setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
                         setTunnelEntranceSpeed(0.65);
                     } else if(!getRearBanner()) {
@@ -170,7 +183,7 @@ public class Tunnel extends Subsystem {
                             CubeIntake.getInstance().setHoldMode();
                             setState(State.OFF);
                         }
-                    }
+                    }*/
                     break;
                 case DETECT:
                     if(!getFrontBanner()) {
@@ -196,19 +209,30 @@ public class Tunnel extends Subsystem {
                     }
                     break;
                 case SINGLE_INTAKE:
+                    if(pendingShutdown && allowSingleIntakeMode() && !frontBannerActivated) {
+                        queueShutdownStopwatch.startIfNotRunning();
+                        if(queueShutdownStopwatch.getTime() > 2.0)
+                        {
+                            setState(State.HOLD);
+                            queueShutdownStopwatch.reset();
+                            pendingShutdown = false;
+                        }
+                    } else {
+                        queueShutdownStopwatch.reset();
+                    }
                     if(frontBannerActivated && allowSingleIntakeMode()) {
                         setAllSpeeds(0);
                     } else if(frontBannerActivated) {
                         setRollerSpeeds(0.25, 0.4);
                         setTunnelEntranceSpeed(0.25);
                     } else if(allowSingleIntakeMode()) {
-                        setRollerSpeeds(-0.6, 0.4);
-                        setTunnelEntranceSpeed(0.65);
+                        setRollerSpeeds(-0.6, 1.0);
+                        setTunnelEntranceSpeed(0.50);
                     } else if(getRearBanner()) {
-                        setRollerSpeeds(-0.6, 0.55);
+                        setRollerSpeeds(-0.6, 1.0);
                         setTunnelEntranceSpeed(0.25);
                     } else if(getFrontBanner()) {
-                        setRollerSpeeds(-0.25, 0.4);
+                        setRollerSpeeds(-0.25, 1.0);
                         setTunnelEntranceSpeed(0.25);
                     }
 
