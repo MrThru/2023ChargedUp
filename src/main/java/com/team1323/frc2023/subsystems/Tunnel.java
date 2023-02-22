@@ -61,7 +61,7 @@ public class Tunnel extends Subsystem {
     }
 
     public enum State {
-        OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY, MANUAL, REVERSE;
+        OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY, MANUAL, STUCK_ON_BUMPER, REVERSE;
     }
     private State currentState = State.MANUAL;
     private boolean stateChanged = false;
@@ -128,6 +128,7 @@ public class Tunnel extends Subsystem {
     Stopwatch queueShutdownStopwatch = new Stopwatch();
     private double lastCubeDetectedtimestamp = Double.POSITIVE_INFINITY;
     private boolean frontBannerActivated = false;
+    private boolean cubeSentThrough = false;
     public boolean cubeOnBumper() {
         return frontBannerActivated;
     }
@@ -238,6 +239,26 @@ public class Tunnel extends Subsystem {
 
                     if(getFrontBanner() && !frontBannerActivated) {
                         frontBannerActivated = true;
+                    }
+                    
+                    break;
+                case STUCK_ON_BUMPER:
+                    if(frontBannerActivated && !getFrontBanner()) {
+                        setAllSpeeds(0);
+                        setTunnelEntranceSpeed(0.65);
+                    } else if(!frontBannerActivated && getFrontBanner()) {
+                        setRollerSpeeds(0.25, 0.4);
+                        setTunnelEntranceSpeed(0.25);
+                        frontBannerActivated = true;
+                    } else if(getFrontBanner() && getRearBanner() && getCubeIntakeBanner()) {
+                        cubeIntake.setHoldMode();
+                        setAllSpeeds(0);
+                    } else if(!getFrontBanner()) {
+                        setRollerSpeeds(-0.60, 0.4);
+                        setTunnelEntranceSpeed(0.65);
+                    } else {
+                        setAllSpeeds(0);
+                        setTunnelEntranceSpeed(0.65);
                     }
                     
                     break;

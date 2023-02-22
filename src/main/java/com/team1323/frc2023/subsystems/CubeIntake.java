@@ -52,7 +52,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         intakeRoller = TalonFXFactory.createRollerTalon(Ports.CUBE_INTAKE, Ports.CANBUS);
         intakeRoller.setInverted(TalonFXInvertType.CounterClockwise);
         intakeRoller.setNeutralMode(NeutralMode.Brake);
-        setIntakeCurrent(60.0);
+        setIntakeCurrent(30.0);
 
 
         banner = new DigitalInput(Ports.INTAKE_BANNER);
@@ -63,7 +63,8 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public static enum State {
-        STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.55);
+        STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.55),
+                            FLOOR(Constants.CubeIntake.kFloorAngle, 0);
         double intakeAngle;
         double intakeSpeed;
         State(double intakeAngle,double intakeSpeed) {
@@ -80,7 +81,6 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public void conformToState(State desiredState) {
-        setIntakeCurrent(30.0);
         setPosition(desiredState.intakeAngle);
         setIntakeSpeed(desiredState.intakeSpeed);
         setState(desiredState);
@@ -93,8 +93,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         intakeRoller.setStatorCurrentLimit(amps, amps);
     }
     public void setHoldMode() {
-        intakeRoller.setStatorCurrentLimit(10, 0.01);
-        setIntakeSpeed(0.1);
+        conformToState(State.FLOOR);
     }
 
     public boolean getBanner() {

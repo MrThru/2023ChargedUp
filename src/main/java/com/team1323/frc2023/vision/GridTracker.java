@@ -6,10 +6,14 @@ package com.team1323.frc2023.vision;
 
 import java.util.List;
 
+import com.team1323.frc2023.field.NodeLocation.Column;
+import com.team1323.frc2023.field.NodeLocation.Grid;
+import com.team1323.frc2023.field.NodeLocation.Row;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Detector;
 import com.team1323.frc2023.vision.ObjectDetector.Cube;
 import com.team1323.frc2023.vision.ObjectDetector.GameObject;
 import com.team1323.lib.math.geometry.Vector3d;
+import com.team254.lib.geometry.Pose2d;
 
 /** Contains the Grid tracking system. This is fed detected objects
  * every cycle, and is factored into the "current detected grid" which
@@ -32,6 +36,10 @@ public class GridTracker {
     }
 
     public void constructGridLocations() {
+        
+    }
+
+    public void addRobotScorePosition(Grid grid, Row row, Column column) {
         
     }
 

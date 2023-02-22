@@ -161,6 +161,7 @@ public class Constants {
 
         public static final double kStartingAngle = 0;
         public static final double kIntakeAngle = -2.5;
+        public static final double kFloorAngle = 105;
 
         public static final double kAngleTolerance = 1.0;
         public static final double kVelocityScalar = 1.0;

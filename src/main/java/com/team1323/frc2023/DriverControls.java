@@ -32,6 +32,7 @@ import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.GridTracker;
 import com.team1323.frc2023.vision.ObjectDetector.Cone;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
@@ -222,6 +223,7 @@ public class DriverControls implements Loop {
                 if(targetScoringRow == NodeLocation.Row.BOTTOM && !tunnel.allowSingleIntakeMode()) {
                     s.cubeLowScoringSequence(ScoringPoses.getClosestScoringPosition(swerve.getPose()));
                 }
+                GridTracker.getInstance().addRobotScorePosition(null, targetScoringRow, null);
             }
         }
 
