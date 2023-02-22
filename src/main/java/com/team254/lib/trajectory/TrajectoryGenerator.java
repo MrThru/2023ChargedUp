@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.DriveMotionPlanner;
+import com.team1323.frc2023.field.AutoZones;
+import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
@@ -88,21 +91,31 @@ public class TrajectoryGenerator {
     
     public class TrajectorySet {
         public class MirroredTrajectory {
-            private static final double kXMirror = 325.625;
-            private static final double kYMirror = 108.19;
-
-            public MirroredTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> bottomLeft) {
-                this.bottomLeft = bottomLeft;
-                double defaultVelocity = bottomLeft.defaultVelocity();
-                topLeft = TrajectoryUtil.mirrorAboutYTimed(bottomLeft, kYMirror, defaultVelocity);
-                topRight = TrajectoryUtil.mirrorAboutXTimed(topLeft, kXMirror, defaultVelocity);
-                bottomRight = TrajectoryUtil.mirrorAboutYTimed(topRight, kYMirror, defaultVelocity);
-            }
-            
             public final Trajectory<TimedState<Pose2dWithCurvature>> bottomLeft;
             public final Trajectory<TimedState<Pose2dWithCurvature>> topLeft;
             public final Trajectory<TimedState<Pose2dWithCurvature>> topRight;
             public final Trajectory<TimedState<Pose2dWithCurvature>> bottomRight;
+
+            public MirroredTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> bottomLeft) {
+                this.bottomLeft = bottomLeft;
+                double defaultVelocity = bottomLeft.defaultVelocity();
+                topLeft = TrajectoryUtil.mirrorAboutYTimed(bottomLeft, AutoZones.kYMirror, defaultVelocity);
+                topRight = TrajectoryUtil.mirrorAboutXTimed(topLeft, AutoZones.kXMirror, defaultVelocity);
+                bottomRight = TrajectoryUtil.mirrorAboutYTimed(topRight, AutoZones.kYMirror, defaultVelocity);
+            }
+            
+            public Trajectory<TimedState<Pose2dWithCurvature>> get(Quadrant quadrant) {
+                switch (quadrant) {
+                    case TOP_LEFT:
+                        return topLeft;
+                    case TOP_RIGHT:
+                        return topRight;
+                    case BOTTOM_RIGHT:
+                        return bottomRight;
+                    default:
+                        return bottomLeft;
+                }
+            }
         }
         
         //Test Paths
@@ -157,7 +170,7 @@ public class TrajectoryGenerator {
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPiecePickupPath() {
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(71, 20), Rotation2d.fromDegrees(20)));
+            waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(20)));
             waypoints.add(secondConePickupPose);
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);

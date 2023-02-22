@@ -31,6 +31,7 @@ public class Constants {
     //Field Landmarks
     public static final Translation2d kCenterOfField = new Translation2d(324.0, 0.0);
     public static final Pose2d kRobotStartingPose = Pose2d.identity();
+    public static final Pose2d kAutoStartingPose = new Pose2d(new Translation2d(71, 20), Rotation2d.fromDegrees(180));
 
     /**
     * Target Specifications
@@ -193,7 +194,7 @@ public class Constants {
     }
 
     public static class VerticalElevator {
-        public static final double kTicksPerInch = 81190.0 / 12.75;
+        public static final double kTicksPerInch = 84646.0 / 18.9375;
 
         public static final double kMinControlHeight = 0.0;
         public static final double kMaxControlHeight = 20.0;
@@ -201,23 +202,23 @@ public class Constants {
         public static final double kHeightTolerance = 1.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 3.0;
+        public static final double kAccelerationScalar = 4.0;
 
         public static final double kSupplyCurrentLimit = 60.0;
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,
             0.01,
-            0.00001,
+            0.0,
             0.0,
             kFalconMotionMagicFeedForward
         );
 
-        public static final double kArbitraryFeedForward = 0.035938;
+        public static final double kArbitraryFeedForward = 0.048438;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.1,
-            1.3,
+            0.8,
             0.0,
             0.5
         );

@@ -321,17 +321,11 @@ public class Pose2d implements IPose2d<Pose2d> {
 
     @Override
     public Pose2d mirrorAboutX(double xValue) {
-        Translation2d mirroredTranslation = new Translation2d(xValue + (xValue - getTranslation().x()), getTranslation().y());
-        Rotation2d mirroredRotation = new Rotation2d(-getRotation().cos(), getRotation().sin(), false);
-        
-        return new Pose2d(mirroredTranslation, mirroredRotation);
+        return new Pose2d(getTranslation().mirrorAboutX(xValue), getRotation().mirrorAboutX());
     }
 
     @Override
     public Pose2d mirrorAboutY(double yValue) {
-        Translation2d mirroredTranslation = new Translation2d(getTranslation().x(), yValue + (yValue - getTranslation().y()));
-        Rotation2d mirroredRotation = new Rotation2d(getRotation().cos(), -getRotation().sin(), false);
-        
-        return new Pose2d(mirroredTranslation, mirroredRotation);
+        return new Pose2d(getTranslation().mirrorAboutY(yValue), getRotation().mirrorAboutY());
     }
 }

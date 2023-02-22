@@ -134,7 +134,7 @@ public class DriverControls implements Loop {
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
-                twoControllerMode();; 
+                twoControllerMode();;; 
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }
@@ -563,13 +563,16 @@ public class DriverControls implements Loop {
 
 
         if(testController.aButton.wasActivated()) {
-            horizontalElevator.setPosition(20.0);
+            //horizontalElevator.setPosition(20.0);
+            verticalElevator.setPosition(10.0);
         }
         if(testController.bButton.wasActivated()) {
-            horizontalElevator.setPosition(0.5);
+            //horizontalElevator.setPosition(0.5);
+            verticalElevator.setPosition(0.5);
         }
         if(testController.yButton.wasActivated()) {
-            horizontalElevator.setPosition(30.0);
+            //horizontalElevator.setPosition(30.0);
+            verticalElevator.setPosition(19.0);
         }
 
         if (testController.POV0.wasActivated()) {
@@ -579,7 +582,7 @@ public class DriverControls implements Loop {
         } else if (testController.POV180.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography());
         } else if (testController.POV270.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
         }
 
         // D-pad controls for vision PID

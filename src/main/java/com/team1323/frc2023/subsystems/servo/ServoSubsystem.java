@@ -102,6 +102,12 @@ public abstract class ServoSubsystem extends Subsystem {
         return outputUnits * encoderUnitsPerOutputUnit;
     }
 
+    public double getVelocityOutputUnitsPerSecond() {
+        double encoderUnitsPer100Ms = leader.getSelectedSensorVelocity();
+        double encoderUnitsPerSecond = encoderUnitsPer100Ms * 10.0;
+        return encoderUnitsToOutputUnits(encoderUnitsPerSecond);
+    }
+
     protected void zeroPosition() {
         leader.setSelectedSensorPosition(0.0);
     }
@@ -174,6 +180,4 @@ public abstract class ServoSubsystem extends Subsystem {
         public ControlMode controlMode = ControlMode.PercentOutput;
         public double arbitraryFeedForward = 0.0;
     }
-
-    
 }
