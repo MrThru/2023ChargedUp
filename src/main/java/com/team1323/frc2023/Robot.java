@@ -9,9 +9,9 @@ import java.util.Set;
 import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeExecuter;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
-import com.team1323.frc2023.auto.SmartDashboardInteractions.StartingSide;
 import com.team1323.frc2023.auto.modes.TwoConesAndRampMode;
 import com.team1323.frc2023.field.AllianceChooser;
+import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.Looper;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new TwoConesAndRampMode(StartingSide.LEFT);
+		AutoModeBase auto = new TwoConesAndRampMode(Quadrant.BOTTOM_LEFT);
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}
