@@ -31,6 +31,7 @@ public class Constants {
     //Field Landmarks
     public static final Translation2d kCenterOfField = new Translation2d(324.0, 0.0);
     public static final Pose2d kRobotStartingPose = Pose2d.identity();
+    public static final Pose2d kAutoStartingPose = new Pose2d(new Translation2d(71, 20), Rotation2d.fromDegrees(180));
 
     /**
     * Target Specifications

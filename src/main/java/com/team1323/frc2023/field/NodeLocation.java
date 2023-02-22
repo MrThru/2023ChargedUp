@@ -48,11 +48,33 @@ public class NodeLocation {
                 (grid == Grid.LEFT && column == Column.LEFT);
     }
 
+    public NodeLocation mirrorAboutX() {
+        return new NodeLocation(grid.mirrorAboutX(), row, column.mirrorAboutX());
+    }
+
+    public NodeLocation mirrorAboutY() {
+        return new NodeLocation(grid.mirrorAboutY(), row, column.mirrorAboutY());
+    }
+
     /**
      * Positions are from the robot's perspective when scoring.
      */
     public enum Grid {
         LEFT, CENTER, RIGHT;
+
+        public Grid mirrorAboutX() {
+            if (this == Grid.LEFT) {
+                return Grid.RIGHT;
+            } else if (this == Grid.RIGHT) {
+                return Grid.LEFT;
+            }
+
+            return this;
+        }
+
+        public Grid mirrorAboutY() {
+            return mirrorAboutX();
+        }
     }
 
     public enum Row {
@@ -61,5 +83,19 @@ public class NodeLocation {
 
     public enum Column {
         LEFT, CENTER, RIGHT;
+
+        public Column mirrorAboutX() {
+            if (this == Column.LEFT) {
+                return Column.RIGHT;
+            } else if (this == Column.RIGHT) {
+                return Column.LEFT;
+            }
+
+            return this;
+        }
+
+        public Column mirrorAboutY() {
+            return mirrorAboutX();
+        }
     }
 }

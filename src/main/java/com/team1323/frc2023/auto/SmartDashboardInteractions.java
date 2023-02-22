@@ -2,7 +2,11 @@ package com.team1323.frc2023.auto;
 
 import com.team1323.frc2023.auto.modes.StandStillMode;
 import com.team1323.frc2023.auto.modes.TwoConesAndRampMode;
+import com.team1323.frc2023.field.AllianceChooser;
+import com.team1323.frc2023.field.AutoZones.Quadrant;
+import com.team1323.frc2023.field.AutoZones.StartingSide;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -34,12 +38,29 @@ public class SmartDashboardInteractions {
     public AutoModeBase getSelectedAutoMode(){
         AutoOption selectedOption = (AutoOption) modeChooser.getSelected();
         StartingSide selectedSide = getSelectedStartingSide();
-        return createAutoMode(selectedOption, selectedSide);
+        Quadrant quadrant = getQuadrant(AllianceChooser.getAlliance(), selectedSide);
+        return createAutoMode(selectedOption, quadrant);
     }
 
     private StartingSide getSelectedStartingSide() {
         StartingSide selectedSide = (StartingSide) sideChooser.getSelected();
         return selectedSide;
+    }
+
+    private Quadrant getQuadrant(Alliance alliance, StartingSide startingSide) {
+        if (alliance == Alliance.Blue) {
+            if (startingSide == StartingSide.RIGHT) {
+                return Quadrant.BOTTOM_LEFT;
+            } else {
+                return Quadrant.TOP_LEFT;
+            }
+        } else {
+            if (startingSide == StartingSide.RIGHT) {
+                return Quadrant.TOP_RIGHT;
+            } else {
+                return Quadrant.BOTTOM_RIGHT;
+            }
+        }
     }
     
     public String getSelectedMode(){
@@ -57,16 +78,12 @@ public class SmartDashboardInteractions {
     	}
     }
 
-    public enum StartingSide {
-        LEFT, RIGHT;
-    }
-
-    private AutoModeBase createAutoMode(AutoOption option, StartingSide startingSide){
+    private AutoModeBase createAutoMode(AutoOption option, Quadrant quadrant){
     	switch(option){
             case STAND_STILL:
                 return new StandStillMode();
             case TWO_CONES_AND_RAMP:
-                return new TwoConesAndRampMode(startingSide);
+                return new TwoConesAndRampMode(quadrant);
             default:
                 System.out.println("ERROR: unexpected auto mode: " + option);
                 return new StandStillMode();

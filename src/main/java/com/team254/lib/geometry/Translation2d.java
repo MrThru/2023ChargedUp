@@ -111,6 +111,14 @@ public class Translation2d implements ITranslation2d<Translation2d> {
         return new Rotation2d(x_, y_, true);
     }
 
+    public Translation2d mirrorAboutX(double xValue) {
+        return new Translation2d(xValue + (xValue - x_), y_);
+    }
+
+    public Translation2d mirrorAboutY(double yValue) {
+        return new Translation2d(x_, yValue + (yValue - y_));
+    }
+
     /**
      * The inverse simply means a Translation2d that "undoes" this object.
      *

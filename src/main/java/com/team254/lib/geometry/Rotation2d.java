@@ -163,6 +163,14 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
     	return new Rotation2d(pole_cos, pole_sin, false);
     }
 
+    public Rotation2d mirrorAboutX() {
+        return new Rotation2d(-cos_angle_, sin_angle_, false);
+    }
+
+    public Rotation2d mirrorAboutY() {
+        return new Rotation2d(cos_angle_, -sin_angle_, false);
+    }
+
     @Override
     public Rotation2d interpolate(final Rotation2d other, double x) {
         if (x <= 0) {
