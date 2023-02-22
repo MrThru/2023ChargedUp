@@ -177,7 +177,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             0.25,
-            175.0,
+            170.0,
             -146.0
         );
 
@@ -280,7 +280,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             7.5,
-            -90.0,
+            -86.0,
             98.0
         );
         

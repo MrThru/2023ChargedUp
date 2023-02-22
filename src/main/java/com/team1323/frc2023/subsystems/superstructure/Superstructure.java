@@ -256,8 +256,11 @@ public class Superstructure extends Subsystem {
 	}
 
 	public void reverseSubsystemsState() {
-
+		request(new ParallelRequest(
+			tunnel.stateRequest(Tunnel.State.REVERSE)
+		));
 	}
+
 
 	public void neutralState() {
 		request(new ParallelRequest(

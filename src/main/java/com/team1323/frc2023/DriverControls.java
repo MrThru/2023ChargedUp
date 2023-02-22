@@ -133,7 +133,7 @@ public class DriverControls implements Loop {
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
-                twoControllerMode(); 
+                twoControllerMode();; 
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }
@@ -284,6 +284,8 @@ public class DriverControls implements Loop {
         if(coDriver.aButton.wasActivated()) {
             if(tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
                 s.intakeState(Tunnel.State.SINGLE_INTAKE);
+            } else if(!tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
+                tunnel.stateRequest(Tunnel.State.SINGLE_INTAKE);
             }
         } else if(coDriver.aButton.isBeingPressed()) {
             if(tunnel.getFrontBanner() || tunnel.getRearBanner()) {
@@ -294,10 +296,16 @@ public class DriverControls implements Loop {
             tunnel.queueShutdown(true);
         }
 
-        if(coDriver.leftBumper.wasActivated()) {
+        if(coDriver.rightCenterClick.wasActivated()) {
             claw.conformToState(Claw.ControlState.CONE_OUTAKE);
-        } else if(coDriver.leftBumper.wasReleased()) {
+        } else if(coDriver.rightCenterClick.wasReleased()) {
             claw.conformToState(Claw.ControlState.OFF);
+        }
+
+        if(coDriver.leftBumper.wasActivated()) {
+            s.reverseSubsystemsState();
+        } else if(coDriver.leftBumper.wasReleased()) {
+            tunnel.setState(Tunnel.State.OFF);
         }
         /*if(coDriver.leftBumper.wasActivated()) {
             s.handOffCubeState();
@@ -463,9 +471,9 @@ public class DriverControls implements Loop {
             ));
             //SuperstructureCoordinator.getInstance().getCubeIntakeChoreography();
         } 
-        if(testController.yButton.wasActivated()) {
+        /*if(testController.yButton.wasActivated()) {
             shoulder.setPosition(0);
-        }
+        }*/
 
         
         /*if(coDriver.aButton.wasActivated()) {
@@ -491,7 +499,7 @@ public class DriverControls implements Loop {
             claw.conformToState(Claw.ControlState.OFF);
         }*/
         
-        if(testController.aButton.wasActivated()) {
+        /*if(testController.aButton.wasActivated()) {
             tunnel.setState(Tunnel.State.MANUAL);
             tunnel.setConveyorSpeed(Netlink.getNumberValue("Tunnel Manual Conveyor Speed"));
         } else if(testController.aButton.wasReleased()) {
@@ -503,7 +511,7 @@ public class DriverControls implements Loop {
             tunnel.setRollerSpeed(Netlink.getNumberValue("Tunnel Manual Top Roller Speed"));
         } else if(testController.bButton.wasReleased()) {
             tunnel.setRollerSpeed(0);
-        }
+        }*/
 
         /*if(testController.xButton.wasActivated()) {
             s.intakeState(Tunnel.State.SPIT);
@@ -551,14 +559,25 @@ public class DriverControls implements Loop {
             cubeIntake.setIntakeSpeed(0);
         }*/
 
+
+        if(testController.aButton.wasActivated()) {
+            horizontalElevator.setPosition(20.0);
+        }
+        if(testController.bButton.wasActivated()) {
+            horizontalElevator.setPosition(0.5);
+        }
+        if(testController.yButton.wasActivated()) {
+            horizontalElevator.setPosition(30.0);
+        }
+
         if (testController.POV0.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getShuttleChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
         } else if (testController.POV90.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getCubeIntakeChoreography());
         } else if (testController.POV180.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography());
         } else if (testController.POV270.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getCubeMidScoringChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
         }
 
         // D-pad controls for vision PID

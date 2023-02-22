@@ -31,7 +31,7 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
 
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);
         zeroPosition();
-        leader.setInverted(TalonFXInvertType.CounterClockwise);
+        leader.setInverted(TalonFXInvertType.Clockwise);
         leader.setPIDF(Constants.HorizontalElevator.kPIDF);
     }
 
