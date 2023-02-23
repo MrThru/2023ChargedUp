@@ -8,6 +8,7 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.subsystems.Subsystem;
+import com.team1323.lib.util.CircularBuffer;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
@@ -35,6 +36,7 @@ public abstract class SwerveModule extends Subsystem {
 	private Translation2d position;
 	private Translation2d startingPosition;
 	private Pose2d estimatedRobotPose = new Pose2d();
+	protected CircularBuffer drivePositionBuffer = new CircularBuffer(50);
 
 	PeriodicIO periodicIO = new PeriodicIO();
 	
@@ -162,6 +164,10 @@ public abstract class SwerveModule extends Subsystem {
 	
 	public Translation2d getPosition(){
 		return position;
+	}
+	
+	public double getAverageDrivePosition() {
+		return drivePositionBuffer.getAverage();
 	}
 	
 	public Pose2d getEstimatedRobotPose(){

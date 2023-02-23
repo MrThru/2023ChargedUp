@@ -1,6 +1,7 @@
 package com.team1323.frc2023.auto;
 
 import com.team1323.frc2023.auto.modes.StandStillMode;
+import com.team1323.frc2023.auto.modes.ThreeConesMode;
 import com.team1323.frc2023.auto.modes.TwoConesAndRampMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
@@ -24,6 +25,7 @@ public class SmartDashboardInteractions {
     	modeChooser = new SendableChooser<AutoOption>();
         modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
         modeChooser.addOption(AutoOption.TWO_CONES_AND_RAMP.name, AutoOption.TWO_CONES_AND_RAMP);
+        modeChooser.addOption(AutoOption.THREE_CONES.name, AutoOption.THREE_CONES);;
 
         sideChooser = new SendableChooser<StartingSide>();
         sideChooser.setDefaultOption(DEFAULT_SIDE.toString(), DEFAULT_SIDE);
@@ -69,7 +71,7 @@ public class SmartDashboardInteractions {
     }
 
     enum AutoOption{
-        STAND_STILL("Stand Still"), TWO_CONES_AND_RAMP("Two Cones and Ramp");
+        STAND_STILL("Stand Still"), TWO_CONES_AND_RAMP("Two Cones and Ramp"), THREE_CONES("Three Cones");
 
     	public final String name;
     	
@@ -84,6 +86,8 @@ public class SmartDashboardInteractions {
                 return new StandStillMode();
             case TWO_CONES_AND_RAMP:
                 return new TwoConesAndRampMode(quadrant);
+            case THREE_CONES:
+                return new ThreeConesMode(quadrant);
             default:
                 System.out.println("ERROR: unexpected auto mode: " + option);
                 return new StandStillMode();

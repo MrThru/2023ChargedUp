@@ -138,6 +138,7 @@ public class Phoenix5SwerveModule extends SwerveModule {
 		if (RobotBase.isReal()) {
             periodicIO.absoluteRotation = rotationAbsoluteEncoder.getOutput() * 360.0;
 		}
+		drivePositionBuffer.addValue(encUnitsToInches(periodicIO.drivePosition));
 	}
 	
 	@Override

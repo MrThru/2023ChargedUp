@@ -130,11 +130,11 @@ public class DriverControls implements Loop {
             driver.update();
 			coDriver.update();
             //singleController.update();
-            testController.update();
+            //testController.update();
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
-                twoControllerMode();;; 
+                twoControllerMode();;;; 
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }

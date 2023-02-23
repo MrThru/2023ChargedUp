@@ -576,6 +576,15 @@ public class Swerve extends Subsystem{
 		}
 		return onTarget;
 	}
+
+	public boolean areModulesStuck() {
+		final double modulePositionTolerance = 1;
+		boolean stuck = true;
+		for(SwerveModule m : modules) {
+			stuck &= Math.abs(m.getAverageDrivePosition() - m.getDriveDistanceInches()) < modulePositionTolerance;;			
+		}
+		return stuck;
+	}
 	
 	/**
 	* Sets a trajectory for the robot to follow

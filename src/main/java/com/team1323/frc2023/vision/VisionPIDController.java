@@ -6,6 +6,7 @@ import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.LEDs;
 import com.team1323.frc2023.subsystems.LEDs.LEDColors;
+import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.Stopwatch;
 import com.team1323.lib.util.SynchronousPIDF;
@@ -16,8 +17,8 @@ import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryGenerator;
-import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.TrajectoryGenerator.TrajectorySet.MirroredTrajectory;
+import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -29,7 +30,7 @@ public class VisionPIDController {
     private static final double kDistanceThresholdForRetroSwitch = 12.0;
 
 	private final SynchronousPIDF lateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
-	private final SynchronousPIDF forwardPID = new SynchronousPIDF(0.02, 0.0, 0.0);
+	private final SynchronousPIDF forwardPID = new SynchronousPIDF(0.03, 0.0, 0.0);
     private final TwoPointRamp decelerationRamp = new TwoPointRamp(
         new Translation2d(1.0, 0.1),
         new Translation2d(60.0, 0.4),
@@ -48,6 +49,7 @@ public class VisionPIDController {
     private Rotation2d targetHeading = Rotation2d.identity();
     private Rotation2d approachAngle = Rotation2d.identity();
     private double distanceToTargetPosition = Double.POSITIVE_INFINITY;
+    private Stopwatch runtimeStopwatch = new Stopwatch();
     private Stopwatch onTargetStopwatch = new Stopwatch();
     private boolean targetReached = false;
     private boolean useRetroTarget = false;
@@ -61,6 +63,7 @@ public class VisionPIDController {
         this.approachAngle = approachAngle;
         distanceToTargetPosition = Double.POSITIVE_INFINITY;
         this.useRetroTarget = useRetroTarget;
+        runtimeStopwatch.start();
         onTargetStopwatch.reset();
         targetReached = false;
 
@@ -182,6 +185,12 @@ public class VisionPIDController {
         return new Pose2d(driveVector, targetHeading);
     }
 
+    private void finish() {
+        onTargetStopwatch.reset();
+        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+        targetReached = true;
+    }
+
     /**
      * @return A Pose2d whose translation represents a drive vector that should be applied
      * to the swerve, and whose rotation represents a target heading for the swerve's
@@ -192,15 +201,17 @@ public class VisionPIDController {
             return Pose2d.fromRotation(targetHeading);
         }
 
+        if (runtimeStopwatch.getTime() > 0.5 && Swerve.getInstance().areModulesStuck()) {
+            finish();
+            return Pose2d.fromRotation(targetHeading);
+        }
+
         Translation2d error = getPIDError(robotPose);
         distanceToTargetPosition = error.norm();
 		if (distanceToTargetPosition <= kDistanceToTargetTolerance) {
             onTargetStopwatch.startIfNotRunning();
             if (onTargetStopwatch.getTime() >= kOnTargetTime) {
-                onTargetStopwatch.reset();
-                LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
-                targetReached = true;
-
+                finish();
                 return Pose2d.fromRotation(targetHeading);
             }
 		}

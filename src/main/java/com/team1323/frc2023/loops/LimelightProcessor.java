@@ -230,7 +230,7 @@ public class LimelightProcessor implements Loop {
 		Translation2d estimatedPolePosition = getRetroTargetPosition(targetInfo, poleHeight, robotPose);
 		Translation2d positionCorrection = new Translation2d(estimatedPolePosition, truePolePosition);
 		Pose2d correctedRobotPose = new Pose2d(robotPose.getTranslation().translateBy(positionCorrection), robotPose.getRotation());
-		Matrix<N3, N1> standardDeviations = VecBuilder.fill(1.0, 1.0, 100.0);
+		Matrix<N3, N1> standardDeviations = VecBuilder.fill(2.0, 1.0, 100.0);
 
 		Swerve.getInstance().addVisionMeasurement(Units.inchesToMeters(correctedRobotPose), observationTimestamp, standardDeviations);
 

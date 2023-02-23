@@ -31,12 +31,15 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class TwoConesAndRampMode extends AutoModeBase {
     private final Quadrant quadrant;
 
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft, trajectories.secondConeHighScorePath.topLeft);
+        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft, trajectories.secondConeHighScorePath.topLeft,
+                        trajectories.secondConeScoreToThirdConePickup.topLeft, trajectories.thirdConePickupToScorePath.topLeft);
     }
 
     public TwoConesAndRampMode(Quadrant quadrant) {
@@ -45,6 +48,7 @@ public class TwoConesAndRampMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
+        startTime = Timer.getFPGATimestamp();
         runAction(new ResetPoseAction(Constants.kAutoStartingPose, quadrant));
         LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR);
         runAction(new WaitAction(0.5));
@@ -72,5 +76,6 @@ public class TwoConesAndRampMode extends AutoModeBase {
         } else {
             runAction(new WaitToFinishPathAction());
         }
+        System.out.println("Auto Done in: " + currentTime());
     }
 }

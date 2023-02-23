@@ -280,7 +280,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             7.5,
-            -86.0,
+            -90.0,
             98.0
         );
         
@@ -288,6 +288,10 @@ public class SuperstructureCoordinator {
     }
 
     private Request getHighChoreography(SuperstructurePosition finalPosition) {
+        return getHighChoreography(finalPosition, 0.0);
+    }
+
+    private Request getHighChoreography(SuperstructurePosition finalPosition, double preemptiveExtensionSeconds) {
         SuperstructurePosition currentPosition = getPosition();
 
         updateShoulderAcceleration(currentPosition, finalPosition);
@@ -304,13 +308,16 @@ public class SuperstructureCoordinator {
                     new ParallelRequest(
                         shoulder.angleRequest(90.0),
                         horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
-                    ).withPrerequisite(() -> verticalElevator.getPosition() <= kVerticalHeightForStow)
+                    ).withPrerequisite(() -> verticalElevator.getPosition() <= kVerticalHeightForStow || 
+                            verticalElevator.isAtPosition(kVerticalHeightForStow))
                 ),
-                verticalElevator.heightRequest(finalPosition.verticalHeight),
                 new ParallelRequest(
-                    horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
-                    shoulder.angleRequest(finalPosition.shoulderAngle),
-                    wrist.angleRequest(finalPosition.wristAngle)
+                    verticalElevator.heightRequest(finalPosition.verticalHeight),
+                    new ParallelRequest(
+                        horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+                        shoulder.angleRequest(finalPosition.shoulderAngle),
+                        wrist.angleRequest(finalPosition.wristAngle)   
+                    ).withPrerequisite(verticalElevator.willReachHeightWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds))
                 )
             );
         }
@@ -414,8 +421,8 @@ public class SuperstructureCoordinator {
         );
 
         return new SequentialRequest(
-            getHighChoreography(finalPosition),
-            Superstructure.getInstance().waitRequest(0.5)
+            getHighChoreography(finalPosition, 1.15),
+            Superstructure.getInstance().waitRequest(0.125)
         );
     }
 

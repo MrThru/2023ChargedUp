@@ -518,5 +518,11 @@ public class Superstructure extends Subsystem {
 			waitRequest(0.5)
 		));
 	}
-
+	public void coneMidScoreManual() {
+		request(new SequentialRequest(
+			coordinator.getConeMidScoringChoreography(),
+			claw.stateRequest(Claw.ControlState.CONE_OUTAKE),
+			waitRequest(0.5)
+		));
+	}
 }
