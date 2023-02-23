@@ -173,7 +173,7 @@ public class DriverControls implements Loop {
             s.scoringSequence(dashboardNodeLocation);
         }*/
 
-        /*if (driver.rightTrigger.wasActivated()) {
+        if (driver.rightTrigger.wasActivated()) {
             Translation2d conePosition = LimelightProcessor.getInstance().getConePosition();
             if (!conePosition.equals(Translation2d.identity())) {
                 s.coneIntakeSequence();
@@ -181,7 +181,7 @@ public class DriverControls implements Loop {
                         .transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength, 0.0)));
                 swerve.startVisionPID(intakingPose, intakingPose.getRotation(), false);
             }
-        }*/
+        }
             
         if (driver.backButton.wasActivated()) {
             swerve.temporarilyDisableHeadingController();
@@ -308,13 +308,15 @@ public class DriverControls implements Loop {
             s.reverseSubsystemsState();
         } else if(coDriver.leftBumper.wasReleased()) {
             tunnel.setState(Tunnel.State.OFF);
+            cubeIntake.setIntakeSpeed(0);
         }
         /*if(coDriver.leftBumper.wasActivated()) {
             s.handOffCubeState();
         }*/
 
-        
-        if (coDriver.bButton.wasReleased()) {
+        if(coDriver.bButton.shortReleased()) {
+            s.objectAwareStowSequence();
+        } else if(coDriver.bButton.longReleased()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
                 s.request(new ParallelRequest(
                     SuperstructureCoordinator.getInstance().getFullStowChoreography(),
@@ -371,12 +373,10 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.leftCenterClick.wasActivated() && coDriver.bButton.isBeingPressed()) {
-            wrist.setStatorCurrentLimit(200);
             wrist.setPosition(0);
             claw.conformToState(Claw.ControlState.OFF);
         } else if(coDriver.leftCenterClick.wasReleased() && coDriver.bButton.isBeingPressed()) {
             wrist.setPosition(90);
-            wrist.setCurrentAtTarget(Constants.Wrist.kLowCurrentMode);
             claw.conformToState(Claw.ControlState.CONE_INTAKE);
         }
 

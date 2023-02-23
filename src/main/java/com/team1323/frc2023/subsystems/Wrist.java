@@ -36,6 +36,7 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
         leader.setPIDF(Constants.Wrist.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
+        setStatorCurrentLimit(200);
         setPositionToAbsolute();
         stop();
     }
@@ -59,16 +60,11 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
         @Override
         public void onStart(double timestamp) {
             updateArbitraryFeedForward();
-            setStatorCurrentLimit(200);
         }
 
         @Override
         public void onLoop(double timestamp) {
             updateArbitraryFeedForward();
-            if(targetAmpsOnTarget != 0 && isWithinTolerance(2.0)) {
-                setStatorCurrentLimit(targetAmpsOnTarget);
-                targetAmpsOnTarget = 0;
-            }
         }
 
         @Override

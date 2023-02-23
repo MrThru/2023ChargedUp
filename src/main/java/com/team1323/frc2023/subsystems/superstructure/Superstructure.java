@@ -257,7 +257,10 @@ public class Superstructure extends Subsystem {
 
 	public void reverseSubsystemsState() {
 		request(new ParallelRequest(
-			tunnel.stateRequest(Tunnel.State.REVERSE)
+			tunnel.stateRequest(Tunnel.State.REVERSE),
+			new LambdaRequest(() -> {
+				cubeIntake.setIntakeSpeed(-0.5);
+			})
 		));
 	}
 
@@ -275,19 +278,13 @@ public class Superstructure extends Subsystem {
 	public void coneIntakeSequence() {
 		request(new SequentialRequest(
 			SuperstructureCoordinator.getInstance().getConeIntakeChoreography(),
-			wrist.setCurrentAtTargetRequest(Constants.Wrist.kLowCurrentMode),
-			wrist.enableCoastModeRequest(true),
 			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
 			new ParallelRequest(
-				wrist.setCurrentAtTargetRequest(200),
-				wrist.enableCoastModeRequest(false),
 				getConeStowSequence(),
 				new LambdaRequest(() -> {coneIntakingSequence = true;})
 			).withPrerequisite(() -> (claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)),
 			new LambdaRequest(() -> {coneIntakingSequence = false;})
 		).withCleanup(() -> {
-			wrist.setStatorCurrentLimit(200);
-			wrist.enableCoastMode(false);
 			coneIntakingSequence = false;
 		}
 		));
