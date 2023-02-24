@@ -428,7 +428,8 @@ public class Superstructure extends Subsystem {
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0),
 				new ParallelRequest(
 					new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CUBE_OUTAKE))
-				).withPrerequisite(horizontalElevator.willReachExtensionWithinTime(horizontalExtension, 0.75))
+				).withPrerequisites(horizontalElevator.willReachExtensionWithinTime(horizontalExtension, .625),
+						() -> swerve.getDistanceToTargetPosition() < 4.0)
 			),
 			new LambdaRequest(() -> swerve.stop()),
 			new LambdaRequest(() -> swerve.resetVisionPID()),

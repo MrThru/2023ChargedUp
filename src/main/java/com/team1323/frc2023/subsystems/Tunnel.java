@@ -85,7 +85,9 @@ public class Tunnel extends Subsystem {
     public void setRollerSpeed(double speed) {
         frontRollerTalon.set(ControlMode.PercentOutput, speed);
     }
+    double conveyorSpeed = 0;
     public void setConveyorSpeed(double speed) {
+        conveyorSpeed = speed;
         conveyorTalon.set(ControlMode.PercentOutput, speed);
     }
     public void setRollerSpeeds(double frontRoller, double conveyorSpeed) {
@@ -145,6 +147,7 @@ public class Tunnel extends Subsystem {
         public void onLoop(double timestamp) {
             if(stateChanged) {
                 pendingShutdown = false;
+                queueShutdownStopwatch.reset();
             }
             switch(currentState) {
                 //ToDo: Send straight through to claw, if the claw is empty
@@ -212,8 +215,7 @@ public class Tunnel extends Subsystem {
                 case SINGLE_INTAKE:
                     if(pendingShutdown && allowSingleIntakeMode() && !frontBannerActivated) {
                         queueShutdownStopwatch.startIfNotRunning();
-                        if(queueShutdownStopwatch.getTime() > 2.0)
-                        {
+                        if(queueShutdownStopwatch.getTime() > 10.0) {
                             setState(State.HOLD);
                             queueShutdownStopwatch.reset();
                             pendingShutdown = false;
@@ -222,18 +224,19 @@ public class Tunnel extends Subsystem {
                         queueShutdownStopwatch.reset();
                     }
                     if(frontBannerActivated && allowSingleIntakeMode()) {
-                        setAllSpeeds(0);
+                        if(frontRollerTalon.getStatorCurrent() > 14.0)
+                            setAllSpeeds(0);
                     } else if(frontBannerActivated) {
                         setRollerSpeeds(0.25, 0.4);
                         setTunnelEntranceSpeed(0.25);
                     } else if(allowSingleIntakeMode()) {
-                        setRollerSpeeds(-0.6, 1.0);
+                        setRollerSpeeds(0.25, 1.0);
                         setTunnelEntranceSpeed(0.50);
                     } else if(getRearBanner()) {
-                        setRollerSpeeds(-0.6, 1.0);
+                        setRollerSpeeds(0.25, 1.0);
                         setTunnelEntranceSpeed(0.25);
                     } else if(getFrontBanner()) {
-                        setRollerSpeeds(-0.25, 1.0);
+                        setRollerSpeeds(0.25, 1.0);
                         setTunnelEntranceSpeed(0.25);
                     }
 
@@ -333,7 +336,8 @@ public class Tunnel extends Subsystem {
         SmartDashboard.putBoolean("Tunnel Rear Banner", getRearBanner());
         SmartDashboard.putString("Tunnel Control State", currentState.toString());
         SmartDashboard.putNumber("Tunnel Top Roller Current", frontRollerTalon.getStatorCurrent());
-
+        SmartDashboard.putNumber("Tunnel Floor Percent Output", conveyorSpeed);
+        SmartDashboard.putBoolean("Cube on Bumper", frontBannerActivated);
     }
 
     public Request stateRequest(State desiredState) {

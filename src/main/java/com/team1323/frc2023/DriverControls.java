@@ -87,6 +87,7 @@ public class DriverControls implements Loop {
     }
 
     private NodeLocation.Row targetScoringRow = NodeLocation.Row.BOTTOM;
+    private Tunnel.State lastTunnelState = Tunnel.State.OFF;
 
     public DriverControls() {
         driver = new Xbox(0);
@@ -291,11 +292,11 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.aButton.wasActivated()) {
-            if(tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
-                s.intakeState(Tunnel.State.SINGLE_INTAKE);
+            s.intakeState(Tunnel.State.SINGLE_INTAKE);
+            /*if(tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
             } else if(!tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
                 tunnel.stateRequest(Tunnel.State.SINGLE_INTAKE);
-            }
+            }*/
         } else if(coDriver.aButton.isBeingPressed()) {
             if(tunnel.getFrontBanner() || tunnel.getRearBanner()) {
                 s.postIntakeState();
@@ -373,10 +374,13 @@ public class DriverControls implements Loop {
             s.postCubeIntakeState();
         }
 
+
         if(coDriver.rightBumper.wasActivated()) {
+            //lastTunnelState = tunnel.getState();
             tunnel.setState(Tunnel.State.SPIT);
         } else if(coDriver.rightBumper.wasReleased()) {
-            tunnel.setState(Tunnel.State.HOLD);
+            //lastTunnelState = (lastTunnelState == Tunnel.State.SPIT) ? Tunnel.State.OFF : lastTunnelState;
+            tunnel.setState(Tunnel.State.OFF);
         }
 
         if(coDriver.leftCenterClick.wasActivated() && coDriver.bButton.isBeingPressed()) {
@@ -570,16 +574,16 @@ public class DriverControls implements Loop {
 
 
         if(testController.aButton.wasActivated()) {
-            //horizontalElevator.setPosition(20.0);
-            verticalElevator.setPosition(10.0);
+            horizontalElevator.setPosition(20.0);
+            //verticalElevator.setPosition(10.0);
         }
         if(testController.bButton.wasActivated()) {
-            //horizontalElevator.setPosition(0.5);
-            verticalElevator.setPosition(0.5);
+            horizontalElevator.setPosition(0.5);
+            //verticalElevator.setPosition(0.5);
         }
         if(testController.yButton.wasActivated()) {
-            //horizontalElevator.setPosition(30.0);
-            verticalElevator.setPosition(19.0);
+            horizontalElevator.setPosition(30.0);
+            //verticalElevator.setPosition(19.0);
         }
 
         if (testController.POV0.wasActivated()) {

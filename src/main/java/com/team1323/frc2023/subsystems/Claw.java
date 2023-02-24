@@ -66,7 +66,7 @@ public class Claw extends Subsystem {
     }
 
     public enum ControlState {
-        OFF(0.0), CUBE_INTAKE(-0.5), CUBE_OUTAKE(1.0), CONE_INTAKE(1.0), CONE_OUTAKE(-1.0);
+        OFF(0.0), CUBE_INTAKE(-0.5), CUBE_OUTAKE(0.3), CONE_INTAKE(1.0), CONE_OUTAKE(-1.0);
         double speed;
         ControlState(double speed) {
             this.speed = speed;
