@@ -8,8 +8,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
-import com.team1323.frc2023.subsystems.servo.ServoSubsystem;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 import com.team1323.lib.util.Netlink;
 
@@ -46,6 +46,19 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
             public boolean isFinished() {
                 return isOnTarget();
             }
+        };
+    }
+
+    public Prerequisite willReachExtensionWithinTime(double inches, double seconds) {
+        return () -> {
+            double inchesPerSecond = getVelocityOutputUnitsPerSecond();
+            boolean isHeadingTowardHeight = Math.signum(inches - getPosition()) == Math.signum(inchesPerSecond);
+            double secondsUntilHeightReached = Double.POSITIVE_INFINITY;
+            if (inchesPerSecond != 0.0) {
+                secondsUntilHeightReached = Math.abs(inches - getPosition()) / Math.abs(inchesPerSecond);
+            }
+
+            return (isHeadingTowardHeight && secondsUntilHeightReached <= seconds) || isAtPosition(inches);
         };
     }
 

@@ -414,6 +414,23 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
+	private void cubeScoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo,
+			double horizontalExtension, boolean useTrajectory) {
+		request(new SequentialRequest(
+			new ParallelRequest(
+				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory),
+				choreographyRequest(scoringChoreo)
+						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0),
+				new ParallelRequest(
+					new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CUBE_OUTAKE)),
+					new LambdaRequest(() -> swerve.stop()),
+					new LambdaRequest(() -> swerve.resetVisionPID())
+				).withPrerequisite(horizontalElevator.willReachExtensionWithinTime(horizontalExtension, 1.0))
+			),
+			waitRequest(1.0),
+			choreographyRequest(this::objectAwareStow)
+		));
+	}
 
 	private Request getSuperstructureScorePositions(ChoreographyProvider scoringChoreo, 
 			Claw.ControlState clawScoringState, ChoreographyProvider stowingChoreo) {
@@ -500,14 +517,15 @@ public class Superstructure extends Subsystem {
 	}
 
 	public void cubeMidScoringSequence(Pose2d scoringPose) {
-		scoringSequence(scoringPose, coordinator::getCubeMidScoringChoreography,
-				Claw.ControlState.CUBE_OUTAKE, false, false);
+		cubeScoringSequence(scoringPose, coordinator::getCubeMidScoringChoreography,
+				SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, false);
 	}
 
 	public void cubeHighScoringSequence(Pose2d scoringPose) {
-		scoringSequence(scoringPose, coordinator::getCubeHighScoringChoreography,
-				Claw.ControlState.CUBE_OUTAKE, false, false);
+		cubeScoringSequence(scoringPose, coordinator::getCubeHighScoringChoreography,
+				SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, false);
 	}
+
 	public void coneHighScoreManual() {
 		request(new SequentialRequest(
 			coordinator.getConeHighScoringChoreography(),
@@ -515,6 +533,7 @@ public class Superstructure extends Subsystem {
 			waitRequest(0.5)
 		));
 	}
+
 	public void coneMidScoreManual() {
 		request(new SequentialRequest(
 			coordinator.getConeMidScoringChoreography(),

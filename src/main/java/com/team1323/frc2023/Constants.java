@@ -3,11 +3,13 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 import java.util.List;
 
-import com.team254.drivers.LazyPhoenix5TalonFX.TalonPIDF;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
 import com.team1323.lib.math.geometry.Pose3d;
 import com.team1323.lib.math.geometry.Vector3d;
+import com.team1323.lib.util.InterpolatingDouble;
+import com.team1323.lib.util.InterpolatingTreeMap;
+import com.team254.drivers.LazyPhoenix5TalonFX.TalonPIDF;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -109,11 +111,15 @@ public class Constants {
     
     public static final List<Translation2d> kModulePositions = Arrays.asList(kVehicleToModuleZero,
     kVehicleToModuleOne, kVehicleToModuleTwo, kVehicleToModuleThree);
-
    
+    public static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kElevatorHeightToSwerveSpeedMap = new InterpolatingTreeMap<>();
+    static {
+        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(-1.0), new InterpolatingDouble(1.0));
+        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(1.0), new InterpolatingDouble(1.0));
+        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(VerticalElevator.kMaxControlHeight), new InterpolatingDouble(0.5));
+        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(VerticalElevator.kMaxControlHeight + 1.0), new InterpolatingDouble(0.5));
+    }
 
-
-    
     //Scrub Factors
     public static final boolean kSimulateReversedCarpet = false;
     public static final double[] kWheelScrubFactors = new double[]{1.0, 1.0, 1.0, 1.0};
