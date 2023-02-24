@@ -376,7 +376,15 @@ public class Superstructure extends Subsystem {
 	}
 
 	public void shuttleIntakeSequence() {
+		request(getShuttleIntake());
+	}
+	public void getAutoShuttleIntakSequence() {
 		request(new SequentialRequest(
+			
+		));
+	}
+	public Request getShuttleIntake() {
+		return (new SequentialRequest(
 			new ParallelRequest(
 				coordinator.getShuttleChoreography(),
 				claw.stateRequest(Claw.ControlState.CONE_INTAKE)
@@ -384,7 +392,6 @@ public class Superstructure extends Subsystem {
 			getConeStowSequence().withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
 		));
 	}
-
 	/*public void flipGroundCone() {
 		request(new SequentialRequest(
 			coordinator.getConeIntakeChoreography(),
@@ -398,7 +405,6 @@ public class Superstructure extends Subsystem {
 				new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.RETRO))
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 18.0) :
 				new EmptyRequest();
-
 		request(new SequentialRequest(
 			new ParallelRequest(
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory),
@@ -409,8 +415,7 @@ public class Superstructure extends Subsystem {
 			new LambdaRequest(() -> claw.conformToState(clawScoringState)),
 			new LambdaRequest(() -> swerve.stop()),
 			new LambdaRequest(() -> swerve.resetVisionPID()),
-			waitRequest(1.0),
-			choreographyRequest(this::objectAwareStow)
+			choreographyRequest(this::objectAwareStow).withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.None)
 		));
 	}
 
@@ -422,13 +427,18 @@ public class Superstructure extends Subsystem {
 				choreographyRequest(scoringChoreo)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0),
 				new ParallelRequest(
-					new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CUBE_OUTAKE)),
-					new LambdaRequest(() -> swerve.stop()),
-					new LambdaRequest(() -> swerve.resetVisionPID())
-				).withPrerequisite(horizontalElevator.willReachExtensionWithinTime(horizontalExtension, 1.0))
+					new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CUBE_OUTAKE))
+				).withPrerequisite(horizontalElevator.willReachExtensionWithinTime(horizontalExtension, 0.75))
 			),
-			waitRequest(1.0),
-			choreographyRequest(this::objectAwareStow)
+			new LambdaRequest(() -> swerve.stop()),
+			new LambdaRequest(() -> swerve.resetVisionPID()),
+			new LambdaRequest(() -> {
+				System.out.println("Cube Ejected");
+			}),
+			choreographyRequest(this::objectAwareStow).withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.None),
+			new LambdaRequest(() -> {
+				System.out.println("Superstructure Stowed");
+			})
 		));
 	}
 

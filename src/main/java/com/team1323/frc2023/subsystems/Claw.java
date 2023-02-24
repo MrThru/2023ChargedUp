@@ -147,7 +147,7 @@ public class Claw extends Subsystem {
             } else if(currentState == ControlState.CONE_OUTAKE) {
                 if(stateChanged)
                     stopwatch.start();
-                if(stopwatch.getTime() > 1.0) {
+                if(stopwatch.getTime() > 0.375) {
                     conformToState(ControlState.OFF);
                     stopwatch.reset();
                     setCurrentHoldingObject(HoldingObject.None);
@@ -156,7 +156,7 @@ public class Claw extends Subsystem {
             } else if(currentState == ControlState.CUBE_OUTAKE) {
                 if(stateChanged)
                     stopwatch.start();
-                if(stopwatch.getTime() > 1.0) {
+                if(stopwatch.getTime() > 0.5) {
                     conformToState(ControlState.OFF);
                     stopwatch.reset();
                     setCurrentHoldingObject(HoldingObject.None);

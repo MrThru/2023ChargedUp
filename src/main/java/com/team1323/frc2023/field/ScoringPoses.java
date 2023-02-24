@@ -61,13 +61,15 @@ public class ScoringPoses {
         AprilTag nodeTag = kGridToAprilTagMap.get(AllianceChooser.getAlliance()).get(nodeLocation.grid);
 
         double xTransform = kScoringPoseForwardPadding;
-        double yTransform = -coneLateralOffset;
+        double yTransform = 0.0;
         switch (nodeLocation.column) {
             case LEFT:
+                yTransform = -coneLateralOffset;
                 yTransform += kAprilTagToConeLateralDisplacement;
                 xTransform -= 2.5; // 3.5
                 break;
             case RIGHT:
+                yTransform = -coneLateralOffset;
                 yTransform -= kAprilTagToConeLateralDisplacement;
                 xTransform -= 2.5; // 3.25
                 break;

@@ -173,7 +173,7 @@ public class DriverControls implements Loop {
             s.scoringSequence(dashboardNodeLocation);
         }*/
 
-        if (driver.rightTrigger.wasActivated()) {
+        /*if (driver.rightTrigger.wasActivated()) {
             Translation2d conePosition = LimelightProcessor.getInstance().getConePosition();
             if (!conePosition.equals(Translation2d.identity())) {
                 s.coneIntakeSequence();
@@ -181,6 +181,13 @@ public class DriverControls implements Loop {
                         .transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength, 0.0)));
                 swerve.startVisionPID(intakingPose, intakingPose.getRotation(), false);
             }
+        }*/
+
+        if(driver.rightTrigger.wasActivated()) {
+            //s.shuttleIntakeSequence();
+            Pose2d kShuttleIntakePosition = (AllianceChooser.getAlliance() == Alliance.Blue) ? new Pose2d(new Translation2d(554.34, 287.25), Rotation2d.fromDegrees(90)) :
+                            new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0));
+            swerve.startVisionPID(kShuttleIntakePosition, kShuttleIntakePosition.getRotation(), false);
         }
             
         if (driver.backButton.wasActivated()) {
