@@ -216,7 +216,7 @@ public class Tunnel extends Subsystem {
                     if(pendingShutdown && allowSingleIntakeMode() && !frontBannerActivated) {
                         queueShutdownStopwatch.startIfNotRunning();
                         if(queueShutdownStopwatch.getTime() > 10.0) {
-                            setState(State.HOLD);
+                            //setState(State.HOLD);
                             queueShutdownStopwatch.reset();
                             pendingShutdown = false;
                         }
@@ -232,11 +232,11 @@ public class Tunnel extends Subsystem {
                     } else if(allowSingleIntakeMode()) {
                         setRollerSpeeds(0.25, 1.0);
                         setTunnelEntranceSpeed(0.50);
-                    } else if(getRearBanner()) {
-                        setRollerSpeeds(0.25, 1.0);
-                        setTunnelEntranceSpeed(0.25);
                     } else if(getFrontBanner()) {
-                        setRollerSpeeds(0.25, 1.0);
+                        setRollerSpeeds(0.25, 0.4);
+                        setTunnelEntranceSpeed(0.25);
+                    } else if(getRearBanner()) {
+                        setRollerSpeeds(0.25, 1.00);
                         setTunnelEntranceSpeed(0.25);
                     }
 
@@ -247,8 +247,11 @@ public class Tunnel extends Subsystem {
                     break;
                 case STUCK_ON_BUMPER:
                     if(frontBannerActivated && !getFrontBanner()) {
-                        setAllSpeeds(0);
-                        setTunnelEntranceSpeed(0.65);
+                        if(frontRollerTalon.getStatorCurrent() > 7.0) 
+                        {
+                            setAllSpeeds(0);
+                            setTunnelEntranceSpeed(0.65);
+                        }
                     } else if(!frontBannerActivated && getFrontBanner()) {
                         setRollerSpeeds(0.25, 0.4);
                         setTunnelEntranceSpeed(0.25);
@@ -258,9 +261,6 @@ public class Tunnel extends Subsystem {
                         setAllSpeeds(0);
                     } else if(!getFrontBanner()) {
                         setRollerSpeeds(-0.60, 0.4);
-                        setTunnelEntranceSpeed(0.65);
-                    } else {
-                        setAllSpeeds(0);
                         setTunnelEntranceSpeed(0.65);
                     }
                     

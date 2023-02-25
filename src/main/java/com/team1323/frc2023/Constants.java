@@ -246,7 +246,7 @@ public class Constants {
         public static final double kExtensionTolerance = 1.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 4.0;
+        public static final double kAccelerationScalar = 3.0;
 
         public static final double kSupplyLimit = 40.0;
 
@@ -393,8 +393,8 @@ public class Constants {
         public static final double kHoldConveyorSpeed = 0.1;
         public static final double kHoldFrontRollerSpeed = kHoldConveyorSpeed * -2.0;
 
-        public static final double kScoreConveyorSpeed = 0.5;
-        public static final double kScoreFrontRollerSpeed = 0.5;
+        public static final double kScoreConveyorSpeed = 0.25;
+        public static final double kScoreFrontRollerSpeed = 0.25;
 
         public static final TalonPIDF kConveyorPID = new TalonPIDF(
             0,

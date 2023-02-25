@@ -95,7 +95,7 @@ public class DriverControls implements Loop {
         testController = new Xbox(4);
         singleController = new Xbox(5);
         driver.setDeadband(0.0);
-		coDriver.setDeadband(0.15);
+		coDriver.setDeadband(0.25);
 
         swerve = Swerve.getInstance();
         verticalElevator = VerticalElevator.getInstance();
@@ -305,6 +305,7 @@ public class DriverControls implements Loop {
             s.postIntakeState();
             tunnel.queueShutdown(true);
         }
+        SmartDashboard.putNumber("RB Pressed", (coDriver.rightBumper.isBeingPressed() ? 1 : 0));
 
         if(coDriver.rightCenterClick.wasActivated()) {
             claw.conformToState(Claw.ControlState.CONE_OUTAKE);
@@ -361,17 +362,19 @@ public class DriverControls implements Loop {
             targetScoringRow = NodeLocation.Row.BOTTOM;
         }
 
-        if(coDriver.leftTrigger.wasActivated() && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+        if(coDriver.leftTrigger.wasActivated() /*&& AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())*/) {
+            /*if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
                 s.request(new SequentialRequest(
                     SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
                     claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
                 )); 
             }
+            tunnel.setState(Tunnel.State.COMMUNITY);*/
             cubeIntake.conformToState(CubeIntake.State.INTAKE);
-            tunnel.setState(Tunnel.State.COMMUNITY);
+            tunnel.setState(Tunnel.State.STUCK_ON_BUMPER);
         } else if(coDriver.leftTrigger.wasReleased()) {
-            s.postCubeIntakeState();
+            //s.postCubeIntakeState();
+            cubeIntake.conformToState(CubeIntake.State.STOWED);
         }
 
 
@@ -395,8 +398,12 @@ public class DriverControls implements Loop {
             claw.resetCurrentHolding();
         }
 
+        if(cubeIntake.getState() == CubeIntake.State.INTAKE) {
+            cubeIntake.acceptManualInput(-coDriver.getLeftY() * 0.1);
+        }
+
         if (coDriver.backButton.wasActivated()) {
-            verticalElevator.startCurrentZeroing();
+            //verticalElevator.startCurrentZeroing();
             horizontalElevator.startCurrentZeroing();
             //shoulder.startCurrentZeroing();
             //wrist.startCurrentZeroing();

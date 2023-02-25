@@ -8,10 +8,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.loops.ILooper;
+import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 import com.team1323.lib.util.Netlink;
+import com.team1323.lib.util.Stopwatch;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -33,6 +36,33 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
         zeroPosition();
         leader.setInverted(TalonFXInvertType.Clockwise);
         leader.setPIDF(Constants.HorizontalElevator.kPIDF);
+    }
+
+
+    Stopwatch currentDrawStopwatch = new Stopwatch();
+
+    Loop loop = new Loop() {
+
+        @Override
+        public void onStart(double timestamp) {
+            
+        }
+
+        @Override
+        public void onLoop(double timestamp) {
+        }
+
+        @Override
+        public void onStop(double timestamp) {
+            
+        }
+        
+    };
+
+    @Override
+    public void registerEnabledLoops(ILooper enabledLooper) {
+        enabledLooper.register(loop);
+        super.registerEnabledLoops(enabledLooper);
     }
 
     public Request extensionRequest(double inches) {
@@ -72,9 +102,9 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
             leader.setNeutralMode(NeutralMode.Brake);
 			neutralModeIsBrake = true;
 		}
-       SmartDashboard.putNumber("Horizontal Elevator Height", getPosition());
-       SmartDashboard.putNumber("Horizontal Elevator Encoder Position", periodicIO.position); 
-       SmartDashboard.putBoolean("Horizontal Elevator on Target", isOnTarget());
+        SmartDashboard.putNumber("Horizontal Elevator Height", getPosition());
+        SmartDashboard.putNumber("Horizontal Elevator Encoder Position", periodicIO.position); 
+        SmartDashboard.putBoolean("Horizontal Elevator on Target", isOnTarget());
     }
 
 }

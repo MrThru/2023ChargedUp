@@ -251,7 +251,7 @@ public class LimelightProcessor implements Loop {
 		return Collections.min(AllianceChooser.getConePoleYs(), distanceToRobotComparator);
 	}
 
-	private Translation2d getRetroTargetPosition(TargetInfo target, double physicalTargetHeight, Pose2d robotPose) {
+	public Translation2d getRetroTargetPosition(TargetInfo target, double physicalTargetHeight, Pose2d robotPose) {
 		final double differentialHeight = physicalTargetHeight - Constants.kCameraZOffset;
 		final Pose2d cameraPose = robotPose.transformBy(kRobotToCameraTransform);
 

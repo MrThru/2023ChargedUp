@@ -338,11 +338,9 @@ public class Superstructure extends Subsystem {
 
 	private Request getHandOffCubeSequence() {
 		return new SequentialRequest(
+			claw.stateRequest(Claw.ControlState.CUBE_INTAKE),
 			SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
-			new ParallelRequest(
-				tunnel.stateRequest(Tunnel.State.EJECT_ONE),
-				claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
-			)
+			tunnel.stateRequest(Tunnel.State.EJECT_ONE).withPrerequisite(() -> Math.abs(claw.getRPM()) > 2500)
 		);
 	}
 	public void handOffCubeState() {

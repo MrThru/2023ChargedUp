@@ -17,6 +17,7 @@ import com.team1323.frc2023.loops.Looper;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
 import com.team1323.frc2023.loops.RobotStateEstimator;
 import com.team1323.frc2023.subsystems.CubeIntake;
+import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.LEDs;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.SubsystemManager;
@@ -126,6 +127,8 @@ public class Robot extends TimedRobot {
 			disabledLooper.stop();
 			enabledLooper.start();
 			SmartDashboard.putBoolean("Auto", false);
+			SmartDashboard.putBoolean("Subsystems Coast Mode", false);
+
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -156,6 +159,8 @@ public class Robot extends TimedRobot {
 			disabledLooper.start();
 			
 			LEDs.getInstance().configLEDs(LEDs.LEDColors.TWINKLE);;;;;;;;;;;;;;
+
+			SmartDashboard.putBoolean("Subsystems Coast Mode", true);
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;

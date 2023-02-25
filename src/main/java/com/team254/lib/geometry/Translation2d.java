@@ -1,5 +1,6 @@
 package com.team254.lib.geometry;
 
+import com.team1323.lib.math.geometry.Vector3d;
 import com.team254.lib.util.Util;
 
 import java.text.DecimalFormat;
@@ -110,7 +111,10 @@ public class Translation2d implements ITranslation2d<Translation2d> {
     public Rotation2d direction() {
         return new Rotation2d(x_, y_, true);
     }
-
+    
+    public Vector3d toVector3d() {
+        return new Vector3d(x(), y(), 0);
+    }
     public Translation2d mirrorAboutX(double xValue) {
         return new Translation2d(xValue + (xValue - x_), y_);
     }
