@@ -19,6 +19,7 @@ import com.team1323.frc2023.subsystems.gyros.Gyro;
 import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.vision.VisionPIDController;
+import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.math.vectors.VectorField;
 import com.team1323.lib.util.DriveSignal;
@@ -26,6 +27,7 @@ import com.team1323.lib.util.Kinematics;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.SwerveHeadingController;
 import com.team1323.lib.util.SwerveInverseKinematics;
+import com.team1323.lib.util.SynchronousPIDF;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -344,8 +346,8 @@ public class Swerve extends Subsystem{
 					headingController.setStabilizationTarget(headingController.getTargetHeading());
 
 				if(isTracking() || currentState == ControlState.POSITION){
-					if(Math.abs(translationalInput.direction().distance(visionTargetHeading)) > Math.toRadians(120.0)){
-						//setState(ControlState.MANUAL);
+					if (Math.hypot(x, y) >= 0.75) {
+						stop();
 					}
 				} else if(currentState != ControlState.MANUAL){
 					setState(ControlState.MANUAL);
@@ -640,6 +642,15 @@ public class Swerve extends Subsystem{
 	
 	// Vision PID (new, simpler vision tracking system)
 	public void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory) {
+		startVisionPID(desiredFieldPose, approachAngle, useTrajectory, 
+				VisionPIDController.kDefaultLateralPID, VisionPIDController.kDefaultForwardPID, 
+				VisionPIDController.kDefaultDecelerationRamp);
+	}
+
+	public void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, 
+			SynchronousPIDF lateralPID, SynchronousPIDF forwardPID, TwoPointRamp decelerationRamp) {
+		visionPID.setPID(lateralPID, forwardPID);
+		visionPID.setDecelerationRamp(decelerationRamp);
 		visionPID.start(pose, desiredFieldPose, approachAngle, useTrajectory, false);
 		rotationScalar = 0.75;
 		setState(ControlState.VISION_PID);
