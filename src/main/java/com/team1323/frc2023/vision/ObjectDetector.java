@@ -17,6 +17,7 @@ import com.team1323.lib.math.geometry.Raycast3d;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -71,10 +72,11 @@ public class ObjectDetector {
         
         TargetInfo targetInfo = new TargetInfo(Rotation2d.fromDegrees(-detectedTarget.tx).tan(),
                             Rotation2d.fromDegrees(detectedTarget.ty).tan());
-        Vector3d objectPosition = LimelightProcessor.getInstance()
-                        .getRetroTargetPosition(targetInfo, detectedGameObject.getHeight(), swervePose).toVector3d();
-        detectedGameObject.setPosition(objectPosition);
-
+        Vector3d objectFieldPosition = LimelightProcessor.getInstance()
+                        .getRetroTargetPosition(targetInfo, detectedGameObject.getHeight(), swervePose).toVector3d()
+                        .add(new Vector3d(0, 0, detectedGameObject.height/2));
+        Translation2d robotRelativePosition = objectFieldPosition.toTranslation().translateBy(swervePose.getTranslation());
+        detectedGameObject.setPosition(objectFieldPosition);
     }
 
 

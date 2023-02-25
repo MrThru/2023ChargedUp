@@ -7,6 +7,8 @@
 
 package com.team1323.lib.math.geometry;
 
+import com.team254.lib.geometry.Translation2d;
+
 /**
  * Add your docs here.
  */
@@ -60,6 +62,9 @@ public class Vector3d {
         return this.scale(1.0 / magnitude());
     }
 
+    public Translation2d toTranslation() {
+        return new Translation2d(x(), y());
+    }
 
     public Rotation3d getRotation3d() {
         return new Rotation3d(Math.toDegrees(Math.atan2(this.y_, this.x_)), Math.toDegrees(Math.atan2(this.z_, this.x_)), 0);

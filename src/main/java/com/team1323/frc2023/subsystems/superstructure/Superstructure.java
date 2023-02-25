@@ -232,7 +232,7 @@ public class Superstructure extends Subsystem {
 
 	public void intakeState(Tunnel.State tunnelState) {
 		request(new ParallelRequest(
-			verticalElevator.heightRequest(0.25),
+			verticalElevator.heightRequest(1.0),
 			tunnel.stateRequest(tunnelState),
 			cubeIntake.stateRequest(CubeIntake.State.INTAKE)
 		));
@@ -240,7 +240,8 @@ public class Superstructure extends Subsystem {
 	public void postIntakeState() {
 		request(new ParallelRequest(
 			//tunnel.queueShutdownRequest(),
-			cubeIntake.stateRequest(CubeIntake.State.STOWED)
+			cubeIntake.stateRequest(CubeIntake.State.STOWED),
+			verticalElevator.heightRequest(0.25)
 		));
 	}
 	public void postCubeIntakeState() {
@@ -424,8 +425,10 @@ public class Superstructure extends Subsystem {
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory),
 				choreographyRequest(scoringChoreo)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0),
-				new ParallelRequest(
-					new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CUBE_OUTAKE))
+				new SequentialRequest(
+					new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CUBE_OUTAKE)),
+					waitRequest(0.25),
+					wrist.angleRequest(Constants.Wrist.kMaxControlAngle)
 				).withPrerequisites(horizontalElevator.willReachExtensionWithinTime(horizontalExtension, .625),
 						() -> swerve.getDistanceToTargetPosition() < 4.0)
 			),

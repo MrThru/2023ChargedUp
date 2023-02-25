@@ -157,11 +157,12 @@ public class Claw extends Subsystem {
                 if(stateChanged)
                     stopwatch.start();
                 if(stopwatch.getTime() > 0.6) {
-                    conformToState(ControlState.OFF);
-                    stopwatch.reset();
                     setCurrentHoldingObject(HoldingObject.None);
                 }
-
+                if(getCurrentHoldingObject() == HoldingObject.None && stopwatch.getTime() > 3.0) {
+                    conformToState(ControlState.OFF);
+                    stopwatch.reset();
+                }
             } else if(currentState == ControlState.OFF) {
                 conformToState(ControlState.OFF);
                 setCurrentHoldingObject(HoldingObject.None);

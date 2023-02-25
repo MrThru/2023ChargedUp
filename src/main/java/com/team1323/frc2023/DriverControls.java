@@ -370,17 +370,24 @@ public class DriverControls implements Loop {
                 )); 
             }
             tunnel.setState(Tunnel.State.COMMUNITY);*/
+            verticalElevator.setPosition(2.0);
             cubeIntake.conformToState(CubeIntake.State.INTAKE);
-            tunnel.setState(Tunnel.State.STUCK_ON_BUMPER);
+            tunnel.setState(Tunnel.State.COMMUNITY);
         } else if(coDriver.leftTrigger.wasReleased()) {
             //s.postCubeIntakeState();
-            cubeIntake.conformToState(CubeIntake.State.STOWED);
+            verticalElevator.setPosition(0.5);
+            if(tunnel.getFrontBanner() && tunnel.getRearBanner()) {
+                cubeIntake.conformToState(CubeIntake.State.FLOOR);
+                tunnel.setTunnelEntranceSpeed(0);
+            } else {
+                cubeIntake.conformToState(CubeIntake.State.STOWED);
+            }
         }
 
 
         if(coDriver.rightBumper.wasActivated()) {
             //lastTunnelState = tunnel.getState();
-            tunnel.setState(Tunnel.State.SPIT);
+            tunnel.setState(Tunnel.State.EJECT_ONE);
         } else if(coDriver.rightBumper.wasReleased()) {
             //lastTunnelState = (lastTunnelState == Tunnel.State.SPIT) ? Tunnel.State.OFF : lastTunnelState;
             tunnel.setState(Tunnel.State.OFF);

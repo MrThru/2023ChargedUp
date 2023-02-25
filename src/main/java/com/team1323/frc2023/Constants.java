@@ -175,7 +175,7 @@ public class Constants {
 
         public static final double kStartingAngle = 0;
         public static final double kIntakeAngle = -2.5;
-        public static final double kFloorAngle = 105;
+        public static final double kFloorAngle = -38.75;
 
         public static final double kAngleTolerance = 1.0;
         public static final double kVelocityScalar = 1.0;
@@ -294,8 +294,8 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            355.605469, 
-            -90.0, 
+            344.091797, 
+            174.0, 
             -95.0,
             185.0
         );

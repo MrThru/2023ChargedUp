@@ -51,7 +51,7 @@ public class SuperstructureCoordinator {
     private static final double kHorizontalExtensionForUprightShoulder = 6.0;
     private static final double kHorizontalExtensionForGridClearance = 15.0;
 
-    public static final double kCubeMidScoringHorizontalExtension = 18.5;
+    public static final double kCubeMidScoringHorizontalExtension = 16.5;
     public static final double kCubeHighScoringHorizontalExtension = 31.0;
 
     private final VerticalElevator verticalElevator;
@@ -453,7 +453,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             1,
             kCubeMidScoringHorizontalExtension,
-            79.9,
+            60.,
             90.0
         );
 
