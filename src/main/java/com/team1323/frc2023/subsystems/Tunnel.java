@@ -158,12 +158,6 @@ public class Tunnel extends Subsystem {
                             setState(State.OFF);
                             cubeIntake.setHoldMode();
                         }
-                        bannerActivatedStopwatch.startIfNotRunning();
-                        if(bannerActivatedStopwatch.getTime() > 0.5) {
-                            //setAllSpeeds(0);
-                            setState(State.MANUAL);
-                            bannerActivatedStopwatch.reset();
-                        }
                     } else if(getFrontBanner()) {
                         setAllSpeeds(0);
                         setTunnelEntranceSpeed(0.65);
