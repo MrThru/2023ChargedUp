@@ -57,7 +57,7 @@ public class ObjectDetector {
         }
     }
 
-    public void addDetectedObject(LimelightTarget_Detector detectedTarget) {
+    public void addDetectedObject(LimelightTarget_Detector detectedTarget, double timestamp) {
         GameObject detectedGameObject;
         Pose2d swervePose = Swerve.getInstance().getPose();
         if(detectedTarget.className == "cube") {
@@ -78,7 +78,12 @@ public class ObjectDetector {
         Translation2d robotRelativePosition = objectFieldPosition.toTranslation().translateBy(swervePose.getTranslation());
         ray.scale(robotRelativePosition.norm());
         detectedGameObject.setPosition(objectFieldPosition);
+        groundTracker.update(timestamp, Arrays.asList(robotRelativePosition));
+
+        
     }
+
+    
 
 
 //    public void addDetectedGroudObject()

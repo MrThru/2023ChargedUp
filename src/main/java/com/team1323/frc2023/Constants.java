@@ -39,7 +39,8 @@ public class Constants {
     public static final Translation2d kCenterOfField = new Translation2d(324.0, 0.0);
     public static final Pose2d kRobotStartingPose = Pose2d.identity();
     public static final Pose2d kAutoStartingPose = new Pose2d(new Translation2d(71, 20), Rotation2d.fromDegrees(180));
-
+    public static final Pose2d kThirdPoleStartingPose = new Pose2d(new Translation2d(71, 87), Rotation2d.fromDegrees(180));
+    
     public static final Translation2d kFirstPickupConePosition = new Translation2d(277.7, 38.25);
     public static final Translation2d kSecondPickupConePosition = new Translation2d(277.7, 85.25);
 

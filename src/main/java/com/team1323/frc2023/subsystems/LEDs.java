@@ -16,6 +16,7 @@ import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.lib.util.Stopwatch;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -41,7 +42,12 @@ public class LEDs extends Subsystem {
         configLEDs(disabledLEDColorsMode);
     }
     public enum LEDMode {
-        SOLID, RAINBOW, FIRE, TWINKLE, STROBE;
+        SOLID, BLINK_SOLID, RAINBOW, FIRE, TWINKLE, STROBE;
+        
+        LEDBlink blink = LEDs.getInstance().new LEDBlink();
+        public void setBlinkMode(LEDBlink blink) {
+            this.blink = blink;
+        }
     }
     private LEDMode selectedLEDType = LEDMode.SOLID;
     public LEDMode getLEDType() {
@@ -82,7 +88,12 @@ public class LEDs extends Subsystem {
         this.selectedLEDType = ledColors.ledMode;
         currentLEDMode = ledColors;
     }
-    
+
+    public void setLEDsBlink(LEDColors ledColors) {
+        //this.
+    }
+
+
     @Override
     public void writePeriodicOutputs() {
         if(selectedLEDType == LEDMode.SOLID) {
@@ -98,20 +109,19 @@ public class LEDs extends Subsystem {
             candle.animate(twinkleAnimation);
         } else if(selectedLEDType == LEDMode.STROBE) {
             candle.animate(new StrobeAnimation(100, 100, 100, 50, 0.25, 1690));
+        } else if(selectedLEDType == LEDMode.BLINK_SOLID) {
+            
         }
-        SmartDashboard.putString("LED Mode", selectedLEDType.toString());
-        SmartDashboard.putNumberArray("LED Colors", new double[]{mRed, mGreen, mBlue});
+       
     }
 
   
     @Override
     public void outputTelemetry() {
-        
     }
 
     public Request ledModeRequest(LEDColors desiredColor) {
         return new Request() {
-
             @Override
             public void act() {
                 configLEDs(desiredColor);              
@@ -123,5 +133,20 @@ public class LEDs extends Subsystem {
     @Override
     public void stop() {
         configLEDs(disabledLEDColorsMode);
+    }
+
+    private class LEDBlink {
+        double onPeriod = 1.0;
+        double offPeriod = 1.0;
+
+        private Stopwatch stopwatch = new Stopwatch();
+        public LEDBlink(double onPeriod, double offPeriod) {
+            this.onPeriod = onPeriod;
+            this.offPeriod = offPeriod;
+        }
+        public LEDBlink() {
+        }
+
+
     }
 }

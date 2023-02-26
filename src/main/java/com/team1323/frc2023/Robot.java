@@ -10,6 +10,7 @@ import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeExecuter;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
 import com.team1323.frc2023.auto.modes.ThreeConesMode;
+import com.team1323.frc2023.auto.modes.ThreeMidConesMode;
 import com.team1323.frc2023.auto.modes.TwoConesAndRampMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
@@ -83,7 +84,7 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new ThreeConesMode(Quadrant.BOTTOM_LEFT);
+		AutoModeBase auto = new ThreeMidConesMode(Quadrant.BOTTOM_LEFT);
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}
@@ -100,6 +101,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		try {
+			SmartDashboard.putBoolean("Subsystems Coast Mode", false);
 			if (autoModeExecuter != null)
 				autoModeExecuter.stop();
 
@@ -113,6 +115,8 @@ public class Robot extends TimedRobot {
 			autoModeExecuter = new AutoModeExecuter();
 			autoModeExecuter.setAutoMode(smartDashboardInteractions.getSelectedAutoMode());
 			autoModeExecuter.start();
+
+
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
