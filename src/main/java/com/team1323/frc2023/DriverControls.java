@@ -487,6 +487,7 @@ public class DriverControls implements Loop {
         }
         if(coDriver.yButton.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
+            
         }
         if (coDriver.xButton.wasActivated()) {
             s.request(new SequentialRequest(

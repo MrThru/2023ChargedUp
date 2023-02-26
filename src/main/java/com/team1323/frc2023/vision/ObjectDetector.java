@@ -24,10 +24,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 /** Add your docs here. */
 public class ObjectDetector {
     private GridTracker gridTracker;
+    private GoalTracker groundTracker;
+
 
     public ObjectDetector() {
         gridTracker = new GridTracker();
-
+        groundTracker = new GoalTracker();
     }
 
     public void addDetectedObjects() {
@@ -43,7 +45,6 @@ public class ObjectDetector {
         private double tx = 0;
         private double ty = 0;
 
-        private GoalTracker groundTracker;
 
         public DetectedObject(String clasString, double confidence, double[] cornerPoints,
                     double tx, double ty) {
@@ -53,7 +54,6 @@ public class ObjectDetector {
             this.tx = tx;
             this.ty = ty;
 
-            groundTracker = new GoalTracker();
         }
     }
 
@@ -76,6 +76,7 @@ public class ObjectDetector {
                         .getRetroTargetPosition(targetInfo, detectedGameObject.getHeight(), swervePose).toVector3d()
                         .add(new Vector3d(0, 0, detectedGameObject.height/2));
         Translation2d robotRelativePosition = objectFieldPosition.toTranslation().translateBy(swervePose.getTranslation());
+        ray.scale(robotRelativePosition.norm());
         detectedGameObject.setPosition(objectFieldPosition);
     }
 
