@@ -580,7 +580,7 @@ public class Swerve extends Subsystem{
 	}
 
 	public boolean areModulesStuck() {
-		final double modulePositionTolerance = 1;
+		final double modulePositionTolerance = 2;
 		boolean stuck = true;
 		for(SwerveModule m : modules) {
 			stuck &= Math.abs(m.getAverageDrivePosition() - m.getDriveDistanceInches()) < modulePositionTolerance;;			

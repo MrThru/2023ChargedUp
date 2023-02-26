@@ -5,6 +5,7 @@ import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
+import com.team1323.frc2023.subsystems.requests.EmptyRequest;
 import com.team1323.frc2023.subsystems.requests.LambdaRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
@@ -177,20 +178,21 @@ public class SuperstructureCoordinator {
         );
     }
 
-    public Request getFullStowChoreography() {
+    public Request getFullStowChoreography(boolean zeroHorizontalElevator) {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             0.25,
             170.0,
             -146.0
         );
+        Request zeroingRequest = zeroHorizontalElevator ?
+                new LambdaRequest(() -> horizontalElevator.startCurrentZeroing()) :
+                new EmptyRequest();
 
         return new SequentialRequest(
             getStowChoreography(finalPosition),
-            new LambdaRequest(() -> {
-                horizontalElevator.startCurrentZeroing();
-            }
-        ));
+            zeroingRequest
+        );
     }
 
     public Request getConeStowChoreography() {
@@ -278,7 +280,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.25, //0.875
             0.25, //0.25  230.26
-            -50.76, //-55
+            -55.76, //-50.76
             85.26 //90 38.6 35
         );
 

@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class TrajectoryGenerator {
     private static final double kMaxVelocity = 120.0;
     private static final double kMaxAccel = 120.0; 
-    private static final double kMaxDecel = 72.0;
+    private static final double kMaxDecel = 120.0;
     private static final double kMaxVoltage = 9.0;
     
     private static TrajectoryGenerator mInstance = new TrajectoryGenerator();
@@ -87,7 +87,7 @@ public class TrajectoryGenerator {
     private Pose2d communitySweepEndPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345 + 6.0, 174.19 + 22.0), Rotation2d.fromDegrees(90.0));
 
     private Pose2d secondConePickupPose = new Pose2d(new Translation2d(269.5, 30.5), Rotation2d.fromDegrees(20))
-        .transformBy(Pose2d.fromTranslation(new Translation2d(0.0, 0.0)));
+        .transformBy(Pose2d.fromTranslation(new Translation2d(0.0, -12.0)));
     private Pose2d thirdConePickupPose = new Pose2d(new Translation2d(278.0, 84.5), Rotation2d.fromDegrees(45));
     
     public class TrajectorySet {
@@ -124,6 +124,9 @@ public class TrajectoryGenerator {
         
         // Auto Paths
         public final MirroredTrajectory secondPiecePickupPath;
+        public final MirroredTrajectory secondPieceToEdgeColumn;
+        public final MirroredTrajectory edgeColumnToThirdPiece;
+        public final MirroredTrajectory thirdPieceToSecondConeColumn;
         public final MirroredTrajectory secondConeHighScorePath;
         public final MirroredTrajectory secondPieceToAprilTag;
         public final MirroredTrajectory secondConeScoreToThirdConePickup;
@@ -142,6 +145,9 @@ public class TrajectoryGenerator {
 
             // Auto Paths
             secondPiecePickupPath = new MirroredTrajectory(getSecondPiecePickupPath());
+            secondPieceToEdgeColumn = new MirroredTrajectory(getSecondPieceToEdgeColumn());
+            edgeColumnToThirdPiece = new MirroredTrajectory(getEdgeColumnToThirdPiece());
+            thirdPieceToSecondConeColumn = new MirroredTrajectory(getThirdPieceToSecondConeColumn());
             secondConeHighScorePath = new MirroredTrajectory(getSecondConeHighScorePath());
             secondPieceToAprilTag = new MirroredTrajectory(getSecondPieceToAprilTagPath());
             secondConeScoreToThirdConePickup = new MirroredTrajectory(getSecondScoreToThirdConePickupPath());
@@ -179,6 +185,32 @@ public class TrajectoryGenerator {
             waypoints.add(secondConePickupPose);
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPieceToEdgeColumn() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(secondConePickupPose.getTranslation(), Rotation2d.fromDegrees(-160)));
+            waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(-160)));
+            
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getEdgeColumnToThirdPiece(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(20)));
+            waypoints.add(new Pose2d(new Translation2d(152.57, 24.28), Rotation2d.fromDegrees(0)));
+            waypoints.add(thirdConePickupPose);
+            
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToSecondConeColumn(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(-135)));
+            waypoints.add(new Pose2d(new Translation2d(152.57, 24.28), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(71.0, 64.0), Rotation2d.fromDegrees(140)));
+            
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondConeHighScorePath() {

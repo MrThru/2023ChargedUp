@@ -1,5 +1,6 @@
 package com.team1323.frc2023.loops;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,7 +13,7 @@ import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Fiducial;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Retro;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
-import com.team1323.frc2023.vision.GoalTrack;
+import com.team1323.frc2023.vision.GoalTracker;
 import com.team1323.frc2023.vision.TargetInfo;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.math.Units;
@@ -62,7 +63,7 @@ public class LimelightProcessor implements Loop {
 	private static final double kHighConePoleHeight = 43.875;
 	private static final double kConeHeight = 7.5;
 
-	private final GoalTrack coneGoalTrack = GoalTrack.makeNewTrack(0.0, Translation2d.identity(), 0);
+	private final GoalTracker coneGoalTracker = new GoalTracker();
 
 	private double previousHeartbeat = -1.0;
 	
@@ -164,6 +165,7 @@ public class LimelightProcessor implements Loop {
 
 	private void handleDetectorTargets(LimelightResults results, double timestamp) {
 		if (results.targetingResults.targets_Detector.length == 0) {
+			coneGoalTracker.update(timestamp, new ArrayList<>());
 			return;
 		}
 
@@ -175,11 +177,21 @@ public class LimelightProcessor implements Loop {
 				GridTracker.getInstance().addDetectedObject(results.targetingResults.targets_Detector[i]);
 			}*/
 
-			TargetInfo targetInfo = new TargetInfo(Rotation2d.fromDegrees(-LimelightHelpers.getTX(kLimelightName)).tan(), 
-					Rotation2d.fromDegrees(LimelightHelpers.getTY(kLimelightName)).tan());
-			Translation2d conePosition = getRetroTargetPosition(targetInfo, kConeHeight, robotPose);
-			coneGoalTrack.forceUpdate(timestamp, conePosition);
-			SmartDashboard.putNumberArray("Cone Position", new double[]{conePosition.x(), conePosition.y()});
+			List<Translation2d> targetPositions = Arrays.stream(results.targetingResults.targets_Detector)
+					.map(target -> {
+						TargetInfo targetInfo = new TargetInfo(Rotation2d.fromDegrees(-target.tx).tan(), 
+								Rotation2d.fromDegrees(target.ty).tan());
+						Translation2d targetPosition = getRetroTargetPosition(targetInfo, kConeHeight, robotPose);
+
+						return targetPosition;
+					})
+					.toList();
+			coneGoalTracker.update(timestamp, targetPositions);
+
+			List<Translation2d> goalTrackerPositions = coneGoalTracker.getTracks().stream()
+						.map(report -> report.field_to_goal)
+						.toList();
+			SmartDashboard.putString("Cone Positions", goalTrackerPositions.toString());
 		}
 	}
 
@@ -280,19 +292,26 @@ public class LimelightProcessor implements Loop {
 		return coneLeftRightOffset;
 	}
 
-	public Translation2d getConePosition() {
-		coneGoalTrack.emptyUpdate();
-		Translation2d conePosition = coneGoalTrack.getSmoothedPosition();
-
-		if (conePosition == null) {
-			return new Translation2d();
+	public Translation2d getNearestConePosition(Translation2d trueFieldPosition) {
+		List<Translation2d> conePositions = coneGoalTracker.getTracks().stream()
+				.map(report -> report.field_to_goal)
+				.toList();
+		if (conePositions.isEmpty()) {
+			return Translation2d.identity();
 		}
 
-		return conePosition;
+		Comparator<Translation2d> distanceComparator = (t1, t2) -> {
+			double distance1 = t1.distance(trueFieldPosition);
+			double distance2 = t2.distance(trueFieldPosition);
+
+			return Double.compare(distance1, distance2);
+		};
+
+		return Collections.min(conePositions, distanceComparator);
 	}
 
-	public Pose2d getRobotConePickupPosition() {
-		Translation2d conePosition = LimelightProcessor.getInstance().getConePosition();
+	public Pose2d getRobotConePickupPosition(Translation2d trueConePosition) {
+		Translation2d conePosition = getNearestConePosition(trueConePosition);
         Pose2d intakingPose = Pose2d.identity();    
 		if (!conePosition.equals(Translation2d.identity())) {
 			intakingPose = new Pose2d(conePosition, Swerve.getInstance().getPose().getRotation())

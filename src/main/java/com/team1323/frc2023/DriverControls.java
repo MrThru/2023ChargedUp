@@ -328,7 +328,7 @@ public class DriverControls implements Loop {
         } else if(coDriver.bButton.longReleased()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
                 s.request(new ParallelRequest(
-                    SuperstructureCoordinator.getInstance().getFullStowChoreography(),
+                    SuperstructureCoordinator.getInstance().getFullStowChoreography(true),
                     claw.stateRequest(Claw.ControlState.OFF)
                 ));
             }else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube && claw.getState() == Claw.ControlState.CUBE_INTAKE) {
@@ -482,7 +482,7 @@ public class DriverControls implements Loop {
             } else if(claw.getState() == Claw.ControlState.CUBE_INTAKE) {
                 s.request(SuperstructureCoordinator.getInstance().getCubeStowChoreography());
             } else {
-                s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography());
+                s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography(true));
             }
         }
         if(coDriver.yButton.wasActivated()) {
@@ -606,7 +606,7 @@ public class DriverControls implements Loop {
         } else if (testController.POV90.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getCubeIntakeChoreography());
         } else if (testController.POV180.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography(true));
         } else if (testController.POV270.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
         }

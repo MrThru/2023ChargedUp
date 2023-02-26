@@ -18,7 +18,7 @@ public class WaitToEjectObjectAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return claw.getCurrentHoldingObject() == Claw.HoldingObject.None || stopwatch.getTime() > 2.0;
+        return claw.getCurrentHoldingObject() == Claw.HoldingObject.None || stopwatch.getTime() > 5.0;
     }
 
     @Override

@@ -60,7 +60,7 @@ public class TwoConesAndRampMode extends AutoModeBase {
         runAction(new WaitToPassXCoordinateAction(154.0, quadrant));
         Superstructure.getInstance().coneIntakeWithoutScanSequence();
         runAction(new WaitToPassXCoordinateAction(185.0, quadrant));
-        Pose2d coneIntakingPosition = LimelightProcessor.getInstance().getRobotConePickupPosition();
+        Pose2d coneIntakingPosition = LimelightProcessor.getInstance().getRobotConePickupPosition(AutoZones.mirror(Constants.kFirstPickupConePosition, quadrant));
         if(!coneIntakingPosition.equals(Pose2d.identity())) {
             Swerve.getInstance().startVisionPID(coneIntakingPosition, coneIntakingPosition.getRotation(), false);
             runAction(new WaitToIntakeAction(Claw.HoldingObject.Cone));

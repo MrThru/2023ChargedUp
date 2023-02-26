@@ -40,6 +40,9 @@ public class Constants {
     public static final Pose2d kRobotStartingPose = Pose2d.identity();
     public static final Pose2d kAutoStartingPose = new Pose2d(new Translation2d(71, 20), Rotation2d.fromDegrees(180));
 
+    public static final Translation2d kFirstPickupConePosition = new Translation2d(277.7, 38.25);
+    public static final Translation2d kSecondPickupConePosition = new Translation2d(277.7, 85.25);
+
     /**
     * Target Specifications
     */
@@ -71,7 +74,7 @@ public class Constants {
     public static final Vector3d kLimelightFieldOrigin = new Vector3d(8.270875, 4.00685, 0.0);
     
     //Goal tracker constants
-    public static final double kMaxGoalTrackAge = 0.5;
+    public static final double kMaxGoalTrackAge = 1.0;
     public static final double kMaxTrackerDistance = 18.0;
     public static final double kCameraFrameRate = 90.0;
     public static final double kTrackStabilityWeight = 1.0;
@@ -103,10 +106,10 @@ public class Constants {
     * Enter angle read by the absolute encoder. Insert as degrees and subtract or add 90° to the value
     * based on where the bevel ended up.
     */
-    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 105.533283;
-    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 106.175118;
-    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 5.3 : 274.0;
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 212.974817;
+    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 327.384728;
+    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 128.228223;
+    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 5.3 : 228.909876;
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 216.865976;
     
     //Swerve Module Positions (relative to the center of the drive base)
     public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
@@ -294,7 +297,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            344.091797, 
+            342.75, 
             174.0, 
             -95.0,
             185.0
