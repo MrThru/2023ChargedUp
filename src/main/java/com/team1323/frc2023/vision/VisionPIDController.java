@@ -21,6 +21,7 @@ import com.team254.lib.trajectory.TrajectoryGenerator.TrajectorySet.MirroredTraj
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class VisionPIDController {
@@ -59,7 +60,7 @@ public class VisionPIDController {
     private boolean useRetroTarget = false;
 
     public void start(Pose2d currentPose, Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, boolean useRetroTarget) {
-        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+        //LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         lateralPID.setSetpoint(0.0);
         forwardPID.setSetpoint(0.0);
         targetPosition = desiredFieldPose.getTranslation();
@@ -216,6 +217,7 @@ public class VisionPIDController {
 
         if (runtimeStopwatch.getTime() > 0.5 && Swerve.getInstance().areModulesStuck()) {
             finish();
+            DriverStation.reportError("Vision PID ended due to stuck modules", false);
             return Pose2d.fromRotation(targetHeading);
         }
 

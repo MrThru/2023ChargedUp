@@ -580,10 +580,10 @@ public class Swerve extends Subsystem{
 	}
 
 	public boolean areModulesStuck() {
-		final double modulePositionTolerance = 2;
+		final double velocityRatioThreshold = 0.75;
 		boolean stuck = true;
 		for(SwerveModule m : modules) {
-			stuck &= Math.abs(m.getAverageDrivePosition() - m.getDriveDistanceInches()) < modulePositionTolerance;;			
+			stuck &= m.getActualVelocityToTargetVelocityRatio() < velocityRatioThreshold;			
 		}
 		return stuck;
 	}

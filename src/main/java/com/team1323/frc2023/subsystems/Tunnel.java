@@ -228,6 +228,10 @@ public class Tunnel extends Subsystem {
                         cubeEjected = true;
                     } else if(!allowSingleIntakeMode()) {
                         setRollerSpeeds(0.25, 1.0);
+                        if(getCubeIntakeBanner()) {
+                            setTunnelEntranceSpeed(0.65);
+                            cubeIntake.setIntakeSpeed(0.5);
+                        }
                     }
 
                     break;

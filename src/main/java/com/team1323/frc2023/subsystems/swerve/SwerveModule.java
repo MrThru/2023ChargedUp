@@ -263,6 +263,14 @@ public abstract class SwerveModule extends Subsystem {
 	public double getModuleVelocity() {
 		return encVelocityToInchesPerSecond(periodicIO.velocity);
 	}
+
+	public double getActualVelocityToTargetVelocityRatio() {
+		if (periodicIO.driveControlMode != ControlMode.Velocity || periodicIO.driveDemand == 0.0) {
+			return 1.0;
+		}
+
+		return periodicIO.velocity / periodicIO.driveDemand;
+	}
 	
 	@Override
 	public void outputTelemetry() {

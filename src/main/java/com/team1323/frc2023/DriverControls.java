@@ -376,7 +376,7 @@ public class DriverControls implements Loop {
         } else if(coDriver.leftTrigger.wasReleased()) {
             //s.postCubeIntakeState();
             if(tunnel.getFrontBanner() && tunnel.getRearBanner()) {
-                verticalElevator.setPosition(0.75);
+                verticalElevator.setPosition(0.5);
                 cubeIntake.conformToState(CubeIntake.State.FLOOR);
                 tunnel.setTunnelEntranceSpeed(0);
             } else {

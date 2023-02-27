@@ -250,7 +250,7 @@ public class Constants {
         public static final double kExtensionTolerance = 1.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 3.0;
+        public static final double kAccelerationScalar = 1.0; //3.0
 
         public static final double kSupplyLimit = 40.0;
 

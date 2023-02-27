@@ -142,10 +142,11 @@ public class SuperstructureCoordinator {
                 new ParallelRequest(
                     shoulder.angleRequest(90.0),
                     horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder),
-                    wrist.angleRequest(finalPosition.wristAngle),
-                    verticalElevator.heightRequest(kVerticalHeightForTopBarClearance)
-                            .withPrerequisites(() -> horizontalElevator.getPosition() < kHorizontalExtensionForGridClearance,
-                                    shoulder.anglePrerequisite(90.0))
+                    new ParallelRequest(
+                        verticalElevator.heightRequest(kVerticalHeightForTopBarClearance),
+                        wrist.angleRequest(finalPosition.wristAngle)
+                    ).withPrerequisites(() -> horizontalElevator.getPosition() < kHorizontalExtensionForGridClearance,
+                            shoulder.anglePrerequisite(90.0))
                 ),
                 new ParallelRequest(
                     shoulder.angleRequest(finalPosition.shoulderAngle),
@@ -189,10 +190,7 @@ public class SuperstructureCoordinator {
                 new LambdaRequest(() -> horizontalElevator.startCurrentZeroing()) :
                 new EmptyRequest();
 
-        return new SequentialRequest(
-            getStowChoreography(finalPosition),
-            zeroingRequest
-        );
+        return getStowChoreography(finalPosition);
     }
 
     public Request getConeStowChoreography() {
@@ -429,9 +427,9 @@ public class SuperstructureCoordinator {
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             16.0,
-            26.5,
+            25.0,
             34.75,
-            -4.75
+            10.25 //-4.75
         );
 
         return new SequentialRequest(
@@ -442,10 +440,10 @@ public class SuperstructureCoordinator {
 
     public Request getConeMidScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            0.5,
-            13.0,
+            3.0,
+            7.5,
             49.5,
-            -19.4
+            -4.4 //19.4
         );
 
         return getHighChoreography(finalPosition);

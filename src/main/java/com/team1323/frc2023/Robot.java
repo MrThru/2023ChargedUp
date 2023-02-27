@@ -12,6 +12,7 @@ import com.team1323.frc2023.auto.SmartDashboardInteractions;
 import com.team1323.frc2023.auto.modes.ThreeConesMode;
 import com.team1323.frc2023.auto.modes.ThreeMidConesMode;
 import com.team1323.frc2023.auto.modes.TwoConesAndRampMode;
+import com.team1323.frc2023.auto.modes.TwoConesOneCubeMidMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.loops.LimelightProcessor;
