@@ -30,6 +30,7 @@ import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.lib.util.InterpolatingDouble;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
@@ -128,6 +129,10 @@ public class Superstructure extends Subsystem {
 
 		@Override
 		public void onLoop(double timestamp) {
+			InterpolatingDouble elevatorHeight = new InterpolatingDouble(verticalElevator.getPosition());
+			InterpolatingDouble maxSwerveSpeed = Constants.kElevatorHeightToSwerveSpeedMap.getInterpolated(elevatorHeight);
+			swerve.setMaxSpeed(maxSwerveSpeed.value);
+
 			if(newRequest && activeRequest != null) {
 				activeRequest.act();
 				newRequest = false;
