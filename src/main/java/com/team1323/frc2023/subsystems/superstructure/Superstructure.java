@@ -548,8 +548,8 @@ public class Superstructure extends Subsystem {
 	public void coneHighScoreManual() {
 		request(new SequentialRequest(
 			coordinator.getConeHighScoringChoreography(),
-			claw.stateRequest(Claw.ControlState.CONE_OUTAKE),
-			waitRequest(0.5)
+			waitRequest(0.125),
+			claw.stateRequest(Claw.ControlState.CONE_OUTAKE)
 		));
 	}
 

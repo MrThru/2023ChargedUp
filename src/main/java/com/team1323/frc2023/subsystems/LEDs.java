@@ -112,7 +112,8 @@ public class LEDs extends Subsystem {
         } else if(selectedLEDType == LEDMode.BLINK_SOLID) {
             
         }
-       
+        //SmartDashboard.putString("LEDs Mode", getLEDType().toString());
+        
     }
 
   

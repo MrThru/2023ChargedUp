@@ -54,6 +54,7 @@ public class SuperstructureCoordinator {
 
     public static final double kCubeMidScoringHorizontalExtension = 16.5;
     public static final double kCubeHighScoringHorizontalExtension = 31.0;
+    public static final double kConeIntakingWristAngle = 85.26;
 
     private final VerticalElevator verticalElevator;
     private final HorizontalElevator horizontalElevator;
@@ -184,13 +185,19 @@ public class SuperstructureCoordinator {
             0.5,
             0.25,
             170.0,
-            -146.0
+            Constants.Wrist.kMinControlAngle
         );
         Request zeroingRequest = zeroHorizontalElevator ?
-                new LambdaRequest(() -> horizontalElevator.startCurrentZeroing()) :
+                new LambdaRequest(() -> {
+                    horizontalElevator.startCurrentZeroing();
+                    verticalElevator.startCurrentZeroing();
+                }) :
                 new EmptyRequest();
 
-        return getStowChoreography(finalPosition);
+        return new SequentialRequest(
+            getStowChoreography(finalPosition),
+            zeroingRequest
+        );
     }
 
     public Request getConeStowChoreography() {
@@ -279,7 +286,7 @@ public class SuperstructureCoordinator {
             0.25, //0.875
             0.25, //0.25  230.26
             -55.76, //-50.76
-            85.26 //90 38.6 35
+            kConeIntakingWristAngle //90 38.6 35
         );
 
         return getLowChoreography(finalPosition);
@@ -310,21 +317,23 @@ public class SuperstructureCoordinator {
                 (currentPosition.verticalHeight >= kVerticalHeightForStow || finalPosition.verticalHeight >= kVerticalHeightForStow)) {
             double clearanceHeight = finalPosition.verticalHeight > kVerticalHeightForStow ? 
                     kVerticalHeightForStow : kVerticalHeightForTopBarClearance;
+            double shoulderClearanceAngle = finalPosition.shoulderAngle <= 45.0 ? 45.0 : 90.0;
             System.out.println("Branch 1");
             return new SequentialRequest(
                 new ParallelRequest(
                     verticalElevator.heightRequest(clearanceHeight),
                     new ParallelRequest(
-                        shoulder.angleRequest(90.0),
+                        shoulder.angleRequest(shoulderClearanceAngle),
                         horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
                     ).withPrerequisite(() -> verticalElevator.getPosition() <= kVerticalHeightForStow || 
                             verticalElevator.isAtPosition(kVerticalHeightForStow))
                 ),
                 new ParallelRequest(
                     verticalElevator.heightRequest(finalPosition.verticalHeight),
+                    shoulder.angleRequest(finalPosition.shoulderAngle)
+                            .withPrerequisite(verticalElevator.willReachHeightWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds + 0.5)),
                     new ParallelRequest(
                         horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
-                        shoulder.angleRequest(finalPosition.shoulderAngle),
                         wrist.angleRequest(finalPosition.wristAngle)   
                     ).withPrerequisite(verticalElevator.willReachHeightWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds))
                 )
@@ -426,10 +435,10 @@ public class SuperstructureCoordinator {
 
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            16.0,
+            17.5,
             25.0,
             34.75,
-            10.25 //-4.75
+            -4.75 //-4.75
         );
 
         return new SequentialRequest(
@@ -440,10 +449,10 @@ public class SuperstructureCoordinator {
 
     public Request getConeMidScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            3.0,
-            7.5,
+            0.5,
+            11.5,
             49.5,
-            -4.4 //19.4
+            -14.4 //19.4
         );
 
         return getHighChoreography(finalPosition);

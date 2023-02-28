@@ -131,11 +131,11 @@ public class DriverControls implements Loop {
             driver.update();
 			coDriver.update();
             //singleController.update();
-            //testController.update();
+            testController.update();
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
-                twoControllerMode();;;; 
+                twoControllerMode();;;;
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }
@@ -394,10 +394,10 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.leftCenterClick.wasActivated() && coDriver.bButton.isBeingPressed()) {
-            wrist.setPosition(0);
+            wrist.setPosition(10);
             claw.conformToState(Claw.ControlState.OFF);
         } else if(coDriver.leftCenterClick.wasReleased() && coDriver.bButton.isBeingPressed()) {
-            wrist.setPosition(90);
+            wrist.setPosition(SuperstructureCoordinator.kConeIntakingWristAngle);
             claw.conformToState(Claw.ControlState.CONE_INTAKE);
         }
 
@@ -410,7 +410,7 @@ public class DriverControls implements Loop {
         }
 
         if (coDriver.backButton.wasActivated()) {
-            //verticalElevator.startCurrentZeroing();
+            verticalElevator.startCurrentZeroing();
             horizontalElevator.startCurrentZeroing();
             //shoulder.startCurrentZeroing();
             //wrist.startCurrentZeroing();
@@ -589,26 +589,29 @@ public class DriverControls implements Loop {
 
 
         if(testController.aButton.wasActivated()) {
-            horizontalElevator.setPosition(20.0);
+            //horizontalElevator.setPosition(20.0);
             //verticalElevator.setPosition(10.0);
+            wrist.setPosition(-90);
         }
         if(testController.bButton.wasActivated()) {
-            horizontalElevator.setPosition(0.5);
+            //horizontalElevator.setPosition(0.5);
             //verticalElevator.setPosition(0.5);
+            wrist.setPosition(0);
         }
         if(testController.yButton.wasActivated()) {
-            horizontalElevator.setPosition(30.0);
+            //horizontalElevator.setPosition(30.0);
             //verticalElevator.setPosition(19.0);
+            wrist.setPosition(90);
         }
 
         if (testController.POV0.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
         } else if (testController.POV90.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getCubeIntakeChoreography());
         } else if (testController.POV180.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography(true));
+            s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
         } else if (testController.POV270.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
         }
 
         // D-pad controls for vision PID

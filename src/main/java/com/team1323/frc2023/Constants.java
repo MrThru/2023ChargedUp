@@ -107,10 +107,10 @@ public class Constants {
     * Enter angle read by the absolute encoder. Insert as degrees and subtract or add 90° to the value
     * based on where the bevel ended up.
     */
-    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 327.384728;
-    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 128.228223;
-    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 5.3 : 228.909876;
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 216.865976;
+    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 329.475;
+    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 144.19;
+    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 5.3 : 225.0;
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 216.4;
     
     //Swerve Module Positions (relative to the center of the drive base)
     public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
@@ -125,8 +125,8 @@ public class Constants {
     static {
         kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(-1.0), new InterpolatingDouble(1.0));
         kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(1.0), new InterpolatingDouble(1.0));
-        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(VerticalElevator.kMaxControlHeight), new InterpolatingDouble(0.5));
-        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(VerticalElevator.kMaxControlHeight + 1.0), new InterpolatingDouble(0.5));
+        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(VerticalElevator.kMaxControlHeight), new InterpolatingDouble(0.3));
+        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(VerticalElevator.kMaxControlHeight + 1.0), new InterpolatingDouble(0.3));
     }
 
     
@@ -250,7 +250,7 @@ public class Constants {
         public static final double kExtensionTolerance = 1.0;
 
         public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 1.0; //3.0
+        public static final double kAccelerationScalar = 4.0; //3.0
 
         public static final double kSupplyLimit = 40.0;
 
@@ -317,8 +317,8 @@ public class Constants {
         public static final double kEncoderUnitsPerWristRotation = kMotorRotationsPerWristRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWristRotation / 360.0;
 
-        public static final double kMinControlAngle = -147.712908;
-        public static final double kMaxControlAngle = 133.666388;
+        public static final double kMinControlAngle = -144;
+        public static final double kMaxControlAngle = 134.6;
 
         public static final double kAngleTolerance = 10.0;
 
@@ -341,10 +341,10 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            54.140625, 
+            75.0, 
             0.0, 
-            -152, 
-            138
+            -149, 
+            139.6
         );
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(

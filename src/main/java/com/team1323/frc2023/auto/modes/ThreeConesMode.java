@@ -49,7 +49,7 @@ public class ThreeConesMode extends AutoModeBase {
 
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft, trajectories.secondPieceToEdgeColumn.topLeft,
+        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft, trajectories.secondPiecePickupPath.topLeft, trajectories.secondPieceToEdgeColumn.topLeft,
                 trajectories.edgeColumnToThirdPiece.topLeft, trajectories.thirdPieceToSecondConeColumn.topLeft);
     }
 
@@ -63,16 +63,18 @@ public class ThreeConesMode extends AutoModeBase {
         LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR);
         runAction(new WaitAction(0.5));
         startTime = Timer.getFPGATimestamp();
-        Superstructure.getInstance().coneMidScoreManual();
+        Superstructure.getInstance().coneHighScoreManual();
         runAction(new WaitForSuperstructureAction());
-        runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(20), 0.75, quadrant));
         runAction(new WaitToEjectObjectAction());
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
+        runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(10), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(130.0, quadrant));
+        Swerve.getInstance().setPathHeading(AutoZones.mirror(Rotation2d.fromDegrees(0), quadrant));
         Superstructure.getInstance().coneIntakeWithoutScanSequence();
-        runAction(new WaitToPassXCoordinateAction(220.0, quadrant));
+        runAction(new WaitToPassXCoordinateAction(207.0, quadrant));
         Pose2d coneIntakingPosition = LimelightProcessor.getInstance().getRobotConePickupPosition(AutoZones.mirror(Constants.kFirstPickupConePosition, quadrant));
         if(!coneIntakingPosition.equals(Pose2d.identity())) {
+            coneIntakingPosition = coneIntakingPosition.transformBy(Pose2d.fromTranslation(new Translation2d(0, 3)));
             Swerve.getInstance().startVisionPID(coneIntakingPosition, coneIntakingPosition.getRotation(), false,
                     new SynchronousPIDF(0.07, 0.0, 0.0),
                     new SynchronousPIDF(0.02, 0.0, 0.0),
@@ -86,10 +88,10 @@ public class ThreeConesMode extends AutoModeBase {
         } else {
             runAction(new WaitToFinishPathAction());
         }
-        runAction(new SetTrajectoryAction(trajectories.secondPieceToEdgeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.secondPieceToEdgeColumn, Rotation2d.fromDegrees(170), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(110, quadrant));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
-            NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.TOP, Column.LEFT), quadrant);
+            NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.LEFT), quadrant);
             Superstructure.getInstance().scoringSequence(nodeLocation);
             runAction(new WaitToEjectObjectAction());
         } else {
@@ -105,6 +107,7 @@ public class ThreeConesMode extends AutoModeBase {
         runAction(new WaitToPassXCoordinateAction(220.0, quadrant));
         coneIntakingPosition = LimelightProcessor.getInstance().getRobotConePickupPosition(AutoZones.mirror(Constants.kSecondPickupConePosition, quadrant));
         if(!coneIntakingPosition.equals(Pose2d.identity())) {
+            coneIntakingPosition = coneIntakingPosition.transformBy(Pose2d.fromTranslation(new Translation2d(0, 3)));
             Swerve.getInstance().startVisionPID(coneIntakingPosition, coneIntakingPosition.getRotation(), false,
                     new SynchronousPIDF(0.07, 0.0, 0.0),
                     new SynchronousPIDF(0.02, 0.0, 0.0),
@@ -123,7 +126,7 @@ public class ThreeConesMode extends AutoModeBase {
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
             NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.RIGHT), quadrant);
             Superstructure.getInstance().scoringSequence(nodeLocation);
-            runAction(new WaitForSuperstructureAction());
+            runAction(new WaitToEjectObjectAction());
         } else {
             runAction(new WaitToFinishPathAction());
         }

@@ -50,9 +50,9 @@ public class ThreeMidConesMode extends AutoModeBase {
     
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft,trajectories.secondPiecePickupPath.topLeft,
-                    trajectories.secondConeHighScorePath.topLeft, trajectories.secondConeScoreToThirdConePickup.topLeft, 
-                    trajectories.thirdPiecePickupToThirdPole.topLeft);
+        return Arrays.asList(trajectories.secondPiecePickupPath.bottomLeft,trajectories.secondPiecePickupPath.bottomLeft,
+                    trajectories.secondConeHighScorePath.bottomLeft, trajectories.secondConeScoreToThirdConePickup.bottomLeft, 
+                    trajectories.thirdPiecePickupToThirdPole.bottomLeft);
     }
 
     public ThreeMidConesMode(Quadrant quadrant) {
@@ -130,20 +130,15 @@ public class ThreeMidConesMode extends AutoModeBase {
         }        
         runAction(new SetTrajectoryAction(trajectories.thirdPiecePickupToThirdPole, Rotation2d.fromDegrees(180), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(150, quadrant));
-        runAction(new WaitToPassYCoordinateAction(66, quadrant));
+        runAction(new WaitToPassYCoordinateAction(76, quadrant));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
             LimelightProcessor.getInstance().setPipeline(Pipeline.RETRO);
-            Pose2d swervePose = Swerve.getInstance().getPose();
-            Pose2d leftScoringPose = ScoringPoses.getLeftScoringPose(swervePose);
-            Pose2d rightScoringPose = ScoringPoses.getRightScoringPose(swervePose);
-            Pose2d closestScoringPose = rightScoringPose;
-            if(leftScoringPose.getTranslation().distance(swervePose.getTranslation()) < rightScoringPose.getTranslation().distance(swervePose.getTranslation())) {
-                closestScoringPose = leftScoringPose;
-            }
-            Superstructure.getInstance().coneMidScoringSequence(closestScoringPose);
+            NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.CENTER, Row.MIDDLE, Column.LEFT), quadrant);
+            Superstructure.getInstance().scoringSequence(nodeLocation);
             runAction(new WaitToEjectObjectAction());
         } else {
             runAction(new WaitToFinishPathAction());
+            Superstructure.getInstance().objectAwareStowSequence();
         }
         
         System.out.println(String.format("Auto Finished in %f", currentTime()));        
