@@ -112,8 +112,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     private void updateArbitraryFeedForward() {
-        periodicIO.arbitraryFeedForward = (Math.cos(Math.toRadians(getPosition())) * Constants.CubeIntake.kArbitraryFeedForward) +
-                    Math.abs(Math.cos(Swerve.getInstance().getHeading().getRadians()) * 0.02);
+        periodicIO.arbitraryFeedForward = (Math.cos(Math.toRadians(getPosition())) * Constants.CubeIntake.kArbitraryFeedForward);
     }
 
     private Loop loop = new Loop() {

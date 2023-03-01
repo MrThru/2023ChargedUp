@@ -27,6 +27,7 @@ import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.LEDs.LEDColors;
+import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
@@ -121,6 +122,7 @@ public class DriverControls implements Loop {
         swerve.setDriveNeutralMode(NeutralMode.Brake);
         cubeIntake.lockPosition();
         leds.configLEDs(LEDColors.TWINKLE);
+        Pigeon2IMU.getInstance().resetRoll();
     }
 
     @Override
@@ -131,7 +133,7 @@ public class DriverControls implements Loop {
             driver.update();
 			coDriver.update();
             //singleController.update();
-            testController.update();
+            //testController.update();
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
@@ -186,9 +188,10 @@ public class DriverControls implements Loop {
 
         if(driver.rightTrigger.wasActivated()) {
             //s.shuttleIntakeSequence();
-            Pose2d kShuttleIntakePosition = (AllianceChooser.getAlliance() == Alliance.Blue) ? new Pose2d(new Translation2d(554.34, 287.25), Rotation2d.fromDegrees(90)) :
+            /*Pose2d kShuttleIntakePosition = (AllianceChooser.getAlliance() == Alliance.Blue) ? new Pose2d(new Translation2d(554.34, 287.25), Rotation2d.fromDegrees(90)) :
                             new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0));
-            swerve.startVisionPID(kShuttleIntakePosition, kShuttleIntakePosition.getRotation(), false);
+            swerve.startVisionPID(kShuttleIntakePosition, kShuttleIntakePosition.getRotation(), false);*/
+            swerve.startBalancePID();
         }
             
         if (driver.backButton.wasActivated()) {

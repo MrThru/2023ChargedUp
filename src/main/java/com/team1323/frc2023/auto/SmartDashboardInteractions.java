@@ -5,6 +5,7 @@ import com.team1323.frc2023.auto.modes.ThreeConesMode;
 import com.team1323.frc2023.auto.modes.ThreeMidConesMode;
 import com.team1323.frc2023.auto.modes.TwoConesAndRampMode;
 import com.team1323.frc2023.auto.modes.TwoConesOneCubeMidMode;
+import com.team1323.frc2023.auto.modes.TwoPieceAndRampMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.field.AutoZones.StartingSide;
@@ -30,6 +31,7 @@ public class SmartDashboardInteractions {
         modeChooser.addOption(AutoOption.THREE_CONES.name, AutoOption.THREE_CONES);;
         modeChooser.addOption(AutoOption.THREE_MID_CONES.name, AutoOption.THREE_MID_CONES);
         modeChooser.addOption(AutoOption.TWO_CONES_ONE_CUBE.name, AutoOption.TWO_CONES_ONE_CUBE);
+        modeChooser.addOption(AutoOption.TWO_PIECE_RAMP.name, AutoOption.TWO_PIECE_RAMP);
 
         sideChooser = new SendableChooser<StartingSide>();
         sideChooser.setDefaultOption(DEFAULT_SIDE.toString(), DEFAULT_SIDE);
@@ -50,6 +52,11 @@ public class SmartDashboardInteractions {
 
     private StartingSide getSelectedStartingSide() {
         StartingSide selectedSide = (StartingSide) sideChooser.getSelected();
+
+        if (selectedSide == null) {
+            return DEFAULT_SIDE;
+        }
+
         return selectedSide;
     }
 
@@ -76,7 +83,7 @@ public class SmartDashboardInteractions {
 
     enum AutoOption{
         STAND_STILL("Stand Still"), TWO_CONES_AND_RAMP("Two Cones and Ramp"), THREE_CONES("Three Cones"),
-            THREE_MID_CONES("Three Mid Cones"), TWO_CONES_ONE_CUBE("Two Cones One Cube");
+            THREE_MID_CONES("Three Mid Cones"), TWO_CONES_ONE_CUBE("Two Cones One Cube"), TWO_PIECE_RAMP("Two Piece Ramp");
 
     	public final String name;
     	
@@ -97,6 +104,8 @@ public class SmartDashboardInteractions {
                 return new ThreeMidConesMode(quadrant);
             case TWO_CONES_ONE_CUBE:
                 return new TwoConesOneCubeMidMode(quadrant);
+            case TWO_PIECE_RAMP:
+                return new TwoPieceAndRampMode(quadrant);
             default:
                 System.out.println("ERROR: unexpected auto mode: " + option);
                 return new StandStillMode();

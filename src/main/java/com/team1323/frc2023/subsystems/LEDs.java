@@ -142,4 +142,20 @@ public class LEDs extends Subsystem {
     public void stop() {
         configLEDs(disabledLEDColorsMode);
     }
+
+    private class LEDBlink {
+        double onPeriod = 1.0;
+        double offPeriod = 1.0;
+
+        private Stopwatch stopwatch = new Stopwatch();
+
+        public LEDBlink(double onPeriod, double offPeriod) {
+            this.onPeriod = onPeriod;
+            this.offPeriod = offPeriod;
+        }
+
+        public LEDBlink() {
+        }
+
+    }
 }

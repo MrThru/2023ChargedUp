@@ -109,6 +109,8 @@ public class Swerve extends Subsystem{
 		}		
 		return false;
 	}
+
+	BalancePIDController balanceController = new BalancePIDController();
 	
 	//Name says it all
 	TrajectoryGenerator generator;
@@ -265,7 +267,7 @@ public class Swerve extends Subsystem{
 	//The swerve's various control states
 	public enum ControlState{
 		NEUTRAL, MANUAL, POSITION, ROTATION, DISABLED, VECTORIZED,
-		TRAJECTORY, VELOCITY, VISION_PID
+		TRAJECTORY, VELOCITY, VISION_PID, BALANCE_PID
 	}
 	private ControlState currentState = ControlState.NEUTRAL;
 	public ControlState getState(){
@@ -679,6 +681,14 @@ public class Swerve extends Subsystem{
 	public void addRetroObservation(Translation2d retroPosition, double timestamp) {
 		visionPID.addRetroObservation(retroPosition, timestamp);
 	}
+
+	public void startBalancePID() {
+		setState(ControlState.BALANCE_PID);
+		balanceController.start(Rotation2d.fromDegrees(0));
+	}
+	public boolean balancePIDOnTarget() {
+		return balanceController.isOnTarget();
+	}
 	
 	/****************************************************/
 	/* Vector Fields */
@@ -945,6 +955,16 @@ public class Swerve extends Subsystem{
 				setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, Util.deadBand(rotationCorrection*rotationScalar, 0.01), pose, false));
 			}
 			lastDriveVector = driveVector;
+			break;
+			case BALANCE_PID:
+				Translation2d balanceDriveVector = balanceController.update(pigeon.getRoll(), timestamp);
+				if(Util.epsilonEquals(balanceDriveVector.norm(), 0.0, Constants.kEpsilon)){
+					balanceDriveVector = lastDriveVector;
+					setVelocityDriveOutput(inverseKinematics.updateDriveVectors(balanceDriveVector, Util.deadBand(rotationCorrection*rotationScalar, 0.01), pose, true), 0.0);
+				}else{
+					setVelocityDriveOutput(inverseKinematics.updateDriveVectors(balanceDriveVector, Util.deadBand(rotationCorrection*rotationScalar, 0.01), pose, true));
+				}
+				lastDriveVector = balanceDriveVector;
 			break;
 			case VELOCITY:
 			break;
@@ -1216,7 +1236,7 @@ public class Swerve extends Subsystem{
 
 		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getDegrees());
 
-
+		SmartDashboard.putString("Swerve Last Drive Vector", lastDriveVector.toString());
 
 		if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
 			setDriveNeutralMode(NeutralMode.Coast);
@@ -1238,6 +1258,7 @@ public class Swerve extends Subsystem{
 			SmartDashboard.putString("Swerve State", currentState.toString());
 			SmartDashboard.putNumberArray("Pigeon YPR", pigeon.getYPR());
 			SmartDashboard.putNumber("Gyro Yaw", pigeon.getYaw().getDegrees());
+			SmartDashboard.putNumber("Gyro Pitch", pigeon.getRoll().getDegrees());
 
 			double swerveVelocity =  velocity.norm() / 12.0;
 			double currentTimestamp = Timer.getFPGATimestamp();

@@ -18,7 +18,7 @@ import com.team254.lib.trajectory.timing.TimingConstraint;
 import edu.wpi.first.wpilibj.Timer;
 
 public class TrajectoryGenerator {
-    private static final double kMaxVelocity = 48.0;
+    private static final double kMaxVelocity = 96.0;
     private static final double kMaxAccel = 120.0; 
     private static final double kMaxDecel = 120.0;
     private static final double kMaxVoltage = 9.0;
@@ -198,7 +198,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(10)));
             waypoints.add(secondConePickupPose);
             
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 2.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 120.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPieceToEdgeColumn() {
@@ -229,7 +229,7 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getCubeScoreToThirdPiece(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(new Translation2d(74.3125, 42.19), Rotation2d.fromDegrees(-10)));
-            waypoints.add(new Pose2d(new Translation2d(152.57, 30.28), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(152.57, 24.28), Rotation2d.fromDegrees(0)));
             waypoints.add(thirdConePickupPose);
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
@@ -238,7 +238,7 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToSecondConeColumn(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(-135)));
-            waypoints.add(new Pose2d(new Translation2d(152.57, 30.28), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(152.57, 34.28), Rotation2d.fromDegrees(180)));
             waypoints.add(new Pose2d(new Translation2d(71.0, 64.0), Rotation2d.fromDegrees(140)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
@@ -356,10 +356,10 @@ public class TrajectoryGenerator {
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToBridgePath(){
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(265.75, 73), Rotation2d.fromDegrees(180)));
-            waypoints.add(new Pose2d(new Translation2d(152.5, 85), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(135)));
+            waypoints.add(new Pose2d(new Translation2d(158.5, 108.19), Rotation2d.fromDegrees(180)));
             
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 48.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
     }
 }

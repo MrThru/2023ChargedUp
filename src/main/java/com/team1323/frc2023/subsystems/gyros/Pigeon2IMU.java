@@ -39,9 +39,13 @@ public class Pigeon2IMU extends Gyro {
         return Rotation2d.fromDegrees(pigeon.getPitch());
     }
 
+    private double rollOffset = 0;
+    public void resetRoll() {
+        rollOffset = getRoll().getDegrees();
+    }
     @Override
     public Rotation2d getRoll() {
-        return Rotation2d.fromDegrees(pigeon.getRoll());
+        return Rotation2d.fromDegrees(pigeon.getRoll() - rollOffset);
     }
     
     @Override
