@@ -50,8 +50,8 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
 
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft, trajectories.secondConeHighScorePath.topLeft,
-                    trajectories.secondConeScoreToThirdConePickup.topLeft, trajectories.thirdPieceToCubeScore.topLeft);
+        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft, trajectories.secondPieceToCubeScore.topLeft,
+                    trajectories.cubeScoreToThirdPiece.topLeft, trajectories.thirdPieceToSecondConeColumn.topLeft);
     }
     
     public TwoConesOneCubeMidMode(Quadrant quadrant) {
@@ -61,19 +61,40 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         runAction(new ResetPoseAction(Constants.kAutoStartingPose, quadrant));
-        LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR);
+        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         runAction(new WaitAction(0.5));
         startTime = Timer.getFPGATimestamp();
         Superstructure.getInstance().coneMidScoreManual();
         runAction(new WaitForSuperstructureAction());
-        runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(10), 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 0.75, quadrant));
         runAction(new WaitToEjectObjectAction());
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
-        runAction(new WaitToPassXCoordinateAction(130.0, quadrant));
-        Swerve.getInstance().setPathHeading(AutoZones.mirror(Rotation2d.fromDegrees(0), quadrant));
-        Superstructure.getInstance().coneIntakeWithoutScanSequence();
+
+        // Cube Intake
         runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
-        Pose2d coneIntakingPosition = LimelightProcessor.getInstance().getRobotConePickupPosition(AutoZones.mirror(Constants.kFirstPickupConePosition, quadrant));
+        Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
+        runAction(new WaitToIntakeCubeAction());
+        runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
+        Superstructure.getInstance().postIntakeState();
+        runAction(new WaitForSuperstructureAction());
+        Superstructure.getInstance().handOffCubeState();
+        runAction(new WaitToPassXCoordinateAction(110, quadrant));
+        runAction(new WaitToIntakeAction(HoldingObject.Cube));
+        if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
+            NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.CENTER), quadrant);
+            Superstructure.getInstance().scoringSequence(nodeLocation);
+            runAction(new WaitToEjectObjectAction());
+        } else {
+            runAction(new WaitToFinishPathAction());
+        }
+
+        // Cone Intake
+        LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR);
+        runAction(new SetTrajectoryAction(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
+        runAction(new WaitToPassXCoordinateAction(140.0, quadrant));
+        Superstructure.getInstance().coneIntakeWithoutScanSequence();
+        runAction(new WaitToPassXCoordinateAction(220.0, quadrant));
+        Pose2d coneIntakingPosition = LimelightProcessor.getInstance().getRobotConePickupPosition(AutoZones.mirror(Constants.kSecondPickupConePosition, quadrant));
         LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         if(!coneIntakingPosition.equals(Pose2d.identity())) {
             coneIntakingPosition = coneIntakingPosition.transformBy(Pose2d.fromTranslation(new Translation2d(0, 3)));
@@ -90,7 +111,7 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         } else {
             runAction(new WaitToFinishPathAction());
         }
-        runAction(new SetTrajectoryAction(trajectories.secondConeHighScorePath, Rotation2d.fromDegrees(170), 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.thirdPieceToSecondConeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(110, quadrant));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
             NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.RIGHT), quadrant);
@@ -101,27 +122,6 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
             Superstructure.getInstance().objectAwareStowSequence();
         }
 
-        // Cube Intake
-        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
-        runAction(new SetTrajectoryAction(trajectories.secondConeScoreToThirdConePickup, Rotation2d.fromDegrees(180), 0.75, quadrant));
-        runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
-        Swerve.getInstance().setPathHeading(AutoZones.mirror(Rotation2d.fromDegrees(-135), quadrant));
-        runAction(new WaitToPassXCoordinateAction(220.0, quadrant));
-        Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
-        runAction(new WaitToIntakeCubeAction());
-        runAction(new SetTrajectoryAction(trajectories.thirdPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
-        Superstructure.getInstance().postIntakeState();
-        runAction(new WaitForSuperstructureAction());
-        Superstructure.getInstance().handOffCubeState();
-        runAction(new WaitToPassXCoordinateAction(110, quadrant));
-        runAction(new WaitToIntakeAction(HoldingObject.Cube));
-        if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
-            NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.CENTER), quadrant);
-            Superstructure.getInstance().scoringSequence(nodeLocation);
-            runAction(new WaitToEjectObjectAction());
-        } else {
-            runAction(new WaitToFinishPathAction());
-        }
         System.out.println("Auto Done in: " + currentTime());
     }
 
