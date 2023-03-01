@@ -20,7 +20,6 @@ import com.team1323.lib.util.Stopwatch;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 /** Add your docs here. */
 public class LEDs extends Subsystem {
     CANdle candle;
@@ -28,10 +27,11 @@ public class LEDs extends Subsystem {
     public int mRed = 0;
     public int mGreen = 0;
     public int mBlue = 0;
-    
+
     private static LEDs instance = null;
+
     public static LEDs getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new LEDs();
         return instance;
     }
@@ -41,34 +41,40 @@ public class LEDs extends Subsystem {
         candle.configLEDType(LEDStripType.GRB);
         configLEDs(disabledLEDColorsMode);
     }
+
     public enum LEDMode {
         SOLID, BLINK_SOLID, RAINBOW, FIRE, TWINKLE, STROBE;
-        
-        LEDBlink blink = LEDs.getInstance().new LEDBlink();
-        public void setBlinkMode(LEDBlink blink) {
-            this.blink = blink;
-        }
+
     }
+
     private LEDMode selectedLEDType = LEDMode.SOLID;
+
     public LEDMode getLEDType() {
         return selectedLEDType;
     }
+
     private LEDColors selectedLEDColors = LEDColors.OFF;
+
     public LEDColors getSelectedLEDColors() {
         return selectedLEDColors;
     }
 
     public enum LEDColors {
-        OFF(0,0,0, LEDMode.SOLID), RED(255,0,0, LEDMode.SOLID), GREEN(0,255,0, LEDMode.SOLID), BLUE(0,0,255, LEDMode.SOLID),
-        DISABLED(255,0,0, LEDMode.SOLID), ENABLED(0,0,255, LEDMode.SOLID), ORANGE(255, 102, 0, LEDMode.SOLID), YELLOW(255, 255, 0, LEDMode.SOLID),
+        OFF(0, 0, 0, LEDMode.SOLID), RED(255, 0, 0, LEDMode.SOLID), GREEN(0, 255, 0, LEDMode.SOLID),
+        BLUE(0, 0, 255, LEDMode.SOLID),
+        DISABLED(255, 0, 0, LEDMode.SOLID), ENABLED(0, 0, 255, LEDMode.SOLID), ORANGE(255, 102, 0, LEDMode.SOLID),
+        YELLOW(255, 255, 0, LEDMode.SOLID),
         PURPLE(255, 0, 255, LEDMode.SOLID),
-        RAINBOW(0,0,0, LEDMode.RAINBOW), FIRE(0,0,0, LEDMode.FIRE), TWINKLE(0,0,0, LEDMode.TWINKLE), STROBE(0,0,0, LEDMode.STROBE),
-        REDFIRE(255,0,0, LEDMode.FIRE);
+        RAINBOW(0, 0, 0, LEDMode.RAINBOW), FIRE(0, 0, 0, LEDMode.FIRE), TWINKLE(0, 0, 0, LEDMode.TWINKLE),
+        STROBE(0, 0, 0, LEDMode.STROBE),
+        REDFIRE(255, 0, 0, LEDMode.FIRE);
+
         int r;
         int g;
         int b;
         LEDMode ledMode;
-        LEDColors(int r,int g,int b, LEDMode ledMode) {
+
+        LEDColors(int r, int g, int b, LEDMode ledMode) {
             this.r = r;
             this.g = g;
             this.b = b;
@@ -78,9 +84,11 @@ public class LEDs extends Subsystem {
 
     private LEDColors disabledLEDColorsMode = LEDColors.RAINBOW;
     private LEDColors currentLEDMode = LEDColors.OFF;
+
     public LEDColors getLEDMode() {
         return currentLEDMode;
     }
+
     public void configLEDs(LEDColors ledColors) {
         this.mRed = ledColors.r;
         this.mGreen = ledColors.g;
@@ -90,64 +98,48 @@ public class LEDs extends Subsystem {
     }
 
     public void setLEDsBlink(LEDColors ledColors) {
-        //this.
+        // this.
     }
-
 
     @Override
     public void writePeriodicOutputs() {
-        if(selectedLEDType == LEDMode.SOLID) {
+        if (selectedLEDType == LEDMode.SOLID) {
             candle.setLEDs(mRed, mGreen, mBlue);
-        } else if(selectedLEDType == LEDMode.RAINBOW) {
+        } else if (selectedLEDType == LEDMode.RAINBOW) {
             RainbowAnimation animation = new RainbowAnimation(0.25, 0.25, 1690);
             candle.animate(animation);
-        } else if(selectedLEDType == LEDMode.FIRE) {
+        } else if (selectedLEDType == LEDMode.FIRE) {
             FireAnimation fireAnimation = new FireAnimation(1, 1, 1690, 1, 0.25);
             candle.animate(fireAnimation);
-        } else if(selectedLEDType == LEDMode.TWINKLE) {
-            TwinkleAnimation twinkleAnimation = new TwinkleAnimation(255, 255, 255, 127, 0.25, 1690, TwinklePercent.Percent76);
+        } else if (selectedLEDType == LEDMode.TWINKLE) {
+            TwinkleAnimation twinkleAnimation = new TwinkleAnimation(255, 255, 255, 127, 0.25, 1690,
+                    TwinklePercent.Percent76);
             candle.animate(twinkleAnimation);
-        } else if(selectedLEDType == LEDMode.STROBE) {
+        } else if (selectedLEDType == LEDMode.STROBE) {
             candle.animate(new StrobeAnimation(100, 100, 100, 50, 0.25, 1690));
-        } else if(selectedLEDType == LEDMode.BLINK_SOLID) {
-            
+        } else if (selectedLEDType == LEDMode.BLINK_SOLID) {
+
         }
-        //SmartDashboard.putString("LEDs Mode", getLEDType().toString());
-        
+
     }
 
-  
     @Override
     public void outputTelemetry() {
+        SmartDashboard.putString("LEDs Mode", getLEDType().toString());
     }
 
     public Request ledModeRequest(LEDColors desiredColor) {
         return new Request() {
             @Override
             public void act() {
-                configLEDs(desiredColor);              
+                configLEDs(desiredColor);
             }
-            
+
         };
     }
-    
+
     @Override
     public void stop() {
         configLEDs(disabledLEDColorsMode);
-    }
-
-    private class LEDBlink {
-        double onPeriod = 1.0;
-        double offPeriod = 1.0;
-
-        private Stopwatch stopwatch = new Stopwatch();
-        public LEDBlink(double onPeriod, double offPeriod) {
-            this.onPeriod = onPeriod;
-            this.offPeriod = offPeriod;
-        }
-        public LEDBlink() {
-        }
-
-
     }
 }

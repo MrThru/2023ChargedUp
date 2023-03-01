@@ -112,14 +112,16 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     private void updateArbitraryFeedForward() {
-        periodicIO.arbitraryFeedForward = (Math.cos(Math.toRadians(getPosition())) * Constants.CubeIntake.kArbitraryFeedForward); /*+
-                    Math.cos(Swerve.getInstance().getHeading().getDegrees()) * 0.01;*/
+        periodicIO.arbitraryFeedForward = (Math.cos(Math.toRadians(getPosition())) * Constants.CubeIntake.kArbitraryFeedForward) +
+                    Math.abs(Math.cos(Swerve.getInstance().getHeading().getRadians()) * 0.02);
     }
 
     private Loop loop = new Loop() {
         @Override
         public void onStart(double timestamp) {
             updateArbitraryFeedForward();
+            setIntakeSpeed(0);
+
         }
 
         @Override
@@ -189,7 +191,6 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     @Override
     public void stop() {
         super.stop();
-        setIntakeSpeed(0);
     }
 
 }

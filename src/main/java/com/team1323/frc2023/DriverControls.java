@@ -303,7 +303,8 @@ public class DriverControls implements Loop {
             }
         } else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState();
-            tunnel.queueShutdown(true);
+            if(tunnel.isEmpty())
+                tunnel.setState(Tunnel.State.OFF);
         }
         SmartDashboard.putNumber("RB Pressed", (coDriver.rightBumper.isBeingPressed() ? 1 : 0));
 
@@ -402,6 +403,11 @@ public class DriverControls implements Loop {
 
         if(coDriver.POV180.wasActivated()) {
             claw.resetCurrentHolding();
+        }
+        if(coDriver.POV0.wasActivated()) {
+            cubeIntake.conformToState(CubeIntake.State.FLOOR);
+        } else if(coDriver.POV0.wasReleased()) {
+            cubeIntake.conformToState(CubeIntake.State.STOWED);
         }
 
         if(cubeIntake.getState() == CubeIntake.State.INTAKE) {
