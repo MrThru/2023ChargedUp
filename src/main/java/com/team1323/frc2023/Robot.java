@@ -85,7 +85,7 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new ThreeConesMode(Quadrant.BOTTOM_LEFT);
+		AutoModeBase auto = new TwoConesOneCubeMidMode(Quadrant.BOTTOM_LEFT);
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}

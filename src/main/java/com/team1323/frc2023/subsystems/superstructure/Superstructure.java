@@ -545,6 +545,12 @@ public class Superstructure extends Subsystem {
 				SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, false);
 	}
 
+	public void tripleCubeScoringSequence() {
+		request(new SequentialRequest(
+			
+		));
+	}
+
 	public void coneHighScoreManual() {
 		request(new SequentialRequest(
 			coordinator.getConeHighScoringChoreography(),

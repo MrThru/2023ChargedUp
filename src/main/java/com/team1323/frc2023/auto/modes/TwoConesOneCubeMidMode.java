@@ -12,8 +12,17 @@ import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeEndedException;
 import com.team1323.frc2023.auto.actions.ResetPoseAction;
 import com.team1323.frc2023.auto.actions.SetTrajectoryAction;
+import com.team1323.frc2023.auto.actions.WaitAction;
+import com.team1323.frc2023.auto.actions.WaitForSuperstructureAction;
+import com.team1323.frc2023.auto.actions.WaitToEjectObjectAction;
+import com.team1323.frc2023.auto.actions.WaitToPassXCoordinateAction;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
+import com.team1323.frc2023.loops.LimelightProcessor;
+import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
+import com.team1323.frc2023.subsystems.Tunnel;
+import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 
@@ -33,9 +42,16 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
     }
     @Override
     protected void routine() throws AutoModeEndedException {
-        super.startTime = Timer.getFPGATimestamp();
-        runAction(new ResetPoseAction(Constants.kAutoStartingPose));
-        // runAction(new SetTrajectoryAction());
+        runAction(new ResetPoseAction(Constants.kAutoStartingPose, quadrant));
+        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+        runAction(new WaitAction(0.5));
+        startTime = Timer.getFPGATimestamp();
+        Superstructure.getInstance().coneMidScoreManual();
+        runAction(new WaitForSuperstructureAction());
+        runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 0.5, quadrant));
+        runAction(new WaitToEjectObjectAction());
+        runAction(new WaitToPassXCoordinateAction(200, quadrant));
+        Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
     }
 
 }

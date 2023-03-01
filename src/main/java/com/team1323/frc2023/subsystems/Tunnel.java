@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Tunnel extends Subsystem {
     CubeIntake cubeIntake;
+    Claw claw;
 
     LazyPhoenix5TalonFX tunnelEntrance, conveyorTalon, frontRollerTalon;
     DigitalInput frontBanner, rearBanner;
@@ -40,6 +41,7 @@ public class Tunnel extends Subsystem {
 
     public Tunnel() {
         cubeIntake = CubeIntake.getInstance();
+        claw = Claw.getInstance();
 
         tunnelEntrance = TalonFXFactory.createRollerTalon(Ports.TUNNEL_ENTRANCE_TALON, Ports.CANBUS);
         conveyorTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS);
@@ -153,7 +155,9 @@ public class Tunnel extends Subsystem {
             switch(currentState) {
                 //ToDo: Send straight through to claw, if the claw is empty
                 case COMMUNITY:
-                    if(getFrontBanner() && getRearBanner()) {
+                    if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
+                        
+                    }else if(getFrontBanner() && getRearBanner()) {
                         if(getCubeIntakeBanner()) {
                             setState(State.OFF);
                             cubeIntake.setHoldMode();
