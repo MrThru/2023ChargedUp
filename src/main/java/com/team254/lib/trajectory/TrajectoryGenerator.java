@@ -127,6 +127,7 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory secondPieceToEdgeColumn;
         public final MirroredTrajectory edgeColumnToThirdPiece;
         public final MirroredTrajectory thirdPieceToSecondConeColumn;
+        public final MirroredTrajectory thirdPieceToCubeScore;
         public final MirroredTrajectory secondConeHighScorePath;
         public final MirroredTrajectory secondPieceToAprilTag;
         public final MirroredTrajectory secondConeScoreToThirdConePickup;
@@ -152,6 +153,7 @@ public class TrajectoryGenerator {
             secondPieceToEdgeColumn = new MirroredTrajectory(getSecondPieceToEdgeColumn());
             edgeColumnToThirdPiece = new MirroredTrajectory(getEdgeColumnToThirdPiece());
             thirdPieceToSecondConeColumn = new MirroredTrajectory(getThirdPieceToSecondConeColumn());
+            thirdPieceToCubeScore = new MirroredTrajectory(getThirdPieceToCubeScore());
             secondConeHighScorePath = new MirroredTrajectory(getSecondConeHighScorePath());
             secondPieceToAprilTag = new MirroredTrajectory(getSecondPieceToAprilTagPath());
             secondConeScoreToThirdConePickup = new MirroredTrajectory(getSecondScoreToThirdConePickupPath());
@@ -217,6 +219,15 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(-135)));
             waypoints.add(new Pose2d(new Translation2d(152.57, 24.28), Rotation2d.fromDegrees(180)));
             waypoints.add(new Pose2d(new Translation2d(71.0, 64.0), Rotation2d.fromDegrees(140)));
+            
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToCubeScore(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(-135)));
+            waypoints.add(new Pose2d(new Translation2d(152.57, 24.28), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(74.3125, 42.19), Rotation2d.fromDegrees(140)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
