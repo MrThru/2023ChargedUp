@@ -190,7 +190,6 @@ public class SuperstructureCoordinator {
         Request zeroingRequest = zeroHorizontalElevator ?
                 new LambdaRequest(() -> {
                     horizontalElevator.startCurrentZeroing();
-                    verticalElevator.startCurrentZeroing();
                 }) :
                 new EmptyRequest();
 
