@@ -103,7 +103,9 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
 
         // Cube Intake
         LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
-        runAction(new SetTrajectoryAction(trajectories.secondConeScoreToThirdConePickup, Rotation2d.fromDegrees(-135), 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.secondConeScoreToThirdConePickup, Rotation2d.fromDegrees(180), 0.75, quadrant));
+        runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
+        Swerve.getInstance().setPathHeading(AutoZones.mirror(Rotation2d.fromDegrees(-135), quadrant));
         runAction(new WaitToPassXCoordinateAction(220.0, quadrant));
         Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
         runAction(new WaitToIntakeCubeAction());

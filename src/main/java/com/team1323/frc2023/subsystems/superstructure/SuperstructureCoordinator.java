@@ -296,7 +296,7 @@ public class SuperstructureCoordinator {
             0.5,
             4.6875, //7.0
             -87.4,
-            93.0
+            98.0
         );
         
         return getLowChoreography(finalPosition);

@@ -61,7 +61,7 @@ public class Claw extends Subsystem {
     public HoldingObject getCurrentHoldingObject() {
         return currentHoldingObject;
     }
-    private void setCurrentHoldingObject(HoldingObject holdingObject) {
+    public void setCurrentHoldingObject(HoldingObject holdingObject) {
         currentHoldingObject = holdingObject;
     }
 
@@ -237,6 +237,7 @@ public class Claw extends Subsystem {
     }
     @Override
     public void stop() {
+        resetCurrentHolding();
         conformToState(ControlState.OFF);
     }
 

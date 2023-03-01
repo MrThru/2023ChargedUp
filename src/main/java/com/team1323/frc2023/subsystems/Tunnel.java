@@ -121,6 +121,9 @@ public class Tunnel extends Subsystem {
         return !(getFrontBanner() || getRearBanner() || getCubeIntakeBanner());
     }
 
+    public boolean isEmpty() {
+        return allowSingleIntakeMode();
+    }
     public double encUnitsToRPM(double encUnits) {
         return (encUnits * 600) / 2048.0;
     }
@@ -155,16 +158,19 @@ public class Tunnel extends Subsystem {
             switch(currentState) {
                 //ToDo: Send straight through to claw, if the claw is empty
                 case COMMUNITY:
-                    if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
-                        
-                    }else if(getFrontBanner() && getRearBanner()) {
+                    if(getFrontBanner() && getRearBanner()) {
                         if(getCubeIntakeBanner()) {
                             setState(State.OFF);
                             cubeIntake.setHoldMode();
                         }
                     } else if(getFrontBanner()) {
-                        setAllSpeeds(0);
-                        setTunnelEntranceSpeed(0.65);
+                        if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
+                            setConveyorSpeed(0.25);
+                            setRollerSpeed(0.25);
+                        } else {
+                            setAllSpeeds(0);
+                            setTunnelEntranceSpeed(0.65);
+                        }
                     } else {
                         setTunnelEntranceSpeed(0.65);
                         setRollerSpeeds(0.25, 1);
@@ -303,6 +309,19 @@ public class Tunnel extends Subsystem {
             @Override
             public void act() {
                 setState(desiredState);
+            }
+        };
+    }
+    public Request ejectOneRequest() {
+        return new Request() {
+            @Override
+            public void act() {
+                setState(State.EJECT_ONE);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return getState() == State.OFF;
             }
         };
     }

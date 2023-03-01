@@ -18,7 +18,7 @@ import com.team254.lib.trajectory.timing.TimingConstraint;
 import edu.wpi.first.wpilibj.Timer;
 
 public class TrajectoryGenerator {
-    private static final double kMaxVelocity = 120.0;
+    private static final double kMaxVelocity = 48.0;
     private static final double kMaxAccel = 120.0; 
     private static final double kMaxDecel = 120.0;
     private static final double kMaxVoltage = 9.0;
@@ -226,8 +226,8 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToCubeScore(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(-135)));
-            waypoints.add(new Pose2d(new Translation2d(152.57, 24.28), Rotation2d.fromDegrees(180)));
-            waypoints.add(new Pose2d(new Translation2d(74.3125, 42.19), Rotation2d.fromDegrees(140)));
+            waypoints.add(new Pose2d(new Translation2d(152.57, 30.28), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(74.3125, 42.19), Rotation2d.fromDegrees(160)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
@@ -252,7 +252,7 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondScoreToThirdConePickupPath(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(new Translation2d(71.0, 64.0), Rotation2d.fromDegrees(-45)));
-            waypoints.add(new Pose2d(new Translation2d(152.57, 22.28), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(152.57, 30.28), Rotation2d.fromDegrees(0)));
             waypoints.add(thirdConePickupPose);
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);

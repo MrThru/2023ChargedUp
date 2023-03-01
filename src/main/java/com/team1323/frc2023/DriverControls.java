@@ -368,13 +368,8 @@ public class DriverControls implements Loop {
                     SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
                     claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
                 ));
-                //verticalElevator.setPosition(2.0);
-                cubeIntake.conformToState(CubeIntake.State.INTAKE);
-                tunnel.setState(Tunnel.State.COMMUNITY);
             }
-            verticalElevator.setPosition(2.0);
             cubeIntake.conformToState(CubeIntake.State.INTAKE);
-            tunnel.setState(Tunnel.State.COMMUNITY);
             tunnel.setState(Tunnel.State.COMMUNITY);
             
         } else if(coDriver.leftTrigger.wasReleased()) {

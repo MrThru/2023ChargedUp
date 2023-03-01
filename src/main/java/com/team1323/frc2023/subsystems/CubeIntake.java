@@ -18,6 +18,7 @@ import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Netlink;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
+import com.team1323.frc2023.subsystems.swerve.Swerve;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -111,7 +112,8 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     private void updateArbitraryFeedForward() {
-        periodicIO.arbitraryFeedForward = Math.cos(Math.toRadians(getPosition())) * Constants.CubeIntake.kArbitraryFeedForward;
+        periodicIO.arbitraryFeedForward = (Math.cos(Math.toRadians(getPosition())) * Constants.CubeIntake.kArbitraryFeedForward); /*+
+                    Math.cos(Swerve.getInstance().getHeading().getDegrees()) * 0.01;*/
     }
 
     private Loop loop = new Loop() {
@@ -187,7 +189,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     @Override
     public void stop() {
         super.stop();
-
+        setIntakeSpeed(0);
     }
 
 }

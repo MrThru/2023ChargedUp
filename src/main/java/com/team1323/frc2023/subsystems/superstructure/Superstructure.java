@@ -277,6 +277,9 @@ public class Superstructure extends Subsystem {
 				verticalElevator.stop();
 				horizontalElevator.stop();
 				wrist.stop();
+				tunnel.stop();
+				cubeIntake.stop();
+				claw.stop();
 			})
 		));
 	}
@@ -427,7 +430,12 @@ public class Superstructure extends Subsystem {
 
 	private void cubeScoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo,
 			double horizontalExtension, boolean useTrajectory) {
-		request(new SequentialRequest(
+		request(getCubeScoringSequence(scoringPose, scoringChoreo, horizontalExtension, useTrajectory));
+	}
+
+	private Request getCubeScoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo,
+			double horizontalExtension, boolean useTrajectory) {
+		return new SequentialRequest(
 			new ParallelRequest(
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory),
 				choreographyRequest(scoringChoreo)
@@ -448,7 +456,7 @@ public class Superstructure extends Subsystem {
 			new LambdaRequest(() -> {
 				System.out.println("Superstructure Stowed");
 			})
-		));
+		);
 	}
 
 	private Request getSuperstructureScorePositions(ChoreographyProvider scoringChoreo, 
@@ -545,10 +553,48 @@ public class Superstructure extends Subsystem {
 				SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, false);
 	}
 
-	public void tripleCubeScoringSequence() {
-		request(new SequentialRequest(
-			
-		));
+
+	private Request tripleCubeIntake() {
+		if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+			return getHandOffCubeSequence();
+		} else {
+			return new EmptyRequest();
+		}
+	}
+	private Request tripleCubeTopScore() {
+		if(tunnel.isEmpty())
+			return new EmptyRequest();
+		return new SequentialRequest(
+			tripleCubeIntake(),
+			getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeHighScoringChoreography,
+					SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, false)
+		);
+	}
+	private Request tripleCubeMidScore() {
+		if(tunnel.isEmpty())
+			return new EmptyRequest();
+		return new SequentialRequest(
+			tripleCubeIntake(),
+			getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeMidScoringChoreography,
+					SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, false)
+		);
+	}
+	private Request tripleCubeLowScore() {
+		if(tunnel.isEmpty())
+			return new EmptyRequest();
+		return new SequentialRequest(
+			tunnel.ejectOneRequest()
+		);
+	}
+	public void tripleCubeScoringSequence(boolean scoreHigh, boolean scoreMid, boolean scoreLow) {
+		List<Request> cubeScoringRequests = Arrays.asList();
+		
+		if(scoreMid) {cubeScoringRequests.add(tripleCubeMidScore());}
+		if(scoreHigh) {cubeScoringRequests.add(tripleCubeTopScore());}
+		if(scoreLow) {cubeScoringRequests.add(tripleCubeLowScore());}
+		request(
+			new SequentialRequest(cubeScoringRequests)
+		);
 	}
 
 	public void coneHighScoreManual() {
