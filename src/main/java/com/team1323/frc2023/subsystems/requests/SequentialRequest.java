@@ -8,6 +8,7 @@
 package com.team1323.frc2023.subsystems.requests;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,6 +20,10 @@ public class SequentialRequest extends Request {
     private boolean startedCurrentRequest = false;
 
     public SequentialRequest(Request... requests) {
+        this(Arrays.asList(requests));
+    }
+
+    public SequentialRequest(List<Request> requests) {
         this.requests = new ArrayList<>();
         for (Request request : requests) {
             this.requests.add(request);
