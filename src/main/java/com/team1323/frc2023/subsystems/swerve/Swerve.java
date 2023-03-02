@@ -582,7 +582,7 @@ public class Swerve extends Subsystem{
 	}
 
 	public boolean areModulesStuck() {
-		final double velocityRatioThreshold = 0.75;
+		final double velocityRatioThreshold = 0.60;
 		boolean stuck = true;
 		for(SwerveModule m : modules) {
 			stuck &= m.getActualVelocityToTargetVelocityRatio() < velocityRatioThreshold;			

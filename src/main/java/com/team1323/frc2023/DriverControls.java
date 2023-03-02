@@ -77,7 +77,6 @@ public class DriverControls implements Loop {
     private Superstructure s;
 
     private final boolean oneControllerMode = false;
-        
     private boolean inAuto = true;
     public void setAutoMode(boolean auto) {
         inAuto = auto;
@@ -119,6 +118,7 @@ public class DriverControls implements Loop {
         if(inAuto) {
             swerve.requireModuleConfiguration();
         }
+        SmartDashboard.putBoolean("Subsystems Coast Mode", false);
         swerve.setDriveNeutralMode(NeutralMode.Brake);
         cubeIntake.lockPosition();
         leds.configLEDs(LEDColors.TWINKLE);
@@ -144,6 +144,9 @@ public class DriverControls implements Loop {
 
     @Override
     public void onStop(double timestamp) {
+        if(!inAuto) {
+            SmartDashboard.putBoolean("Subsystems Coast Mode", true);
+        }
         subsystems.stop();
     }
 
@@ -166,9 +169,7 @@ public class DriverControls implements Loop {
         else if (driver.yButton.wasActivated())
             swerve.rotate(Rotation2d.fromDegrees(0));
         
-        if(driver.leftBumper.wasActivated()) {
-            swerve.rotate(Rotation2d.fromDegrees(151.0));
-        }
+        
         /*if (driver.rightTrigger.wasActivated()) {
             NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
             Pose2d scoringPose = ScoringPoses.getScoringPose(dashboardNodeLocation);
@@ -239,11 +240,10 @@ public class DriverControls implements Loop {
         }
 
         if(driver.rightBumper.wasActivated()) {
-            if(LEDs.getInstance().getLEDMode() == LEDColors.PURPLE) {
-                LEDs.getInstance().configLEDs(LEDColors.YELLOW);
-            } else {
-                LEDs.getInstance().configLEDs(LEDColors.PURPLE);
-            }
+            leds.configLEDs(LEDColors.CUBE);
+        }
+        if(driver.leftBumper.wasActivated()) {
+            leds.configLEDs(LEDColors.CONE);
         }
 
         if(coDriver.startButton.wasActivated()) {
@@ -268,7 +268,7 @@ public class DriverControls implements Loop {
         if((!driver.POV0.isBeingPressed() && !driver.POV90.isBeingPressed() && !driver.POV180.isBeingPressed() && !driver.POV270.isBeingPressed())) {
             swerve.setCenterOfRotation(new Translation2d());
         }*/
-        if(driver.POV270.wasActivated()) {
+        if(driver.leftCenterClick.wasActivated()) {
             double sign = AllianceChooser.getAlliance() == Alliance.Blue ? 1.0 : -1.0;
             double offset = sign * 3.0;
             if (swerve.isVisionPIDDone()) {
@@ -278,7 +278,7 @@ public class DriverControls implements Loop {
                 swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
             }
         }
-        if(driver.POV90.wasActivated()) {
+        if(driver.rightCenterClick.wasActivated()) {
             double sign = AllianceChooser.getAlliance() == Alliance.Blue ? -1.0 : 1.0;
             double offset = sign * 3.0;
             if (swerve.isVisionPIDDone()) {
@@ -363,7 +363,9 @@ public class DriverControls implements Loop {
 
         }
         if(coDriver.rightTrigger.wasActivated()) {
-            targetScoringRow = NodeLocation.Row.BOTTOM;
+            tunnel.setState(Tunnel.State.EJECT_ONE);
+        } else if(coDriver.rightTrigger.wasActivated()) {
+            tunnel.setState(Tunnel.State.OFF);
         }
 
         if(coDriver.leftTrigger.wasActivated() /*&& AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())*/) {
@@ -390,7 +392,7 @@ public class DriverControls implements Loop {
 
         if(coDriver.rightBumper.wasActivated()) {
             //lastTunnelState = tunnel.getState();
-            tunnel.setState(Tunnel.State.EJECT_ONE);
+            tunnel.setState(Tunnel.State.SPIT);
         } else if(coDriver.rightBumper.wasReleased()) {
             //lastTunnelState = (lastTunnelState == Tunnel.State.SPIT) ? Tunnel.State.OFF : lastTunnelState;
             tunnel.setState(Tunnel.State.OFF);

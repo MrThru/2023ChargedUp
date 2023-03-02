@@ -16,7 +16,7 @@ public class BalancePIDController {
     private final double kPitchDeadband = 5;
     private final double kOnTargetTime = 0.5;
 
-    SynchronousPIDF mainPIDF = new SynchronousPIDF(0.005, 0, 0, 0);
+    SynchronousPIDF mainPIDF = new SynchronousPIDF(0.0075, 0, 0, 0);
     Rotation2d targetPitch = Rotation2d.fromDegrees(0);
     boolean isOnTarget = false;
     Stopwatch onTargetStopwatch = new Stopwatch();

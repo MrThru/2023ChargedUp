@@ -202,8 +202,16 @@ public class Tunnel extends Subsystem {
                     }
                     break;
                 case SINGLE_INTAKE:
-                    if(getFrontBanner()) {
+                    if(getRearBanner()) {
+                        bannerActivatedStopwatch.reset();
+                    }
+                    if(bannerActivatedStopwatch.getTime() > 0.02) {
+                        //if(frontRollerTalon.getStatorCurrent() > 7.0)
                         setAllSpeeds(0);
+                        bannerActivatedStopwatch.reset();                       
+                    }
+                    if(getFrontBanner()) {
+                        bannerActivatedStopwatch.startIfNotRunning();
                     } else {
                         setRollerSpeeds(0.25, 1.0);
                         setTunnelEntranceSpeed(0.65);

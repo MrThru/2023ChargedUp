@@ -62,7 +62,13 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
                 secondsUntilHeightReached = Math.abs(inches - getPosition()) / Math.abs(inchesPerSecond);
             }
 
-            return (isHeadingTowardHeight && secondsUntilHeightReached <= seconds) || isAtPosition(inches);
+            boolean willReachHeight = (isHeadingTowardHeight && secondsUntilHeightReached <= seconds) || isAtPosition(inches);
+
+            if (willReachHeight) {
+                System.out.println("Vertical elevator will reach height.");
+            }
+
+            return willReachHeight;
         };
     }
 

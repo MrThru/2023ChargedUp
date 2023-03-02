@@ -193,6 +193,8 @@ public class SuperstructureCoordinator {
                 }) :
                 new EmptyRequest();
 
+        System.out.println("Full stow choreo");
+
         return new SequentialRequest(
             getStowChoreography(finalPosition),
             zeroingRequest
@@ -206,6 +208,8 @@ public class SuperstructureCoordinator {
             147.0,
             95.0
         );
+
+        System.out.println("Cone stow choreo");
 
         return getStowChoreography(finalPosition);
     }
@@ -288,6 +292,8 @@ public class SuperstructureCoordinator {
             kConeIntakingWristAngle //90 38.6 35
         );
 
+        System.out.println("Cone intake choreo");
+
         return getLowChoreography(finalPosition);
     }
 
@@ -296,8 +302,10 @@ public class SuperstructureCoordinator {
             0.5,
             4.6875, //7.0
             -87.4,
-            98.0
+            105.0
         );
+
+        System.out.println("Cube intake choreo");
         
         return getLowChoreography(finalPosition);
     }
@@ -327,6 +335,7 @@ public class SuperstructureCoordinator {
                     ).withPrerequisite(() -> verticalElevator.getPosition() <= kVerticalHeightForStow || 
                             verticalElevator.isAtPosition(kVerticalHeightForStow))
                 ),
+                new LambdaRequest(() -> System.out.println("Put the shoulder out.")),
                 new ParallelRequest(
                     verticalElevator.heightRequest(finalPosition.verticalHeight),
                     shoulder.angleRequest(finalPosition.shoulderAngle)
@@ -358,7 +367,8 @@ public class SuperstructureCoordinator {
                 wrist.angleRequest(finalPosition.wristAngle),
                 verticalElevator.heightRequest(finalPosition.verticalHeight),
                 horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
-                        .withPrerequisite(verticalElevator.willReachHeightWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds))
+                        .withPrerequisites(verticalElevator.willReachHeightWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds),
+                                () -> shoulder.getPosition() > 0.0)
             );
         }
 
@@ -435,10 +445,12 @@ public class SuperstructureCoordinator {
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             17.5,
-            25.0,
+            26.0,
             34.75,
             -4.75 //-4.75
         );
+
+        System.out.println("Cone high scoring choreo");
 
         return new SequentialRequest(
             getHighChoreography(finalPosition, 1.15),
@@ -454,6 +466,8 @@ public class SuperstructureCoordinator {
             -14.4 //19.4
         );
 
+        System.out.println("Cone mid scoring choreo");
+
         return getHighChoreography(finalPosition);
     }
 
@@ -465,6 +479,8 @@ public class SuperstructureCoordinator {
             90.0
         );
 
+        System.out.println("Cube mid scoring choreo");
+
         return getHighChoreography(finalPosition);
     }
 
@@ -475,6 +491,8 @@ public class SuperstructureCoordinator {
             60.0,
             90.0
         );
+
+        System.out.println("Cube high scoring choreo");
 
         return getHighChoreography(finalPosition, 3.0);
     }

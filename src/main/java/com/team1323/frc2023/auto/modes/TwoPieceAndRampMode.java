@@ -9,7 +9,6 @@ import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeEndedException;
 import com.team1323.frc2023.auto.actions.ResetPoseAction;
 import com.team1323.frc2023.auto.actions.SetTrajectoryAction;
-import com.team1323.frc2023.auto.actions.WaitAction;
 import com.team1323.frc2023.auto.actions.WaitForShoulderToPassAngleAction;
 import com.team1323.frc2023.auto.actions.WaitForSuperstructureAction;
 import com.team1323.frc2023.auto.actions.WaitToBalanceAction;
@@ -27,6 +26,7 @@ import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.Tunnel;
+import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
@@ -48,10 +48,9 @@ public class TwoPieceAndRampMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
+        startTime = Timer.getFPGATimestamp();
         runAction(new ResetPoseAction(Constants.kAutoStartingPose, quadrant));
         LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
-        runAction(new WaitAction(0.5));
-        startTime = Timer.getFPGATimestamp();
         Superstructure.getInstance().coneMidScoreManual();
         runAction(new WaitForSuperstructureAction());
         runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 0.75, quadrant));
@@ -62,6 +61,7 @@ public class TwoPieceAndRampMode extends AutoModeBase {
         runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
         Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
         runAction(new WaitToIntakeCubeAction());
+        
         runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
         Superstructure.getInstance().postIntakeState();
         runAction(new WaitForSuperstructureAction());
@@ -76,6 +76,7 @@ public class TwoPieceAndRampMode extends AutoModeBase {
         }
 
         // Cone Intake
+        
         LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR);
         runAction(new SetTrajectoryAction(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(140.0, quadrant));

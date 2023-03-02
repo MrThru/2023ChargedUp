@@ -27,9 +27,6 @@ public class SmartDashboardInteractions {
     public void initWithDefaults(){
     	modeChooser = new SendableChooser<AutoOption>();
         modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
-        modeChooser.addOption(AutoOption.TWO_CONES_AND_RAMP.name, AutoOption.TWO_CONES_AND_RAMP);
-        modeChooser.addOption(AutoOption.THREE_CONES.name, AutoOption.THREE_CONES);;
-        modeChooser.addOption(AutoOption.THREE_MID_CONES.name, AutoOption.THREE_MID_CONES);
         modeChooser.addOption(AutoOption.TWO_CONES_ONE_CUBE.name, AutoOption.TWO_CONES_ONE_CUBE);
         modeChooser.addOption(AutoOption.TWO_PIECE_RAMP.name, AutoOption.TWO_PIECE_RAMP);
 
@@ -82,8 +79,7 @@ public class SmartDashboardInteractions {
     }
 
     enum AutoOption{
-        STAND_STILL("Stand Still"), TWO_CONES_AND_RAMP("Two Cones and Ramp"), THREE_CONES("Three Cones"),
-            THREE_MID_CONES("Three Mid Cones"), TWO_CONES_ONE_CUBE("Two Cones One Cube"), TWO_PIECE_RAMP("Two Piece Ramp");
+        STAND_STILL("Stand Still"), TWO_CONES_ONE_CUBE("Two Cones One Cube"), TWO_PIECE_RAMP("Two Piece Ramp");
 
     	public final String name;
     	
@@ -96,12 +92,6 @@ public class SmartDashboardInteractions {
     	switch(option){
             case STAND_STILL:
                 return new StandStillMode();
-            case TWO_CONES_AND_RAMP:
-                return new TwoConesAndRampMode(quadrant);
-            case THREE_CONES:
-                return new ThreeConesMode(quadrant);
-            case THREE_MID_CONES:
-                return new ThreeMidConesMode(quadrant);
             case TWO_CONES_ONE_CUBE:
                 return new TwoConesOneCubeMidMode(quadrant);
             case TWO_PIECE_RAMP:

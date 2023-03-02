@@ -8,6 +8,7 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -63,10 +64,11 @@ public class LEDs extends Subsystem {
         OFF(0, 0, 0, LEDMode.SOLID), RED(255, 0, 0, LEDMode.SOLID), GREEN(0, 255, 0, LEDMode.SOLID),
         BLUE(0, 0, 255, LEDMode.SOLID),
         DISABLED(255, 0, 0, LEDMode.SOLID), ENABLED(0, 0, 255, LEDMode.SOLID), ORANGE(255, 102, 0, LEDMode.SOLID),
-        YELLOW(255, 255, 0, LEDMode.SOLID),
+        YELLOW(255, 100, 0, LEDMode.SOLID),
         PURPLE(255, 0, 255, LEDMode.SOLID),
         RAINBOW(0, 0, 0, LEDMode.RAINBOW), FIRE(0, 0, 0, LEDMode.FIRE), TWINKLE(0, 0, 0, LEDMode.TWINKLE),
         STROBE(0, 0, 0, LEDMode.STROBE),
+        CONE(255, 100, 0, LEDMode.BLINK_SOLID), CUBE(255, 0, 255, LEDMode.BLINK_SOLID),
         REDFIRE(255, 0, 0, LEDMode.FIRE);
 
         int r;
@@ -95,11 +97,21 @@ public class LEDs extends Subsystem {
         this.mBlue = ledColors.b;
         this.selectedLEDType = ledColors.ledMode;
         currentLEDMode = ledColors;
+        if(ledColors.ledMode == LEDMode.BLINK_SOLID) {
+            blinkStopwatch.start();
+        }
+    }
+
+    public void setBlinkMode(LEDBlink ledblink) {
+        
     }
 
     public void setLEDsBlink(LEDColors ledColors) {
         // this.
     }
+
+    private final Stopwatch blinkStopwatch = new Stopwatch();
+    private static final double kBlinkRateSeconds = 0.25;
 
     @Override
     public void writePeriodicOutputs() {
@@ -118,7 +130,15 @@ public class LEDs extends Subsystem {
         } else if (selectedLEDType == LEDMode.STROBE) {
             candle.animate(new StrobeAnimation(100, 100, 100, 50, 0.25, 1690));
         } else if (selectedLEDType == LEDMode.BLINK_SOLID) {
-
+            // candle.animate()
+            double time = blinkStopwatch.getTime();
+            if (time < kBlinkRateSeconds / 2.0) {
+                candle.setLEDs(mRed, mGreen, mBlue);
+            } else if ((kBlinkRateSeconds / 2.0) < time && time < kBlinkRateSeconds) {
+                candle.setLEDs(0, 0, 0);
+            } else if (time > kBlinkRateSeconds) {
+                blinkStopwatch.start();
+            }
         }
 
     }
@@ -143,6 +163,13 @@ public class LEDs extends Subsystem {
         configLEDs(disabledLEDColorsMode);
     }
 
+    private LEDBlink currentBlinkProfile = new LEDBlink();
+    public void setBlinkProfile(LEDBlink blinkProfile) {
+        currentBlinkProfile = blinkProfile;
+    }
+    public LEDBlink getBlinkProfile() {
+        return currentBlinkProfile;
+    }
     private class LEDBlink {
         double onPeriod = 1.0;
         double offPeriod = 1.0;
@@ -155,6 +182,7 @@ public class LEDs extends Subsystem {
         }
 
         public LEDBlink() {
+
         }
 
     }

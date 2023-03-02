@@ -237,7 +237,7 @@ public class Claw extends Subsystem {
     }
     @Override
     public void stop() {
-        resetCurrentHolding();
+        //resetCurrentHolding();
         conformToState(ControlState.OFF);
     }
 

@@ -8,20 +8,20 @@
 package com.team1323.frc2023.subsystems.requests;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A Request which takes a list of Requests and executes them in parallel.
  */
 public class ParallelRequest extends Request {
-    private final Set<Request> idleRequests;
-    private final Set<Request> inProgressRequests;
+    private final List<Request> idleRequests;
+    private final List<Request> inProgressRequests;
 
     public ParallelRequest(Request... requests) {
-        idleRequests = new HashSet<>(Arrays.asList(requests));
-        inProgressRequests = new HashSet<>();
+        idleRequests = new LinkedList<>(Arrays.asList(requests));
+        inProgressRequests = new LinkedList<>();
     }
 
     @Override

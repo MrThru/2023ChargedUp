@@ -132,7 +132,6 @@ public class Robot extends TimedRobot {
 			disabledLooper.stop();
 			enabledLooper.start();
 			SmartDashboard.putBoolean("Auto", false);
-			SmartDashboard.putBoolean("Subsystems Coast Mode", false);
 
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
@@ -165,7 +164,6 @@ public class Robot extends TimedRobot {
 			
 			LEDs.getInstance().configLEDs(LEDs.LEDColors.TWINKLE);;;;;;;;;;;;;;
 
-			SmartDashboard.putBoolean("Subsystems Coast Mode", true);
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;

@@ -216,7 +216,7 @@ public class Constants {
         public static final double kMinControlHeight = 0.0;
         public static final double kMaxControlHeight = 20.0;
 
-        public static final double kHeightTolerance = 1.0;
+        public static final double kHeightTolerance = 2.0;
 
         public static final double kVelocityScalar = 1.0;
         public static final double kAccelerationScalar = 4.0;
@@ -363,7 +363,7 @@ public class Constants {
 
 
         public static final double kIntakeCubeStatorCurrentLimit = 15.0;
-        public static final double kIntakeCubeVelocityThreshold = 300.0;
+        public static final double kIntakeCubeVelocityThreshold = 500.0;
         
         
         public static final double kIntakeCubeSpeed = 0.25;

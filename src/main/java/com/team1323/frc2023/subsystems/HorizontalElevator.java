@@ -34,6 +34,7 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
 
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);
         zeroPosition();
+        isZeroed = true;
         leader.setInverted(TalonFXInvertType.Clockwise);
         leader.setPIDF(Constants.HorizontalElevator.kPIDF);
     }
@@ -88,8 +89,20 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
                 secondsUntilHeightReached = Math.abs(inches - getPosition()) / Math.abs(inchesPerSecond);
             }
 
-            return (isHeadingTowardHeight && secondsUntilHeightReached <= seconds) || isAtPosition(inches);
+            boolean willReachExtension = (isHeadingTowardHeight && secondsUntilHeightReached <= seconds) || isAtPosition(inches);
+
+            if (willReachExtension) {
+                System.out.println("Horizontal elevator will reach extension.");
+            }
+
+            return willReachExtension;
         };
+    }
+
+    @Override
+    public void setPosition(double outputUnits) {
+        System.out.println(String.format("Horizontal elevator being set to %.2f", outputUnits));
+        super.setPosition(outputUnits);
     }
 
     private boolean neutralModeIsBrake = true;
