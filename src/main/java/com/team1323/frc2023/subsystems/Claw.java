@@ -14,6 +14,7 @@ import com.team1323.frc2023.subsystems.LEDs.LEDColors;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Stopwatch;
+import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -157,7 +158,7 @@ public class Claw extends Subsystem {
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
                     stopwatch.start();
                 }
-                if(encUnitsToRPM(periodicIO.velocity) > -Constants.Claw.kIntakeCubeVelocityThreshold && stopwatch.getTime() > 0.25) {
+                if(Util.isInRange(encUnitsToRPM(periodicIO.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 0) && stopwatch.getTime() > 0.5) {
                     setCurrentHoldingObject(HoldingObject.Cube);
                     LEDs.getInstance().configLEDs(LEDColors.PURPLE);
                     stopwatch.reset();

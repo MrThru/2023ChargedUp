@@ -560,9 +560,11 @@ public class Superstructure extends Subsystem {
 		}
 		request(new SequentialRequest(
 			intakeCube,
-			getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeMidScoringChoreography,
-					SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, false, coordinator::getHalfCubeStowChoreography)
-							.withPrerequisite(() -> claw.getCurrentHoldingObject() == HoldingObject.Cube),
+			new ParallelRequest(
+				tunnel.stateRequest(Tunnel.State.OFF),
+				getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeMidScoringChoreography,
+						SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, false, coordinator::getHalfCubeStowChoreography)
+			).withPrerequisite(() -> claw.getCurrentHoldingObject() == HoldingObject.Cube),
 			getHandOffCubeSequence(),
 			new ParallelRequest(
 				getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeHighScoringChoreography,

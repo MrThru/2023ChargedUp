@@ -75,11 +75,11 @@ public class ObjectDetector {
         Vector3d objectFieldPosition = LimelightProcessor.getInstance()
                         .getRetroTargetPosition(targetInfo, detectedGameObject.getHeight(), swervePose).toVector3d()
                         .add(new Vector3d(0, 0, detectedGameObject.height/2));
-        Translation2d robotRelativePosition = objectFieldPosition.toTranslation().translateBy(swervePose.getTranslation());
+        Translation2d robotRelativePosition = objectFieldPosition.toTranslation().translateBy(swervePose.getTranslation().inverse());
         ray.scale(robotRelativePosition.norm());
         detectedGameObject.setPosition(objectFieldPosition);
         groundTracker.update(timestamp, Arrays.asList(robotRelativePosition));
-
+        
         
     }
 

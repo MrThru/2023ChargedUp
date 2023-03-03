@@ -192,7 +192,8 @@ public class DriverControls implements Loop {
             /*Pose2d kShuttleIntakePosition = (AllianceChooser.getAlliance() == Alliance.Blue) ? new Pose2d(new Translation2d(554.34, 287.25), Rotation2d.fromDegrees(90)) :
                             new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0));
             swerve.startVisionPID(kShuttleIntakePosition, kShuttleIntakePosition.getRotation(), false);*/
-            swerve.startBalancePID();
+            //swerve.startBalancePID();
+            s.tripleCubeScoringSequence();
         }
             
         if (driver.backButton.wasActivated()) {
@@ -381,7 +382,7 @@ public class DriverControls implements Loop {
             
         } else if(coDriver.leftTrigger.wasReleased()) {
             //s.postCubeIntakeState();
-            if(tunnel.getFrontBanner() && tunnel.getRearBanner()) {
+            if(tunnel.getRearBanner()) {
                 verticalElevator.setPosition(0.5);
                 cubeIntake.conformToState(CubeIntake.State.FLOOR);
                 tunnel.setTunnelEntranceSpeed(0);

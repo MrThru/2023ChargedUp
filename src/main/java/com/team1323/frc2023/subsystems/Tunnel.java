@@ -164,14 +164,16 @@ public class Tunnel extends Subsystem {
                             cubeIntake.setHoldMode();
                         }
                     } else if(getFrontBanner()) {
-                        if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
+                        bannerActivatedStopwatch.startIfNotRunning();
+                        if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && claw.getState() == Claw.ControlState.CUBE_INTAKE) {
                             setConveyorSpeed(0.25);
                             setRollerSpeed(0.25);
-                        } else {
+                        } else if(bannerActivatedStopwatch.getTime() > 0.02) {
                             setAllSpeeds(0);
                             setTunnelEntranceSpeed(0.65);
                         }
                     } else {
+                        bannerActivatedStopwatch.reset();
                         setTunnelEntranceSpeed(0.65);
                         setRollerSpeeds(0.25, 1);
                     }
