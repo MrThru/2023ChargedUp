@@ -4,7 +4,9 @@
 
 package com.team1323.frc2023.vision;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.team1323.frc2023.field.NodeLocation.Column;
 import com.team1323.frc2023.field.NodeLocation.Grid;
@@ -30,17 +32,26 @@ public class GridTracker {
     }
 
 
-    private List<PieceLocations> gridPositions;
+    private Map<String, List<PieceLocations>> gridPositions;
+    {
+      gridPositions.put("Top", Arrays.asList());
+      gridPositions.put("Mid", Arrays.asList());
+      gridPositions.put("Low", Arrays.asList());
+    }
     public GridTracker() {
         constructGridLocations();
     }
 
     public void constructGridLocations() {
-        
+
     }
 
     public void addRobotScorePosition(Grid grid, Row row, Column column) {
         
+    }
+
+    public void checkDetections(LimelightTarget_Detector detectedObject) {
+
     }
 
    
