@@ -320,6 +320,11 @@ public class Tunnel extends Subsystem {
             public void act() {
                 setState(desiredState);
             }
+
+            @Override
+            public String toString() {
+                return String.format("TunnelRequest(state = %s)", desiredState);
+            }
         };
     }
     public Request ejectOneRequest() {

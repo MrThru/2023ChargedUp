@@ -65,4 +65,10 @@ public class SequentialRequest extends Request {
 
         return false;
     }
+
+    @Override
+    public String toString() {
+        return String.format("SequentialRequest(currentRequest = %s, startedCurrentRequest = %b, remainingRequests = %s)",
+                currentRequest, startedCurrentRequest, requests);
+    }
 }

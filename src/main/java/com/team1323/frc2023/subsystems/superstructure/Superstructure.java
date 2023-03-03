@@ -7,14 +7,15 @@ import java.util.List;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
-import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.field.NodeLocation.Column;
 import com.team1323.frc2023.field.NodeLocation.Row;
+import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.LimelightProcessor;
-import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
+import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Claw;
+import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Shoulder;
@@ -22,11 +23,9 @@ import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
-import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.requests.EmptyRequest;
 import com.team1323.frc2023.subsystems.requests.LambdaRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
-import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
@@ -120,6 +119,10 @@ public class Superstructure extends Subsystem {
 		setQueue(request);
 	}
 
+	public void printActiveRequest() {
+		System.out.println(String.format("%s", activeRequest));
+	}
+
 	private final Loop loop = new Loop(){
 
 		@Override
@@ -192,6 +195,11 @@ public class Superstructure extends Subsystem {
 			public boolean isFinished(){
 				return (Timer.getFPGATimestamp() - startTime) > waitTime;
 			}
+
+			@Override
+			public String toString() {
+				return String.format("WaitRequest(time = %.2f)", seconds);
+			}
 		};
 	}
 
@@ -209,17 +217,10 @@ public class Superstructure extends Subsystem {
 			public boolean isFinished() {
 				return choreography.isFinished();
 			}
-		};
-	}
 
-	private Prerequisite allSubsystemsOnTargetPrerequisite() {
-		return new Prerequisite() {
 			@Override
-			public boolean met() {
-				return verticalElevator.isOnTarget() &&
-						horizontalElevator.isOnTarget() &&
-						shoulder.isOnTarget() &&
-						wrist.isOnTarget();
+			public String toString() {
+				return String.format("ChoreographyRequest(choreo = %s)", choreography);
 			}
 		};
 	}

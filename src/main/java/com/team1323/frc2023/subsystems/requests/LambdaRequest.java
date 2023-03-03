@@ -26,4 +26,9 @@ public class LambdaRequest extends Request{
     public void act() {
         mF.f();
     }
+
+    @Override
+    public String toString() {
+        return "LambdaRequest()";
+    }
 }

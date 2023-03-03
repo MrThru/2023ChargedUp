@@ -54,4 +54,10 @@ public class ParallelRequest extends Request {
 
         return idleRequests.isEmpty() && inProgressRequests.isEmpty();
     }
+
+    @Override
+    public String toString() {
+        return String.format("ParallelRequest(inProgressRequests = %s, idleRequests = %s)",
+                inProgressRequests, idleRequests);   
+    }
 }

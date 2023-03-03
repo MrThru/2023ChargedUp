@@ -84,6 +84,11 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
             public boolean isFinished() {
                 return isOnTarget();
             }
+
+            @Override
+            public String toString() {
+                return String.format("ShoulderRequest(target = %.2f)", degrees);
+            }
         };
     }
 

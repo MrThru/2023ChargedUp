@@ -77,6 +77,11 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
             public boolean isFinished() {
                 return isOnTarget();
             }
+
+            @Override
+            public String toString() {
+                return String.format("HorizontalElevatorRequest(target = %.2f)", inches);
+            }
         };
     }
 

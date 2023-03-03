@@ -46,6 +46,11 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
             public boolean isFinished() {
                 return isOnTarget();
             }
+
+            @Override
+            public String toString() {
+                return String.format("VerticalElevatorRequest(target = %.2f)", inches);
+            }
         };
     }
 

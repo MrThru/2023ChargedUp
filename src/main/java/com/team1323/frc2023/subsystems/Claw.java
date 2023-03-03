@@ -248,6 +248,11 @@ public class Claw extends Subsystem {
             public void act() {
                 conformToState(desiredState);
             }
+
+            @Override
+            public String toString() {
+                return String.format("ClawRequest(state = %s)", desiredState);
+            }
         };
     }
 

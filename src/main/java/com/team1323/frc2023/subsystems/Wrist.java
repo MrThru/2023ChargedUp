@@ -95,6 +95,11 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
             public boolean isFinished() {
                 return isOnTarget();
             }
+
+            @Override
+            public String toString() {
+                return String.format("WristRequest(target = %.2f)", degrees);
+            }
         };
     }
     public Request enableCoastModeRequest(boolean enable) {

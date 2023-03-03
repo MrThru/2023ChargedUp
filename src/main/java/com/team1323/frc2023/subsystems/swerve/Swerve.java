@@ -1039,6 +1039,11 @@ public class Swerve extends Subsystem{
 				return false;
 			}
 
+			@Override
+			public String toString() {
+				return "SwerveVisionPIDRequest()";
+			}
+
 		};
 	}
 

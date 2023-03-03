@@ -163,9 +163,14 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
             public void act() {
                 conformToState(desiredState);
             }
+
             @Override
             public boolean isFinished() {
                 return isOnTarget();
+            }
+
+            public String toString() {
+                return String.format("CubeIntakeRequest(state = %s)", desiredState);
             }
         };
     }
