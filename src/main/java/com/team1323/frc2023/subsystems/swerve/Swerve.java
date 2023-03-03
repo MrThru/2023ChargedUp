@@ -587,6 +587,9 @@ public class Swerve extends Subsystem{
 		for(SwerveModule m : modules) {
 			double desiredVelocity = Math.abs(m.getDriveVelocitySetpoint() / Constants.kMaxFalconEncoderSpeed);
 			double expectedVelocity = Math.abs(m.getDriveVoltage() / 12.0);
+			if (desiredVelocity == 0.0) {
+				desiredVelocity = expectedVelocity;
+			}
 			stuck &= expectedVelocity > kStuckThreshold * desiredVelocity;
 		}
 		return stuck;
