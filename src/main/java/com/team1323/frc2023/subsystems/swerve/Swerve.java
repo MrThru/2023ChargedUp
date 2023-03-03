@@ -348,7 +348,7 @@ public class Swerve extends Subsystem{
 					headingController.setStabilizationTarget(headingController.getTargetHeading());
 
 				if(isTracking() || currentState == ControlState.POSITION){
-					if (Math.hypot(x, y) >= 0.75) {
+					if (Math.hypot(x, y) >= 0.5) {
 						stop();
 					}
 				} else if(currentState != ControlState.MANUAL){

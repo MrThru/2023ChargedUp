@@ -208,6 +208,7 @@ public class DriverControls implements Loop {
 
         if (driver.leftTrigger.wasActivated()) {
             System.out.println("Cone Intaking Sequence" + s.coneIntakingSequence);
+            System.out.println("Detected Object When Tracking: " + claw.getCurrentHoldingObject().toString());
             if(!s.coneIntakingSequence) {
                 if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
                     Pose2d leftScoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
@@ -406,13 +407,26 @@ public class DriverControls implements Loop {
             claw.conformToState(Claw.ControlState.CONE_INTAKE);
         }
 
-        if(coDriver.POV180.wasActivated()) {
+        if(coDriver.POV180.shortReleased()) {
             claw.resetCurrentHolding();
-        }
-        if(coDriver.POV0.wasActivated()) {
+        } else if(coDriver.POV180.longPressed()) {
             cubeIntake.conformToState(CubeIntake.State.FLOOR);
-        } else if(coDriver.POV0.wasReleased()) {
+        } else if(coDriver.POV180.longReleased()) {
             cubeIntake.conformToState(CubeIntake.State.STOWED);
+        }
+
+        if(coDriver.POV0.wasActivated()) {
+            claw.setCurrentConeOffset(Claw.ConeOffset.Center);
+            ScoringPoses.updateConeLateralOffset();
+        }
+
+        if(coDriver.POV90.wasActivated()) {
+            claw.setCurrentConeOffset(Claw.ConeOffset.Left);
+            ScoringPoses.updateConeLateralOffset();
+        }
+        if(coDriver.POV270.wasActivated()) {
+            claw.setCurrentConeOffset(Claw.ConeOffset.Right);
+            ScoringPoses.updateConeLateralOffset();
         }
 
         if(cubeIntake.getState() == CubeIntake.State.INTAKE) {
@@ -601,17 +615,20 @@ public class DriverControls implements Loop {
         if(testController.aButton.wasActivated()) {
             //horizontalElevator.setPosition(20.0);
             //verticalElevator.setPosition(10.0);
-            wrist.setPosition(-90);
+            //wrist.setPosition(-90);
+            shoulder.setPosition(-45);
         }
         if(testController.bButton.wasActivated()) {
             //horizontalElevator.setPosition(0.5);
             //verticalElevator.setPosition(0.5);
-            wrist.setPosition(0);
+            //wrist.setPosition(0);
+            shoulder.setPosition(90);
         }
         if(testController.yButton.wasActivated()) {
             //horizontalElevator.setPosition(30.0);
             //verticalElevator.setPosition(19.0);
-            wrist.setPosition(90);
+            //wrist.setPosition(90);
+            shoulder.setPosition(45);
         }
 
         if (testController.POV0.wasActivated()) {

@@ -44,6 +44,27 @@ public class Claw extends Subsystem {
 
         claw.setPIDF(Constants.Claw.kPID);
     }
+    private PeriodicIO periodicIO = new PeriodicIO();
+
+    public enum ConeOffset {
+        Center(0.0), Right(-Constants.Claw.kConeOffset), Left(Constants.Claw.kConeOffset);
+        public double offset = 0;
+        ConeOffset(double offset) {
+            this.offset = offset;
+        }
+    }
+    private ConeOffset currentConeOffset = ConeOffset.Center; //The offset of the cone relative to the Driver Station
+    public ConeOffset getCurrentConeOffset() {
+        return this.currentConeOffset;
+    }
+    public void setCurrentConeOffset(ConeOffset coneOffset) {
+        this.currentConeOffset = coneOffset;
+    }
+    public ConeOffset flipConeOffsetMode(ConeOffset mode) {
+        if(mode == ConeOffset.Center)
+            return ConeOffset.Center;
+        return (mode == ConeOffset.Right) ? ConeOffset.Left : ConeOffset.Right;
+    }
 
     public enum HoldingObject {
         Cone(ControlState.CONE_INTAKE, ControlState.CONE_OUTAKE), Cube(ControlState.CUBE_INTAKE, ControlState.CUBE_OUTAKE), 
@@ -56,7 +77,6 @@ public class Claw extends Subsystem {
         }
     }
 
-    private PeriodicIO periodicIO = new PeriodicIO();
     private HoldingObject currentHoldingObject = HoldingObject.None;
     public HoldingObject getCurrentHoldingObject() {
         return currentHoldingObject;
@@ -165,7 +185,7 @@ public class Claw extends Subsystem {
                 }
             } else if(currentState == ControlState.OFF) {
                 conformToState(ControlState.OFF);
-                setCurrentHoldingObject(HoldingObject.None);
+                //setCurrentHoldingObject(HoldingObject.None);
             }
             if(stateChanged)
                 stateChanged = false;
@@ -214,6 +234,7 @@ public class Claw extends Subsystem {
         SmartDashboard.putNumber("Claw RPM", encUnitsToRPM(claw.getSelectedSensorVelocity()));
         SmartDashboard.putNumber("Claw RPM detla", periodicIO.dv);
         SmartDashboard.putString("Current Holding Object", getCurrentHoldingObject().toString());
+        SmartDashboard.putString("Claw Left Right Offset Mode", flipConeOffsetMode(getCurrentConeOffset()).toString());
         SmartDashboard.putNumber("Claw Current", claw.getOutputCurrent());
         SmartDashboard.putString("Claw State", getState().toString());
         SmartDashboard.putNumber("Claw Stator Current", claw.getStatorCurrent());

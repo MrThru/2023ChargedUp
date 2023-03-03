@@ -124,7 +124,7 @@ public class Constants {
     public static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kElevatorHeightToSwerveSpeedMap = new InterpolatingTreeMap<>();
     static {
         kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(-1.0), new InterpolatingDouble(1.0));
-        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(1.0), new InterpolatingDouble(1.0));
+        kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(4.0), new InterpolatingDouble(1.0));
         kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(VerticalElevator.kMaxControlHeight), new InterpolatingDouble(0.3));
         kElevatorHeightToSwerveSpeedMap.put(new InterpolatingDouble(VerticalElevator.kMaxControlHeight + 1.0), new InterpolatingDouble(0.3));
     }
@@ -278,7 +278,7 @@ public class Constants {
         public static final double kMinControlAngle = -90.0;
         public static final double kMaxControlAngle = 180.0;
 
-        public static final double kAngleTolerance = 2.0;
+        public static final double kAngleTolerance = 4.0;
 
         public static final double kVelocityScalar = 1.0;
         public static final double kAccelerationScalar = 3.0;
@@ -377,7 +377,7 @@ public class Constants {
             0.045
         );
 
-
+        public static final double kConeOffset = 3;
     }
 
     public static class Tunnel {

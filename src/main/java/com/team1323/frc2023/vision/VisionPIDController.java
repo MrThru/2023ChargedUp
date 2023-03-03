@@ -215,7 +215,7 @@ public class VisionPIDController {
             return Pose2d.fromRotation(targetHeading);
         }
 
-        if (runtimeStopwatch.getTime() > 0.75 && Swerve.getInstance().areModulesStuck()) {
+        if (runtimeStopwatch.getTime() > 1.0 && Swerve.getInstance().areModulesStuck()) {
             finish();
             DriverStation.reportError("Vision PID ended due to stuck modules", false);
             return Pose2d.fromRotation(targetHeading);

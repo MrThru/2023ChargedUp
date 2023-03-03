@@ -11,6 +11,8 @@ import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightResults;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Fiducial;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Retro;
+import com.team1323.frc2023.subsystems.Claw;
+import com.team1323.frc2023.subsystems.Claw.ConeOffset;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.GoalTracker;
@@ -158,7 +160,13 @@ public class LimelightProcessor implements Loop {
 			double currentFrameLeftRightOffset = -Math.tan(Math.toRadians(LimelightHelpers.getTX(kLimelightName))) * 
 									distanceFromLimelight;
 			coneLeftRightBuffer.addValue(currentFrameLeftRightOffset);
-			coneLeftRightOffset = coneLeftRightBuffer.getAverage();	
+			coneLeftRightOffset = coneLeftRightBuffer.getAverage();
+
+			if(Math.abs(coneLeftRightOffset) >= 1.5) {
+				Claw.getInstance().setCurrentConeOffset((Math.signum(coneLeftRightOffset) == -1) ? ConeOffset.Right : ConeOffset.Left);
+			} else {
+				Claw.getInstance().setCurrentConeOffset(ConeOffset.Center);
+			}
 		}
 		
 	}
@@ -289,7 +297,7 @@ public class LimelightProcessor implements Loop {
 	}
 
 	public double getRetroConeLeftRightOffset() {
-		return coneLeftRightOffset;
+		return Claw.getInstance().getCurrentConeOffset().offset;
 	}
 
 	public Translation2d getNearestConePosition(Translation2d trueFieldPosition) {
