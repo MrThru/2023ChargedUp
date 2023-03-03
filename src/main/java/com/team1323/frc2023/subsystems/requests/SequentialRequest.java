@@ -24,10 +24,7 @@ public class SequentialRequest extends Request {
     }
 
     public SequentialRequest(List<Request> requests) {
-        this.requests = new ArrayList<>();
-        for (Request request : requests) {
-            this.requests.add(request);
-        }
+        this.requests = new ArrayList<>(requests);
     }
 
     @Override

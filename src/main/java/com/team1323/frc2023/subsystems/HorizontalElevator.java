@@ -91,10 +91,6 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
 
             boolean willReachExtension = (isHeadingTowardHeight && secondsUntilHeightReached <= seconds) || isAtPosition(inches);
 
-            if (willReachExtension) {
-                System.out.println("Horizontal elevator will reach extension.");
-            }
-
             return willReachExtension;
         };
     }

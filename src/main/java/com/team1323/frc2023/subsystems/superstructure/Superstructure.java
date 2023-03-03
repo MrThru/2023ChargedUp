@@ -436,6 +436,7 @@ public class Superstructure extends Subsystem {
 	private Request getCubeScoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo,
 			double horizontalExtension, boolean useTrajectory, ChoreographyProvider stowingChoreo) {
 		return new SequentialRequest(
+			new LambdaRequest(() -> System.out.println("Started cube scoring sequence")),
 			new ParallelRequest(
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory),
 				choreographyRequest(scoringChoreo)
@@ -559,14 +560,19 @@ public class Superstructure extends Subsystem {
 			return;
 		}
 		request(new SequentialRequest(
+			new LambdaRequest(() -> System.out.println("Starting triple cube score sequence")),
 			intakeCube,
+			new LambdaRequest(() -> System.out.println("Finished intaking cube")),
 			new ParallelRequest(
 				tunnel.stateRequest(Tunnel.State.OFF),
 				getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeMidScoringChoreography,
 						SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, false, coordinator::getHalfCubeStowChoreography)
 			).withPrerequisite(() -> claw.getCurrentHoldingObject() == HoldingObject.Cube),
+			new LambdaRequest(() -> System.out.println("Finished scoring mid cube")),
 			getHandOffCubeSequence(),
+			new LambdaRequest(() -> System.out.println("Finished handoff sequence for second cube")),
 			new ParallelRequest(
+				new LambdaRequest(() -> System.out.println("Entered parallel request for scoring high cube")),
 				getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeHighScoringChoreography,
 						SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, false, this::objectAwareStow),
 				tunnel.stateRequest(Tunnel.State.SPIT)
