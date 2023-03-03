@@ -271,6 +271,16 @@ public abstract class SwerveModule extends Subsystem {
 
 		return periodicIO.velocity / periodicIO.driveDemand;
 	}
+
+	public abstract double getDriveVoltage();
+
+	public double getDriveVelocitySetpoint() {
+		if (periodicIO.driveControlMode != ControlMode.Velocity) {
+			return 0.0;
+		}
+
+		return periodicIO.driveDemand;
+	}
 	
 	@Override
 	public void outputTelemetry() {

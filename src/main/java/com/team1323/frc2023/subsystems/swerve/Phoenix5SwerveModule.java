@@ -131,6 +131,11 @@ public class Phoenix5SwerveModule extends SwerveModule {
     }
 
 	@Override
+	public double getDriveVoltage() {
+		return driveMotor.getMotorOutputVoltage();
+	}
+
+	@Override
 	public void readPeriodicInputs() {
 		periodicIO.velocity = driveMotor.getSelectedSensorVelocity(0);
 		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);

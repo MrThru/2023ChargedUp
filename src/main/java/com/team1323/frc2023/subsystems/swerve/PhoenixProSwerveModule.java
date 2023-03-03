@@ -131,6 +131,11 @@ public class PhoenixProSwerveModule extends SwerveModule {
         return ErrorCode.OK;
     }
 
+    @Override
+    public double getDriveVoltage() {
+        return driveMotor.getSupplyVoltage().getValue();
+    }
+
     private double rotationsPerSecondToEncUnitsPer100Ms(double rps) {
         return rps * kFalconSensorResolution / 10.0;
     }

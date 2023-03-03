@@ -582,10 +582,12 @@ public class Swerve extends Subsystem{
 	}
 
 	public boolean areModulesStuck() {
-		final double velocityRatioThreshold = 0.60;
+		final double kStuckThreshold = 2.0;
 		boolean stuck = true;
 		for(SwerveModule m : modules) {
-			stuck &= m.getActualVelocityToTargetVelocityRatio() < velocityRatioThreshold;			
+			double desiredVelocity = Math.abs(m.getDriveVelocitySetpoint() / Constants.kMaxFalconEncoderSpeed);
+			double expectedVelocity = Math.abs(m.getDriveVoltage() / 12.0);
+			stuck &= expectedVelocity > kStuckThreshold * desiredVelocity;
 		}
 		return stuck;
 	}
