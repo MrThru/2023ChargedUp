@@ -229,7 +229,7 @@ public class Tunnel extends Subsystem {
                         bannerActivatedStopwatch.startIfNotRunning();
                     } else {
                         setRollerSpeeds(0.1, 1.0);
-                        setTunnelEntranceSpeed(0.65);
+                        setTunnelEntranceSpeed(0.70);
                     }
                     break;
                 case STUCK_ON_BUMPER:

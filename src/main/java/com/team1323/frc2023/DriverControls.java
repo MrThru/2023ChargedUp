@@ -37,6 +37,7 @@ import com.team1323.frc2023.vision.GridTracker;
 import com.team1323.frc2023.vision.ObjectDetector.Cone;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
+import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -308,10 +309,10 @@ public class DriverControls implements Loop {
             }*/
         } else if(coDriver.aButton.isBeingPressed()) {
             if(tunnel.getFrontBanner() || tunnel.getRearBanner()) {
-                s.postIntakeState();
+                s.postIntakeState(0.0);
             }
         } else if(coDriver.aButton.wasReleased()) {
-            s.postIntakeState();
+            s.postIntakeState(1.0);
             tunnel.queueShutdown(true);
         }
         SmartDashboard.putNumber("RB Pressed", (coDriver.rightBumper.isBeingPressed() ? 1 : 0));
@@ -452,7 +453,9 @@ public class DriverControls implements Loop {
         } else {
             wrist.lockPosition();
         }*/
-        
+        if(Util.isInRange(DriverStation.getMatchTime(), 10.1, 9.9)) {
+            driver.rumble(swerveXInput, 1.5);
+        }
 
 
     }

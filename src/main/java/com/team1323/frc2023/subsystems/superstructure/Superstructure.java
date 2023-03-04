@@ -243,11 +243,14 @@ public class Superstructure extends Subsystem {
 			cubeIntake.stateRequest(CubeIntake.State.INTAKE)
 		));
 	}
-	public void postIntakeState() {
+	public void postIntakeState(double waitTime) {
 		request(new ParallelRequest(
 			tunnel.queueShutdownRequest(),
 			cubeIntake.stateRequest(CubeIntake.State.STOWED),
-			verticalElevator.heightRequest(0.25)
+			new SequentialRequest(
+				waitRequest(waitTime),
+				verticalElevator.heightRequest(0.25)
+			)
 		));
 	}
 	public void postCubeIntakeState() {
@@ -434,12 +437,12 @@ public class Superstructure extends Subsystem {
 	}
 
 	private void cubeScoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo,
-			double horizontalExtension, boolean useTrajectory, ChoreographyProvider stowingChoreo) {
-		request(getCubeScoringSequence(scoringPose, scoringChoreo, horizontalExtension, useTrajectory, stowingChoreo));
+			double horizontalExtension, double preemptiveScoreSeconds, boolean useTrajectory, ChoreographyProvider stowingChoreo) {
+		request(getCubeScoringSequence(scoringPose, scoringChoreo, horizontalExtension, preemptiveScoreSeconds, useTrajectory, stowingChoreo));
 	}
 
 	private Request getCubeScoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo,
-			double horizontalExtension, boolean useTrajectory, ChoreographyProvider stowingChoreo) {
+			double horizontalExtension, double preemptiveScoreSeconds, boolean useTrajectory, ChoreographyProvider stowingChoreo) {
 		return new SequentialRequest(
 			new LambdaRequest(() -> System.out.println("Started cube scoring sequence")),
 			new ParallelRequest(
@@ -450,7 +453,7 @@ public class Superstructure extends Subsystem {
 					new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CUBE_OUTAKE)),
 					waitRequest(0.25),
 					wrist.angleRequest(Constants.Wrist.kMaxControlAngle)
-				).withPrerequisites(horizontalElevator.willReachExtensionWithinTime(horizontalExtension, .625),
+				).withPrerequisites(horizontalElevator.willReachExtensionWithinTime(horizontalExtension, preemptiveScoreSeconds),
 						() -> swerve.getDistanceToTargetPosition() < 4.0 || swerve.isVisionPIDDone())
 			),
 			new LambdaRequest(() -> swerve.stop()),
@@ -551,12 +554,12 @@ public class Superstructure extends Subsystem {
 
 	public void cubeMidScoringSequence(Pose2d scoringPose) {
 		cubeScoringSequence(scoringPose, coordinator::getCubeMidScoringChoreography,
-				SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, false, this::objectAwareStow);
+				SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, 0.625, false, this::objectAwareStow);
 	}
 
 	public void cubeHighScoringSequence(Pose2d scoringPose) {
 		cubeScoringSequence(scoringPose, coordinator::getCubeHighScoringChoreography,
-				SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, false, this::objectAwareStow);
+				SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, 0.125, false, this::objectAwareStow);
 	}
 
 	public void tripleCubeScoringSequence() {
@@ -571,7 +574,7 @@ public class Superstructure extends Subsystem {
 			new ParallelRequest(
 				// tunnel.stateRequest(Tunnel.State.OFF),
 				getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeMidScoringChoreography,
-						SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, false, coordinator::getHalfCubeStowChoreography)
+						SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, 0.625, false, coordinator::getHalfCubeStowChoreography)
 			).withPrerequisite(() -> claw.getCurrentHoldingObject() == HoldingObject.Cube),
 			new LambdaRequest(() -> System.out.println("Finished scoring mid cube")),
 			getHandOffCubeSequence(),
@@ -579,7 +582,7 @@ public class Superstructure extends Subsystem {
 			new ParallelRequest(
 				new LambdaRequest(() -> System.out.println("Entered parallel request for scoring high cube")),
 				getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeHighScoringChoreography,
-						SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, false, this::objectAwareStow),
+						SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, 0.125, false, this::objectAwareStow),
 				tunnel.stateRequest(Tunnel.State.SPIT)
 						.withPrerequisite(() -> shoulder.getPosition() > 0.0)
 			).withPrerequisite(() -> claw.getCurrentHoldingObject() == HoldingObject.Cube)

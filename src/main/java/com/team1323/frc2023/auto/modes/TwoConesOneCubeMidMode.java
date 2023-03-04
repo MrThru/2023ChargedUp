@@ -75,7 +75,7 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
         runAction(new WaitToIntakeCubeAction());
         runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
-        Superstructure.getInstance().postIntakeState();
+        Superstructure.getInstance().postIntakeState(0);
         runAction(new WaitForSuperstructureAction());
         Superstructure.getInstance().handOffCubeState();
         runAction(new WaitToPassXCoordinateAction(110, quadrant));
