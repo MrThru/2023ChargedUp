@@ -9,6 +9,7 @@ import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeEndedException;
 import com.team1323.frc2023.auto.actions.ResetPoseAction;
 import com.team1323.frc2023.auto.actions.SetTrajectoryAction;
+import com.team1323.frc2023.auto.actions.WaitForRemainingTimeAction;
 import com.team1323.frc2023.auto.actions.WaitForShoulderToPassAngleAction;
 import com.team1323.frc2023.auto.actions.WaitForSuperstructureAction;
 import com.team1323.frc2023.auto.actions.WaitToBalanceAction;
@@ -107,7 +108,8 @@ public class TwoPieceAndRampMode extends AutoModeBase {
         runAction(new WaitToFinishPathAction());
         Swerve.getInstance().startBalancePID();
         CubeIntake.getInstance().conformToState(CubeIntake.State.STOWED);
-        runAction(new WaitToBalanceAction());
+        runAction(new WaitForRemainingTimeAction(0.25, startTime));
+        Swerve.getInstance().zukLockDrivePosition();
         System.out.println("Auto Done in: " + currentTime());
     }
 
