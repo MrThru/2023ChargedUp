@@ -165,7 +165,8 @@ public class Tunnel extends Subsystem {
                         }
                     } else if(getFrontBanner()) {
                         bannerActivatedStopwatch.startIfNotRunning();
-                        if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && claw.getState() == Claw.ControlState.CUBE_INTAKE) {
+                        if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && claw.getState() == Claw.ControlState.CUBE_INTAKE &&
+                                Shoulder.getInstance().isOnTarget()) {
                             setConveyorSpeed(0.25);
                             setRollerSpeed(0.25);
                         } else if(bannerActivatedStopwatch.getTime() > 0.02) {
@@ -204,18 +205,30 @@ public class Tunnel extends Subsystem {
                     }
                     break;
                 case SINGLE_INTAKE:
-                    if(getRearBanner()) {
+                    if(pendingShutdown) {
+                        queueShutdownStopwatch.startIfNotRunning();
+                        if(queueShutdownStopwatch.getTime() > 2.0) {
+                            pendingShutdown = false;
+                            setState(State.OFF);
+                        } else {
+                            if(getFrontBanner() || getRearBanner()) {
+                                pendingShutdown = false;
+                                queueShutdownStopwatch.reset();
+                            }
+                        }
+                    }
+                    if(getRearBanner() || !getFrontBanner()) {
                         bannerActivatedStopwatch.reset();
                     }
-                    if(bannerActivatedStopwatch.getTime() > 0.02) {
-                        //if(frontRollerTalon.getStatorCurrent() > 7.0)
+                    if(bannerActivatedStopwatch.getTime() > 0.05) {
+                        // if(frontRollerTalon.getStatorCurrent() > 7.0)
                         setAllSpeeds(0);
                         bannerActivatedStopwatch.reset();                       
                     }
                     if(getFrontBanner()) {
                         bannerActivatedStopwatch.startIfNotRunning();
                     } else {
-                        setRollerSpeeds(0.25, 1.0);
+                        setRollerSpeeds(0.1, 1.0);
                         setTunnelEntranceSpeed(0.65);
                     }
                     break;

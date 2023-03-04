@@ -54,7 +54,8 @@ public class SuperstructureCoordinator {
 
     public static final double kCubeMidScoringHorizontalExtension = 16.5;
     public static final double kCubeHighScoringHorizontalExtension = 31.0;
-    public static final double kConeIntakingWristAngle = 85.26;
+    public static final double kConeIntakingWristAngle = 85.26; //85.26
+    public static final double kCubeHoldingWristAngle = 105.0;
 
     private final VerticalElevator verticalElevator;
     private final HorizontalElevator horizontalElevator;
@@ -190,6 +191,7 @@ public class SuperstructureCoordinator {
         Request zeroingRequest = zeroHorizontalElevator ?
                 new LambdaRequest(() -> {
                     horizontalElevator.startCurrentZeroing();
+                    verticalElevator.startCurrentZeroing();
                 }) :
                 new EmptyRequest();
 
@@ -288,8 +290,8 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.25, //0.875
             0.25, //0.25  230.26
-            -55.76, //-50.76
-            kConeIntakingWristAngle //90 38.6 35
+            -55.76, //-50.76 : -55.76
+            kConeIntakingWristAngle //90 38.6 35 
         );
 
         System.out.println("Cone intake choreo");
@@ -299,10 +301,10 @@ public class SuperstructureCoordinator {
 
     public Request getCubeIntakeChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            0.5,
+            1.0,
             4.6875, //7.0
             -87.4,
-            105.0
+            kCubeHoldingWristAngle
         );
 
         System.out.println("Cube intake choreo");
@@ -416,7 +418,7 @@ public class SuperstructureCoordinator {
             0.5,
             0.25,
             97.0,
-            98.0
+            kCubeHoldingWristAngle
         );
 
         return getHighChoreography(finalPosition);
@@ -445,7 +447,7 @@ public class SuperstructureCoordinator {
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             17.5,
-            26.0,
+            25.5,
             34.75,
             -4.75 //-4.75
         );
@@ -476,7 +478,7 @@ public class SuperstructureCoordinator {
             1,
             kCubeMidScoringHorizontalExtension,
             60.,
-            90.0
+            kCubeHoldingWristAngle
         );
 
         System.out.println("Cube mid scoring choreo");
@@ -489,7 +491,7 @@ public class SuperstructureCoordinator {
             16.0,
             kCubeHighScoringHorizontalExtension,
             60.0,
-            90.0
+            kCubeHoldingWristAngle
         );
 
         System.out.println("Cube high scoring choreo");

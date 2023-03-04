@@ -234,9 +234,9 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.048438;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
-            -0.1,
-            0.8,
-            0.0,
+            -0.15,
+            3.5,
+            -0.3,
             0.5
         );
     }
@@ -247,7 +247,7 @@ public class Constants {
         public static final double kMinExtension = 0.0;
         public static final double kMaxExtension = 30.0;
 
-        public static final double kExtensionTolerance = 1.0;
+        public static final double kExtensionTolerance = 2.0;
 
         public static final double kVelocityScalar = 1.0;
         public static final double kAccelerationScalar = 4.0; //3.0

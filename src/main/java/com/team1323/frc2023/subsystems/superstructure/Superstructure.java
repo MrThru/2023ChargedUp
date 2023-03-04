@@ -132,9 +132,9 @@ public class Superstructure extends Subsystem {
 
 		@Override
 		public void onLoop(double timestamp) {
-			InterpolatingDouble elevatorHeight = new InterpolatingDouble(verticalElevator.getPosition());
+			/*InterpolatingDouble elevatorHeight = new InterpolatingDouble(verticalElevator.getPosition());
 			InterpolatingDouble maxSwerveSpeed = Constants.kElevatorHeightToSwerveSpeedMap.getInterpolated(elevatorHeight);
-			swerve.setMaxSpeed(maxSwerveSpeed.value);
+			swerve.setMaxSpeed(maxSwerveSpeed.value);*/
 
 			if(newRequest && activeRequest != null) {
 				activeRequest.act();
@@ -245,7 +245,7 @@ public class Superstructure extends Subsystem {
 	}
 	public void postIntakeState() {
 		request(new ParallelRequest(
-			//tunnel.queueShutdownRequest(),
+			tunnel.queueShutdownRequest(),
 			cubeIntake.stateRequest(CubeIntake.State.STOWED),
 			verticalElevator.heightRequest(0.25)
 		));
@@ -319,7 +319,7 @@ public class Superstructure extends Subsystem {
 			return coordinator.getConeStowChoreography();
 		} else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
 			return coordinator.getCubeStowChoreography();
-		} else  {
+		} else {
 			return coordinator.getFullStowChoreography(true);
 		}
 	}
@@ -421,7 +421,7 @@ public class Superstructure extends Subsystem {
 				new EmptyRequest();
 		request(new SequentialRequest(
 			new ParallelRequest(
-				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory),
+				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory, true),
 				switchToRetroRequest,
 				choreographyRequest(scoringChoreo)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0 || swerve.isVisionPIDDone())
@@ -443,7 +443,7 @@ public class Superstructure extends Subsystem {
 		return new SequentialRequest(
 			new LambdaRequest(() -> System.out.println("Started cube scoring sequence")),
 			new ParallelRequest(
-				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory),
+				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory, false),
 				choreographyRequest(scoringChoreo)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0),
 				new SequentialRequest(
@@ -541,7 +541,7 @@ public class Superstructure extends Subsystem {
 
 	public void cubeLowScoringSequence(Pose2d scoringPose) {
 		request(new SequentialRequest(
-			swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), false),
+			swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), false, true),
 			tunnel.stateRequest(Tunnel.State.EJECT_ONE),
 			waitRequest(1.0),
 			new LambdaRequest(() -> swerve.stop()),
@@ -569,7 +569,7 @@ public class Superstructure extends Subsystem {
 			intakeCube,
 			new LambdaRequest(() -> System.out.println("Finished intaking cube")),
 			new ParallelRequest(
-				tunnel.stateRequest(Tunnel.State.OFF),
+				// tunnel.stateRequest(Tunnel.State.OFF),
 				getCubeScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), coordinator::getCubeMidScoringChoreography,
 						SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, false, coordinator::getHalfCubeStowChoreography)
 			).withPrerequisite(() -> claw.getCurrentHoldingObject() == HoldingObject.Cube),

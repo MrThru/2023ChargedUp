@@ -32,12 +32,12 @@ public class GridTracker {
     }
 
 
-    private Map<String, List<PieceLocations>> gridPositions;
+    /*private Map<String, List<PieceLocations>> gridPositions;
     {
       gridPositions.put("Top", Arrays.asList());
       gridPositions.put("Mid", Arrays.asList());
       gridPositions.put("Low", Arrays.asList());
-    }
+    }*/
     public GridTracker() {
         constructGridLocations();
     }

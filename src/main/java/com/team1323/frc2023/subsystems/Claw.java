@@ -143,7 +143,7 @@ public class Claw extends Subsystem {
                     stopwatch.start();
                     stopwatch2.reset();
                 }
-                if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 0.25) {
+                if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 1.0) {
                     stopwatch2.startIfNotRunning();
                     if(stopwatch2.getTime() > 0.25) {
                         setCurrentHoldingObject(HoldingObject.Cone);

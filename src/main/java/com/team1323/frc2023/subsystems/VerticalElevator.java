@@ -30,7 +30,7 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(0.5));
         leader.setPIDF(Constants.VerticalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.VerticalElevator.kSupplyCurrentLimit);
-        zeroPosition();
+        leader.setSelectedSensorPosition(0);
         isZeroed = true;
         stop();
     }
@@ -105,6 +105,7 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
     @Override
     public void outputTelemetry() {
         SmartDashboard.putNumber("Vertical Elevator Height", getPosition());
+        SmartDashboard.putNumber("Vertical Elevator Target Height", encoderUnitsToOutputUnits(periodicIO.demand));
         SmartDashboard.putNumber("Vertical Elevator Encoder Position", periodicIO.position);
         SmartDashboard.putBoolean("Vertical Elevator Is On Target", isOnTarget());
         SmartDashboard.putNumber("Vertical Elevator Velocity", getVelocityOutputUnitsPerSecond());

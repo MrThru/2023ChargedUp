@@ -582,6 +582,7 @@ public class Swerve extends Subsystem{
 	}
 
 	public boolean areModulesStuck() {
+		final double kDesiredVelocityThreshold = 0.1;
 		final double kStuckThreshold = 2.0;
 		boolean stuck = true;
 		for(SwerveModule m : modules) {
@@ -590,7 +591,7 @@ public class Swerve extends Subsystem{
 			if (desiredVelocity == 0.0) {
 				desiredVelocity = expectedVelocity;
 			}
-			stuck &= expectedVelocity > kStuckThreshold * desiredVelocity;
+			stuck &= (desiredVelocity >= kDesiredVelocityThreshold) && (expectedVelocity > kStuckThreshold * desiredVelocity);
 		}
 		return stuck;
 	}
@@ -1021,7 +1022,7 @@ public class Swerve extends Subsystem{
 		
 	};
 
-	public Request visionPIDRequest(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory) {
+	public Request visionPIDRequest(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, boolean waitToFinish) {
 		return new Request(){
 		
 			@Override
@@ -1032,6 +1033,10 @@ public class Swerve extends Subsystem{
 
 			@Override
 			public boolean isFinished() {
+				if (!waitToFinish) {
+					return true;
+				}
+				
 				if (visionPID.isDone()) {
 					DriverStation.reportError("Swerve Vision PID Request Finished", false);
 					return true;

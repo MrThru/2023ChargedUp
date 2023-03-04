@@ -41,6 +41,7 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -193,7 +194,10 @@ public class DriverControls implements Loop {
                             new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0));
             swerve.startVisionPID(kShuttleIntakePosition, kShuttleIntakePosition.getRotation(), false);*/
             //swerve.startBalancePID();
-            s.tripleCubeScoringSequence();
+            //s.tripleCubeScoringSequence();
+            //cubeIntake.conformToState(CubeIntake.State.FLOOR);
+        } else if(driver.rightTrigger.wasReleased()) {
+            cubeIntake.conformToState(CubeIntake.State.STOWED);
         }
             
         if (driver.backButton.wasActivated()) {
@@ -308,8 +312,7 @@ public class DriverControls implements Loop {
             }
         } else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState();
-            if(tunnel.isEmpty())
-                tunnel.setState(Tunnel.State.OFF);
+            tunnel.queueShutdown(true);
         }
         SmartDashboard.putNumber("RB Pressed", (coDriver.rightBumper.isBeingPressed() ? 1 : 0));
 
@@ -317,6 +320,7 @@ public class DriverControls implements Loop {
             claw.conformToState(Claw.ControlState.CONE_OUTAKE);
         } else if(coDriver.rightCenterClick.wasReleased()) {
             claw.conformToState(Claw.ControlState.OFF);
+            claw.setCurrentHoldingObject(Claw.HoldingObject.None);
         }
 
         if(coDriver.leftBumper.wasActivated()) {
@@ -370,7 +374,7 @@ public class DriverControls implements Loop {
             tunnel.setState(Tunnel.State.OFF);
         }
 
-        if(coDriver.leftTrigger.wasActivated() /*&& AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())*/) {
+        if(coDriver.leftTrigger.wasActivated() && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
                 s.request(new SequentialRequest(
                     SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
@@ -382,13 +386,16 @@ public class DriverControls implements Loop {
             
         } else if(coDriver.leftTrigger.wasReleased()) {
             //s.postCubeIntakeState();
-            if(tunnel.getRearBanner()) {
+            /*if(tunnel.getRearBanner()) {
                 verticalElevator.setPosition(0.5);
                 cubeIntake.conformToState(CubeIntake.State.FLOOR);
                 tunnel.setTunnelEntranceSpeed(0);
             } else {
                 cubeIntake.conformToState(CubeIntake.State.STOWED);
-            }
+            }*/
+            verticalElevator.setPosition(0.5);
+            cubeIntake.conformToState(CubeIntake.State.FLOOR);
+            tunnel.setTunnelEntranceSpeed(0);
         }
 
 
@@ -401,18 +408,16 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.leftCenterClick.wasActivated() && coDriver.bButton.isBeingPressed()) {
-            wrist.setPosition(10);
+            wrist.setPosition(12);
             claw.conformToState(Claw.ControlState.OFF);
         } else if(coDriver.leftCenterClick.wasReleased() && coDriver.bButton.isBeingPressed()) {
             wrist.setPosition(SuperstructureCoordinator.kConeIntakingWristAngle);
             claw.conformToState(Claw.ControlState.CONE_INTAKE);
         }
 
-        if(coDriver.POV180.shortReleased()) {
-            claw.resetCurrentHolding();
-        } else if(coDriver.POV180.longPressed()) {
+        if(coDriver.POV180.wasActivated()) {
             cubeIntake.conformToState(CubeIntake.State.FLOOR);
-        } else if(coDriver.POV180.longReleased()) {
+        } else if(coDriver.POV180.wasReleased()) {
             cubeIntake.conformToState(CubeIntake.State.STOWED);
         }
 
@@ -447,6 +452,9 @@ public class DriverControls implements Loop {
         } else {
             wrist.lockPosition();
         }*/
+        
+
+
     }
 
     private void manualMode() {

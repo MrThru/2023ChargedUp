@@ -78,7 +78,7 @@ public class ObjectDetector {
         Translation2d robotRelativePosition = objectFieldPosition.toTranslation().translateBy(swervePose.getTranslation().inverse());
         ray.scale(robotRelativePosition.norm());
         detectedGameObject.setPosition(objectFieldPosition);
-        groundTracker.update(timestamp, Arrays.asList(robotRelativePosition));
+        //groundTracker.update(timestamp, Arrays.asList(robotRelativePosition));
         
         
     }
