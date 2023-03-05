@@ -47,6 +47,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         setSupplyCurrentLimit(Constants.CubeIntake.kSupplyCurrentLimit);
         setPositionToAbsolute();
         stop();
+        disableStatorCurrentLimit();
 
         
         
@@ -127,7 +128,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         public void onLoop(double timestamp) {
             updateArbitraryFeedForward();
             if (isOnTarget() && !isCurrentLimited) {
-                setStatorCurrentLimit(10.0);
+                setStatorCurrentLimit(15.0);
                 isCurrentLimited = true;
             }
         }

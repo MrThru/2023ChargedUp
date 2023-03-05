@@ -60,7 +60,7 @@ public class VisionPIDController {
     private boolean useRetroTarget = false;
 
     public void start(Pose2d currentPose, Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, boolean useRetroTarget) {
-        //LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         lateralPID.setSetpoint(0.0);
         forwardPID.setSetpoint(0.0);
         targetPosition = desiredFieldPose.getTranslation();
@@ -103,6 +103,7 @@ public class VisionPIDController {
 
     public void resetDistanceToTargetPosition() {
         distanceToTargetPosition = Double.POSITIVE_INFINITY;
+        targetReached = false;
     }
 
     private boolean canSwitchToVisionPID(Pose2d robotPose, Translation2d scoringPosition) {

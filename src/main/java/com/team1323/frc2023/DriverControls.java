@@ -8,33 +8,32 @@
 package com.team1323.frc2023;
 
 import java.util.Arrays;
-import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.LimelightProcessor;
-import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
+import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.LEDs;
+import com.team1323.frc2023.subsystems.LEDs.LEDColors;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
-import com.team1323.frc2023.subsystems.LEDs.LEDColors;
 import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
+import com.team1323.frc2023.subsystems.requests.EmptyRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.GridTracker;
-import com.team1323.frc2023.vision.ObjectDetector.Cone;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Util;
@@ -97,7 +96,7 @@ public class DriverControls implements Loop {
         testController = new Xbox(4);
         singleController = new Xbox(5);
         driver.setDeadband(0.0);
-		coDriver.setDeadband(0.25);
+		coDriver.setDeadband(0.6);
 
         swerve = Swerve.getInstance();
         verticalElevator = VerticalElevator.getInstance();
@@ -117,8 +116,10 @@ public class DriverControls implements Loop {
 
     @Override
     public void onStart(double timestamp) {
-        if(inAuto) {
+        if (inAuto) {
             swerve.requireModuleConfiguration();
+        } else {
+            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         }
         SmartDashboard.putBoolean("Subsystems Coast Mode", false);
         swerve.setDriveNeutralMode(NeutralMode.Brake);
@@ -172,12 +173,12 @@ public class DriverControls implements Loop {
             swerve.rotate(Rotation2d.fromDegrees(0));
         
         
-        /*if (driver.rightTrigger.wasActivated()) {
+        if (driver.rightTrigger.wasActivated()) {
             NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
             Pose2d scoringPose = ScoringPoses.getScoringPose(dashboardNodeLocation);
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
             s.scoringSequence(dashboardNodeLocation);
-        }*/
+        }
 
         /*if (driver.rightTrigger.wasActivated()) {
             Translation2d conePosition = LimelightProcessor.getInstance().getConePosition();
@@ -189,7 +190,7 @@ public class DriverControls implements Loop {
             }
         }*/
 
-        if(driver.rightTrigger.wasActivated()) {
+        /*if(driver.rightTrigger.wasActivated()) {
             //s.shuttleIntakeSequence();
             /*Pose2d kShuttleIntakePosition = (AllianceChooser.getAlliance() == Alliance.Blue) ? new Pose2d(new Translation2d(554.34, 287.25), Rotation2d.fromDegrees(90)) :
                             new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0));
@@ -197,9 +198,9 @@ public class DriverControls implements Loop {
             //swerve.startBalancePID();
             //s.tripleCubeScoringSequence();
             //cubeIntake.conformToState(CubeIntake.State.FLOOR);
-        } else if(driver.rightTrigger.wasReleased()) {
+        /*} else if(driver.rightTrigger.wasReleased()) {
             cubeIntake.conformToState(CubeIntake.State.STOWED);
-        }
+        }*/
             
         if (driver.backButton.wasActivated()) {
             swerve.temporarilyDisableHeadingController();
@@ -209,6 +210,7 @@ public class DriverControls implements Loop {
 
         if (driver.startButton.wasActivated()) {
             swerve.stop();
+            swerve.resetVisionPID();
             LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         }
 
@@ -234,9 +236,9 @@ public class DriverControls implements Loop {
                     }
                 } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
                     if(targetScoringRow == NodeLocation.Row.TOP) {
-                        s.cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()));
+                        s.cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), true);
                     } else if(targetScoringRow == NodeLocation.Row.MIDDLE) {
-                        s.cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()));
+                        s.cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), true);
                     }
                 }
                 if(targetScoringRow == NodeLocation.Row.BOTTOM && !tunnel.allowSingleIntakeMode()) {
@@ -320,7 +322,7 @@ public class DriverControls implements Loop {
         if(coDriver.rightCenterClick.wasActivated()) {
             claw.conformToState(Claw.ControlState.CONE_OUTAKE);
         } else if(coDriver.rightCenterClick.wasReleased()) {
-            claw.conformToState(Claw.ControlState.OFF);
+            //claw.conformToState(Claw.ControlState.OFF);
             claw.setCurrentHoldingObject(Claw.HoldingObject.None);
         }
 
@@ -403,16 +405,19 @@ public class DriverControls implements Loop {
         if(coDriver.rightBumper.wasActivated()) {
             //lastTunnelState = tunnel.getState();
             tunnel.setState(Tunnel.State.SPIT);
+            cubeIntake.setIntakeSpeed(0.5);
         } else if(coDriver.rightBumper.wasReleased()) {
             //lastTunnelState = (lastTunnelState == Tunnel.State.SPIT) ? Tunnel.State.OFF : lastTunnelState;
             tunnel.setState(Tunnel.State.OFF);
+            cubeIntake.setIntakeSpeed(0.0);
         }
 
         if(coDriver.leftCenterClick.wasActivated() && coDriver.bButton.isBeingPressed()) {
-            wrist.setPosition(12);
+            //wrist.setPosition(12); // 12
+            s.request(SuperstructureCoordinator.getInstance().getConeFlipChoreography());
             claw.conformToState(Claw.ControlState.OFF);
         } else if(coDriver.leftCenterClick.wasReleased() && coDriver.bButton.isBeingPressed()) {
-            wrist.setPosition(SuperstructureCoordinator.kConeIntakingWristAngle);
+            s.coneIntakeSequence();
             claw.conformToState(Claw.ControlState.CONE_INTAKE);
         }
 
@@ -438,6 +443,11 @@ public class DriverControls implements Loop {
 
         if(cubeIntake.getState() == CubeIntake.State.INTAKE) {
             cubeIntake.acceptManualInput(-coDriver.getLeftY() * 0.1);
+        }
+        double rightStickY = -coDriver.getRightY() * 0.15;
+        verticalElevator.acceptManualInput(rightStickY);
+        if (Math.abs(rightStickY) != 0) {
+            s.request(new EmptyRequest());
         }
 
         if (coDriver.backButton.wasActivated()) {
@@ -650,7 +660,7 @@ public class DriverControls implements Loop {
         } else if (testController.POV180.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
         } else if (testController.POV270.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
         }
 
         // D-pad controls for vision PID

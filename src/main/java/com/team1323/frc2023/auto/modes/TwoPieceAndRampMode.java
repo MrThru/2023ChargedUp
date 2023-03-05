@@ -70,7 +70,7 @@ public class TwoPieceAndRampMode extends AutoModeBase {
         runAction(new WaitToPassXCoordinateAction(110, quadrant));
         runAction(new WaitToIntakeAction(HoldingObject.Cube));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
-            Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()));
+            Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
             runAction(new WaitToEjectObjectAction());
         } else {
             runAction(new WaitToFinishPathAction());

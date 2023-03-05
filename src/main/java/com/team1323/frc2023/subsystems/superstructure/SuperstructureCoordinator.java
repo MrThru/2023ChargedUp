@@ -147,8 +147,8 @@ public class SuperstructureCoordinator {
                     new ParallelRequest(
                         verticalElevator.heightRequest(kVerticalHeightForTopBarClearance),
                         wrist.angleRequest(finalPosition.wristAngle)
-                    ).withPrerequisites(() -> horizontalElevator.getPosition() < kHorizontalExtensionForGridClearance,
-                            shoulder.anglePrerequisite(90.0))
+                    ).withPrerequisites(horizontalElevator.willReachExtensionWithinTime(kHorizontalExtensionForUprightShoulder, 1.0) /*horizontalElevator.getPosition() < kHorizontalExtensionForGridClearance,*/
+                            /*shoulder.anglePrerequisite(90.0)*/)
                 ),
                 new ParallelRequest(
                     shoulder.angleRequest(finalPosition.shoulderAngle),
@@ -312,6 +312,19 @@ public class SuperstructureCoordinator {
         return getLowChoreography(finalPosition);
     }
 
+    public Request getConeFlipChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            0.1,
+            6.1,
+            -95.0,
+            133.5
+        );
+
+        System.out.println("Cone flip choreo");
+        
+        return getLowChoreography(finalPosition);
+    }
+
     private Request getHighChoreography(SuperstructurePosition finalPosition) {
         return getHighChoreography(finalPosition, 0.0);
     }
@@ -447,7 +460,7 @@ public class SuperstructureCoordinator {
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             17.5,
-            25.5,
+            25.0,
             34.75,
             -4.75 //-4.75
         );
@@ -477,7 +490,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             1,
             kCubeMidScoringHorizontalExtension,
-            60.,
+            55.0,
             kCubeHoldingWristAngle
         );
 
@@ -490,7 +503,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             16.0,
             kCubeHighScoringHorizontalExtension,
-            60.0,
+            55.0,
             kCubeHoldingWristAngle
         );
 

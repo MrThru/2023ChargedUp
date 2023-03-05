@@ -12,6 +12,7 @@ import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeEndedException;
 import com.team1323.frc2023.auto.actions.ResetPoseAction;
 import com.team1323.frc2023.auto.actions.SetTrajectoryAction;
+import com.team1323.frc2023.auto.actions.WaitForRemainingTimeAction;
 import com.team1323.frc2023.auto.actions.WaitForSuperstructureAction;
 import com.team1323.frc2023.auto.actions.WaitToEjectObjectAction;
 import com.team1323.frc2023.auto.actions.WaitToFinishPathAction;
@@ -66,7 +67,9 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         Superstructure.getInstance().coneMidScoreManual();
         runAction(new WaitForSuperstructureAction());
-        runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 0.75, quadrant));
+        Rotation2d targetHeading = Rotation2d.fromDegrees(quadrant.hasBump() ? -170 : 180);
+        runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, targetHeading, 0.75, quadrant));
+        
         runAction(new WaitToEjectObjectAction());
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
 
@@ -81,7 +84,7 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         runAction(new WaitToPassXCoordinateAction(110, quadrant));
         runAction(new WaitToIntakeAction(HoldingObject.Cube));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
-            Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()));
+            Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
             runAction(new WaitToEjectObjectAction());
         } else {
             runAction(new WaitToFinishPathAction());
@@ -96,7 +99,7 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         Pose2d coneIntakingPosition = LimelightProcessor.getInstance().getRobotConePickupPosition(AutoZones.mirror(Constants.kSecondPickupConePosition, quadrant));
         LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         if(!coneIntakingPosition.equals(Pose2d.identity())) {
-            coneIntakingPosition = coneIntakingPosition.transformBy(Pose2d.fromTranslation(new Translation2d(0, 0)));
+            coneIntakingPosition = coneIntakingPosition.transformBy(Pose2d.fromTranslation(new Translation2d(quadrant.hasBump() ? 4 : 0, 0)));
             Swerve.getInstance().startVisionPID(coneIntakingPosition, coneIntakingPosition.getRotation(), false,
                     new SynchronousPIDF(0.07, 0.0, 0.0),
                     new SynchronousPIDF(0.02, 0.0, 0.0),
@@ -115,7 +118,14 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
             NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.RIGHT), quadrant);
             Superstructure.getInstance().scoringSequence(nodeLocation);
-            runAction(new WaitToEjectObjectAction());
+            runAction(new WaitForRemainingTimeAction(0.375, startTime));
+            if (Swerve.getInstance().getDistanceToTargetPosition() <= 4.0) {
+                Claw.getInstance().conformToState(Claw.ControlState.CONE_OUTAKE);
+            }
+            runAction(new WaitForRemainingTimeAction(0.1, startTime));
+            if (Claw.getInstance().getState() == Claw.ControlState.CONE_OUTAKE) {
+                Claw.getInstance().setCurrentHoldingObject(HoldingObject.None);
+            }
         } else {
             runAction(new WaitToFinishPathAction());
             Superstructure.getInstance().objectAwareStowSequence();

@@ -57,5 +57,9 @@ public class AutoZones {
 
     public enum Quadrant {
         BOTTOM_LEFT, TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT;
+
+        public boolean hasBump() {
+            return this == BOTTOM_LEFT || this == BOTTOM_RIGHT;
+        }
     }
 }

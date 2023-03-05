@@ -177,7 +177,7 @@ public class Claw extends Subsystem {
             } else if(currentState == ControlState.CUBE_OUTAKE) {
                 if(stateChanged)
                     stopwatch.start();
-                if(stopwatch.getTime() > 0.6) {
+                if(stopwatch.getTime() > 0.3) {
                     setCurrentHoldingObject(HoldingObject.None);
                 }
                 if(getCurrentHoldingObject() == HoldingObject.None && stopwatch.getTime() > 3.0) {

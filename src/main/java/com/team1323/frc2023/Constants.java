@@ -275,7 +275,7 @@ public class Constants {
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerShoulderRotation / 360.0;
 
-        public static final double kMinControlAngle = -90.0;
+        public static final double kMinControlAngle = -95.0;
         public static final double kMaxControlAngle = 180.0;
 
         public static final double kAngleTolerance = 4.0;
