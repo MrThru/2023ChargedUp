@@ -257,6 +257,7 @@ public class Swerve extends Subsystem{
 		updateInputs = enable;
 	}
 	private boolean robotCentric = false;
+	private boolean translationStickReset = false;
 	
 	//Swerve kinematics (exists in a separate class)
 	private SwerveInverseKinematics inverseKinematics = new SwerveInverseKinematics();
@@ -342,17 +343,27 @@ public class Swerve extends Subsystem{
 			
 			rotationalInput = rotate;
 			
+			if(Util.epsilonEquals(translationalInput.norm(), 0.0) && !translationStickReset) {
+				translationStickReset = true;
+			}
+
 			if(!Util.epsilonEquals(translationalInput.norm(), 0.0)){
 				if (headingController.getState() == SwerveHeadingController.State.Snap || 
 					headingController.getState() == SwerveHeadingController.State.Stationary)
 					headingController.setStabilizationTarget(headingController.getTargetHeading());
 
 				if(isTracking() || currentState == ControlState.POSITION){
-					if (Math.hypot(x, y) >= 0.5) {
+					/*if (Math.hypot(x, y) >= 0.5) {
+						stop();
+					}*/
+					if(Math.hypot(x, y) >= 0.5 && translationStickReset) {
+						translationStickReset = false;
+						System.out.println("VisionPID stopped due to Translation breakout");
 						stop();
 					}
 				} else if(currentState != ControlState.MANUAL){
 					setState(ControlState.MANUAL);
+					
 				}
 			}else if(!Util.epsilonEquals(rotationalInput, 0.0)){
 				if(currentState != ControlState.MANUAL && currentState != ControlState.TRAJECTORY && currentState != ControlState.VISION_PID && currentState != ControlState.POSITION){
@@ -661,6 +672,7 @@ public class Swerve extends Subsystem{
 		visionPID.setDecelerationRamp(decelerationRamp);
 		visionPID.start(pose, desiredFieldPose, approachAngle, useTrajectory, false);
 		rotationScalar = 0.75;
+		translationStickReset = false;
 		setState(ControlState.VISION_PID);
 	}
 
@@ -1248,10 +1260,12 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.outputTelemetry());
 		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getDegrees()});
 		SmartDashboard.putNumberArray("Robot Velocity", new double[]{velocity.dx, velocity.dy, velocity.dtheta});
-
+		
 		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getDegrees());
-
+		
 		SmartDashboard.putString("Swerve Last Drive Vector", lastDriveVector.toString());
+
+		SmartDashboard.putString("Swerve State", currentState.toString());
 
 		if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
 			setDriveNeutralMode(NeutralMode.Coast);
@@ -1270,7 +1284,6 @@ public class Swerve extends Subsystem{
 			SmartDashboard.putNumber("Target Heading", getTargetHeading().getDegrees());
 			SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
 			SmartDashboard.putString("Robot Velocity", velocity.toString());
-			SmartDashboard.putString("Swerve State", currentState.toString());
 			SmartDashboard.putNumberArray("Pigeon YPR", pigeon.getYPR());
 			SmartDashboard.putNumber("Gyro Yaw", pigeon.getYaw().getDegrees());
 			SmartDashboard.putNumber("Gyro Pitch", pigeon.getRoll().getDegrees());

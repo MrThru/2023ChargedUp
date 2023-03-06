@@ -17,6 +17,7 @@ import com.team1323.lib.util.Stopwatch;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Have a single state named "detect" that will handle
@@ -71,6 +72,9 @@ public class Tunnel extends Subsystem {
         return currentState;
     }
     public void setState(State state) {
+        if(state == State.OFF) {
+            DriverStation.reportError("Set State to OFF, current Shutdown state = " + shutdownState.toString(), true);
+        }
         currentState = state;
         stateChanged = true;
     }
@@ -107,6 +111,15 @@ public class Tunnel extends Subsystem {
     public void queueShutdown(boolean pendingShutdown) {
         this.pendingShutdown = pendingShutdown;
     }
+    private State shutdownState = State.COMMUNITY;
+    public void queueShutdownAndChangestate(State state) {
+        shutdownState = state;
+        queueShutdown(true);
+    }
+    private boolean autoAdjustElevator = false;
+    public void setAutoAdjustElevator(boolean enable) {
+        autoAdjustElevator = enable;
+    }
     public boolean getFrontBanner() {
         return frontBanner.get();
     }
@@ -130,15 +143,10 @@ public class Tunnel extends Subsystem {
     public double rpmToEncUnits(double rpm) {
         return (rpm / 600) * 2048.0;
     }
+
     Stopwatch bannerActivatedStopwatch = new Stopwatch();
     Stopwatch cubeEjectedStopwatch = new Stopwatch();
     Stopwatch queueShutdownStopwatch = new Stopwatch();
-    private double lastCubeDetectedtimestamp = Double.POSITIVE_INFINITY;
-    private boolean frontBannerActivated = false;
-    private boolean cubeSentThrough = false;
-    public boolean cubeOnBumper() {
-        return frontBannerActivated;
-    }
     
     Loop loop = new Loop() {
 
@@ -146,7 +154,6 @@ public class Tunnel extends Subsystem {
         public void onStart(double timestamp) {
                         
         }
-        
 
         @Override
         public void onLoop(double timestamp) {
@@ -154,54 +161,51 @@ public class Tunnel extends Subsystem {
                 pendingShutdown = false;
                 queueShutdownStopwatch.reset();
                 bannerActivatedStopwatch.reset();
+                cubeEjected = false;
             }
             switch(currentState) {
                 //ToDo: Send straight through to claw, if the claw is empty
                 case COMMUNITY:
-                    if(getFrontBanner() && getRearBanner()) {
-                        if(getCubeIntakeBanner()) {
-                            setState(State.OFF);
-                            cubeIntake.setHoldMode();
-                        }
-                    } else if(getFrontBanner()) {
-                        bannerActivatedStopwatch.startIfNotRunning();
-                        if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && claw.getState() == Claw.ControlState.CUBE_INTAKE &&
-                                Shoulder.getInstance().isOnTarget()) {
-                            setConveyorSpeed(0.25);
-                            setRollerSpeed(0.25);
-                        } else if(bannerActivatedStopwatch.getTime() > 0.02) {
-                            setAllSpeeds(0);
-                            setTunnelEntranceSpeed(0.65);
-                        }
-                    } else {
+                    if(allowSingleIntakeMode()) {
+                        setRollerSpeeds(0.1, 1.0);
+                        setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                         bannerActivatedStopwatch.reset();
-                        setTunnelEntranceSpeed(0.65);
-                        setRollerSpeeds(0.25, 1);
-                    }
-                    
-                    
-                    break;
-                case DETECT:
-                    if(!getFrontBanner()) {
-                        setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
-                        setTunnelEntranceSpeed(0.50);
-                    } else if(!getRearBanner()) {
-                        setRollerSpeeds(Constants.Tunnel.kFeedFrontRollerSpeed, Constants.Tunnel.kFeedConveyorSpeed);
-                        setTunnelEntranceSpeed(0.50);
                     } else {
-                        if(CubeIntake.getInstance().getBanner() && Double.isInfinite(lastCubeDetectedtimestamp)) {
-                            lastCubeDetectedtimestamp = timestamp;
-                        } else if(Double.isInfinite(lastCubeDetectedtimestamp)) {
-                            setRollerSpeeds(0, 0);
-                            setTunnelEntranceSpeed(0.05);
+                        if(getFrontBanner()) {
+                            bannerActivatedStopwatch.startIfNotRunning();
+                            if(bannerActivatedStopwatch.getTime() > 0.06) {
+                                setRollerSpeeds(0, 0);
+                            }
+                            if(getRearBanner()) {
+                                if(getCubeIntakeBanner()) {
+                                    cubeIntake.setHoldMode();
+                                    setState(State.OFF);
+                                } else if(cubeIntake.getState() == CubeIntake.State.FLOOR && bannerActivatedStopwatch.getTime() > 0.06) {
+                                    //setState(State.OFF);
+                                    cubeIntake.setIntakeSpeed(0);
+                                }
+                                setTunnelEntranceSpeed(0.0);
+                            } else {
+                                if(!getCubeIntakeBanner() && cubeIntake.getState() == CubeIntake.State.FLOOR) {
+                                    //setState(State.OFF);
+                                }
+                                setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
+                            }
+
+                        } else {
+                            bannerActivatedStopwatch.reset();
+                            setRollerSpeeds(0.1, 1.0);
+                            setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
+                            if(getRearBanner()) {
+                                if(cubeIntake.getState() == CubeIntake.State.FLOOR) {
+                                    cubeIntake.setIntakeSpeed(0);
+                                }
+                            } else {
+                                if(cubeIntake.getState() == CubeIntake.State.FLOOR) {
+                                    cubeIntake.setIntakeSpeed(CubeIntake.State.INTAKE.intakeSpeed);
+                                }
+                            }
                         }
-                        if(timestamp - lastCubeDetectedtimestamp > 0.5) {
-                            setTunnelEntranceSpeed(0.0);
-                            lastCubeDetectedtimestamp = Double.POSITIVE_INFINITY;
-                            CubeIntake.getInstance().setHoldMode();
-                            setState(State.OFF);
-                        }
-                        
                     }
                     break;
                 case SINGLE_INTAKE:
@@ -223,56 +227,31 @@ public class Tunnel extends Subsystem {
                     if(bannerActivatedStopwatch.getTime() > 0.05) {
                         // if(frontRollerTalon.getStatorCurrent() > 7.0)
                         setAllSpeeds(0);
-                        bannerActivatedStopwatch.reset();                       
+                        bannerActivatedStopwatch.reset();
                     }
                     if(getFrontBanner()) {
                         bannerActivatedStopwatch.startIfNotRunning();
                     } else {
                         setRollerSpeeds(0.1, 1.0);
-                        setTunnelEntranceSpeed(0.75);
+                        setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                     }
-                    break;
-                case STUCK_ON_BUMPER:
-                    if(frontBannerActivated && !getFrontBanner()) {
-                        if(frontRollerTalon.getStatorCurrent() > 7.0) 
-                        {
-                            setAllSpeeds(0);
-                            setTunnelEntranceSpeed(0.65);
-                        }
-                    } else if(!frontBannerActivated && getFrontBanner()) {
-                        setRollerSpeeds(0.25, 0.4);
-                        setTunnelEntranceSpeed(0.25);
-                        frontBannerActivated = true;
-                    } else if(getFrontBanner() && getRearBanner() && getCubeIntakeBanner()) {
-                        cubeIntake.setHoldMode();
-                        setAllSpeeds(0);
-                    } else if(!getFrontBanner()) {
-                        setRollerSpeeds(-0.60, 0.4);
-                        setTunnelEntranceSpeed(0.65);
-                    }
-                    
                     break;
                 case EJECT_ONE:
-                    if(cubeEjected && !getFrontBanner()) {
-                        cubeEjected = false;
-                        setState(State.OFF);
-                    } else if(getFrontBanner()) {
-                        setRollerSpeeds(0.25, 1.0);
-                        cubeEjected = true;
-                    } else if(!allowSingleIntakeMode()) {
-                        setRollerSpeeds(0.25, 1.0);
-                        if(getCubeIntakeBanner()) {
-                            setTunnelEntranceSpeed(0.65);
-                            cubeIntake.setIntakeSpeed(0.5);
+                    if(getFrontBanner()) {
+                        setRollerSpeeds(0.25, 0.0);
+                    } else {
+                        if(!allowSingleIntakeMode()) {
+                            setState(State.COMMUNITY);
+                        } else {
+                            setState(State.SINGLE_INTAKE);
+                            queueShutdown(true);
                         }
                     }
-
                     break;
                 case SPIT:
                     setRollerSpeed(0.25);
                     setConveyorSpeed(0.25);
                     setTunnelEntranceSpeed(0.25);
-                    frontBannerActivated = false;
                     break;
                 case HOLD:
                     setRollerSpeed(Constants.Tunnel.kHoldFrontRollerSpeed);
@@ -324,7 +303,6 @@ public class Tunnel extends Subsystem {
         SmartDashboard.putString("Tunnel Control State", currentState.toString());
         SmartDashboard.putNumber("Tunnel Top Roller Current", frontRollerTalon.getStatorCurrent());
         SmartDashboard.putNumber("Tunnel Floor Percent Output", conveyorSpeed);
-        SmartDashboard.putBoolean("Cube on Bumper", frontBannerActivated);
     }
 
     public Request stateRequest(State desiredState) {

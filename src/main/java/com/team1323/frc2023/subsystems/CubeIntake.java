@@ -54,8 +54,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         intakeRoller = TalonFXFactory.createRollerTalon(Ports.CUBE_INTAKE, Ports.CANBUS);
         intakeRoller.setInverted(TalonFXInvertType.CounterClockwise);
         intakeRoller.setNeutralMode(NeutralMode.Brake);
-        setIntakeCurrent(30.0);
-
+        setIntakeCurrent(Constants.CubeIntake.kStandardIntakeCurrentLimit);
 
         banner = new DigitalInput(Ports.INTAKE_BANNER);
     }
@@ -67,8 +66,8 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     public static enum State {
         STOWED(Constants.CubeIntake.kMaxControlAngle, 0), INTAKE(Constants.CubeIntake.kIntakeAngle, 0.55),
                             FLOOR(Constants.CubeIntake.kFloorAngle, 0);
-        double intakeAngle;
-        double intakeSpeed;
+        public final double intakeAngle;
+        public final double intakeSpeed;
         State(double intakeAngle,double intakeSpeed) {
             this.intakeAngle = intakeAngle;
             this.intakeSpeed = intakeSpeed;
@@ -103,6 +102,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     private boolean isCurrentLimited = false;
+    private boolean intakeCurrentLimitSet = false;
     @Override
     public void setPosition(double outputUnits) {
         if (isCurrentLimited) {
@@ -121,16 +121,22 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         public void onStart(double timestamp) {
             updateArbitraryFeedForward();
             setIntakeSpeed(0);
-
         }
 
         @Override
         public void onLoop(double timestamp) {
             updateArbitraryFeedForward();
-            if (isOnTarget() && !isCurrentLimited) {
+            if (isOnTarget() && !isCurrentLimited && getPosition() < 100) {
                 setStatorCurrentLimit(15.0);
                 isCurrentLimited = true;
             }
+            /*if(getBanner() && !intakeCurrentLimitSet) {
+                setIntakeCurrent(Constants.CubeIntake.kLowerIntakeCurrentLimit);
+                intakeCurrentLimitSet = true;
+            } else if(!getBanner() && intakeCurrentLimitSet) {
+                setIntakeCurrent(Constants.CubeIntake.kStandardIntakeCurrentLimit);
+                intakeCurrentLimitSet = false;
+            }*/
         }
 
         @Override

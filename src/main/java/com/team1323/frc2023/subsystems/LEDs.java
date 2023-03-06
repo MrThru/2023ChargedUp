@@ -118,17 +118,17 @@ public class LEDs extends Subsystem {
         if (selectedLEDType == LEDMode.SOLID) {
             candle.setLEDs(mRed, mGreen, mBlue);
         } else if (selectedLEDType == LEDMode.RAINBOW) {
-            RainbowAnimation animation = new RainbowAnimation(0.25, 0.25, 1690);
+            RainbowAnimation animation = new RainbowAnimation(0.25, 0.25, 400);
             candle.animate(animation);
         } else if (selectedLEDType == LEDMode.FIRE) {
             FireAnimation fireAnimation = new FireAnimation(1, 1, 1690, 1, 0.25);
             candle.animate(fireAnimation);
         } else if (selectedLEDType == LEDMode.TWINKLE) {
-            TwinkleAnimation twinkleAnimation = new TwinkleAnimation(255, 255, 255, 127, 0.25, 1690,
+            TwinkleAnimation twinkleAnimation = new TwinkleAnimation(255, 255, 255, 127, 0.25, 400,
                     TwinklePercent.Percent76);
             candle.animate(twinkleAnimation);
         } else if (selectedLEDType == LEDMode.STROBE) {
-            candle.animate(new StrobeAnimation(100, 100, 100, 50, 0.25, 1690));
+            candle.animate(new StrobeAnimation(100, 100, 100, 50, 0.25, 400));
         } else if (selectedLEDType == LEDMode.BLINK_SOLID) {
             // candle.animate()
             double time = blinkStopwatch.getTime();

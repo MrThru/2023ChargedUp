@@ -187,6 +187,9 @@ public class Constants {
         
         public static final double kSupplyCurrentLimit = 25.0;
 
+        public static final double kStandardIntakeCurrentLimit = 30.0;
+        public static final double kLowerIntakeCurrentLimit = 20.0;
+
         public static final double kArbitraryFeedForward = 0.025;
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             1,
@@ -207,6 +210,52 @@ public class Constants {
             100.0,
             109.0,
             108.0
+        );
+    }
+
+    public static class Tunnel {
+
+        public static final double kIntakeSpeed = 0.5;
+        public static final double kIntakeConveyorSpeed = 0.2;
+
+        public static final double kFloorRatio = 9.722222222;
+        public static final double kTopRollerRatio = 2.333333333;
+        public static final double kTunnelEntranceRatio = 2.333333333;
+
+        public static final double kIntakeFrontRollerSpeed = kIntakeConveyorSpeed * -2.0;
+
+        public static final double kFeedConveyorSpeed = 0.4;
+        public static final double kFeedFrontRollerSpeed = kFeedConveyorSpeed * -1.5;
+
+        public static final double kHoldConveyorSpeed = 0.1;
+        public static final double kHoldFrontRollerSpeed = kHoldConveyorSpeed * -2.0;
+
+        public static final double kScoreConveyorSpeed = 0.25;
+        public static final double kScoreFrontRollerSpeed = 0.25;
+
+        public static final double kTunnelEntranceSpeed = 0.75;
+        public static final TalonPIDF kConveyorPID = new TalonPIDF(
+            0,
+            0,
+            0,
+            0,
+            0.048
+        );
+
+        public static final TalonPIDF kFrontRollerPID = new TalonPIDF(
+            0,
+            0,
+            0,
+            0,
+            0.048
+        );
+        
+        public static final TalonPIDF kTunnelEntrance = new TalonPIDF(
+            0, 
+            0, 
+            0,
+            0, 
+            0.048
         );
     }
 
@@ -380,50 +429,6 @@ public class Constants {
         public static final double kConeOffset = 3;
     }
 
-    public static class Tunnel {
-
-        public static final double kIntakeSpeed = 0.5;
-        public static final double kIntakeConveyorSpeed = 0.2;
-
-        public static final double kFloorRatio = 9.722222222;
-        public static final double kTopRollerRatio = 2.333333333;
-        public static final double kTunnelEntranceRatio = 2.333333333;
-
-        public static final double kIntakeFrontRollerSpeed = kIntakeConveyorSpeed * -2.0;
-
-        public static final double kFeedConveyorSpeed = 0.4;
-        public static final double kFeedFrontRollerSpeed = kFeedConveyorSpeed * -1.5;
-
-        public static final double kHoldConveyorSpeed = 0.1;
-        public static final double kHoldFrontRollerSpeed = kHoldConveyorSpeed * -2.0;
-
-        public static final double kScoreConveyorSpeed = 0.25;
-        public static final double kScoreFrontRollerSpeed = 0.25;
-
-        public static final TalonPIDF kConveyorPID = new TalonPIDF(
-            0,
-            0,
-            0,
-            0,
-            0.048
-        );
-
-        public static final TalonPIDF kFrontRollerPID = new TalonPIDF(
-            0,
-            0,
-            0,
-            0,
-            0.048
-        );
-        
-        public static final TalonPIDF kTunnelEntrance = new TalonPIDF(
-            0, 
-            0, 
-            0,
-            0, 
-            0.048
-        );
-    }
 
     public static class Winch {
         public static final double kMotorRotationsPerWinchRotation = 1.0;

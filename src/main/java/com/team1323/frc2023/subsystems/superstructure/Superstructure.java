@@ -289,7 +289,10 @@ public class Superstructure extends Subsystem {
 	}
 
 	public void coneIntakeSequence() {
-		request(new SequentialRequest(
+		request(getConeIntakeSequence());
+	}
+	public Request getConeIntakeSequence() {
+		return new SequentialRequest(
 			SuperstructureCoordinator.getInstance().getConeIntakeChoreography(),
 			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
 			new ParallelRequest(
@@ -299,8 +302,9 @@ public class Superstructure extends Subsystem {
 			new LambdaRequest(() -> {coneIntakingSequence = false;})
 		).withCleanup(() -> {
 			coneIntakingSequence = false;
+			System.out.println("Cone Intake Sequence Reset");
 		}
-		));
+		);
 	}
 
 	public void coneIntakeWithoutScanSequence() {
@@ -319,7 +323,10 @@ public class Superstructure extends Subsystem {
 
 	public Request objectAwareStow() {
 		if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
-			return coordinator.getConeStowChoreography();
+			return new ParallelRequest(
+				coordinator.getConeStowChoreography(), 			
+				new LambdaRequest(() -> {coneIntakingSequence = false;})
+			);
 		} else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
 			return coordinator.getCubeStowChoreography();
 		} else {

@@ -216,8 +216,8 @@ public class DriverControls implements Loop {
 
         if (driver.leftTrigger.wasActivated()) {
             System.out.println("Cone Intaking Sequence" + s.coneIntakingSequence);
-            System.out.println("Detected Object When Tracking: " + claw.getCurrentHoldingObject().toString());
             if(!s.coneIntakingSequence) {
+                System.out.println("Detected Object When Tracking: " + claw.getCurrentHoldingObject().toString());
                 if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
                     Pose2d leftScoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
                     Pose2d rightScoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
@@ -337,14 +337,17 @@ public class DriverControls implements Loop {
         }*/
 
         if(coDriver.bButton.shortReleased()) {
-            s.objectAwareStowSequence();
+            if(claw.getState() != Claw.ControlState.CONE_INTAKE || claw.getRPM() > 2000 || claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
+                s.objectAwareStowSequence();
+            }
         } else if(coDriver.bButton.longReleased()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
                 s.request(new ParallelRequest(
                     SuperstructureCoordinator.getInstance().getFullStowChoreography(true),
                     claw.stateRequest(Claw.ControlState.OFF)
                 ));
-            }else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube && claw.getState() == Claw.ControlState.CUBE_INTAKE) {
+                System.out.println("Button Pressed For Full Stow Choreography");
+            } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube && claw.getState() == Claw.ControlState.CUBE_INTAKE) {
                 s.request(new ParallelRequest(
                     s.objectAwareStow()
                 ));
@@ -358,47 +361,32 @@ public class DriverControls implements Loop {
 
         if(coDriver.xButton.wasActivated()) {
             targetScoringRow = NodeLocation.Row.MIDDLE;
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (!tunnel.allowSingleIntakeMode() || tunnel.cubeOnBumper())) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
                 s.handOffCubeState();
             }
             leds.configLEDs(LEDs.LEDColors.ORANGE);
         }
         if(coDriver.yButton.wasActivated()) {
             targetScoringRow = NodeLocation.Row.TOP;
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (!tunnel.allowSingleIntakeMode() || tunnel.cubeOnBumper())) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
                 s.handOffCubeState();
             }
             leds.configLEDs(LEDs.LEDColors.RED);
 
         }
+
+
         if(coDriver.rightTrigger.wasActivated()) {
             tunnel.setState(Tunnel.State.EJECT_ONE);
-        } else if(coDriver.rightTrigger.wasActivated()) {
-            tunnel.setState(Tunnel.State.OFF);
         }
 
         if(coDriver.leftTrigger.wasActivated() && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
-                s.request(new SequentialRequest(
-                    SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
-                    claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
-                ));
-            }
             cubeIntake.conformToState(CubeIntake.State.INTAKE);
             tunnel.setState(Tunnel.State.COMMUNITY);
-            
+            verticalElevator.setPosition(2.0);
         } else if(coDriver.leftTrigger.wasReleased()) {
-            //s.postCubeIntakeState();
-            /*if(tunnel.getRearBanner()) {
-                verticalElevator.setPosition(0.5);
-                cubeIntake.conformToState(CubeIntake.State.FLOOR);
-                tunnel.setTunnelEntranceSpeed(0);
-            } else {
-                cubeIntake.conformToState(CubeIntake.State.STOWED);
-            }*/
-            verticalElevator.setPosition(0.5);
+            //verticalElevator.setPosition(0.25);
             cubeIntake.conformToState(CubeIntake.State.FLOOR);
-            tunnel.setTunnelEntranceSpeed(0);
         }
 
 
@@ -417,8 +405,16 @@ public class DriverControls implements Loop {
             s.request(SuperstructureCoordinator.getInstance().getConeFlipChoreography());
             claw.conformToState(Claw.ControlState.OFF);
         } else if(coDriver.leftCenterClick.wasReleased() && coDriver.bButton.isBeingPressed()) {
-            s.coneIntakeSequence();
-            claw.conformToState(Claw.ControlState.CONE_INTAKE);
+            //s.coneIntakeSequence();
+            if(shoulder.getPosition() < 0) {
+                s.request(new SequentialRequest(
+                    new ParallelRequest(
+                        shoulder.angleRequest(-55.76),
+                        horizontalElevator.extensionRequest(0.25)
+                    ),
+                    s.getConeIntakeSequence()
+                ));
+            }
         }
 
         if(coDriver.POV180.wasActivated()) {
@@ -464,7 +460,7 @@ public class DriverControls implements Loop {
             wrist.lockPosition();
         }*/
         if(Util.isInRange(DriverStation.getMatchTime(), 10.1, 9.9)) {
-            driver.rumble(swerveXInput, 1.5);
+            driver.rumble(1.0, 1.5);
         }
 
 
