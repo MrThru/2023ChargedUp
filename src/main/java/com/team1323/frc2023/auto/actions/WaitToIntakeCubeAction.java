@@ -9,21 +9,23 @@ import com.team1323.lib.util.Stopwatch;
 
 /** Add your docs here. */
 public class WaitToIntakeCubeAction implements Action {
-    Stopwatch timeout = new Stopwatch();
+    private final double timeoutSeconds;
+    private final Stopwatch timeoutStopwatch = new Stopwatch();
+    private final Tunnel tunnel;
 
-    Tunnel tunnel;
-    public WaitToIntakeCubeAction() {
+    public WaitToIntakeCubeAction(double timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
         tunnel = Tunnel.getInstance();
     }
 
     @Override
     public boolean isFinished() {
-        return timeout.getTime() > 5 || (tunnel.getRearBanner() || tunnel.getFrontBanner());
+        return timeoutStopwatch.getTime() >= timeoutSeconds || (tunnel.getRearBanner() || tunnel.getFrontBanner());
     }
 
     @Override
     public void start() {
-        timeout.start();
+        timeoutStopwatch.start();
     }
 
     @Override

@@ -66,7 +66,7 @@ public class ThreeConesMode extends AutoModeBase {
         startTime = Timer.getFPGATimestamp();
         Superstructure.getInstance().coneHighScoreManual();
         runAction(new WaitForSuperstructureAction());
-        runAction(new WaitToEjectObjectAction());
+        runAction(new WaitToEjectObjectAction(5.0));
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
         runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(10), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(130.0, quadrant));
@@ -94,7 +94,7 @@ public class ThreeConesMode extends AutoModeBase {
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
             NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.LEFT), quadrant);
             Superstructure.getInstance().scoringSequence(nodeLocation);
-            runAction(new WaitToEjectObjectAction());
+            runAction(new WaitToEjectObjectAction(5.0));
         } else {
             runAction(new WaitToFinishPathAction());
             Superstructure.getInstance().objectAwareStowSequence();
@@ -127,7 +127,7 @@ public class ThreeConesMode extends AutoModeBase {
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
             NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.RIGHT), quadrant);
             Superstructure.getInstance().scoringSequence(nodeLocation);
-            runAction(new WaitToEjectObjectAction());
+            runAction(new WaitToEjectObjectAction(5.0));
         } else {
             runAction(new WaitToFinishPathAction());
         }

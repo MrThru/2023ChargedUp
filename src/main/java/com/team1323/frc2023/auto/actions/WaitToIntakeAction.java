@@ -9,22 +9,29 @@ import com.team1323.lib.util.Stopwatch;
 
 /** Add your docs here. */
 public class WaitToIntakeAction implements Action {
-
-    Claw claw;
-    Claw.HoldingObject targetObject = Claw.HoldingObject.None;
-    Stopwatch timeout = new Stopwatch();
+    private final Claw claw;
+    private final double timeoutSeconds;
+    private final Stopwatch timeoutStopwatch = new Stopwatch();
+    private final Claw.HoldingObject targetObject;
 
     public WaitToIntakeAction(Claw.HoldingObject holdingObject) {
-        targetObject = holdingObject;
+        this(holdingObject, 3.0);
     }
+
+    public WaitToIntakeAction(Claw.HoldingObject holdingObject, double timeoutSeconds) {
+        targetObject = holdingObject;
+        this.timeoutSeconds = timeoutSeconds;
+        claw = Claw.getInstance();
+    }
+
     @Override
     public boolean isFinished() {
-        return (Claw.getInstance().getCurrentHoldingObject() == targetObject || timeout.getTime() > 3.0);
+        return (claw.getCurrentHoldingObject() == targetObject || timeoutStopwatch.getTime() > timeoutSeconds);
     }
 
     @Override
     public void start() {
-        timeout.startIfNotRunning();
+        timeoutStopwatch.start();
     }
 
     @Override

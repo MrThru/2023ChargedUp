@@ -70,13 +70,13 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         Rotation2d targetHeading = Rotation2d.fromDegrees(quadrant.hasBump() ? -170 : 180);
         runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, targetHeading, 0.75, quadrant));
         
-        runAction(new WaitToEjectObjectAction());
+        runAction(new WaitToEjectObjectAction(5.0));
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
 
         // Cube Intake
         runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
         Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
-        runAction(new WaitToIntakeCubeAction());
+        runAction(new WaitToIntakeCubeAction(5.0));
         runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
         Superstructure.getInstance().postIntakeState(0);
         runAction(new WaitForSuperstructureAction());
@@ -85,7 +85,7 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         runAction(new WaitToIntakeAction(HoldingObject.Cube));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
             Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
-            runAction(new WaitToEjectObjectAction());
+            runAction(new WaitToEjectObjectAction(5.0));
         } else {
             runAction(new WaitToFinishPathAction());
         }

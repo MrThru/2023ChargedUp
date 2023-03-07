@@ -12,7 +12,6 @@ import com.team1323.frc2023.auto.actions.SetTrajectoryAction;
 import com.team1323.frc2023.auto.actions.WaitForRemainingTimeAction;
 import com.team1323.frc2023.auto.actions.WaitForShoulderToPassAngleAction;
 import com.team1323.frc2023.auto.actions.WaitForSuperstructureAction;
-import com.team1323.frc2023.auto.actions.WaitToBalanceAction;
 import com.team1323.frc2023.auto.actions.WaitToEjectObjectAction;
 import com.team1323.frc2023.auto.actions.WaitToFinishPathAction;
 import com.team1323.frc2023.auto.actions.WaitToIntakeAction;
@@ -27,7 +26,6 @@ import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.Tunnel;
-import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
@@ -55,13 +53,13 @@ public class TwoPieceAndRampMode extends AutoModeBase {
         Superstructure.getInstance().coneMidScoreManual();
         runAction(new WaitForSuperstructureAction());
         runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 0.75, quadrant));
-        runAction(new WaitToEjectObjectAction());
+        runAction(new WaitToEjectObjectAction(5.0));
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
 
         // Cube Intake
         runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
         Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
-        runAction(new WaitToIntakeCubeAction());
+        runAction(new WaitToIntakeCubeAction(5.0));
         
         runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
         Superstructure.getInstance().postIntakeState(0);
@@ -71,7 +69,7 @@ public class TwoPieceAndRampMode extends AutoModeBase {
         runAction(new WaitToIntakeAction(HoldingObject.Cube));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
             Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
-            runAction(new WaitToEjectObjectAction());
+            runAction(new WaitToEjectObjectAction(5.0));
         } else {
             runAction(new WaitToFinishPathAction());
         }

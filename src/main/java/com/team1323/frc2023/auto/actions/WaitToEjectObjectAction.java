@@ -9,21 +9,23 @@ import com.team1323.lib.util.Stopwatch;
 
 /** Add your docs here. */
 public class WaitToEjectObjectAction implements Action {
+    private final double timeoutSeconds;
+    private final Stopwatch timeoutStopwatch = new Stopwatch();
+    private final Claw claw;
 
-    Claw claw;
-    Stopwatch stopwatch = new Stopwatch();
-    public WaitToEjectObjectAction() {
+    public WaitToEjectObjectAction(double timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
         claw = Claw.getInstance();
     }
 
     @Override
     public boolean isFinished() {
-        return claw.getCurrentHoldingObject() == Claw.HoldingObject.None || stopwatch.getTime() > 5.0;
+        return claw.getCurrentHoldingObject() == Claw.HoldingObject.None || timeoutStopwatch.getTime() > timeoutSeconds;
     }
 
     @Override
     public void start() {
-        stopwatch.startIfNotRunning();
+        timeoutStopwatch.start();
     }
 
     @Override
