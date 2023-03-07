@@ -38,8 +38,8 @@ public class TwoConesAndRampMode extends AutoModeBase {
 
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft, trajectories.secondConeHighScorePath.topLeft,
-                        trajectories.secondConeScoreToThirdConePickup.topLeft, trajectories.thirdConePickupToScorePath.topLeft);
+        return Arrays.asList(trajectories.secondPiecePickupPath.get(Quadrant.TOP_LEFT), trajectories.secondConeHighScorePath.get(Quadrant.TOP_LEFT),
+                        trajectories.secondConeScoreToThirdConePickup.get(Quadrant.TOP_LEFT), trajectories.thirdConePickupToScorePath.get(Quadrant.TOP_LEFT));
     }
 
     public TwoConesAndRampMode(Quadrant quadrant) {

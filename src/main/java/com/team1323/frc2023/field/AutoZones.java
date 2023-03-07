@@ -1,8 +1,12 @@
 package com.team1323.frc2023.field;
 
 import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryUtil;
+import com.team254.lib.trajectory.timing.TimedState;
 
 public class AutoZones {
     public static final double kXMirror = 325.625;
@@ -49,6 +53,23 @@ public class AutoZones {
 
     public static Pose2d mirror(Pose2d bottomLeftPose, Quadrant quadrant) {
         return new Pose2d(mirror(bottomLeftPose.getTranslation(), quadrant), mirror(bottomLeftPose.getRotation(), quadrant));
+    }
+
+    public static Trajectory<TimedState<Pose2dWithCurvature>> mirror(Trajectory<TimedState<Pose2dWithCurvature>> bottomLeftTrajectory, 
+            Quadrant quadrant) {
+        double defaultVelocity = bottomLeftTrajectory.defaultVelocity();
+        switch (quadrant) {
+            case TOP_LEFT:
+                return TrajectoryUtil.mirrorAboutYTimed(bottomLeftTrajectory, kYMirror, defaultVelocity);
+            case TOP_RIGHT:
+                Trajectory<TimedState<Pose2dWithCurvature>> xMirroredTrajectory = 
+                        TrajectoryUtil.mirrorAboutXTimed(bottomLeftTrajectory, kXMirror, defaultVelocity);
+                return TrajectoryUtil.mirrorAboutYTimed(xMirroredTrajectory, kYMirror, defaultVelocity);
+            case BOTTOM_RIGHT:
+                return TrajectoryUtil.mirrorAboutXTimed(bottomLeftTrajectory, kXMirror, defaultVelocity);
+            default:
+                return bottomLeftTrajectory;
+        }
     }
 
     public enum StartingSide {

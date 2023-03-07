@@ -14,15 +14,6 @@ import com.team254.lib.trajectory.timing.TimedState;
 
 public class TestMode extends AutoModeBase {
     @Override
-    public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        List<MirroredTrajectory> pathList = Arrays.asList(trajectories.communitySweepPath);
-
-        return pathList.stream()
-                .flatMap(path -> Stream.of(path.bottomLeft, path.topLeft, path.topRight, path.bottomRight))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     protected void routine() throws AutoModeEndedException {
         
     }

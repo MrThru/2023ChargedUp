@@ -2,6 +2,7 @@ package com.team1323.frc2023.vision;
 
 import com.team1323.frc2023.DriveMotionPlanner;
 import com.team1323.frc2023.field.AllianceChooser;
+import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.LEDs;
@@ -126,12 +127,12 @@ public class VisionPIDController {
         MirroredTrajectory communitySweepPath = TrajectoryGenerator.getInstance().getTrajectorySet().communitySweepPath;
         if (AllianceChooser.getAlliance() == Alliance.Blue) {
             return robotPose.getTranslation().y() < scoringPosition.y() ?
-                    communitySweepPath.bottomLeft :
-                    communitySweepPath.topLeft;
+                    communitySweepPath.get(Quadrant.BOTTOM_LEFT) :
+                    communitySweepPath.get(Quadrant.TOP_LEFT);
         } else {
             return robotPose.getTranslation().y() < scoringPosition.y() ?
-                    communitySweepPath.bottomRight :
-                    communitySweepPath.topRight;
+                    communitySweepPath.get(Quadrant.BOTTOM_RIGHT) :
+                    communitySweepPath.get(Quadrant.TOP_RIGHT);
         }
     }
 

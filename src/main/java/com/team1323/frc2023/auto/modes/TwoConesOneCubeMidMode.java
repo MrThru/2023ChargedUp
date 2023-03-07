@@ -51,9 +51,9 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
 
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft, trajectories.secondPieceToCubeScore.topLeft,
-                    trajectories.cubeScoreToThirdPiece.topLeft, trajectories.thirdPieceToSecondConeColumn.topLeft, 
-                    trajectories.thirdPieceToBridgePath.topLeft);
+        return Arrays.asList(trajectories.secondPiecePickupPath.get(Quadrant.TOP_LEFT), trajectories.secondPieceToCubeScore.get(Quadrant.TOP_LEFT),
+                    trajectories.cubeScoreToThirdPiece.get(Quadrant.TOP_LEFT), trajectories.thirdPieceToSecondConeColumn.get(Quadrant.TOP_LEFT), 
+                    trajectories.thirdPieceToBridgePath.get(Quadrant.TOP_LEFT));
     }
     
     public TwoConesOneCubeMidMode(Quadrant quadrant) {

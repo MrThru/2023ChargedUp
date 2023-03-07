@@ -50,9 +50,9 @@ public class ThreeMidConesMode extends AutoModeBase {
     
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath.bottomLeft,trajectories.secondPiecePickupPath.bottomLeft,
-                    trajectories.secondConeHighScorePath.bottomLeft, trajectories.secondConeScoreToThirdConePickup.bottomLeft, 
-                    trajectories.thirdPiecePickupToThirdPole.bottomLeft);
+        return Arrays.asList(trajectories.secondPiecePickupPath.get(Quadrant.TOP_LEFT),trajectories.secondPiecePickupPath.get(Quadrant.TOP_LEFT),
+                    trajectories.secondConeHighScorePath.get(Quadrant.TOP_LEFT), trajectories.secondConeScoreToThirdConePickup.get(Quadrant.TOP_LEFT), 
+                    trajectories.thirdPiecePickupToThirdPole.get(Quadrant.TOP_LEFT));
     }
 
     public ThreeMidConesMode(Quadrant quadrant) {

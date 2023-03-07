@@ -49,8 +49,9 @@ public class ThreeConesMode extends AutoModeBase {
 
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath.topLeft, trajectories.secondPiecePickupPath.topLeft, trajectories.secondPieceToEdgeColumn.topLeft,
-                trajectories.edgeColumnToThirdPiece.topLeft, trajectories.thirdPieceToSecondConeColumn.topLeft);
+        return Arrays.asList(trajectories.secondPiecePickupPath.get(Quadrant.TOP_LEFT), trajectories.secondPiecePickupPath.get(Quadrant.TOP_LEFT), 
+                trajectories.secondPieceToEdgeColumn.get(Quadrant.TOP_LEFT), trajectories.edgeColumnToThirdPiece.get(Quadrant.TOP_LEFT), 
+                trajectories.thirdPieceToSecondConeColumn.get(Quadrant.TOP_LEFT));
     }
 
     public ThreeConesMode(Quadrant quadrant) {

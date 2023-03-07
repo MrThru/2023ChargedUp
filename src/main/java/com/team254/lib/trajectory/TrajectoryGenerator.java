@@ -2,12 +2,16 @@ package com.team254.lib.trajectory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.DriveMotionPlanner;
 import com.team1323.frc2023.field.AutoZones;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
+import com.team1323.frc2023.field.WaypointList;
+import com.team1323.frc2023.field.WaypointList.Pose2dWithQuadrantOffsets;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
@@ -92,30 +96,57 @@ public class TrajectoryGenerator {
     
     public class TrajectorySet {
         public class MirroredTrajectory {
-            public final Trajectory<TimedState<Pose2dWithCurvature>> bottomLeft;
-            public final Trajectory<TimedState<Pose2dWithCurvature>> topLeft;
-            public final Trajectory<TimedState<Pose2dWithCurvature>> topRight;
-            public final Trajectory<TimedState<Pose2dWithCurvature>> bottomRight;
+            private final Map<Quadrant, Trajectory<TimedState<Pose2dWithCurvature>>> trajectoryMap = new HashMap<>();
 
             public MirroredTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> bottomLeft) {
-                this.bottomLeft = bottomLeft;
-                double defaultVelocity = bottomLeft.defaultVelocity();
-                topLeft = TrajectoryUtil.mirrorAboutYTimed(bottomLeft, AutoZones.kYMirror, defaultVelocity);
-                topRight = TrajectoryUtil.mirrorAboutXTimed(topLeft, AutoZones.kXMirror, defaultVelocity);
-                bottomRight = TrajectoryUtil.mirrorAboutYTimed(topRight, AutoZones.kYMirror, defaultVelocity);
+                for (Quadrant quadrant : Quadrant.values()) {
+                    trajectoryMap.put(quadrant, AutoZones.mirror(bottomLeft, quadrant));
+                }
+            }
+
+            public MirroredTrajectory(
+                boolean reversed,
+                final WaypointList waypoints,
+                final List<TimingConstraint<Pose2dWithCurvature>> constraints,
+                double max_vel,  // inches/s
+                double max_accel,  // inches/s^2
+                double max_decel,
+                double max_voltage,
+                double default_vel,
+                int slowdown_chunks
+            ) {
+                if (waypoints.hasOffsetsForQuadrant(Quadrant.BOTTOM_LEFT)) {
+                    for (Quadrant quadrant : Quadrant.values()) {
+                        Trajectory<TimedState<Pose2dWithCurvature>> trajectory =
+                                generateTrajectory(reversed, waypoints.getWaypointsForQuadrant(quadrant), constraints, 
+                                        max_vel, max_accel, max_decel, max_voltage, default_vel, slowdown_chunks);
+                        trajectoryMap.put(quadrant, trajectory);
+                    }
+                } else {
+                    Trajectory<TimedState<Pose2dWithCurvature>> bottomLeftTrajectory =
+                            generateTrajectory(reversed, waypoints.getWaypointsForQuadrant(Quadrant.BOTTOM_LEFT), constraints, 
+                                    max_vel, max_accel, max_decel, max_voltage, default_vel, slowdown_chunks);
+                    trajectoryMap.put(Quadrant.BOTTOM_LEFT, bottomLeftTrajectory);
+
+                    for (Quadrant quadrant : Quadrant.values()) {
+                        if (quadrant == Quadrant.BOTTOM_LEFT) {
+                            continue;
+                        }
+
+                        if (waypoints.hasOffsetsForQuadrant(quadrant)) {
+                            Trajectory<TimedState<Pose2dWithCurvature>> trajectory =
+                                    generateTrajectory(reversed, waypoints.getWaypointsForQuadrant(quadrant), constraints, 
+                                            max_vel, max_accel, max_decel, max_voltage, default_vel, slowdown_chunks);
+                            trajectoryMap.put(quadrant, trajectory);
+                        } else {
+                            trajectoryMap.put(quadrant, AutoZones.mirror(bottomLeftTrajectory, quadrant));
+                        }
+                    }
+                }
             }
             
             public Trajectory<TimedState<Pose2dWithCurvature>> get(Quadrant quadrant) {
-                switch (quadrant) {
-                    case TOP_LEFT:
-                        return topLeft;
-                    case TOP_RIGHT:
-                        return topRight;
-                    case BOTTOM_RIGHT:
-                        return bottomRight;
-                    default:
-                        return bottomLeft;
-                }
+                return trajectoryMap.get(quadrant);
             }
         }
         
@@ -155,7 +186,7 @@ public class TrajectoryGenerator {
             secondPieceToEdgeColumn = new MirroredTrajectory(getSecondPieceToEdgeColumn());
             secondPieceToCubeScore = new MirroredTrajectory(getSecondPieceToCubeScore());
             edgeColumnToThirdPiece = new MirroredTrajectory(getEdgeColumnToThirdPiece());
-            cubeScoreToThirdPiece = new MirroredTrajectory(getCubeScoreToThirdPiece());
+            cubeScoreToThirdPiece = getCubeScoreToThirdPiece();
             thirdPieceToSecondConeColumn = new MirroredTrajectory(getThirdPieceToSecondConeColumn());
             thirdPieceToCubeScore = new MirroredTrajectory(getThirdPieceToCubeScore());
             secondConeHighScorePath = new MirroredTrajectory(getSecondConeHighScorePath());
@@ -226,13 +257,15 @@ public class TrajectoryGenerator {
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getCubeScoreToThirdPiece(){
-            List<Pose2d> waypoints = new ArrayList<>();
+        private MirroredTrajectory getCubeScoreToThirdPiece(){
+            WaypointList waypoints = new WaypointList();
             waypoints.add(new Pose2d(new Translation2d(74.3125, 42.19), Rotation2d.fromDegrees(-10)));
-            waypoints.add(new Pose2d(new Translation2d(152.57, 24.28), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2dWithQuadrantOffsets(new Pose2d(new Translation2d(152.57, 24.28), Rotation2d.fromDegrees(0)))
+                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 6)))
+                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 6))));
             waypoints.add(thirdConePickupPose);
             
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return new MirroredTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToSecondConeColumn(){
