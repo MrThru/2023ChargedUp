@@ -90,7 +90,7 @@ public class TrajectoryGenerator {
     private Pose2d communitySweepMidPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345 + 6.0, 108.015), Rotation2d.fromDegrees(90.0));
     private Pose2d communitySweepEndPose = new Pose2d(new Translation2d(40.45 + 13.8 + 30.345 + 6.0, 174.19 + 22.0), Rotation2d.fromDegrees(90.0));
 
-    private Pose2d secondConePickupPose = new Pose2d(new Translation2d(269.5, 28.5), Rotation2d.fromDegrees(0));
+    private Pose2d secondConePickupPose = new Pose2d(new Translation2d(269.5, 26.5), Rotation2d.fromDegrees(0));
     private Pose2d thirdConePickupPose = new Pose2d(new Translation2d(278.0, 80.5), Rotation2d.fromDegrees(45))
                 .transformBy(Pose2d.fromTranslation(new Translation2d(-12, 4)));
     

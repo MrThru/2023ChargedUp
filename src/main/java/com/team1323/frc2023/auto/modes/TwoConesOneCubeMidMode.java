@@ -95,7 +95,7 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         runAction(new SetTrajectoryAction(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(140.0, quadrant));
         Superstructure.getInstance().coneIntakeWithoutScanSequence();
-        runAction(new WaitToPassXCoordinateAction(220.0, quadrant));
+        runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 240.0 : 220.0, quadrant));
         Pose2d coneIntakingPosition = LimelightProcessor.getInstance().getRobotConePickupPosition(AutoZones.mirror(Constants.kSecondPickupConePosition, quadrant));
         LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         if(!coneIntakingPosition.equals(Pose2d.identity())) {
@@ -118,7 +118,7 @@ public class TwoConesOneCubeMidMode extends AutoModeBase {
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
             NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.RIGHT), quadrant);
             Superstructure.getInstance().scoringSequence(nodeLocation);
-            runAction(new WaitForRemainingTimeAction(0.375, startTime));
+            runAction(new WaitForRemainingTimeAction(0.5, startTime));
             if (Swerve.getInstance().getDistanceToTargetPosition() <= 4.0) {
                 Claw.getInstance().conformToState(Claw.ControlState.CONE_OUTAKE);
             }

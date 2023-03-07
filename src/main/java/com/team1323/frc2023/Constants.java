@@ -187,7 +187,7 @@ public class Constants {
         
         public static final double kSupplyCurrentLimit = 25.0;
 
-        public static final double kStandardIntakeCurrentLimit = 30.0;
+        public static final double kStandardIntakeCurrentLimit = 50.0; //30
         public static final double kLowerIntakeCurrentLimit = 20.0;
 
         public static final double kArbitraryFeedForward = 0.025;
@@ -324,7 +324,7 @@ public class Constants {
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerShoulderRotation / 360.0;
 
-        public static final double kMinControlAngle = -95.0;
+        public static final double kMinControlAngle = -97.5;
         public static final double kMaxControlAngle = 180.0;
 
         public static final double kAngleTolerance = 4.0;

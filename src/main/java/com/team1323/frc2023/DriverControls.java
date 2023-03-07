@@ -173,11 +173,15 @@ public class DriverControls implements Loop {
             swerve.rotate(Rotation2d.fromDegrees(0));
         
         
-        if (driver.rightTrigger.wasActivated()) {
+        /*if (driver.rightTrigger.wasActivated()) {
             NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
             Pose2d scoringPose = ScoringPoses.getScoringPose(dashboardNodeLocation);
             SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
             s.scoringSequence(dashboardNodeLocation);
+        }*/
+
+        if(driver.rightTrigger.wasActivated()) {
+            tunnel.setState(Tunnel.State.EJECT_ONE);
         }
 
         /*if (driver.rightTrigger.wasActivated()) {
@@ -310,8 +314,8 @@ public class DriverControls implements Loop {
                 tunnel.stateRequest(Tunnel.State.SINGLE_INTAKE);
             }*/
         } else if(coDriver.aButton.isBeingPressed()) {
-            if(tunnel.getFrontBanner() || tunnel.getRearBanner()) {
-                s.postIntakeState(0.0);
+            if(tunnel.getRearBanner()) {
+                s.postIntakeState(0.25);
             }
         } else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState(1.0);
@@ -376,11 +380,8 @@ public class DriverControls implements Loop {
         }
 
 
-        if(coDriver.rightTrigger.wasActivated()) {
-            tunnel.setState(Tunnel.State.EJECT_ONE);
-        }
 
-        if(coDriver.leftTrigger.wasActivated() && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())) {
+        if(coDriver.leftTrigger.wasActivated()/*  && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())*/) {
             cubeIntake.conformToState(CubeIntake.State.INTAKE);
             tunnel.setState(Tunnel.State.COMMUNITY);
             verticalElevator.setPosition(2.0);

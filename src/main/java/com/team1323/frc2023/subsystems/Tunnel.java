@@ -64,7 +64,7 @@ public class Tunnel extends Subsystem {
     }
 
     public enum State {
-        OFF, DETECT, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY, MANUAL, STUCK_ON_BUMPER, REVERSE;
+        OFF, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY, MANUAL, REVERSE, TRIPLE_CUBE_HOLD;
     }
     private State currentState = State.MANUAL;
     private boolean stateChanged = false;
@@ -72,9 +72,6 @@ public class Tunnel extends Subsystem {
         return currentState;
     }
     public void setState(State state) {
-        if(state == State.OFF) {
-            DriverStation.reportError("Set State to OFF, current Shutdown state = " + shutdownState.toString(), true);
-        }
         currentState = state;
         stateChanged = true;
     }
@@ -147,7 +144,8 @@ public class Tunnel extends Subsystem {
     Stopwatch bannerActivatedStopwatch = new Stopwatch();
     Stopwatch cubeEjectedStopwatch = new Stopwatch();
     Stopwatch queueShutdownStopwatch = new Stopwatch();
-    
+    Stopwatch firstBannerActivatedStopwatch = new Stopwatch(); //The Cube Intake banner
+
     Loop loop = new Loop() {
 
         @Override
@@ -161,6 +159,7 @@ public class Tunnel extends Subsystem {
                 pendingShutdown = false;
                 queueShutdownStopwatch.reset();
                 bannerActivatedStopwatch.reset();
+                firstBannerActivatedStopwatch.reset();
                 cubeEjected = false;
             }
             switch(currentState) {
@@ -178,13 +177,12 @@ public class Tunnel extends Subsystem {
                             }
                             if(getRearBanner()) {
                                 if(getCubeIntakeBanner()) {
-                                    cubeIntake.setHoldMode();
-                                    setState(State.OFF);
+                                    setState(State.TRIPLE_CUBE_HOLD);
                                 } else if(cubeIntake.getState() == CubeIntake.State.FLOOR && bannerActivatedStopwatch.getTime() > 0.06) {
                                     //setState(State.OFF);
                                     cubeIntake.setIntakeSpeed(0);
                                 }
-                                setTunnelEntranceSpeed(0.0);
+                                setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                             } else {
                                 if(!getCubeIntakeBanner() && cubeIntake.getState() == CubeIntake.State.FLOOR) {
                                     //setState(State.OFF);
@@ -234,18 +232,33 @@ public class Tunnel extends Subsystem {
                     } else {
                         setRollerSpeeds(0.1, 1.0);
                         setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
+                        bannerActivatedStopwatch.reset();
                     }
                     break;
                 case EJECT_ONE:
                     if(getFrontBanner()) {
-                        setRollerSpeeds(0.25, 0.0);
+                        setRollerSpeeds(0.15, 0.0);
+                        cubeEjectedStopwatch.reset();
                     } else {
-                        if(!allowSingleIntakeMode()) {
-                            setState(State.COMMUNITY);
-                        } else {
-                            setState(State.SINGLE_INTAKE);
-                            queueShutdown(true);
+                        cubeEjectedStopwatch.startIfNotRunning();
+                        if(cubeEjectedStopwatch.getTime() > 0.01) {
+                            if(!allowSingleIntakeMode()) {
+                                setState(State.COMMUNITY);
+                            } else {
+                                setState(State.SINGLE_INTAKE);
+                                queueShutdown(true);
+                            }
+                            cubeEjectedStopwatch.reset();
                         }
+                    }
+                    break;
+                case TRIPLE_CUBE_HOLD:
+                    firstBannerActivatedStopwatch.startIfNotRunning();
+                    if(firstBannerActivatedStopwatch.getTime() > 0.5) {
+                        firstBannerActivatedStopwatch.reset();
+                        setState(State.OFF);
+                    } else if(firstBannerActivatedStopwatch.getTime() > 0.25) {
+                        cubeIntake.setHoldMode();
                     }
                     break;
                 case SPIT:
