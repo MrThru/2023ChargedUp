@@ -1,9 +1,6 @@
 package com.team1323.frc2023.auto;
 
 import com.team1323.frc2023.auto.modes.StandStillMode;
-import com.team1323.frc2023.auto.modes.ThreeConesMode;
-import com.team1323.frc2023.auto.modes.ThreeMidConesMode;
-import com.team1323.frc2023.auto.modes.TwoConesAndRampMode;
 import com.team1323.frc2023.auto.modes.TwoConesOneCubeMidMode;
 import com.team1323.frc2023.auto.modes.TwoPieceAndRampMode;
 import com.team1323.frc2023.field.AllianceChooser;
@@ -18,7 +15,7 @@ public class SmartDashboardInteractions {
     private static final String SELECTED_AUTO_MODE = "selected_auto_mode";
     private static final String SELECTED_SIDE = "selected_side";
     
-    private static final AutoOption DEFAULT_MODE = AutoOption.STAND_STILL;
+    private static final AutoOption DEFAULT_MODE = AutoOption.TWO_PIECE_RAMP;
     private static final StartingSide DEFAULT_SIDE = StartingSide.LEFT;
 
     private SendableChooser<AutoOption> modeChooser;
@@ -28,7 +25,7 @@ public class SmartDashboardInteractions {
     	modeChooser = new SendableChooser<AutoOption>();
         modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
         modeChooser.addOption(AutoOption.TWO_CONES_ONE_CUBE.name, AutoOption.TWO_CONES_ONE_CUBE);
-        modeChooser.addOption(AutoOption.TWO_PIECE_RAMP.name, AutoOption.TWO_PIECE_RAMP);
+        modeChooser.addOption(AutoOption.STAND_STILL.name, AutoOption.STAND_STILL);
 
         sideChooser = new SendableChooser<StartingSide>();
         sideChooser.setDefaultOption(DEFAULT_SIDE.toString(), DEFAULT_SIDE);
@@ -40,8 +37,8 @@ public class SmartDashboardInteractions {
         SmartDashboard.putString(SELECTED_SIDE, DEFAULT_SIDE.toString());
     }
     
-    public AutoModeBase getSelectedAutoMode(){
-        AutoOption selectedOption = (AutoOption) modeChooser.getSelected();
+    public AutoModeBase getSelectedAutoMode() {
+        AutoOption selectedOption = getSelectedAutoModeEnum();
         StartingSide selectedSide = getSelectedStartingSide();
         Quadrant quadrant = getQuadrant(AllianceChooser.getAlliance(), selectedSide);
         return createAutoMode(selectedOption, quadrant);
@@ -73,9 +70,14 @@ public class SmartDashboardInteractions {
         }
     }
     
-    public String getSelectedMode(){
+    public AutoOption getSelectedAutoModeEnum() {
     	AutoOption option = (AutoOption) modeChooser.getSelected();
-    	return option.name;
+
+        if (option == null) {
+            return AutoOption.STAND_STILL;
+        }
+
+    	return option;
     }
 
     enum AutoOption{
@@ -103,7 +105,7 @@ public class SmartDashboardInteractions {
     }
     
     public void output(){
-    	SmartDashboard.putString(SELECTED_AUTO_MODE, getSelectedMode());
+    	SmartDashboard.putString(SELECTED_AUTO_MODE, getSelectedAutoModeEnum().name);
         SmartDashboard.putString(SELECTED_SIDE, getSelectedStartingSide().toString());
     }
 }
