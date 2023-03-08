@@ -319,8 +319,8 @@ public class Constants {
 
         public static final double kExtensionTolerance = 2.0;
 
-        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
-        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 4.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 4.0 : 4.0;
 
         public static final double kSupplyLimit = 40.0;
 
@@ -361,8 +361,8 @@ public class Constants {
 
         public static final double kAngleTolerance = 4.0;
 
-        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
-        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 3.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 3.0 : 3.0;
 
         public static final double kSupplyCurrentLimit = 40.0; //30.0 - 40
 
@@ -388,7 +388,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 4.218750 : 342.75, 
+            Settings.kIsUsingCompBot ? 1.933594 : 342.75, 
             174.0, 
             -95.0,
             185.0

@@ -111,7 +111,7 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, wrist, cubeIntake, tunnel, /* verticalElevator, horizontalElevator, wrist, shoulder,*/ claw, leds, s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, horizontalElevator, wrist, shoulder, claw, leds, s));
     }
 
     @Override
@@ -140,7 +140,7 @@ public class DriverControls implements Loop {
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
-                manualMode();;;;;
+                twoControllerMode();;;;;;
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }
@@ -637,29 +637,29 @@ public class DriverControls implements Loop {
             //horizontalElevator.setPosition(20.0);
             //verticalElevator.setPosition(10.0);
             //wrist.setPosition(-90);
-            //shoulder.setPosition(-45);
+            shoulder.setPosition(-45);
             //cubeIntake.setPosition(Constants.CubeIntake.kIntakeAngle);
-            cubeIntake.setIntakeSpeed(0.25);
-            tunnel.setState(Tunnel.State.MANUAL);
-            tunnel.setAllSpeeds(0.25);
-            claw.conformToState(Claw.ControlState.CUBE_OUTAKE);
+            // cubeIntake.setIntakeSpeed(0.25);
+            // tunnel.setState(Tunnel.State.MANUAL);
+            // tunnel.setAllSpeeds(0.25);
+            // claw.conformToState(Claw.ControlState.CUBE_OUTAKE);
         }
         if(testController.bButton.wasActivated()) {
             //horizontalElevator.setPosition(0.5);
             //verticalElevator.setPosition(0.5);
             //wrist.setPosition(0);
-            //shoulder.setPosition(90);
+            shoulder.setPosition(90);
             //cubeIntake.setPosition(100);
-            cubeIntake.setIntakeSpeed(0.0);
-            tunnel.setState(Tunnel.State.OFF);
-            claw.conformToState(Claw.ControlState.OFF);
+            // cubeIntake.setIntakeSpeed(0.0);
+            // tunnel.setState(Tunnel.State.OFF);
+            // claw.conformToState(Claw.ControlState.OFF);
         }
         if(testController.yButton.wasActivated()) {
             //horizontalElevator.setPosition(30.0);
             //verticalElevator.setPosition(19.0);
             //wrist.setPosition(90);
-            //shoulder.setPosition(169.0);
-            cubeIntake.setPosition(0);
+            shoulder.setPosition(169.0);
+            //cubeIntake.setPosition(0);
 
         }
 
