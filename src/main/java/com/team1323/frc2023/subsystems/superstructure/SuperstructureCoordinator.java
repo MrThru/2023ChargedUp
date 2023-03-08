@@ -423,6 +423,17 @@ public class SuperstructureCoordinator {
         return getHighChoreography(finalPosition);
     }
 
+    public Request getAutoCubeHoldChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            1,
+            0.25,
+            55.0,
+            kCubeHoldingWristAngle
+        );
+
+        return getHighChoreography(finalPosition);
+    }
+
     public Request getShelfChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             10.0,

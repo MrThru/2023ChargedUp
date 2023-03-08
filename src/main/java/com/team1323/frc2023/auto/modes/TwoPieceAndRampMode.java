@@ -64,7 +64,7 @@ public class TwoPieceAndRampMode extends AutoModeBase {
         runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
         Superstructure.getInstance().postIntakeState(0);
         runAction(new WaitForSuperstructureAction());
-        Superstructure.getInstance().handOffCubeState();
+        Superstructure.getInstance().handOffCubeState(SuperstructureCoordinator.getInstance()::getAutoCubeHoldChoreography);
         runAction(new WaitToPassXCoordinateAction(110, quadrant));
         runAction(new WaitToIntakeAction(HoldingObject.Cube));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {

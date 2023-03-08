@@ -369,17 +369,17 @@ public class Superstructure extends Subsystem {
 			new LambdaRequest(() -> System.out.println("Set tunnel state to eject one"))
 		);
 	}
-	public void handOffCubeState() {
+
+	public void handOffCubeState(ChoreographyProvider stowChoreo) {
 		request(new SequentialRequest(	
 			getHandOffCubeSequence(),
 			tunnel.stateRequest(Tunnel.State.SPIT),
 			new ParallelRequest(
 				tunnel.stateRequest(Tunnel.State.OFF),
-				coordinator.getHalfCubeStowChoreography()
+				choreographyRequest(stowChoreo)
 			).withPrerequisite(
 				() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube
 			)
-
 		));
 	}
 
