@@ -23,6 +23,7 @@ import com.team1323.lib.math.geometry.Vector3d;
 import com.team1323.lib.util.CircularBuffer;
 import com.team1323.lib.util.FieldConversions;
 import com.team1323.lib.util.Netlink;
+import com.team1323.lib.util.Stopwatch;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -67,6 +68,7 @@ public class LimelightProcessor implements Loop {
 
 	private final GoalTracker coneGoalTracker = new GoalTracker();
 
+	private final Stopwatch lastUpdateStopwatch = new Stopwatch();
 	private double previousHeartbeat = -1.0;
 	
 	private LimelightProcessor() {}
@@ -77,12 +79,23 @@ public class LimelightProcessor implements Loop {
 	@Override 
 	public void onLoop(double timestamp) {
 		double currentHeartbeat = LimelightHelpers.getLimelightNTDouble(kLimelightName, "hb");
-		if (currentHeartbeat > previousHeartbeat && !Netlink.getBooleanValue("Limelight Disabled")) {
-			LimelightResults results = LimelightHelpers.getLatestResults(kLimelightName);
-			handleFiducialTargets(results, timestamp);
-			handleRetroTargets(results, timestamp);
-			handleDetectorTargets(results, timestamp);
+		if (currentHeartbeat > previousHeartbeat) {
+			lastUpdateStopwatch.reset();
+			SmartDashboard.putBoolean("Limelight Connected", true);
+
+			if (!Netlink.getBooleanValue("Limelight Disabled")) {
+				LimelightResults results = LimelightHelpers.getLatestResults(kLimelightName);
+				handleFiducialTargets(results, timestamp);
+				handleRetroTargets(results, timestamp);
+				handleDetectorTargets(results, timestamp);
+			}
+
 			previousHeartbeat = currentHeartbeat;
+		} else {
+			lastUpdateStopwatch.startIfNotRunning();
+			if (lastUpdateStopwatch.getTime() > 1.0) {
+				SmartDashboard.putBoolean("Limelight Connected", false);
+			}
 		}
 	}
 	
