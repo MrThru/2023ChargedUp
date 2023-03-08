@@ -208,7 +208,7 @@ public class DriverControls implements Loop {
             
         if (driver.backButton.wasActivated()) {
             swerve.temporarilyDisableHeadingController();
-            swerve.zeroSensors(new Pose2d());
+            swerve.zeroSensorsBasedOnAlliance();
             swerve.resetAveragedDirection();
         }
 
