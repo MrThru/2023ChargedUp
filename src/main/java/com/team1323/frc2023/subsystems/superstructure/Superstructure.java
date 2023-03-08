@@ -77,7 +77,7 @@ public class Superstructure extends Subsystem {
 	private boolean allRequestsCompleted = false;
 	public boolean requestsCompleted(){ return allRequestsCompleted; }
 	
-	private void setActiveRequest(Request request){
+	private synchronized void setActiveRequest(Request request){
 		if (activeRequest != null) {
 			activeRequest.cleanup();
 		}
@@ -101,12 +101,12 @@ public class Superstructure extends Subsystem {
 		queuedRequests.clear();
 	}
 	
-	public void request(Request r){
+	public synchronized void request(Request r){
 		setActiveRequest(r);
 		clearQueue();
 	}
 	
-	public void request(Request active, Request queue){
+	public synchronized void request(Request active, Request queue){
 		setActiveRequest(active);
 		setQueue(queue);
 	}
@@ -136,19 +136,21 @@ public class Superstructure extends Subsystem {
 			InterpolatingDouble maxSwerveSpeed = Constants.kElevatorHeightToSwerveSpeedMap.getInterpolated(elevatorHeight);
 			swerve.setMaxSpeed(maxSwerveSpeed.value);*/
 
-			if(newRequest && activeRequest != null) {
-				activeRequest.act();
-				newRequest = false;
-			} 
+			synchronized (Superstructure.this) {
+				if(newRequest && activeRequest != null) {
+					activeRequest.act();
+					newRequest = false;
+				} 
 
-			if(activeRequest == null) {
-				if(queuedRequests.isEmpty()) {
-					allRequestsCompleted = true;
-				} else {
-					setActiveRequest(queuedRequests.remove(0));
+				if(activeRequest == null) {
+					if(queuedRequests.isEmpty()) {
+						allRequestsCompleted = true;
+					} else {
+						setActiveRequest(queuedRequests.remove(0));
+					}
+				} else if(activeRequest.isFinished()) {
+					activeRequest = null;
 				}
-			} else if(activeRequest.isFinished()) {
-				activeRequest = null;
 			}
 		}
 
