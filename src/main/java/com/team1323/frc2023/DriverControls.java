@@ -96,7 +96,7 @@ public class DriverControls implements Loop {
         testController = new Xbox(4);
         singleController = new Xbox(5);
         driver.setDeadband(0.0);
-		coDriver.setDeadband(0.6);
+		coDriver.setDeadband(0.1); //0.6
 
         swerve = Swerve.getInstance();
         verticalElevator = VerticalElevator.getInstance();
@@ -111,7 +111,7 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, /*cubeIntake, tunnel, verticalElevator, leds, horizontalElevator, wrist, shoulder, claw,*/ s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, wrist, cubeIntake, tunnel, /* verticalElevator, horizontalElevator, wrist, shoulder,*/ claw, leds, s));
     }
 
     @Override
@@ -136,7 +136,7 @@ public class DriverControls implements Loop {
             driver.update();
 			coDriver.update();
             //singleController.update();
-            //testController.update();
+            testController.update();
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
@@ -498,10 +498,12 @@ public class DriverControls implements Loop {
 
         verticalElevator.acceptManualInput(verticalElevatorYInput);
         horizontalElevator.acceptManualInput(horizontalElevatorYInput);
-        shoulder.acceptManualInput(shoulderYInput);
+        //shoulder.acceptManualInput(shoulderYInput);
         wrist.acceptManualInput(wristAngleYInput);
+        cubeIntake.acceptManualInput(shoulderYInput);
 
         SmartDashboard.putNumber("Vertical Elevator Manual Input", verticalElevatorYInput);
+        SmartDashboard.putNumber("Shoulder Manual Input", shoulderYInput);
         
         if (coDriver.aButton.shortReleased()) {
             s.request(new SequentialRequest(
@@ -636,18 +638,29 @@ public class DriverControls implements Loop {
             //verticalElevator.setPosition(10.0);
             //wrist.setPosition(-90);
             //shoulder.setPosition(-45);
+            //cubeIntake.setPosition(Constants.CubeIntake.kIntakeAngle);
+            cubeIntake.setIntakeSpeed(0.25);
+            tunnel.setState(Tunnel.State.MANUAL);
+            tunnel.setAllSpeeds(0.25);
+            claw.conformToState(Claw.ControlState.CUBE_OUTAKE);
         }
         if(testController.bButton.wasActivated()) {
             //horizontalElevator.setPosition(0.5);
             //verticalElevator.setPosition(0.5);
             //wrist.setPosition(0);
             //shoulder.setPosition(90);
+            //cubeIntake.setPosition(100);
+            cubeIntake.setIntakeSpeed(0.0);
+            tunnel.setState(Tunnel.State.OFF);
+            claw.conformToState(Claw.ControlState.OFF);
         }
         if(testController.yButton.wasActivated()) {
             //horizontalElevator.setPosition(30.0);
             //verticalElevator.setPosition(19.0);
             //wrist.setPosition(90);
-            //shoulder.setPosition(45);
+            //shoulder.setPosition(169.0);
+            cubeIntake.setPosition(0);
+
         }
 
         if (testController.POV0.wasActivated()) {

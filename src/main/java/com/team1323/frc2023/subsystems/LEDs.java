@@ -40,7 +40,6 @@ public class LEDs extends Subsystem {
     public LEDs() {
         candle = new CANdle(Ports.CANDLE);
         candle.configLEDType(LEDStripType.GRB);
-        configLEDs(disabledLEDColorsMode);
     }
 
     public enum LEDMode {
@@ -84,7 +83,7 @@ public class LEDs extends Subsystem {
         }
     }
 
-    private LEDColors disabledLEDColorsMode = LEDColors.RAINBOW;
+    public LEDColors disabledLEDColorsMode = LEDColors.RAINBOW;
     private LEDColors currentLEDMode = LEDColors.OFF;
 
     public LEDColors getLEDMode() {

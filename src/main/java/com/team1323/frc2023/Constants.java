@@ -181,9 +181,9 @@ public class Constants {
         public static final double kIntakeAngle = -2.5;
         public static final double kFloorAngle = -38.75;
 
-        public static final double kAngleTolerance = Settings.kIsUsingCompBot ? 1.0 : 1.0;
-        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
-        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 4.0;
+        public static final double kAngleTolerance = Settings.kIsUsingCompBot ? 2.0 : 1.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 4.0 : 4.0;
         
         public static final double kSupplyCurrentLimit = 25.0;
 
@@ -277,8 +277,8 @@ public class Constants {
 
         public static final double kHeightTolerance = 2.0;
 
-        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
-        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 4.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 4.0 : 4.0;
 
         public static final double kSupplyCurrentLimit = 60.0;
 
@@ -301,7 +301,7 @@ public class Constants {
             
         public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
-        public static final double kArbitraryFeedForward = 0.048438;
+        public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.043750 : 0.048438;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.15,
@@ -384,7 +384,7 @@ public class Constants {
             
         public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
-        public static final double kArbitraryFeedForward = 0.03;
+        public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.039062 : 0.03;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
@@ -412,8 +412,8 @@ public class Constants {
 
         public static final double kAngleTolerance = 10.0;
 
-        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
-        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 4.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 4.0 : 4.0;
 
         public static final double kSupplyCurrentLimit = 30.0;
 
@@ -431,7 +431,7 @@ public class Constants {
             0,
             0.01,
             0.00005,
-            0.3,
+            0.6,
             kFalconMotionMagicFeedForward
         );
 
