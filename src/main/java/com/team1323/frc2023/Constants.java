@@ -107,10 +107,10 @@ public class Constants {
     * Enter angle read by the absolute encoder. Insert as degrees and subtract or add 90° to the value
     * based on where the bevel ended up.
     */
-    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 196.2: 329.475;
-    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 89.2 : 144.19;
-    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 5.3 : 225.0;
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 193.0 : 216.4;
+    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 292.2: 329.475;
+    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 221.0 : 144.19;
+    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 103.0 : 225.0;
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 298.4 : 216.4;
     
     //Swerve Module Positions (relative to the center of the drive base)
     public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
@@ -175,15 +175,15 @@ public class Constants {
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWristRotation / 360.0;
 
         public static final double kMinControlAngle = -40.0;
-        public static final double kMaxControlAngle = 105;
+        public static final double kMaxControlAngle = 110;
 
         public static final double kStartingAngle = 0;
         public static final double kIntakeAngle = -2.5;
         public static final double kFloorAngle = -38.75;
 
-        public static final double kAngleTolerance = 1.0;
-        public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 4.0;
+        public static final double kAngleTolerance = Settings.kIsUsingCompBot ? 1.0 : 1.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 4.0;
         
         public static final double kSupplyCurrentLimit = 25.0;
 
@@ -193,17 +193,27 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.025;
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             1,
-            -122.699847, //124.287924 
+            Settings.kIsUsingCompBot ? -178.180006 : -122.699847, //124.287924 
             0, 
             -45,
             115
         );
-        public static final TalonPIDF kStandardPID = new TalonPIDF(0, 
+
+        private static final TalonPIDF kPracticePID = new TalonPIDF(0, 
             0.0174999237, 
             0,
             0.6, 
             kFalconMotionMagicFeedForward
         );
+
+        private static final TalonPIDF kCompPID = new TalonPIDF(0, 
+            0.0174999237, 
+            0,
+            0.6, 
+            kFalconMotionMagicFeedForward
+        );
+
+        public static final TalonPIDF kStandardPID = Settings.kIsUsingCompBot ? kCompPID : kPracticePID;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             0.1,
@@ -267,18 +277,29 @@ public class Constants {
 
         public static final double kHeightTolerance = 2.0;
 
-        public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 4.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 4.0;
 
         public static final double kSupplyCurrentLimit = 60.0;
 
-        public static final TalonPIDF kPIDF = new TalonPIDF(
+        
+        private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
             0.01,
             0.0,
             0.0,
             kFalconMotionMagicFeedForward
         );
+
+        private static final TalonPIDF kCompPIDF = new TalonPIDF(
+            0,
+            0.01,
+            0.0,
+            0.0,
+            kFalconMotionMagicFeedForward
+        );
+            
+        public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
         public static final double kArbitraryFeedForward = 0.048438;
 
@@ -298,18 +319,29 @@ public class Constants {
 
         public static final double kExtensionTolerance = 2.0;
 
-        public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 4.0; //3.0
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 4.0;
 
         public static final double kSupplyLimit = 40.0;
 
-        public static final TalonPIDF kPIDF = new TalonPIDF(
+
+        private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
             0.01,
             0.0,
             0.0,
             kFalconMotionMagicFeedForward
         );
+
+        private static final TalonPIDF kCompPIDF = new TalonPIDF(
+            0,
+            0.01,
+            0.0,
+            0.0,
+            kFalconMotionMagicFeedForward
+        );
+            
+        public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.05,
@@ -329,13 +361,12 @@ public class Constants {
 
         public static final double kAngleTolerance = 4.0;
 
-        public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 3.0;
-        public static final double kFastAccelerationScalar = 3.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 3.0;
 
         public static final double kSupplyCurrentLimit = 40.0; //30.0 - 40
 
-        public static final TalonPIDF kPIDF = new TalonPIDF(
+        private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
             0.04,
             0.0,
@@ -343,11 +374,21 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
 
+        private static final TalonPIDF kCompPIDF = new TalonPIDF(
+            0,
+            0.04,
+            0.0,
+            0.0,
+            kFalconMotionMagicFeedForward
+        );
+            
+        public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
+
         public static final double kArbitraryFeedForward = 0.03;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            342.75, 
+            Settings.kIsUsingCompBot ? 4.218750 : 342.75, 
             174.0, 
             -95.0,
             185.0
@@ -371,14 +412,14 @@ public class Constants {
 
         public static final double kAngleTolerance = 10.0;
 
-        public static final double kVelocityScalar = 1.0;
-        public static final double kAccelerationScalar = 4.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 0.25 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 1.0 : 4.0;
 
         public static final double kSupplyCurrentLimit = 30.0;
 
         public static final double kLowCurrentMode = 3.5;
 
-        public static final TalonPIDF kPIDF = new TalonPIDF(
+        private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
             0.01,
             0.00005,
@@ -386,11 +427,21 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
 
+        private static final TalonPIDF kCompPIDF = new TalonPIDF(
+            0,
+            0.01,
+            0.00005,
+            0.3,
+            kFalconMotionMagicFeedForward
+        );
+
+        public static TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
+
         public static final double kArbitraryFeedForward = 0.0;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            75.0, 
+            Settings.kIsUsingCompBot ? 280.722656 : 75.0, 
             0.0, 
             -149, 
             139.6

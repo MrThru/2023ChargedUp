@@ -111,7 +111,7 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, leds, horizontalElevator, wrist, shoulder, claw, s));
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, /*cubeIntake, tunnel, verticalElevator, leds, horizontalElevator, wrist, shoulder, claw,*/ s));
     }
 
     @Override
@@ -140,7 +140,7 @@ public class DriverControls implements Loop {
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
-                twoControllerMode();;;;
+                manualMode();;;;;
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }
@@ -635,19 +635,19 @@ public class DriverControls implements Loop {
             //horizontalElevator.setPosition(20.0);
             //verticalElevator.setPosition(10.0);
             //wrist.setPosition(-90);
-            shoulder.setPosition(-45);
+            //shoulder.setPosition(-45);
         }
         if(testController.bButton.wasActivated()) {
             //horizontalElevator.setPosition(0.5);
             //verticalElevator.setPosition(0.5);
             //wrist.setPosition(0);
-            shoulder.setPosition(90);
+            //shoulder.setPosition(90);
         }
         if(testController.yButton.wasActivated()) {
             //horizontalElevator.setPosition(30.0);
             //verticalElevator.setPosition(19.0);
             //wrist.setPosition(90);
-            shoulder.setPosition(45);
+            //shoulder.setPosition(45);
         }
 
         if (testController.POV0.wasActivated()) {

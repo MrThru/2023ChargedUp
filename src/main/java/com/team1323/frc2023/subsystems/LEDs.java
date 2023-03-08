@@ -38,7 +38,11 @@ public class LEDs extends Subsystem {
     }
 
     public LEDs() {
-        candle = new CANdle(Ports.CANDLE);
+        if(Settings.kIsUsingCompBot) {
+            candle = new CANdle(Ports.CANDLE, Ports.CANBUS);
+        } else {
+            candle = new CANdle(Ports.CANDLE);
+        }
         candle.configLEDType(LEDStripType.GRB);
         configLEDs(disabledLEDColorsMode);
     }

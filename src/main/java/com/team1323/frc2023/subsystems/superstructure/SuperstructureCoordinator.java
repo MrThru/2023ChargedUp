@@ -118,22 +118,12 @@ public class SuperstructureCoordinator {
         return wristRotationCausesCollision;
     }
 
-    private void updateShoulderAcceleration(SuperstructurePosition currentPosition, SuperstructurePosition finalPosition) {
-        if (Math.abs(currentPosition.horizontalExtension - finalPosition.horizontalExtension) < 1.0) {
-            shoulder.setAccelerationScalar(Constants.Shoulder.kFastAccelerationScalar);
-        } else {
-            shoulder.setAccelerationScalar(Constants.Shoulder.kAccelerationScalar);
-        }
-    }
-
     private Request getStowChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
         Request finalElevatorRequest = new ParallelRequest(
             verticalElevator.heightRequest(finalPosition.verticalHeight),
             horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
         );
-
-        updateShoulderAcceleration(currentPosition, finalPosition);
 
         Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
         if (Util.isInRange(currentPosition.shoulderAngle, 0.0, elevatorCollisionAngle.getDegrees()) &&
@@ -241,8 +231,6 @@ public class SuperstructureCoordinator {
     private Request getLowChoreography(SuperstructurePosition finalPosition) {
         SuperstructurePosition currentPosition = getPosition();
 
-        updateShoulderAcceleration(currentPosition, finalPosition);
-
         Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
         if (currentPosition.shoulderAngle >= elevatorCollisionAngle.getDegrees()) {
             Prerequisite shoulderEscapedPrereq = () -> shoulder.getPosition() < kShoulderAngleForEscapingElevator;
@@ -331,8 +319,6 @@ public class SuperstructureCoordinator {
 
     private Request getHighChoreography(SuperstructurePosition finalPosition, double preemptiveExtensionSeconds) {
         SuperstructurePosition currentPosition = getPosition();
-
-        updateShoulderAcceleration(currentPosition, finalPosition);
 
         Rotation2d elevatorCollisionAngle = currentPosition.getElevatorCollisionAngle();
         if (currentPosition.shoulderAngle >= elevatorCollisionAngle.getDegrees() &&

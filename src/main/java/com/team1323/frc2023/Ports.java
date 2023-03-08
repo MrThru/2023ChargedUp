@@ -42,10 +42,10 @@ public class Ports {
 
 
     //Digital Inputs
-    public static final int FRONT_RIGHT_ENCODER = Settings.kIsUsingCompBot ? 3: 0; //30
-    public static final int FRONT_LEFT_ENCODER = Settings.kIsUsingCompBot ? 2: 1; //31
-    public static final int REAR_LEFT_ENCODER = Settings.kIsUsingCompBot ? 1: 2; //32
-    public static final int REAR_RIGHT_ENCODER = Settings.kIsUsingCompBot ? 0: 3; //33
+    public static final int FRONT_RIGHT_ENCODER = Settings.kIsUsingCompBot ? 0: 0; //30
+    public static final int FRONT_LEFT_ENCODER = Settings.kIsUsingCompBot ? 1: 1; //31
+    public static final int REAR_LEFT_ENCODER = Settings.kIsUsingCompBot ? 2: 2; //32
+    public static final int REAR_RIGHT_ENCODER = Settings.kIsUsingCompBot ? 3: 3; //33
     public static final int[] kModuleEncoders = new int[]{FRONT_RIGHT_ENCODER, FRONT_LEFT_ENCODER,
         REAR_LEFT_ENCODER, REAR_RIGHT_ENCODER};
 
@@ -53,8 +53,8 @@ public class Ports {
     
     public static final int INTAKE_BANNER = 4;
     
-    public static final int TUNNEL_FRONT_BANNER = 6;
-    public static final int TUNNEL_REAR_BANNER = 7;
+    public static final int TUNNEL_FRONT_BANNER = Settings.kIsUsingCompBot ? 7 : 6;
+    public static final int TUNNEL_REAR_BANNER = Settings.kIsUsingCompBot ? 6: 7;
     
     //CANCoders
     
