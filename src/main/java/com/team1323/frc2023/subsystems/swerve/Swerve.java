@@ -122,7 +122,7 @@ public class Swerve extends Subsystem{
 	double distanceTraveled;
 	double currentVelocity = 0;
 	double lastUpdateTimestamp = 0;
-	public Pose2d getPose(){
+	public synchronized Pose2d getPose(){
 		return pose;
 	}
 	public Twist2d getVelocity() {
@@ -1002,7 +1002,7 @@ public class Swerve extends Subsystem{
 		velocity = Units.metersToInches(poseEstimator.getDeltaMeters().scaled(1.0 / deltaTime));
 	}
 
-	public Pose2d getPoseAtTime(double timeSeconds) {
+	public synchronized Pose2d getPoseAtTime(double timeSeconds) {
 		return Units.metersToInches(poseEstimator.getEstimatedPositionAtTime(timeSeconds));
 	}
 	
@@ -1197,7 +1197,7 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.setRotationMotorZeroed(isZeroed));
 	}
 
-	public void addVisionMeasurement(Pose2d estimatedRobotPose, double observationTimestamp, Matrix<N3, N1> standardDeviations) {
+	public synchronized void addVisionMeasurement(Pose2d estimatedRobotPose, double observationTimestamp, Matrix<N3, N1> standardDeviations) {
 		if (Math.abs(estimatedRobotPose.getRotation().distance(pose.getRotation())) > Math.toRadians(45.0)) {
 			temporarilyDisableHeadingController();
 		}
@@ -1243,7 +1243,7 @@ public class Swerve extends Subsystem{
 	}
 	
 	/** Zeroes the drive motors, and sets the robot's internal position and heading to match that of the fed pose */
-	public void zeroSensors(Pose2d startingPose){
+	public synchronized void zeroSensors(Pose2d startingPose){
 		modules.forEach((m) -> m.zeroSensors(startingPose));
 		pose = startingPose;
 		robotState.reset(Timer.getFPGATimestamp(), startingPose, Rotation2d.identity());
