@@ -49,13 +49,13 @@ public abstract class TwoConesOneCubeBaseMode extends AutoModeBase {
         // Intake cube and score it
         runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
         Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
-        runAction(new WaitToIntakeCubeAction(3.0));
+        runAction(new WaitToIntakeCubeAction(1.5));
         runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
         Superstructure.getInstance().postIntakeState(0);
-        runAction(new WaitToPassXCoordinateAction(210.0, quadrant, 1.5));
+        runAction(new WaitToPassXCoordinateAction(242.0, quadrant, 1.5));
         Superstructure.getInstance().handOffCubeState(SuperstructureCoordinator.getInstance()::getAutoCubeHoldChoreography);
         runAction(new WaitToPassXCoordinateAction(110, quadrant, 1.5));
-        runAction(new WaitToIntakeAction(HoldingObject.Cube, 3.0));
+        runAction(new WaitToIntakeAction(HoldingObject.Cube, 1.5));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
             Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
             runAction(new WaitToEjectObjectAction(4.0));
@@ -68,6 +68,6 @@ public abstract class TwoConesOneCubeBaseMode extends AutoModeBase {
         runAction(new SetTrajectoryAction(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(140.0, quadrant));
         Superstructure.getInstance().coneIntakeWithoutScanSequence();
-        runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 240.0 : 220.0, quadrant));
+        runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 240.0 : 230.0, quadrant));
     }
 }

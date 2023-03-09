@@ -119,6 +119,8 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
     private Loop loop = new Loop() {
         @Override
         public void onStart(double timestamp) {
+            resetCurrentLimit();
+            disableStatorCurrentLimit();
             updateArbitraryFeedForward();
             setIntakeSpeed(0);
         }
@@ -149,6 +151,9 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         enabledLooper.register(loop);
     }
 
+    public void resetCurrentLimit() {
+        setSupplyCurrentLimit(Constants.CubeIntake.kSupplyCurrentLimit);
+    }
 
     
     public Request angleRequest(double degrees) {
@@ -171,10 +176,6 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
                 conformToState(desiredState);
             }
 
-            @Override
-            public boolean isFinished() {
-                return isOnTarget();
-            }
 
             public String toString() {
                 return String.format("CubeIntakeRequest(state = %s)", desiredState);

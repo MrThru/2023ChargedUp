@@ -269,7 +269,9 @@ public class LimelightProcessor implements Loop {
 
 		// For debugging purposes
 		if (poleHeight == kHighConePoleHeight) {
-			SmartDashboard.putString("Cone Pole Position", new Translation2d(robotPose.getTranslation(), estimatedPolePosition).toString());
+			SmartDashboard.putString("Cone High Pole Position", new Translation2d(robotPose.getTranslation(), estimatedPolePosition).toString());
+		} else if (poleHeight == kMidConePoleHeight) {
+			SmartDashboard.putString("Cone Mid Pole Position", new Translation2d(robotPose.getTranslation(), estimatedPolePosition).toString());
 		}
 	}
 
@@ -314,6 +316,8 @@ public class LimelightProcessor implements Loop {
 	}
 
 	public Translation2d getNearestConePosition(Translation2d trueFieldPosition) {
+		final double kNearestConeTolerance = 36.0;
+
 		List<Translation2d> conePositions = coneGoalTracker.getTracks().stream()
 				.map(report -> report.field_to_goal)
 				.toList();
@@ -327,8 +331,12 @@ public class LimelightProcessor implements Loop {
 
 			return Double.compare(distance1, distance2);
 		};
+		Translation2d nearestConePosition = Collections.min(conePositions, distanceComparator);
+		if (nearestConePosition.distance(trueFieldPosition) > kNearestConeTolerance) {
+			return Translation2d.identity();
+		}
 
-		return Collections.min(conePositions, distanceComparator);
+		return nearestConePosition;
 	}
 
 	public Pose2d getRobotConePickupPosition(Translation2d trueConePosition) {

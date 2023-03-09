@@ -384,7 +384,7 @@ public class Constants {
             
         public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
-        public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.039062 : 0.03;
+        public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.03 : 0.03; //0.039062
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 

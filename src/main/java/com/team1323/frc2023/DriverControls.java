@@ -136,7 +136,7 @@ public class DriverControls implements Loop {
             driver.update();
 			coDriver.update();
             //singleController.update();
-            testController.update();
+            //testController.update();
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
@@ -182,6 +182,7 @@ public class DriverControls implements Loop {
 
         if(driver.rightTrigger.wasActivated()) {
             tunnel.setState(Tunnel.State.EJECT_ONE);
+            //swerve.startBalancePID();
         }
 
         /*if (driver.rightTrigger.wasActivated()) {
