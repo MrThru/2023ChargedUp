@@ -33,7 +33,7 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystemWi
         isZeroed = true;
     }
 
-    protected void setPositionToAbsolute() {
+    public void setPositionToAbsolute() {
         double absoluteEncoderOffset = Util.boundAngle0to360Degrees(absoluteEncoder.getDegrees() - absoluteEncoderInfo.encoderZeroingAngle);
         double absoluteSubsystemAngle = absoluteEncoderInfo.subsystemZeroingAngle + (absoluteEncoderOffset / absoluteEncoderInfo.encoderToOutputRatio);
         if (absoluteSubsystemAngle > absoluteEncoderInfo.maxInitialSubsystemAngle) {

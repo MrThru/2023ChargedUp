@@ -1193,6 +1193,10 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.resetRotationToAbsolute());
 	}
 
+	public void forceZeroModuleAngles() {
+		modules.forEach((m) -> m.forceResetRotationToAbsolute());
+	}
+
 	public void setRotationMotorZeroed(boolean isZeroed) {
 		modules.forEach((m) -> m.setRotationMotorZeroed(isZeroed));
 	}

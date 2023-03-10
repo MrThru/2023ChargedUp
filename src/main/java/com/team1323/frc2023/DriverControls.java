@@ -448,12 +448,19 @@ public class DriverControls implements Loop {
             s.request(new EmptyRequest());
         }
 
-        if (coDriver.backButton.wasActivated()) {
+        if (coDriver.backButton.shortReleased()) {
             verticalElevator.startCurrentZeroing();
             horizontalElevator.startCurrentZeroing();
             //shoulder.startCurrentZeroing();
             //wrist.startCurrentZeroing();
             //cubeIntake.startCurrentZeroing();
+        } else if (coDriver.backButton.longPressed()) {
+            verticalElevator.startCurrentZeroing();
+            horizontalElevator.startCurrentZeroing();
+            shoulder.setPositionToAbsolute();
+            wrist.setPositionToAbsolute();
+            cubeIntake.setPositionToAbsolute();
+            swerve.forceZeroModuleAngles();
         }
 
         /*if(s.coneIntakingSequence) {

@@ -221,27 +221,31 @@ public abstract class SwerveModule extends Subsystem {
 	int zeroCount = 0;
 	public void resetRotationToAbsolute(){
 		if (!rotationMotorZeroed) {
-			ErrorCode rotationFalconCheck = setRotationSensorPosition(0.0);
-			if (rotationFalconCheck == ErrorCode.OK) {
-				if (isRotationSensorConnected() && RobotBase.isReal()) {
-					setRotationSensorPosition(degreesToEncUnits(getAbsoluteEncoderDegrees() - encoderOffset));
-					moduleZeroedWitoutMagEnc = false;
-				} else {
-					setRotationSensorPosition(0.0);
-					DriverStation.reportError("MAG ENCODER FOR " + name + " WAS NOT CONNECTED UPON BOOT", false);
-					moduleZeroedWitoutMagEnc = true;
-				}
+			forceResetRotationToAbsolute();
+		} 
+	}
+
+	public void forceResetRotationToAbsolute() {
+		ErrorCode rotationFalconCheck = setRotationSensorPosition(0.0);
+		if (rotationFalconCheck == ErrorCode.OK) {
+			if (isRotationSensorConnected() && RobotBase.isReal()) {
+				setRotationSensorPosition(degreesToEncUnits(getAbsoluteEncoderDegrees() - encoderOffset));
+				moduleZeroedWitoutMagEnc = false;
 			} else {
-				DriverStation.reportError("ROTATION FALCON NOT FOUND ON " + name, false);
+				setRotationSensorPosition(0.0);
+				DriverStation.reportError("MAG ENCODER FOR " + name + " WAS NOT CONNECTED UPON BOOT", false);
 				moduleZeroedWitoutMagEnc = true;
 			}
-			if (zeroCount < 500) {
-				zeroCount++;
-			} else {
-				System.out.println("MODULE " + name + " ZEROED");
-				System.out.println(name + "Absolute angle: " + getAbsoluteEncoderDegrees() + ", encoder offset: " + encoderOffset + ", difference: " + (getAbsoluteEncoderDegrees() - encoderOffset) + ", degreesToEncUnits: " + degreesToEncUnits(getAbsoluteEncoderDegrees() - encoderOffset));
-				rotationMotorZeroed = true;
-			}
+		} else {
+			DriverStation.reportError("ROTATION FALCON NOT FOUND ON " + name, false);
+			moduleZeroedWitoutMagEnc = true;
+		}
+		if (zeroCount < 500) {
+			zeroCount++;
+		} else {
+			System.out.println("MODULE " + name + " ZEROED");
+			System.out.println(name + "Absolute angle: " + getAbsoluteEncoderDegrees() + ", encoder offset: " + encoderOffset + ", difference: " + (getAbsoluteEncoderDegrees() - encoderOffset) + ", degreesToEncUnits: " + degreesToEncUnits(getAbsoluteEncoderDegrees() - encoderOffset));
+			rotationMotorZeroed = true;
 		}
 	}
 
