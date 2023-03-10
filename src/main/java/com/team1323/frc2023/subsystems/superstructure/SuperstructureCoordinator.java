@@ -1,6 +1,7 @@
 package com.team1323.frc2023.subsystems.superstructure;
 
 import com.team1323.frc2023.Constants;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.VerticalElevator;
@@ -304,7 +305,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.1,
             6.1,
-            -97.5,
+            Settings.kIsUsingCompBot ? -95.0 : -97.5,
             133.5
         );
 

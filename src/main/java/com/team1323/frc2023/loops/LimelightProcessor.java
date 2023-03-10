@@ -13,6 +13,7 @@ import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Fiducial;
 import com.team1323.frc2023.loops.LimelightHelpers.LimelightTarget_Retro;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.ConeOffset;
+import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.GoalTracker;
@@ -83,7 +84,7 @@ public class LimelightProcessor implements Loop {
 			lastUpdateStopwatch.reset();
 			SmartDashboard.putBoolean("Limelight Connected", true);
 
-			if (!Netlink.getBooleanValue("Limelight Disabled")) {
+			if (!Netlink.getBooleanValue("Limelight Disabled") /*&& VerticalElevator.getInstance().getPosition() <= 16.0*/) {
 				LimelightResults results = LimelightHelpers.getLatestResults(kLimelightName);
 				handleFiducialTargets(results, timestamp);
 				handleRetroTargets(results, timestamp);

@@ -16,6 +16,7 @@ import com.team1323.frc2023.subsystems.encoders.MagEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Netlink;
+import com.team1323.lib.util.Stopwatch;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
@@ -103,6 +104,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
 
     private boolean isCurrentLimited = false;
     private boolean intakeCurrentLimitSet = false;
+    private Stopwatch onTargetStopwatch = new Stopwatch();
     @Override
     public void setPosition(double outputUnits) {
         if (isCurrentLimited) {
@@ -128,9 +130,15 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         @Override
         public void onLoop(double timestamp) {
             updateArbitraryFeedForward();
-            if (isOnTarget() && !isCurrentLimited && getPosition() < 100) {
-                setStatorCurrentLimit(15.0);
+            if (isOnTarget() && getPosition() < 100) {
+                onTargetStopwatch.startIfNotRunning();
+            } else {
+                onTargetStopwatch.reset();
+            }
+            if(onTargetStopwatch.getTime() > 0.25 && !isCurrentLimited) {
                 isCurrentLimited = true;
+                onTargetStopwatch.reset();
+                setStatorCurrentLimit(15.0);
             }
             /*if(getBanner() && !intakeCurrentLimitSet) {
                 setIntakeCurrent(Constants.CubeIntake.kLowerIntakeCurrentLimit);

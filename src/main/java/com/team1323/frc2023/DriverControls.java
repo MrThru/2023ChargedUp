@@ -325,7 +325,11 @@ public class DriverControls implements Loop {
         SmartDashboard.putNumber("RB Pressed", (coDriver.rightBumper.isBeingPressed() ? 1 : 0));
 
         if(coDriver.rightCenterClick.wasActivated()) {
-            claw.conformToState(Claw.ControlState.CONE_OUTAKE);
+            if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
+                claw.conformToState(Claw.ControlState.CONE_OUTAKE);
+            } else {
+                claw.conformToState(Claw.ControlState.CUBE_OUTAKE);
+            }
         } else if(coDriver.rightCenterClick.wasReleased()) {
             //claw.conformToState(Claw.ControlState.OFF);
             claw.setCurrentHoldingObject(Claw.HoldingObject.None);
@@ -358,26 +362,38 @@ public class DriverControls implements Loop {
                 ));
             }
         } else if(coDriver.bButton.longPressed()) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
+            if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
                 s.coneIntakeSequence();
                 System.out.println("Intaking Cone Request");
             }
         }
 
-        if(coDriver.xButton.wasActivated()) {
+        if(coDriver.xButton.shortReleased()) {
             targetScoringRow = NodeLocation.Row.MIDDLE;
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
                 s.handOffCubeState(SuperstructureCoordinator.getInstance()::getHalfCubeStowChoreography);
             }
             leds.configLEDs(LEDs.LEDColors.ORANGE);
+        } else if(coDriver.xButton.longPressed()) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
+                s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
+            } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
+                s.request(SuperstructureCoordinator.getInstance().getCubeMidScoringChoreography());
+            }
         }
-        if(coDriver.yButton.wasActivated()) {
+        if(coDriver.yButton.shortReleased()) {
             targetScoringRow = NodeLocation.Row.TOP;
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
                 s.handOffCubeState(SuperstructureCoordinator.getInstance()::getHalfCubeStowChoreography);
             }
             leds.configLEDs(LEDs.LEDColors.RED);
 
+        } else if(coDriver.yButton.longPressed()) {
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
+                s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
+            } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
+                s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
+            }
         }
 
 
