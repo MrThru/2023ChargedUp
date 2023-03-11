@@ -96,7 +96,7 @@ public class DriverControls implements Loop {
         testController = new Xbox(4);
         singleController = new Xbox(5);
         driver.setDeadband(0.0);
-		coDriver.setDeadband(0.1); //0.6
+		coDriver.setDeadband(0.6); //0.6
 
         swerve = Swerve.getInstance();
         verticalElevator = VerticalElevator.getInstance();
@@ -162,15 +162,15 @@ public class DriverControls implements Loop {
         
         SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
 
-        /*if(driver.bButton.wasActivated())
-            swerve.rotate(Rotation2d.fromDegrees(-90));*/
+        if(driver.bButton.wasActivated())
+            swerve.rotate(Rotation2d.fromDegrees(-90));
             //swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());
-        if(driver.aButton.wasActivated()) 
+        else if(driver.aButton.wasActivated()) 
             swerve.rotate(Rotation2d.fromDegrees(180));
         else if (driver.xButton.wasActivated())
             swerve.rotate(Rotation2d.fromDegrees(90));
-        else if (driver.yButton.wasActivated())
-            swerve.rotate(Rotation2d.fromDegrees(0));
+        /*else if (driver.yButton.wasActivated())
+            swerve.rotate(Rotation2d.fromDegrees(0));*/
         
         
         /*if (driver.rightTrigger.wasActivated()) {
@@ -302,9 +302,9 @@ public class DriverControls implements Loop {
                 swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
             }
         }
-        if(driver.bButton.wasActivated()) {
+        if(driver.yButton.wasActivated()) {
             swerve.zukLockDrivePosition();
-        } else if(driver.bButton.wasReleased()) {
+        } else if(driver.yButton.wasReleased()) {
             swerve.stop();
         }
 

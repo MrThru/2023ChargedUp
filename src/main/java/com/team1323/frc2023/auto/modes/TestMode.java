@@ -16,8 +16,8 @@ import com.team254.lib.trajectory.timing.TimedState;
 public class TestMode extends AutoModeBase {
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.cubeScoreToThirdPiece.get(Quadrant.BOTTOM_LEFT), trajectories.cubeScoreToThirdPiece.get(Quadrant.TOP_LEFT),
-                trajectories.cubeScoreToThirdPiece.get(Quadrant.TOP_RIGHT), trajectories.cubeScoreToThirdPiece.get(Quadrant.BOTTOM_RIGHT));
+        return Arrays.asList(trajectories.thirdPieceToSecondConeColumn.get(Quadrant.BOTTOM_LEFT), trajectories.thirdPieceToSecondConeColumn.get(Quadrant.TOP_LEFT),
+                trajectories.thirdPieceToSecondConeColumn.get(Quadrant.TOP_RIGHT), trajectories.thirdPieceToSecondConeColumn.get(Quadrant.BOTTOM_RIGHT));
     }
 
     @Override

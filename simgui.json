@@ -2,7 +2,8 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/Mode Chooser": "String Chooser"
+      "/SmartDashboard/Mode Chooser": "String Chooser",
+      "/SmartDashboard/Side Chooser": "String Chooser"
     }
   }
 }

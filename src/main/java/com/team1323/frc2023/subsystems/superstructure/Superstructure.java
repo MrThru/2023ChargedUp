@@ -573,7 +573,7 @@ public class Superstructure extends Subsystem {
 
 	public void cubeMidScoringSequence(Pose2d scoringPose, boolean stopSwerveWhenDone) {
 		cubeScoringSequence(scoringPose, coordinator::getCubeMidScoringChoreography,
-				SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, 0.1875, false, this::objectAwareStow, stopSwerveWhenDone);
+				SuperstructureCoordinator.kCubeMidScoringHorizontalExtension, 0.1, false, this::objectAwareStow, stopSwerveWhenDone);
 	}
 
 	public void cubeHighScoringSequence(Pose2d scoringPose, boolean stopSwerveWhenDone) {
