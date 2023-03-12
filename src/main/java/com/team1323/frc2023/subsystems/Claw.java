@@ -140,7 +140,7 @@ public class Claw extends Subsystem {
             if(currentState == ControlState.CONE_INTAKE) {
                 if(stateChanged) {
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.01);
-                    stopwatch.start();
+                    stopwatch.start(); //To ensure that the cone intake isnt a false trigger when it starts to spin
                     stopwatch2.reset();
                 }
                 if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 1.0) {

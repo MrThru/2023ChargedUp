@@ -135,7 +135,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
             } else {
                 onTargetStopwatch.reset();
             }
-            if(onTargetStopwatch.getTime() > 0.25 && !isCurrentLimited) {
+            if(onTargetStopwatch.getTime() > 0.5 && !isCurrentLimited) {
                 isCurrentLimited = true;
                 onTargetStopwatch.reset();
                 setStatorCurrentLimit(15.0);

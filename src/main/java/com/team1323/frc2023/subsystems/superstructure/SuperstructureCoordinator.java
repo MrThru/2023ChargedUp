@@ -449,7 +449,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.50,
             0.25,
-            0.75,
+            -0.25,
             104.5
         );
         return getHighChoreography(finalPosition);

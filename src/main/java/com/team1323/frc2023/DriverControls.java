@@ -263,6 +263,7 @@ public class DriverControls implements Loop {
         if(coDriver.startButton.wasActivated()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None)
                 s.shuttleIntakeSequence();
+            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         } else if(coDriver.startButton.wasReleased()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
                 s.request(s.objectAwareStow());
@@ -310,6 +311,7 @@ public class DriverControls implements Loop {
 
         if(coDriver.aButton.wasActivated()) {
             s.intakeState(Tunnel.State.SINGLE_INTAKE);
+            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
             /*if(tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
             } else if(!tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
                 tunnel.stateRequest(Tunnel.State.SINGLE_INTAKE);
@@ -364,6 +366,7 @@ public class DriverControls implements Loop {
         } else if(coDriver.bButton.longPressed()) {
             if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
                 s.coneIntakeSequence();
+                LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
                 System.out.println("Intaking Cone Request");
             }
         }
@@ -471,12 +474,22 @@ public class DriverControls implements Loop {
             //wrist.startCurrentZeroing();
             //cubeIntake.startCurrentZeroing();
         } else if (coDriver.backButton.longPressed()) {
+            shoulder.stop();
+            wrist.stop();
+            cubeIntake.stop();
+            swerve.stop();
+
             verticalElevator.startCurrentZeroing();
             horizontalElevator.startCurrentZeroing();
             shoulder.setPositionToAbsolute();
             wrist.setPositionToAbsolute();
             cubeIntake.setPositionToAbsolute();
             swerve.forceZeroModuleAngles();
+
+            shoulder.stop();
+            wrist.stop();
+            cubeIntake.stop();
+            swerve.stop();
         }
 
         /*if(s.coneIntakingSequence) {
