@@ -445,12 +445,22 @@ public class SuperstructureCoordinator {
 
         return getHighChoreography(finalPosition);
     }
-    public Request getShuttleChoreography() {
+    public Request getAutoStowShuttleChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.50,
             0.25,
             -0.25,
             104.5
+        );
+        return getHighChoreography(finalPosition);
+    }
+
+    public Request getManualStowShuttleChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            0.50,
+            0.25,
+            -5.9,
+            113.5
         );
         return getHighChoreography(finalPosition);
     }

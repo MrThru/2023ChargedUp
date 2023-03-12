@@ -262,7 +262,7 @@ public class DriverControls implements Loop {
 
         if(coDriver.startButton.wasActivated()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None)
-                s.shuttleIntakeSequence();
+                s.shuttleIntakeSequence(true);
             LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         } else if(coDriver.startButton.wasReleased()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
@@ -271,6 +271,13 @@ public class DriverControls implements Loop {
             }
         }
 
+        if(coDriver.rightTrigger.wasActivated()) {
+            if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube)
+                s.shuttleIntakeSequence(false);
+            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+        } else if(coDriver.rightTrigger.wasReleased()) {
+            s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
+        }
         /*if(driver.POV0.wasActivated()) {
             swerve.setCenterOfRotation(new Translation2d(0, Math.hypot(Constants.kWheelbaseLength, Constants.kWheelbaseWidth) + 8).rotateBy(Rotation2d.fromDegrees(-90).rotateBy(swerve.getHeading().inverse())));
         } else if(driver.POV90.wasActivated()) {
@@ -498,8 +505,11 @@ public class DriverControls implements Loop {
             wrist.lockPosition();
         }*/
         if(Util.isInRange(DriverStation.getMatchTime(), 10.1, 9.9)) {
-            driver.rumble(1.0, 1.5);
+            //driver.rumble(1.0, 1.5);
         }
+        if(claw.getRPM() <= 100 && coDriver.rightTrigger.isBeingPressed() && claw.rumbleStopwatch.getTime() > 1.0) {
+            driver.rumble(1.0, 2.0);
+        }        
 
 
     }

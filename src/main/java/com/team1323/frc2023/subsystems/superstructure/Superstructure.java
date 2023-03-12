@@ -401,21 +401,22 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
-	public void shuttleIntakeSequence() {
-		request(getShuttleIntake());
+	public void shuttleIntakeSequence(boolean automaticStow) {
+		request(getShuttleIntake(automaticStow));
 	}
-	public void getAutoShuttleIntakSequence() {
-		request(new SequentialRequest(
-			
-		));
-	}
-	public Request getShuttleIntake() {
+
+	public Request getShuttleIntake(boolean automaticStow) {
+		Request stow = automaticStow ? 
+			choreographyRequest(this::objectAwareStow).withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) :
+			new EmptyRequest();
+		Request shuttle = automaticStow ?
+			coordinator.getAutoStowShuttleChoreography() : coordinator.getManualStowShuttleChoreography();
 		return (new SequentialRequest(
 			new ParallelRequest(
-				coordinator.getShuttleChoreography(),
+				shuttle,
 				claw.stateRequest(Claw.ControlState.CONE_INTAKE)
 			),
-			choreographyRequest(this::objectAwareStow).withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
+			stow
 		));
 	}
 	/*public void flipGroundCone() {

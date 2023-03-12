@@ -26,8 +26,9 @@ public class Claw extends Subsystem {
     LazyPhoenix5TalonFX claw;
 
     private double targetRPM = 0;
-    private Stopwatch stopwatch = new Stopwatch();
+    private final Stopwatch stopwatch = new Stopwatch();
     private Stopwatch stopwatch2 = new Stopwatch();
+    public final Stopwatch rumbleStopwatch = new Stopwatch();
     private static Claw instance = null;
     public static Claw getInstance() {
         if(instance == null)
@@ -136,10 +137,13 @@ public class Claw extends Subsystem {
             //             (currentState == ControlState.CONE_INTAKE || currentState == ControlState.CUBE_INTAKE)) {
             //     conformToState(ControlState.OFF);
             // }
-
+            if(stateChanged) {
+               rumbleStopwatch.reset(); 
+            }
             if(currentState == ControlState.CONE_INTAKE) {
                 if(stateChanged) {
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.01);
+                    rumbleStopwatch.start();
                     stopwatch.start(); //To ensure that the cone intake isnt a false trigger when it starts to spin
                     stopwatch2.reset();
                 }
