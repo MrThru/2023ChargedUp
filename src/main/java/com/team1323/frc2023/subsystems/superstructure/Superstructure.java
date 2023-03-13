@@ -367,7 +367,8 @@ public class Superstructure extends Subsystem {
 			new LambdaRequest(() -> System.out.println("Set claw state to cube intake")),
 			choreographyRequest(coordinator::getCubeIntakeChoreography),
 			new LambdaRequest(() -> System.out.println("Finished cube intake choreography")),
-			tunnel.stateRequest(Tunnel.State.EJECT_ONE).withPrerequisite(() -> Math.abs(claw.getRPM()) > 2500),
+			tunnel.stateRequest(Tunnel.State.EJECT_ONE).withPrerequisite(() -> (Math.abs(claw.getRPM()) > 2500 || 
+						claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube)),
 			new LambdaRequest(() -> System.out.println("Set tunnel state to eject one"))
 		);
 	}
