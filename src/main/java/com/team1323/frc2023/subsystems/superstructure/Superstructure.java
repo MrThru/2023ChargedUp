@@ -29,7 +29,6 @@ import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
-import com.team1323.lib.util.InterpolatingDouble;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
@@ -472,7 +471,7 @@ public class Superstructure extends Subsystem {
 					new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CUBE_OUTAKE)),
 					waitRequest(0.25),
 					wrist.angleRequest(Constants.Wrist.kMaxControlAngle)
-				).withPrerequisites(horizontalElevator.willReachExtensionWithinTime(horizontalExtension, preemptiveScoreSeconds),
+				).withPrerequisites(horizontalElevator.willReachPositionWithinTime(horizontalExtension, preemptiveScoreSeconds),
 						() -> swerve.getDistanceToTargetPosition() < 4.0 || swerve.isVisionPIDDone())
 			),
 			new LambdaRequest(() -> {

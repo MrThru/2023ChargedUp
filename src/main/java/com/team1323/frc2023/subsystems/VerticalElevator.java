@@ -58,21 +58,6 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
         return () -> isAtPosition(inches);
     }
 
-    public Prerequisite willReachHeightWithinTime(double inches, double seconds) {
-        return () -> {
-            double inchesPerSecond = getVelocityOutputUnitsPerSecond();
-            boolean isHeadingTowardHeight = Math.signum(inches - getPosition()) == Math.signum(inchesPerSecond);
-            double secondsUntilHeightReached = Double.POSITIVE_INFINITY;
-            if (inchesPerSecond != 0.0) {
-                secondsUntilHeightReached = Math.abs(inches - getPosition()) / Math.abs(inchesPerSecond);
-            }
-
-            boolean willReachHeight = (isHeadingTowardHeight && secondsUntilHeightReached <= seconds) || isAtPosition(inches);
-
-            return willReachHeight;
-        };
-    }
-
     private final Loop loop = new Loop() {
 
         @Override

@@ -10,7 +10,6 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
-import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 import com.team1323.lib.util.Netlink;
@@ -82,21 +81,6 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
             public String toString() {
                 return String.format("HorizontalElevatorRequest(target = %.2f)", inches);
             }
-        };
-    }
-
-    public Prerequisite willReachExtensionWithinTime(double inches, double seconds) {
-        return () -> {
-            double inchesPerSecond = getVelocityOutputUnitsPerSecond();
-            boolean isHeadingTowardHeight = Math.signum(inches - getPosition()) == Math.signum(inchesPerSecond);
-            double secondsUntilHeightReached = Double.POSITIVE_INFINITY;
-            if (inchesPerSecond != 0.0) {
-                secondsUntilHeightReached = Math.abs(inches - getPosition()) / Math.abs(inchesPerSecond);
-            }
-
-            boolean willReachExtension = (isHeadingTowardHeight && secondsUntilHeightReached <= seconds) || isAtPosition(inches);
-
-            return willReachExtension;
         };
     }
 

@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.subsystems.Subsystem;
+import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyPhoenix5TalonFX;
@@ -145,9 +146,25 @@ public abstract class ServoSubsystem extends Subsystem {
     public boolean isOnTarget() {
         return isAtPosition(encoderUnitsToOutputUnits(periodicIO.demand));
     }
+
     public boolean isWithinTolerance(double tolerance) {
         return Math.abs(encoderUnitsToOutputUnits(periodicIO.demand) - getPosition()) <= tolerance &&
             periodicIO.controlMode == ControlMode.MotionMagic;
+    }
+
+    public Prerequisite willReachPositionWithinTime(double outputUnits, double seconds) {
+        return () -> {
+            double outputUnitsPerSecond = getVelocityOutputUnitsPerSecond();
+            boolean isHeadingTowardPosition = Math.signum(outputUnits - getPosition()) == Math.signum(outputUnitsPerSecond);
+            double secondsUntilPositionReached = Double.POSITIVE_INFINITY;
+            if (outputUnitsPerSecond != 0.0) {
+                secondsUntilPositionReached = Math.abs(outputUnits - getPosition()) / Math.abs(outputUnitsPerSecond);
+            }
+
+            boolean willReachPosition = (isHeadingTowardPosition && secondsUntilPositionReached <= seconds) || isAtPosition(outputUnits);
+
+            return willReachPosition;
+        };
     }
 
     public void acceptManualInput(double input) {
