@@ -64,7 +64,7 @@ public class Tunnel extends Subsystem {
     }
 
     public enum State {
-        OFF, SINGLE_INTAKE, SPIT, HOLD, EJECT_ONE, COMMUNITY, MANUAL, REVERSE, TRIPLE_CUBE_HOLD;
+        OFF, SINGLE_INTAKE, SPIT, SPIT_HANDOFF, HOLD, EJECT_ONE, COMMUNITY, MANUAL, REVERSE, TRIPLE_CUBE_HOLD;
     }
     private State currentState = State.MANUAL;
     private boolean stateChanged = false;
@@ -262,8 +262,13 @@ public class Tunnel extends Subsystem {
                     }
                     break;
                 case SPIT:
-                    setRollerSpeed(0.25);
-                    setConveyorSpeed(0.25);
+                    setRollerSpeed(0.0);
+                    setConveyorSpeed(0.5); //0.25
+                    setTunnelEntranceSpeed(0.25);
+                    break;
+                case SPIT_HANDOFF:
+                    setRollerSpeed(0.0);
+                    setConveyorSpeed(0.25); //0.25
                     setTunnelEntranceSpeed(0.25);
                     break;
                 case HOLD:

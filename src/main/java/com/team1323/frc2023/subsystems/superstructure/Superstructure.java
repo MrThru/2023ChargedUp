@@ -326,7 +326,8 @@ public class Superstructure extends Subsystem {
 	public Request objectAwareStow() {
 		if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
 			return new ParallelRequest(
-				coordinator.getConeStowChoreography(), 			
+				coordinator.getConeStowChoreography(),
+				//coordinator.getConePreScoreChoreography(), 			
 				new LambdaRequest(() -> {coneIntakingSequence = false;})
 			);
 		} else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
@@ -376,7 +377,7 @@ public class Superstructure extends Subsystem {
 	public void handOffCubeState(ChoreographyProvider stowChoreo) {
 		request(new SequentialRequest(	
 			getHandOffCubeSequence(),
-			tunnel.stateRequest(Tunnel.State.SPIT),
+			tunnel.stateRequest(Tunnel.State.SPIT_HANDOFF),
 			new ParallelRequest(
 				tunnel.stateRequest(Tunnel.State.OFF),
 				choreographyRequest(stowChoreo)
@@ -436,6 +437,7 @@ public class Superstructure extends Subsystem {
 		request(new SequentialRequest(
 			new ParallelRequest(
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory, true),
+				choreographyRequest(coordinator::getConePreScoreChoreography),
 				switchToRetroRequest,
 				choreographyRequest(scoringChoreo)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0 || swerve.isVisionPIDDone())

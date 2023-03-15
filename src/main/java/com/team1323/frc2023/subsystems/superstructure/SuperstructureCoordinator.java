@@ -198,7 +198,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             0.25,
-            147.0,
+            153.0, //147
             95.0
         );
 
@@ -223,6 +223,16 @@ public class SuperstructureCoordinator {
             0.5,
             0.25,
             124.0,
+            95.0
+        );
+
+        return getStowChoreography(finalPosition);
+    }
+    public Request getConePreScoreChoreography() {
+        SuperstructurePosition finalPosition = new SuperstructurePosition(
+            0.5,
+            0.25,
+            104.0,
             95.0
         );
 
