@@ -26,23 +26,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class VisionPIDController {
-    public static final SynchronousPIDF kDefaultLateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
-    public static final SynchronousPIDF kDefaultForwardPID = new SynchronousPIDF(0.03, 0.0, 0.0);
-    public static final TwoPointRamp kDefaultDecelerationRamp = new TwoPointRamp(
-        new Translation2d(1.0, 0.1),
-        new Translation2d(60.0, 0.4),
-        1.0,
-        true
-    );
-
-    private static final double kOnTargetTime = 0.5;
-    private static final double kDistanceToTargetTolerance = 1.0;
     private static final double kLateralThresholdForRetroSwitch = 2.0;
     private static final double kDistanceThresholdForRetroSwitch = 12.0;
 
-	private SynchronousPIDF lateralPID = kDefaultLateralPID;
-	private SynchronousPIDF forwardPID = kDefaultForwardPID;
-    private TwoPointRamp decelerationRamp = kDefaultDecelerationRamp;
+    private final double kOnTargetTime;
+    private final double kDistanceToTargetTolerance;
+	private final SynchronousPIDF lateralPID;
+	private final SynchronousPIDF forwardPID;
+    private final TwoPointRamp decelerationRamp;
     private final GoalTrack retroTargetTrack = GoalTrack.makeNewTrack(0.0, Translation2d.identity(), 0);
     private final DriveMotionPlanner motionPlanner = new DriveMotionPlanner();
 
@@ -59,6 +50,14 @@ public class VisionPIDController {
     private Stopwatch onTargetStopwatch = new Stopwatch();
     private boolean targetReached = false;
     private boolean useRetroTarget = false;
+
+    private VisionPIDController(VisionPIDBuilder builder) {
+        kOnTargetTime = builder.onTargetTime;
+        kDistanceToTargetTolerance = builder.distanceToTargetTolerance;
+        lateralPID = builder.lateralPID;
+        forwardPID = builder.forwardPID;
+        decelerationRamp = builder.decelerationRamp;
+    }
 
     public void start(Pose2d currentPose, Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, boolean useRetroTarget) {
         LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
@@ -83,15 +82,6 @@ public class VisionPIDController {
             LEDs.getInstance().configLEDs(LEDColors.GREEN);
             currentPhase = TrackingPhase.VISION_PID;
         }
-    }
-
-    public void setPID(SynchronousPIDF lateralPID, SynchronousPIDF forwardPID) {
-        this.lateralPID = lateralPID;
-        this.forwardPID = forwardPID;
-    }
-
-    public void setDecelerationRamp(TwoPointRamp decelerationRamp) {
-        this.decelerationRamp = decelerationRamp;
     }
 
     public Translation2d getTargetPosition() {
@@ -255,5 +245,47 @@ public class VisionPIDController {
 
     public boolean isDone() {
         return targetReached;
+    }
+
+    public static class VisionPIDBuilder {
+        private SynchronousPIDF lateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
+        private SynchronousPIDF forwardPID = new SynchronousPIDF(0.03, 0.0, 0.0);
+        private TwoPointRamp decelerationRamp = new TwoPointRamp(
+            new Translation2d(1.0, 0.1),
+            new Translation2d(60.0, 0.4),
+            1.0,
+            true
+        );
+        private double distanceToTargetTolerance = 1.0;
+        private double onTargetTime = 0.5;
+
+        public VisionPIDBuilder withLateralPID(SynchronousPIDF lateralPID) {
+            this.lateralPID = lateralPID;
+            return this;
+        }
+
+        public VisionPIDBuilder withForwardPID(SynchronousPIDF forwardPID) {
+            this.forwardPID = forwardPID;
+            return this;
+        }
+
+        public VisionPIDBuilder withDecelerationRamp(TwoPointRamp decelerationRamp) {
+            this.decelerationRamp = decelerationRamp;
+            return this;
+        }
+
+        public VisionPIDBuilder withTolerance(double distanceToTargetTolerance) {
+            this.distanceToTargetTolerance = distanceToTargetTolerance;
+            return this;
+        }
+
+        public VisionPIDBuilder withOnTargetTime(double onTargetTime) {
+            this.onTargetTime = onTargetTime;
+            return this;
+        }
+
+        public VisionPIDController build() {
+            return new VisionPIDController(this);
+        }
     }
 }

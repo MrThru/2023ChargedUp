@@ -17,13 +17,12 @@ import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
-import com.team1323.frc2023.subsystems.gyros.Pigeon;
-import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.CubeIntake;
+import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
-import com.team1323.lib.math.TwoPointRamp;
+import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.util.SynchronousPIDF;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
@@ -48,14 +47,10 @@ public class TwoPieceAndRampMode extends TwoConesOneCubeBaseMode {
         if(!coneIntakingPosition.equals(Pose2d.identity())) {
             coneIntakingPosition = coneIntakingPosition.transformBy(Pose2d.fromTranslation(new Translation2d(quadrant.hasBump() ? 4 : 0, (quadrant == Quadrant.TOP_RIGHT) ? 6 : 0)));
             Swerve.getInstance().startVisionPID(coneIntakingPosition, coneIntakingPosition.getRotation(), false,
-                    new SynchronousPIDF(0.07, 0.0, 0.0),
-                    new SynchronousPIDF(0.02, 0.0, 0.0),
-                    new TwoPointRamp(
-                        new Translation2d(1.0, 0.1), 
-                        new Translation2d(60.0, 0.4), 
-                        1.0, 
-                        true
-                    ));
+                    new VisionPIDBuilder()
+                            .withLateralPID(new SynchronousPIDF(0.07, 0.0, 0.0))
+                            .withForwardPID(new SynchronousPIDF(0.02, 0.0, 0.0))
+                            .build());
             runAction(new WaitToIntakeAction(Claw.HoldingObject.Cone, Util.limit(kTimeToStartBalancing - currentTime(), 0, 4)));
         } else {
             runAction(new WaitToFinishPathAction(Util.limit(kTimeToStartBalancing - currentTime(), 0, 4)));

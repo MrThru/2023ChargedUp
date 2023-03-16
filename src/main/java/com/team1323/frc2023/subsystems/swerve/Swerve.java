@@ -19,7 +19,7 @@ import com.team1323.frc2023.subsystems.gyros.Gyro;
 import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.vision.VisionPIDController;
-import com.team1323.lib.math.TwoPointRamp;
+import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.math.vectors.VectorField;
 import com.team1323.lib.util.DriveSignal;
@@ -27,7 +27,6 @@ import com.team1323.lib.util.Kinematics;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.SwerveHeadingController;
 import com.team1323.lib.util.SwerveInverseKinematics;
-import com.team1323.lib.util.SynchronousPIDF;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -96,7 +95,7 @@ public class Swerve extends Subsystem{
 	//Vision dependencies
 	RobotState robotState;
 	Rotation2d visionTargetHeading = new Rotation2d();
-	VisionPIDController visionPID = new VisionPIDController();
+	VisionPIDController visionPID = new VisionPIDBuilder().build();
 	public boolean isTracking(){
 		return currentState == ControlState.VISION_PID;
 	}
@@ -661,42 +660,38 @@ public class Swerve extends Subsystem{
 	
 	// Vision PID (new, simpler vision tracking system)
 	public void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory) {
-		startVisionPID(desiredFieldPose, approachAngle, useTrajectory, 
-				VisionPIDController.kDefaultLateralPID, VisionPIDController.kDefaultForwardPID, 
-				VisionPIDController.kDefaultDecelerationRamp);
+		startVisionPID(desiredFieldPose, approachAngle, useTrajectory, new VisionPIDBuilder().build());
 	}
 
-	public void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, 
-			SynchronousPIDF lateralPID, SynchronousPIDF forwardPID, TwoPointRamp decelerationRamp) {
-		visionPID.setPID(lateralPID, forwardPID);
-		visionPID.setDecelerationRamp(decelerationRamp);
+	public synchronized void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, VisionPIDController controller) {
+		visionPID = controller;
 		visionPID.start(pose, desiredFieldPose, approachAngle, useTrajectory, false);
 		rotationScalar = 0.75;
 		translationStickReset = false;
 		setState(ControlState.VISION_PID);
 	}
 
-	public Translation2d getVisionPIDTarget() {
+	public synchronized Translation2d getVisionPIDTarget() {
 		return visionPID.getTargetPosition();
 	}
 
-	public void setVisionPIDTarget(Translation2d targetPosition) {
+	public synchronized void setVisionPIDTarget(Translation2d targetPosition) {
 		visionPID.setTargetPosition(targetPosition);
 	}
 
-	public void resetVisionPID() {
+	public synchronized void resetVisionPID() {
 		visionPID.resetDistanceToTargetPosition();
 	}
 
-	public double getDistanceToTargetPosition() {
+	public synchronized double getDistanceToTargetPosition() {
 		return visionPID.getDistanceToTargetPosition();
 	}
 
-	public boolean isVisionPIDDone() {
+	public synchronized boolean isVisionPIDDone() {
 		return getState() != ControlState.VISION_PID || visionPID.isDone();
 	}
 
-	public void addRetroObservation(Translation2d retroPosition, double timestamp) {
+	public synchronized void addRetroObservation(Translation2d retroPosition, double timestamp) {
 		visionPID.addRetroObservation(retroPosition, timestamp);
 	}
 
@@ -1035,11 +1030,15 @@ public class Swerve extends Subsystem{
 	};
 
 	public Request visionPIDRequest(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, boolean waitToFinish) {
+		return visionPIDRequest(desiredFieldPose, approachAngle, useTrajectory, waitToFinish, new VisionPIDBuilder().build());
+	}
+
+	public Request visionPIDRequest(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, boolean waitToFinish, VisionPIDController controller) {
 		return new Request(){
 		
 			@Override
 			public void act() {
-				startVisionPID(desiredFieldPose, approachAngle, useTrajectory);
+				startVisionPID(desiredFieldPose, approachAngle, useTrajectory, controller);
 				System.out.println("Vision Request Started");
 			}
 
