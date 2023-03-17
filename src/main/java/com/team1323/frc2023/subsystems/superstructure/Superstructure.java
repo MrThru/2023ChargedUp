@@ -436,7 +436,7 @@ public class Superstructure extends Subsystem {
 		request(new SequentialRequest(
 			new ParallelRequest(
 				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory, true),
-				choreographyRequest(coordinator::getConePreScoreChoreography),
+				//choreographyRequest(coordinator::getConePreScoreChoreography),
 				switchToRetroRequest,
 				choreographyRequest(scoringChoreo)
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0 || swerve.isVisionPIDDone())

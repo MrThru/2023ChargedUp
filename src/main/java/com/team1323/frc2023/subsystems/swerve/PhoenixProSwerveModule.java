@@ -1,7 +1,10 @@
 package com.team1323.frc2023.subsystems.swerve;
 
 import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.controls.ControlRequest;
@@ -13,6 +16,8 @@ import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenixpro.signals.InvertedValue;
 import com.ctre.phoenixpro.signals.NeutralModeValue;
 import com.team1323.frc2023.Constants;
+import com.team1323.frc2023.Ports;
+import com.team254.drivers.LazyPhoenix5TalonFX;
 import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,12 +26,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 public class PhoenixProSwerveModule extends SwerveModule {
     private static final double kFalconSensorResolution = 2048.0;
 
-    private final TalonFX rotationMotor, driveMotor;
-
-    private final TalonFXConfiguration rotationConfiguration = new TalonFXConfiguration();
-    private final VoltageOut rotationVoltageOutRequest = new VoltageOut(0.0, true, false);
-    private final MotionMagicVoltage rotationMotionMagicRequest = new MotionMagicVoltage(0.0, true, 0.0, 0, false);
-    private ControlRequest currentRotationControlRequest = rotationVoltageOutRequest;
+    private final LazyPhoenix5TalonFX rotationMotor;
+    private final TalonFX driveMotor;
 
     private final TalonFXConfiguration driveConfiguration = new TalonFXConfiguration();
     private final VoltageOut driveVoltageOutRequest = new VoltageOut(0.0, true, false);
@@ -37,31 +38,43 @@ public class PhoenixProSwerveModule extends SwerveModule {
     public PhoenixProSwerveModule(int rotationPort, int drivePort, int moduleId, 
             double encoderOffset, Translation2d startingPose, boolean flipAbsoluteEncoder) {
         super(moduleId, encoderOffset, startingPose, flipAbsoluteEncoder);
-        rotationMotor = new TalonFX(rotationPort);
-        driveMotor = new TalonFX(drivePort);
+        rotationMotor = new LazyPhoenix5TalonFX(rotationPort, Ports.CANBUS);
+        driveMotor = new TalonFX(drivePort, Ports.CANBUS);
         configureMotors();
     }
 
     @Override
     protected void configureMotors() {
-        rotationConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        rotationConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        rotationConfiguration.MotorOutput.DutyCycleNeutralDeadband = 0.0;
-        rotationConfiguration.MotionMagic.MotionMagicCruiseVelocity = Constants.kSwerveRotationMaxSpeedRps;
-        rotationConfiguration.MotionMagic.MotionMagicAcceleration = Constants.kSwerveRotationMaxAcceleration;
-        rotationConfiguration.Slot0.kP = 1.55;
-        rotationConfiguration.Slot0.kI = 0.0;
-        rotationConfiguration.Slot0.kD = 5.0;
-        rotationConfiguration.Slot0.kV = 1.0 / Constants.kMaxFalconRotationsPerSecond;
-        rotationMotor.getConfigurator().apply(rotationConfiguration, Constants.kCANTimeoutMs);
-		resetRotationToAbsolute();
+		rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+		rotationMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20, 10);
+		rotationMotor.setNeutralMode(NeutralMode.Brake);
+		rotationMotor.configVoltageCompSaturation(7.0, 10);
+		rotationMotor.enableVoltageCompensation(true);
+		rotationMotor.configForwardSoftLimitEnable(false, 10);
+		rotationMotor.configReverseSoftLimitEnable(false, 10);
+		rotationMotor.configMotionAcceleration((int)(Constants.kSwerveRotationMaxSpeedEncUnits*12.5), 10);
+		rotationMotor.configMotionCruiseVelocity((int)(Constants.kSwerveRotationMaxSpeedEncUnits), 10);
+		rotationMotor.selectProfileSlot(0, 0);
+		//Slot 1 is for normal use
+		rotationMotor.config_kP(0, 1.55, 10); // 1.55
+		rotationMotor.config_kI(0, 0.0, 10);
+		rotationMotor.config_kD(0, 5.0, 10); // 5.0
+		rotationMotor.config_kF(0, 1023.0/Constants.kSwerveRotationMaxSpeedEncUnits, 10);
+		//Slot 2 is reserved for the beginning of auto
+		rotationMotor.config_kP(1, 8.0, 10);
+		rotationMotor.config_kI(1, 0.0, 10);
+		rotationMotor.config_kD(1, 200.0, 10);
+		rotationMotor.config_kF(1, 1023.0/Constants.kSwerveRotation10VoltMaxSpeed, 10);
+		rotationMotor.configAllowableClosedloopError(0, 50, Constants.kCANTimeoutMs);
+		rotationMotor.set(ControlMode.MotionMagic, rotationMotor.getSelectedSensorPosition(0));
 		if(!isRotationSensorConnected()){
 			DriverStation.reportError(name + "rotation encoder not detected!", false);
 			hasEmergency = true;
 		}
+		resetRotationToAbsolute();
 
         driveConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        driveConfiguration.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.5;
+        driveConfiguration.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.2;
         driveConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         // Slot 0 is reserved for MotionMagic
         driveConfiguration.Slot0.kP = 0.18;
@@ -86,9 +99,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
 
     @Override
     public void invertRotationMotor(TalonFXInvertType invertType) {
-        rotationConfiguration.MotorOutput.Inverted = (invertType == TalonFXInvertType.Clockwise) ? 
-                InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-        rotationMotor.getConfigurator().apply(rotationConfiguration);
+		rotationMotor.setInverted(invertType);
     }
 
     @Override
@@ -100,16 +111,13 @@ public class PhoenixProSwerveModule extends SwerveModule {
 
     @Override
     public void setRotationNeutralMode(NeutralMode mode) {
-        rotationConfiguration.MotorOutput.NeutralMode = (mode == NeutralMode.Brake) ?
-                NeutralModeValue.Brake : NeutralModeValue.Coast;
-        rotationMotor.getConfigurator().apply(rotationConfiguration);
+		rotationMotor.setNeutralMode(mode);
     }
 
     @Override
     public boolean angleOnTarget() {
-        double error = rotationMotor.getClosedLoopError().getValue();
-        error = Math.abs(error) * 360.0;
-        return error < Constants.kSwerveModuleRotationTolerance;
+		double error = encUnitsToDegrees(Math.abs(rotationMotor.getClosedLoopError(0)));
+		return error < Constants.kSwerveModuleRotationTolerance;
     }
 
     @Override
@@ -127,8 +135,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
 
     @Override
     protected ErrorCode setRotationSensorPosition(double sensorPosition) {
-        rotationMotor.setRotorPosition(sensorPosition / kFalconSensorResolution);
-        return ErrorCode.OK;
+        return rotationMotor.setSelectedSensorPosition(sensorPosition);
     }
 
     @Override
@@ -146,7 +153,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
     
     @Override
     public void readPeriodicInputs() {
-        periodicIO.rotationPosition = rotationMotor.getRotorPosition().getValue() * kFalconSensorResolution;
+		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);
         periodicIO.drivePosition = driveMotor.getRotorPosition().getValue() * kFalconSensorResolution;
         periodicIO.velocity = rotationsPerSecondToEncUnitsPer100Ms(driveMotor.getRotorVelocity().getValue());
 		if (RobotBase.isReal()) {
@@ -156,19 +163,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
 
     @Override
     public void writePeriodicOutputs() {
-        switch (periodicIO.rotationControlMode) {
-            case PercentOutput:
-                rotationVoltageOutRequest.Output = periodicIO.rotationDemand * 7.0;
-                currentRotationControlRequest = rotationVoltageOutRequest;
-                break;
-            case MotionMagic:
-                rotationMotionMagicRequest.Position = periodicIO.rotationDemand / kFalconSensorResolution;
-                currentRotationControlRequest = rotationMotionMagicRequest;
-                break;
-            default:
-                System.out.println("Unexpected rotation control mode! " + periodicIO.rotationControlMode.toString());
-                break;
-        }
+		rotationMotor.set(periodicIO.rotationControlMode, periodicIO.rotationDemand);
 
         switch (periodicIO.driveControlMode) {
             case PercentOutput:
@@ -187,8 +182,6 @@ public class PhoenixProSwerveModule extends SwerveModule {
                 System.out.println("Unexpected drive control mode! " + periodicIO.driveControlMode.toString());
                 break;
         }
-
-        rotationMotor.setControl(currentRotationControlRequest);
         driveMotor.setControl(currentDriveControlRequest);
     }
 }

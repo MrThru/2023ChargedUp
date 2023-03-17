@@ -197,7 +197,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             0.25,
-            153.0, //147
+            147.0,
             95.0
         );
 
@@ -335,7 +335,16 @@ public class SuperstructureCoordinator {
                 (currentPosition.verticalHeight >= kVerticalHeightForStow || finalPosition.verticalHeight >= kVerticalHeightForStow)) {
             double clearanceHeight = finalPosition.verticalHeight > kVerticalHeightForStow ? 
                     kVerticalHeightForStow : kVerticalHeightForTopBarClearance;
-            double shoulderClearanceAngle = finalPosition.shoulderAngle <= 45.0 ? 45.0 : 90.0;
+            double shoulderClearanceAngle = 90.0;
+            double preemptiveLiftSeconds = 0.0;
+            if (Util.isInRange(finalPosition.shoulderAngle, 45.0, 90.0)) {
+                shoulderClearanceAngle = finalPosition.shoulderAngle;
+                preemptiveLiftSeconds = 0.35;
+            } else if (finalPosition.shoulderAngle < 45.0) {
+                shoulderClearanceAngle = 45.0;
+                preemptiveLiftSeconds = 0.35;
+            }
+
             System.out.println("Branch 1");
             return new SequentialRequest(
                 new ParallelRequest(
@@ -344,17 +353,16 @@ public class SuperstructureCoordinator {
                         shoulder.angleRequest(shoulderClearanceAngle),
                         horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
                     ).withPrerequisite(() -> verticalElevator.getPosition() <= kVerticalHeightForStow || 
-                            verticalElevator.isAtPosition(kVerticalHeightForStow))
-                ),
-                new LambdaRequest(() -> System.out.println("Put the shoulder out.")),
-                new ParallelRequest(
-                    verticalElevator.heightRequest(finalPosition.verticalHeight),
-                    shoulder.angleRequest(finalPosition.shoulderAngle)
-                            .withPrerequisite(verticalElevator.willReachPositionWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds + 0.5)),
+                            verticalElevator.isAtPosition(kVerticalHeightForStow)),
                     new ParallelRequest(
-                        horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
-                        wrist.angleRequest(finalPosition.wristAngle)   
-                    ).withPrerequisite(verticalElevator.willReachPositionWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds))
+                        verticalElevator.heightRequest(finalPosition.verticalHeight),
+                        shoulder.angleRequest(finalPosition.shoulderAngle)
+                                .withPrerequisite(verticalElevator.willReachPositionWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds + 0.5)),
+                        new ParallelRequest(
+                            horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+                            wrist.angleRequest(finalPosition.wristAngle)   
+                        ).withPrerequisite(verticalElevator.willReachPositionWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds))
+                    ).withPrerequisite(shoulder.willReachPositionWithinTime(shoulderClearanceAngle, preemptiveLiftSeconds))
                 )
             );
         }
@@ -385,24 +393,55 @@ public class SuperstructureCoordinator {
 
         if (currentPosition.shoulderAngle >= kShoulderAngleForHorizontalExtension &&
                 (currentPosition.verticalHeight >= kVerticalHeightForStow || finalPosition.verticalHeight >= kVerticalHeightForStow)) {
-            System.out.println("Branch 4");
-            return new SequentialRequest(
-                new ParallelRequest(
-                    shoulder.angleRequest(90.0),
-                    horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
-                ),
-                new ParallelRequest(
-                    verticalElevator.heightRequest(finalPosition.verticalHeight),
+
+            if (currentPosition.verticalHeight >= kVerticalHeightForStow) {
+                System.out.println("Branch 4");
+                return new SequentialRequest(
                     new ParallelRequest(
-                        horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
-                        shoulder.angleRequest(finalPosition.shoulderAngle),
-                        wrist.angleRequest(finalPosition.wristAngle)
-                    ).withPrerequisite(verticalElevator.willReachPositionWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds))
-                )
-            );
+                        shoulder.angleRequest(90.0),
+                        horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
+                    ),
+                    new ParallelRequest(
+                        verticalElevator.heightRequest(finalPosition.verticalHeight),
+                        new ParallelRequest(
+                            horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+                            shoulder.angleRequest(finalPosition.shoulderAngle),
+                            wrist.angleRequest(finalPosition.wristAngle)
+                        ).withPrerequisite(verticalElevator.willReachPositionWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds))
+                    )
+                );
+            }
+
+            if (finalPosition.verticalHeight >= kVerticalHeightForStow) {
+                double shoulderClearanceAngle = 90.0;
+                double preemptiveLiftSeconds = 0.0;
+                if (Util.isInRange(finalPosition.shoulderAngle, 45.0, 90.0)) {
+                    shoulderClearanceAngle = finalPosition.shoulderAngle;
+                    preemptiveLiftSeconds = 0.75;
+                } else if (finalPosition.shoulderAngle < 45.0) {
+                    shoulderClearanceAngle = 45.0;
+                    preemptiveLiftSeconds = 0.75;
+                }
+
+                System.out.println("Branch 5");
+                return new SequentialRequest(
+                    new ParallelRequest(
+                        shoulder.angleRequest(shoulderClearanceAngle),
+                        horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
+                    ),
+                    new ParallelRequest(
+                        verticalElevator.heightRequest(finalPosition.verticalHeight),
+                        new ParallelRequest(
+                            horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
+                            shoulder.angleRequest(finalPosition.shoulderAngle),
+                            wrist.angleRequest(finalPosition.wristAngle)
+                        ).withPrerequisite(verticalElevator.willReachPositionWithinTime(finalPosition.verticalHeight, preemptiveExtensionSeconds))
+                    ).withPrerequisite(shoulder.willReachPositionWithinTime(shoulderClearanceAngle, preemptiveLiftSeconds))
+                );
+            }
         }
 
-        System.out.println("Branch 5");
+        System.out.println("Branch 6");
         return new ParallelRequest(
             verticalElevator.heightRequest(finalPosition.verticalHeight),
             horizontalElevator.extensionRequest(finalPosition.horizontalExtension),
@@ -476,10 +515,10 @@ public class SuperstructureCoordinator {
 
     public Request getConeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            17.5,
-            25.0,
-            34.75,
-            -4.75 //-4.75
+            15.5, // 12 inches higher than mid
+            25.686, // 17 inches more than mid
+            36.0,
+            -1.0 //-4.75
         );
 
         System.out.println("Cone high scoring choreo");
