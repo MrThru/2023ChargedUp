@@ -262,13 +262,13 @@ public class Tunnel extends Subsystem {
                     }
                     break;
                 case SPIT:
-                    setRollerSpeed(0.25);
-                    setConveyorSpeed(0.25); //0.25
+                    setRollerSpeed(0.25); //0.15
+                    setConveyorSpeed(0.0); //0.25
                     setTunnelEntranceSpeed(0.25);
                     break;
                 case SPIT_HANDOFF:
-                    setRollerSpeed(0.25);
-                    setConveyorSpeed(0.25); //0.25
+                    setRollerSpeed(0.0);
+                    setConveyorSpeed(1.00); //0.25
                     setTunnelEntranceSpeed(0.25);
                     break;
                 case HOLD:
