@@ -124,7 +124,7 @@ public class DriverControls implements Loop {
         SmartDashboard.putBoolean("Subsystems Coast Mode", false);
         swerve.setDriveNeutralMode(NeutralMode.Brake);
         cubeIntake.lockPosition();
-        leds.configLEDs(LEDColors.TWINKLE);
+        leds.configLEDs(LEDs.LEDColors.TWINKLE);
         Pigeon2IMU.getInstance().resetRoll();
     }
 
@@ -255,6 +255,7 @@ public class DriverControls implements Loop {
 
         if(driver.rightBumper.wasActivated()) {
             leds.configLEDs(LEDColors.CUBE);
+            //swerve.setVelocity(Rotation2d.fromDegrees(0),72.0);
         }
         if(driver.leftBumper.wasActivated()) {
             leds.configLEDs(LEDColors.CONE);

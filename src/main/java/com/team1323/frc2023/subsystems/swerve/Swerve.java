@@ -186,13 +186,13 @@ public class Swerve extends Subsystem{
 		 *     |____|_______________|____|
 		 * 		
 		 */
-		frontRight = new Phoenix5SwerveModule(Ports.FRONT_RIGHT_ROTATION, Ports.FRONT_RIGHT_DRIVE,
+		frontRight = new PhoenixProSwerveModule(Ports.FRONT_RIGHT_ROTATION, Ports.FRONT_RIGHT_DRIVE,
 		0, Constants.kFrontRightEncoderStartingPos, Constants.kVehicleToModuleZero, false);
-		frontLeft = new Phoenix5SwerveModule(Ports.FRONT_LEFT_ROTATION, Ports.FRONT_LEFT_DRIVE,
+		frontLeft = new PhoenixProSwerveModule(Ports.FRONT_LEFT_ROTATION, Ports.FRONT_LEFT_DRIVE,
 		1, Constants.kFrontLeftEncoderStartingPos, Constants.kVehicleToModuleOne, false);
-		rearLeft = new Phoenix5SwerveModule(Ports.REAR_LEFT_ROTATION, Ports.REAR_LEFT_DRIVE,
+		rearLeft = new PhoenixProSwerveModule(Ports.REAR_LEFT_ROTATION, Ports.REAR_LEFT_DRIVE,
 		2, Constants.kRearLeftEncoderStartingPos, Constants.kVehicleToModuleTwo, false);
-		rearRight = new Phoenix5SwerveModule(Ports.REAR_RIGHT_ROTATION, Ports.REAR_RIGHT_DRIVE,
+		rearRight = new PhoenixProSwerveModule(Ports.REAR_RIGHT_ROTATION, Ports.REAR_RIGHT_DRIVE,
 		3, Constants.kRearRightEncoderStartingPos, Constants.kVehicleToModuleThree, false);
 		
 		modules = Arrays.asList(frontRight, frontLeft, rearLeft, rearRight);

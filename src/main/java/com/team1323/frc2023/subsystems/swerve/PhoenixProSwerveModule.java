@@ -85,7 +85,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
         driveConfiguration.Slot1.kP = 0.11;
         driveConfiguration.Slot1.kI = 0.0;
         driveConfiguration.Slot1.kD = 0.0;
-        driveConfiguration.Slot1.kV = 1.0 / Constants.kMaxFalconRotationsPerSecond;
+        driveConfiguration.Slot1.kV = 12.0 / (Constants.kMaxFalconRotationsPerSecond * 0.95);
         driveMotor.getConfigurator().apply(driveConfiguration, Constants.kCANTimeoutMs);
         driveMotor.setRotorPosition(0.0);
     }
