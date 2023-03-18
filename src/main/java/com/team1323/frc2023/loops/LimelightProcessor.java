@@ -268,6 +268,11 @@ public class LimelightProcessor implements Loop {
 
 		if (poleHeight != kHighConePoleHeight || VerticalElevator.getInstance().getPosition() <= 14) {
 			Swerve.getInstance().addVisionMeasurement(Units.inchesToMeters(correctedRobotPose), observationTimestamp, standardDeviations);
+		} else if (poleHeight == kHighConePoleHeight) {
+			correctedRobotPose = new Pose2d(new Translation2d(robotPose.getTranslation().x(), correctedRobotPose.getTranslation().y()), 
+					correctedRobotPose.getRotation());
+			standardDeviations = VecBuilder.fill(10000.0, 1.0, 100.0);
+			Swerve.getInstance().addVisionMeasurement(Units.inchesToMeters(correctedRobotPose), observationTimestamp, standardDeviations);
 		}
 
 		// For debugging purposes
