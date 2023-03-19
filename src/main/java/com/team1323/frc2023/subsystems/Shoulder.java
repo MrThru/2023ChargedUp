@@ -30,7 +30,6 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
                 Constants.Shoulder.kAngleTolerance, Constants.Shoulder.kVelocityScalar, 
                 Constants.Shoulder.kAccelerationScalar, Constants.Shoulder.kCurrentZeroingConfig, 
                 new CanEncoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
-
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
         leader.setPIDF(Constants.Shoulder.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);

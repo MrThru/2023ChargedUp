@@ -352,7 +352,7 @@ public class Constants {
     }
 
     public static class Shoulder {
-        public static final double kMotorRotationsPerShoulderRotation = 69.444444;
+        public static final double kMotorRotationsPerShoulderRotation = 61.728395;// 69.444444;
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerShoulderRotation / 360.0;
 
@@ -362,13 +362,13 @@ public class Constants {
         public static final double kAngleTolerance = 4.0;
 
         public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
-        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 3.0 : 3.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 3.0 : 5.0;
 
-        public static final double kSupplyCurrentLimit = 40.0; //30.0 - 40
+        public static final double kSupplyCurrentLimit = 60.0; //30.0 - 40
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
-            0.04,
+            0.04, //0.04
             0.0,
             0.0,
             kFalconMotionMagicFeedForward
@@ -441,7 +441,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 280.722656 : 88.85, 
+            Settings.kIsUsingCompBot ? 280.722656 : 98.85, 
             0.0, 
             -149, 
             139.6

@@ -140,7 +140,7 @@ public class DriverControls implements Loop {
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
-                twoControllerMode();;;;;;
+                twoControllerMode();;;;;;;
             SmartDashboard.putNumber("timestamp", timestamp);
         }
     }
@@ -263,7 +263,7 @@ public class DriverControls implements Loop {
 
         if(coDriver.startButton.wasActivated()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None)
-                s.shuttleIntakeSequence(true);
+                s.manualShelfSequence();
             LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         } else if(coDriver.startButton.wasReleased()) {
             if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
@@ -546,9 +546,9 @@ public class DriverControls implements Loop {
 
         verticalElevator.acceptManualInput(verticalElevatorYInput);
         horizontalElevator.acceptManualInput(horizontalElevatorYInput);
-        //shoulder.acceptManualInput(shoulderYInput);
+        shoulder.acceptManualInput(shoulderYInput);
         wrist.acceptManualInput(wristAngleYInput);
-        cubeIntake.acceptManualInput(shoulderYInput);
+        //cubeIntake.acceptManualInput(shoulderYInput);
 
         SmartDashboard.putNumber("Vertical Elevator Manual Input", verticalElevatorYInput);
         SmartDashboard.putNumber("Shoulder Manual Input", shoulderYInput);
@@ -714,9 +714,10 @@ public class DriverControls implements Loop {
         if (testController.POV0.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
         } else if (testController.POV90.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getCubeIntakeChoreography());
+            s.request(SuperstructureCoordinator.getInstance().getShelfChoreography());
+            claw.conformToState(Claw.ControlState.CONE_INTAKE);
         } else if (testController.POV180.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
+            s.objectAwareStowSequence();
         } else if (testController.POV270.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
         }

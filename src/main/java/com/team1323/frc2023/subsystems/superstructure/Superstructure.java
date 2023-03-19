@@ -401,6 +401,13 @@ public class Superstructure extends Subsystem {
 			choreographyRequest(coordinator::getConeStowChoreography)
 		));
 	}
+	public void manualShelfSequence() {
+		request(new SequentialRequest(
+			claw.stateRequest(Claw.ControlState.CONE_INTAKE),
+			choreographyRequest(coordinator::getShelfChoreography),
+			choreographyRequest(this::objectAwareStow).withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
+		));
+	}
 
 	public void shuttleIntakeSequence(boolean automaticStow) {
 		request(getShuttleIntake(automaticStow));
