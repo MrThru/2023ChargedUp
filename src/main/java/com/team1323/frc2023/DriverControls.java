@@ -169,8 +169,8 @@ public class DriverControls implements Loop {
             swerve.rotate(Rotation2d.fromDegrees(180));
         else if (driver.xButton.wasActivated())
             swerve.rotate(Rotation2d.fromDegrees(90));
-        /*else if (driver.yButton.wasActivated())
-            swerve.rotate(Rotation2d.fromDegrees(0));*/
+        else if (driver.yButton.wasActivated())
+            swerve.rotate(Rotation2d.fromDegrees(0));
         
         
         /*if (driver.rightTrigger.wasActivated()) {
@@ -262,14 +262,11 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.startButton.wasActivated()) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None)
+            if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube)
                 s.manualShelfSequence();
             LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         } else if(coDriver.startButton.wasReleased()) {
-            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
-                s.request(s.objectAwareStow());
-                claw.conformToState(Claw.ControlState.OFF);       
-            }
+            s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
         }
 
         if(coDriver.rightTrigger.wasActivated()) {
@@ -291,7 +288,7 @@ public class DriverControls implements Loop {
         if((!driver.POV0.isBeingPressed() && !driver.POV90.isBeingPressed() && !driver.POV180.isBeingPressed() && !driver.POV270.isBeingPressed())) {
             swerve.setCenterOfRotation(new Translation2d());
         }*/
-        if(driver.leftCenterClick.wasActivated()) {
+        if(driver.POV270.wasActivated()) {
             double sign = AllianceChooser.getAlliance() == Alliance.Blue ? 1.0 : -1.0;
             double offset = sign * 3.0;
             if (swerve.isVisionPIDDone()) {
@@ -301,7 +298,7 @@ public class DriverControls implements Loop {
                 swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
             }
         }
-        if(driver.rightCenterClick.wasActivated()) {
+        if(driver.POV90.wasActivated()) {
             double sign = AllianceChooser.getAlliance() == Alliance.Blue ? -1.0 : 1.0;
             double offset = sign * 3.0;
             if (swerve.isVisionPIDDone()) {
@@ -311,9 +308,9 @@ public class DriverControls implements Loop {
                 swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
             }
         }
-        if(driver.yButton.wasActivated()) {
+        if(driver.rightCenterClick.wasActivated()) {
             swerve.zukLockDrivePosition();
-        } else if(driver.yButton.wasReleased()) {
+        } else if(driver.rightCenterClick.wasReleased()) {
             swerve.stop();
         }
 

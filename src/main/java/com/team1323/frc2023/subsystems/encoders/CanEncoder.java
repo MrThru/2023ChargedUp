@@ -24,4 +24,9 @@ public class CanEncoder implements AbsoluteEncoder {
     public double getDegrees() {
         return encoder.getAbsolutePosition();
     }
+
+    @Override
+    public void setPosition(double position) {
+        encoder.setPosition(position);
+    }
 }

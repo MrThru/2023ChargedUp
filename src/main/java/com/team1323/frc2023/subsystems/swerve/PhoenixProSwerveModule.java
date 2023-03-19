@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.controls.ControlRequest;
 import com.ctre.phoenixpro.controls.MotionMagicVoltage;
@@ -76,6 +77,10 @@ public class PhoenixProSwerveModule extends SwerveModule {
         driveConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         driveConfiguration.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.2;
         driveConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        driveConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        driveConfiguration.CurrentLimits.SupplyCurrentThreshold = 120.0;
+        driveConfiguration.CurrentLimits.SupplyTimeThreshold = 0.25;
+        driveConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
         // Slot 0 is reserved for MotionMagic
         driveConfiguration.Slot0.kP = 0.18;
         driveConfiguration.Slot0.kI = 0.0;

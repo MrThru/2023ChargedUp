@@ -485,10 +485,10 @@ public class SuperstructureCoordinator {
 
     public Request getShelfChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            11.65, //VERN!!
-            6.25,
-            41.33,
-            -12.15
+            13.5, //VERN!!
+            7.25,
+            37.56,
+            -9.06
         );
 
         return getHighChoreography(finalPosition);

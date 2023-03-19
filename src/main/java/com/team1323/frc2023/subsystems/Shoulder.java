@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
@@ -35,12 +36,18 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
 
         leader.configRemoteFeedbackFilter(Ports.SHOULDER_ENCODER, RemoteSensorSource.CANCoder, 0);
         leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, Constants.kCANTimeoutMs);
+        leader.setSensorPhase(false);
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
         leader.setPIDF(Constants.Shoulder.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
         setSupplyCurrentLimit(Constants.Shoulder.kSupplyCurrentLimit);
         setPositionToAbsolute();
         stop();
+    }
+
+    @Override
+    protected void setSensorPosition(double position) {
+        absoluteEncoder.setPosition( position / 4096.0 * 360.0);
     }
 
     public void setAccelerationScalar(double scalar) {

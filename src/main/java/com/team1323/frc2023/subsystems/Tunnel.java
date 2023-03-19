@@ -267,7 +267,7 @@ public class Tunnel extends Subsystem {
                     setTunnelEntranceSpeed(0.25);
                     break;
                 case SPIT_HANDOFF:
-                    setRollerSpeed(0.0);
+                    setRollerSpeed(0.05);
                     setConveyorSpeed(1.00); //0.25
                     setTunnelEntranceSpeed(0.25);
                     break;

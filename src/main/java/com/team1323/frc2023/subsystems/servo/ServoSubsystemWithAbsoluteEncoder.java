@@ -33,6 +33,10 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystemWi
         isZeroed = true;
     }
 
+    protected void setSensorPosition(double position) {
+        leader.setSelectedSensorPosition(position);
+    }
+
     public void setPositionToAbsolute() {
         double absoluteEncoderOffset = Util.boundAngle0to360Degrees(absoluteEncoder.getDegrees() - absoluteEncoderInfo.encoderZeroingAngle);
         double absoluteSubsystemAngle = absoluteEncoderInfo.subsystemZeroingAngle + (absoluteEncoderOffset / absoluteEncoderInfo.encoderToOutputRatio);
@@ -51,7 +55,7 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystemWi
             hasEmergency = false;
         }
 
-        leader.setSelectedSensorPosition(outputUnitsToEncoderUnits(absoluteSubsystemAngle));
+        setSensorPosition(outputUnitsToEncoderUnits(absoluteSubsystemAngle));
     }
 
     public void setAbsolutePositionWithCounter() {

@@ -349,26 +349,26 @@ public class Constants {
     public static class Shoulder {
         public static final double kMotorRotationsPerShoulderRotation = 61.728395;// 69.444444;
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
-        public static final double kEncoderUnitsPerDegree = 1.0; //kEncoderUnitsPerShoulderRotation / 360.0;
+        public static final double kEncoderUnitsPerDegree = 4096.0 / 360.0; //kEncoderUnitsPerShoulderRotation / 360.0;
 
-        public static final double kMaxEncoderVelocity = kMaxFalconRotationsPerSecond / 10.0 / kMotorRotationsPerShoulderRotation * 360.0;
+        public static final double kMaxEncoderVelocity = kMaxFalconRotationsPerSecond / 10.0 / kMotorRotationsPerShoulderRotation * 4096.0;
 
         public static final double kMinControlAngle = -97.5;
         public static final double kMaxControlAngle = 180.0;
 
         public static final double kAngleTolerance = 4.0;
 
-        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 0.25;
-        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 3.0 : 1.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 3.0 : 5.0;
 
         public static final double kSupplyCurrentLimit = 60.0; //30.0 - 40
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
-            0.0, //0.04
+            0.65, //0.04
+            0.0001,
             0.0,
-            0.0,
-            1023.0 / kMaxEncoderVelocity //kFalconMotionMagicFeedForward
+            1.3 //kFalconMotionMagicFeedForward
         );
 
         private static final TalonPIDF kCompPIDF = new TalonPIDF(
@@ -385,7 +385,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 3.339844 : 342.75, 
+            Settings.kIsUsingCompBot ? 3.339844 : 341.63, 
             174.0, 
             -95.0,
             185.0

@@ -16,4 +16,9 @@ public class MagEncoder implements AbsoluteEncoder {
     public double getDegrees() {
         return readingSign * encoder.getOutput() * 360.0;
     }
+
+    @Override
+    public void setPosition(double position) {
+        // no-op
+    }
 }
