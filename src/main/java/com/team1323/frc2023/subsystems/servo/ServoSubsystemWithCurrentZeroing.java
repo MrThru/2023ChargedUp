@@ -10,17 +10,17 @@ public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
     private final CurrentZeroingConfig zeroingConfig;
     protected boolean isZeroed = false;
 
-    public ServoSubsystemWithCurrentZeroing(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
+    public ServoSubsystemWithCurrentZeroing(int portNumber, String canBus, double maxEncoderVelocity, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
             double cruiseVelocityScalar, double accelerationScalar, CurrentZeroingConfig zeroingConfig) {
-        this(portNumber, new ArrayList<>(), canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
+        this(portNumber, new ArrayList<>(), canBus, maxEncoderVelocity, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
                 outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, zeroingConfig);
     }
 
     public ServoSubsystemWithCurrentZeroing(int portNumber, List<Integer> followerPortNumbers, String canBus, 
-            double encoderUnitsPerOutputUnit, double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
+            double maxEncoderVelocity, double encoderUnitsPerOutputUnit, double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
             double cruiseVelocityScalar, double accelerationScalar, CurrentZeroingConfig zeroingConfig) {
-        super(portNumber, followerPortNumbers, canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
+        super(portNumber, followerPortNumbers, canBus, maxEncoderVelocity, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
                 outputUnitTolerance, cruiseVelocityScalar, accelerationScalar);
         this.zeroingConfig = zeroingConfig;
     }

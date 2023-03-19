@@ -5,6 +5,7 @@
 package com.team1323.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
@@ -13,7 +14,6 @@ import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 import com.team1323.lib.util.Netlink;
-import com.team1323.lib.util.Stopwatch;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -26,20 +26,18 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
     }
 
     public HorizontalElevator() {
-        super(Ports.HORIZONTAL_ELEVATOR_LEADER, Ports.CANBUS, 
+        super(Ports.HORIZONTAL_ELEVATOR_LEADER, Ports.CANBUS, Constants.kMaxFalconEncoderSpeed,
                 Constants.HorizontalElevator.kTicksPerInch, Constants.HorizontalElevator.kMinExtension, Constants.HorizontalElevator.kMaxExtension, 
                 Constants.HorizontalElevator.kExtensionTolerance, Constants.HorizontalElevator.kVelocityScalar, Constants.HorizontalElevator.kAccelerationScalar,
                 Constants.HorizontalElevator.kCurrentZeroingConfig);
 
+        leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
+        leader.setInverted(TalonFXInvertType.Clockwise);
+        leader.setPIDF(Constants.HorizontalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);
         zeroPosition();
         isZeroed = true;
-        leader.setInverted(TalonFXInvertType.Clockwise);
-        leader.setPIDF(Constants.HorizontalElevator.kPIDF);
     }
-
-
-    Stopwatch currentDrawStopwatch = new Stopwatch();
 
     Loop loop = new Loop() {
 

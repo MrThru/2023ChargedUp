@@ -14,12 +14,11 @@ import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.encoders.MagEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Stopwatch;
 import com.team254.drivers.LazyPhoenix5TalonFX;
-import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
-import com.team1323.frc2023.subsystems.swerve.Swerve;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,7 +38,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
 
     
     public CubeIntake() {
-        super(Ports.CUBE_INTAKE_WRIST, Ports.CANBUS, Constants.CubeIntake.kEncoderUnitsPerDegree, 
+        super(Ports.CUBE_INTAKE_WRIST, Ports.CANBUS, Constants.kMaxFalconEncoderSpeed, Constants.CubeIntake.kEncoderUnitsPerDegree, 
                 Constants.CubeIntake.kMinControlAngle, Constants.CubeIntake.kMaxControlAngle,
                 Constants.CubeIntake.kAngleTolerance, Constants.CubeIntake.kVelocityScalar, 
                 Constants.CubeIntake.kAccelerationScalar, Constants.CubeIntake.kCurrentZeroingConfig, 

@@ -20,28 +20,28 @@ import com.team254.drivers.LazyPhoenix5TalonFX;
  * with MotionMagic running on a Talon FX.
  */
 public abstract class ServoSubsystem extends Subsystem {
-    protected static final double kMaxFalconEncoderVelocity = 6380.0 * 2048.0 / 600.0;
-
     protected LazyPhoenix5TalonFX leader;
     protected List<LazyPhoenix5TalonFX> allMotors;
     protected List<LazyPhoenix5TalonFX> followers;
 
     protected PeriodicIO periodicIO = new PeriodicIO();
 
+    protected final double maxEncoderVelocity;
     private final double encoderUnitsPerOutputUnit;
     private final double minOutputUnits;
     private final double maxOutputUnits;
     private final double outputUnitTolerance;
 
-    public ServoSubsystem(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
+    public ServoSubsystem(int portNumber, String canBus, double maxEncoderVelocity, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
             double cruiseVelocityScalar, double accelerationScalar) {
-        this(portNumber, new ArrayList<>(), canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits,
+        this(portNumber, new ArrayList<>(), canBus, maxEncoderVelocity, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits,
                 outputUnitTolerance, cruiseVelocityScalar, accelerationScalar);
     }
 
-    public ServoSubsystem(int portNumber, List<Integer> followerPortNumbers, String canBus, double encoderUnitsPerOutputUnit, 
+    public ServoSubsystem(int portNumber, List<Integer> followerPortNumbers, String canBus, double maxEncoderVelocity, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, double cruiseVelocityScalar, double accelerationScalar) {
+        this.maxEncoderVelocity = maxEncoderVelocity;
         this.encoderUnitsPerOutputUnit = encoderUnitsPerOutputUnit;
         this.minOutputUnits = minOutputUnits;
         this.maxOutputUnits = maxOutputUnits;
@@ -62,8 +62,8 @@ public abstract class ServoSubsystem extends Subsystem {
         leader.configReverseSoftLimitThreshold(outputUnitsToEncoderUnits(minOutputUnits), Constants.kCANTimeoutMs);
         enableLimits(true);
 
-        leader.configMotionCruiseVelocity(kMaxFalconEncoderVelocity * cruiseVelocityScalar, Constants.kCANTimeoutMs);
-        leader.configMotionAcceleration(kMaxFalconEncoderVelocity * accelerationScalar, Constants.kCANTimeoutMs);
+        leader.configMotionCruiseVelocity(maxEncoderVelocity * cruiseVelocityScalar, Constants.kCANTimeoutMs);
+        leader.configMotionAcceleration(maxEncoderVelocity * accelerationScalar, Constants.kCANTimeoutMs);
 
         followers.forEach(f -> f.set(ControlMode.Follower, leaderPortNumber));
     }
@@ -124,7 +124,7 @@ public abstract class ServoSubsystem extends Subsystem {
     }
 
     public void setPositionWithCruiseVelocity(double outputUnits, double cruiseVelocityScalar) {
-        leader.configMotionCruiseVelocity(kMaxFalconEncoderVelocity * cruiseVelocityScalar);
+        leader.configMotionCruiseVelocity(maxEncoderVelocity * cruiseVelocityScalar);
         setPosition(outputUnits);
     }
 

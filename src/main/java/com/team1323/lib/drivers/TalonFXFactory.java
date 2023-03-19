@@ -1,8 +1,8 @@
 package com.team1323.lib.drivers;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.team1323.frc2023.Constants;
 import com.team254.drivers.LazyPhoenix5TalonFX;
 
@@ -38,9 +38,9 @@ public class TalonFXFactory {
 
     private static void configureRollerTalon(LazyPhoenix5TalonFX talon) {
         configureTalon(talon);
+        talon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
         talon.configForwardSoftLimitEnable(false, Constants.kCANTimeoutMs);
         talon.configReverseSoftLimitEnable(false, Constants.kCANTimeoutMs);
-        
     }
     
     public static void setSupplyCurrentLimit(LazyPhoenix5TalonFX talon, double amps) {
@@ -67,7 +67,6 @@ public class TalonFXFactory {
         talon.configNominalOutputForward(0.0, Constants.kCANTimeoutMs);
         talon.configNominalOutputReverse(0.0, Constants.kCANTimeoutMs);
 
-        talon.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         talon.configNeutralDeadband(0.001, Constants.kCANTimeoutMs);
     }
 }

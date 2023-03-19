@@ -15,18 +15,18 @@ public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystemWi
     private final AbsoluteEncoderInfo absoluteEncoderInfo;
     private int numPositionResets = 0;
 
-    public ServoSubsystemWithAbsoluteEncoder(int portNumber, String canBus, double encoderUnitsPerOutputUnit, 
+    public ServoSubsystemWithAbsoluteEncoder(int portNumber, String canBus, double maxEncoderVelocity, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
             double cruiseVelocityScalar, double accelerationScalar, CurrentZeroingConfig currentZeroingConfig, 
             AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
-        this(portNumber, new ArrayList<>(), canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits,
+        this(portNumber, new ArrayList<>(), canBus, maxEncoderVelocity, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits,
                 outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, currentZeroingConfig, encoder, encoderInfo);
     }
 
-    public ServoSubsystemWithAbsoluteEncoder(int portNumber, List<Integer> followerPortNumbers, String canBus, double encoderUnitsPerOutputUnit, 
+    public ServoSubsystemWithAbsoluteEncoder(int portNumber, List<Integer> followerPortNumbers, String canBus, double maxEncoderVelocity, double encoderUnitsPerOutputUnit, 
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, double cruiseVelocityScalar, double accelerationScalar, 
             CurrentZeroingConfig currentZeroingConfig, AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
-        super(portNumber, followerPortNumbers, canBus, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
+        super(portNumber, followerPortNumbers, canBus, maxEncoderVelocity, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
                 outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, currentZeroingConfig);
         absoluteEncoder = encoder;
         absoluteEncoderInfo = encoderInfo;

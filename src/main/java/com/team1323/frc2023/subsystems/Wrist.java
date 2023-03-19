@@ -1,8 +1,8 @@
 package com.team1323.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenix.sensors.CANCoder;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
@@ -11,7 +11,6 @@ import com.team1323.frc2023.subsystems.encoders.CanEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team1323.lib.util.Netlink;
-import com.team1323.lib.util.Stopwatch;
 import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,12 +25,13 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public Wrist() {
-        super(Ports.WRIST, Ports.CANBUS, Constants.Wrist.kEncoderUnitsPerDegree, 
+        super(Ports.WRIST, Ports.CANBUS, Constants.kMaxFalconEncoderSpeed, Constants.Wrist.kEncoderUnitsPerDegree, 
                 Constants.Wrist.kMinControlAngle, Constants.Wrist.kMaxControlAngle, 
                 Constants.Wrist.kAngleTolerance, Constants.Wrist.kVelocityScalar, 
                 Constants.Wrist.kAccelerationScalar, Constants.Wrist.kCurrentZeroingConfig, 
                 new CanEncoder(Ports.WRIST_ENCODER, false), Constants.Wrist.kAbsoluteEncoderInfo);
 
+        leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(4.0));
         leader.setPIDF(Constants.Wrist.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);

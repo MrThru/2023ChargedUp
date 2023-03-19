@@ -17,7 +17,7 @@ public class Winch extends ServoSubsystem {
     }
     
     public Winch() {
-        super(Ports.WINCH, null, Constants.Winch.kEncoderUnitsPerDegree, 
+        super(Ports.WINCH, null, Constants.kMaxFalconEncoderSpeed, Constants.Winch.kEncoderUnitsPerDegree, 
                 Constants.Winch.kMinControlAngle, Constants.Winch.kMaxControlAngle, 
                 Constants.Winch.kAngleTolerance, Constants.Winch.kVelocityScalar, 
                 Constants.Winch.kAccelerationScalar);

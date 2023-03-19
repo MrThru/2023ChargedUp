@@ -3,8 +3,6 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 import java.util.List;
 
-import com.team254.drivers.LazyPhoenix5TalonFX.TalonPIDF;
-import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
 import com.team1323.lib.math.geometry.Pose3d;
@@ -15,9 +13,6 @@ import com.team254.drivers.LazyPhoenix5TalonFX.TalonPIDF;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Constants {
     /*All distance measurements are in inches, unless otherwise noted.*/
@@ -354,24 +349,26 @@ public class Constants {
     public static class Shoulder {
         public static final double kMotorRotationsPerShoulderRotation = 61.728395;// 69.444444;
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
-        public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerShoulderRotation / 360.0;
+        public static final double kEncoderUnitsPerDegree = 1.0; //kEncoderUnitsPerShoulderRotation / 360.0;
+
+        public static final double kMaxEncoderVelocity = kMaxFalconRotationsPerSecond / 10.0 / kMotorRotationsPerShoulderRotation * 360.0;
 
         public static final double kMinControlAngle = -97.5;
         public static final double kMaxControlAngle = 180.0;
 
         public static final double kAngleTolerance = 4.0;
 
-        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
-        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 3.0 : 5.0;
+        public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 0.25;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 3.0 : 1.0;
 
         public static final double kSupplyCurrentLimit = 60.0; //30.0 - 40
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
-            0.04, //0.04
+            0.0, //0.04
             0.0,
             0.0,
-            kFalconMotionMagicFeedForward
+            1023.0 / kMaxEncoderVelocity //kFalconMotionMagicFeedForward
         );
 
         private static final TalonPIDF kCompPIDF = new TalonPIDF(
