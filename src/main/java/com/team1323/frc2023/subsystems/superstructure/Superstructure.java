@@ -256,17 +256,7 @@ public class Superstructure extends Subsystem {
 			)
 		));
 	}
-	public void postCubeIntakeState() {
-		request(new ParallelRequest(
-			tunnel.stateRequest(Tunnel.State.SPIT),
-			cubeIntake.stateRequest(CubeIntake.State.STOWED),
-			new LambdaRequest(() -> {
-				if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None) {
-					claw.conformToState(Claw.ControlState.OFF);
-				}
-			})
-		));
-	}
+
 
 	public void reverseSubsystemsState() {
 		request(new ParallelRequest(
@@ -565,8 +555,8 @@ public class Superstructure extends Subsystem {
 
 	public void coneMidScoringSequence(Pose2d scoringPose) {
 		VisionPIDController controller = new VisionPIDBuilder()
-				.withTolerance(1.5)
-				.withOnTargetTime(0.25)
+				.withTolerance(2.0)
+				.withOnTargetTime(0.1)
 				.build();
 		scoringSequence(scoringPose, coordinator::getConeMidScoringChoreography, 
 				Claw.ControlState.CONE_OUTAKE, controller, false, true);

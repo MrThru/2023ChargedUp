@@ -502,12 +502,12 @@ public class DriverControls implements Loop {
         } else {
             wrist.lockPosition();
         }*/
-        if(Util.isInRange(DriverStation.getMatchTime(), 10.1, 9.9)) {
-            //driver.rumble(1.0, 1.5);
-        }
         if(claw.getRPM() <= 100 && coDriver.rightTrigger.isBeingPressed() && claw.rumbleStopwatch.getTime() > 1.0) {
             driver.rumble(1.0, 2.0);
-        }        
+        }
+        if(tunnel.getCubeEnteredNotifier()) {
+            //driver.rumble(1.0, 2.0);
+        }
 
 
     }

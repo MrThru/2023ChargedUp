@@ -36,7 +36,7 @@ public class Ports {
     public static final int WINCH = 0;
     // MISC CAN
     public static final int PIGEON = 45;
-    public static final int CANDLE = 46;
+    public static final int CANDLE = 47;
     
     //PWM
 

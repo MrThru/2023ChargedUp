@@ -113,10 +113,24 @@ public class Tunnel extends Subsystem {
         shutdownState = state;
         queueShutdown(true);
     }
+
     private boolean autoAdjustElevator = false;
     public void setAutoAdjustElevator(boolean enable) {
         autoAdjustElevator = enable;
     }
+
+    
+    private boolean cubeEnteredNotifier = false;
+    private boolean driverNotified = false;
+    public boolean getCubeEnteredNotifier() {
+        if(cubeEnteredNotifier) {
+            cubeEnteredNotifier = false;
+            driverNotified = true;
+            return true;
+        }
+        return false;
+    }
+
     public boolean getFrontBanner() {
         return frontBanner.get();
     }
@@ -230,14 +244,14 @@ public class Tunnel extends Subsystem {
                     if(getFrontBanner()) {
                         bannerActivatedStopwatch.startIfNotRunning();
                     } else {
-                        setRollerSpeeds(0.1, 1.0);
+                        setRollerSpeeds(0.15, 1.0);
                         setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                         bannerActivatedStopwatch.reset();
                     }
                     break;
                 case EJECT_ONE:
                     if(getFrontBanner()) {
-                        setRollerSpeeds(0.15, 0.0);
+                        setRollerSpeeds(0.25, 1.0);
                         cubeEjectedStopwatch.reset();
                     } else {
                         cubeEjectedStopwatch.startIfNotRunning();
@@ -263,11 +277,11 @@ public class Tunnel extends Subsystem {
                     break;
                 case SPIT:
                     setRollerSpeed(0.25); //0.15
-                    setConveyorSpeed(0.0); //0.25
+                    setConveyorSpeed(0.25); //0.25
                     setTunnelEntranceSpeed(0.25);
                     break;
                 case SPIT_HANDOFF:
-                    setRollerSpeed(0.05);
+                    setRollerSpeed(0.15);
                     setConveyorSpeed(1.00); //0.25
                     setTunnelEntranceSpeed(0.25);
                     break;
@@ -291,6 +305,12 @@ public class Tunnel extends Subsystem {
                     break;
             }
             stateChanged = false;
+            if(getRearBanner() && !cubeEnteredNotifier && !driverNotified) {
+                cubeEnteredNotifier = true;
+            } else if(!getRearBanner()) {
+                cubeEnteredNotifier = false;
+                driverNotified = false;
+            }
         }
 
         @Override
