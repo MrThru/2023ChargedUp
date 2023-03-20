@@ -29,6 +29,8 @@ import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.VisionPIDController;
+import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
@@ -435,14 +437,14 @@ public class Superstructure extends Subsystem {
 	}*/
 
 	private void scoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo, 
-			Claw.ControlState clawScoringState, boolean useTrajectory, boolean useRetro) {
+			Claw.ControlState clawScoringState, VisionPIDController controller, boolean useTrajectory, boolean useRetro) {
 		Request switchToRetroRequest = useRetro ? 
 				new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.RETRO))
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 18.0) :
 				new EmptyRequest();
 		request(new SequentialRequest(
 			new ParallelRequest(
-				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory, true),
+				swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory, true, controller),
 				//choreographyRequest(coordinator::getConePreScoreChoreography),
 				switchToRetroRequest,
 				choreographyRequest(scoringChoreo)
@@ -557,18 +559,22 @@ public class Superstructure extends Subsystem {
 			}
 		}
 
-		scoringSequence(scoringPose, scoringChoreo, clawScoringState, useTrajectory, useRetro);
+		scoringSequence(scoringPose, scoringChoreo, clawScoringState, new VisionPIDBuilder().build(), useTrajectory, useRetro);
 		//request(swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory));
 	}
 
 	public void coneMidScoringSequence(Pose2d scoringPose) {
+		VisionPIDController controller = new VisionPIDBuilder()
+				.withTolerance(1.5)
+				.withOnTargetTime(0.25)
+				.build();
 		scoringSequence(scoringPose, coordinator::getConeMidScoringChoreography, 
-				Claw.ControlState.CONE_OUTAKE, false, true);
+				Claw.ControlState.CONE_OUTAKE, controller, false, true);
 	}
 
 	public void coneHighScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getConeHighScoringChoreography,
-				Claw.ControlState.CONE_OUTAKE, false, true);
+				Claw.ControlState.CONE_OUTAKE, new VisionPIDBuilder().build(), false, true);
 	}
 
 	public void cubeLowScoringSequence(Pose2d scoringPose) {
