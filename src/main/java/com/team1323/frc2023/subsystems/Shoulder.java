@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenix.sensors.CANCoder;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
@@ -28,12 +27,8 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
     }
     
     public Shoulder() {
-        super(Ports.SHOULDER, Ports.CANBUS, Constants.Shoulder.kMaxEncoderVelocity, Constants.Shoulder.kEncoderUnitsPerDegree, 
-                Constants.Shoulder.kMinControlAngle, Constants.Shoulder.kMaxControlAngle, 
-                Constants.Shoulder.kAngleTolerance, Constants.Shoulder.kVelocityScalar, 
-                Constants.Shoulder.kAccelerationScalar, Constants.Shoulder.kCurrentZeroingConfig, 
+        super(Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
                 new CanEncoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
-
         leader.configRemoteFeedbackFilter(Ports.SHOULDER_ENCODER, RemoteSensorSource.CANCoder, 0);
         leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, Constants.kCANTimeoutMs);
         leader.setSensorPhase(false);
@@ -51,7 +46,7 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public void setAccelerationScalar(double scalar) {
-        leader.configMotionAcceleration(maxEncoderVelocity * scalar);
+        leader.configMotionAcceleration(config.maxEncoderVelocity * scalar);
     }
 
     /**

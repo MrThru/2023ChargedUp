@@ -1,8 +1,10 @@
 package com.team1323.frc2023;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemConfig;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
 import com.team1323.lib.math.geometry.Pose3d;
@@ -185,6 +187,19 @@ public class Constants {
         public static final double kStandardIntakeCurrentLimit = 50.0; //30
         public static final double kLowerIntakeCurrentLimit = 20.0;
 
+        public static final ServoSubsystemConfig kConfig = new ServoSubsystemConfig(
+            Ports.CUBE_INTAKE_WRIST,
+            new ArrayList<>(),
+            Ports.CANBUS,
+            kMaxFalconEncoderSpeed,
+            kEncoderUnitsPerDegree,
+            kMinControlAngle,
+            kMaxControlAngle,
+            kAngleTolerance,
+            kVelocityScalar,
+            kAccelerationScalar
+        );
+
         public static final double kArbitraryFeedForward = 0.025;
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             1,
@@ -277,6 +292,18 @@ public class Constants {
 
         public static final double kSupplyCurrentLimit = 60.0;
 
+        public static final ServoSubsystemConfig kConfig = new ServoSubsystemConfig(
+            Ports.VERTICAL_ELEVATOR_LEADER,
+            new ArrayList<>(),
+            Ports.CANBUS,
+            kMaxFalconEncoderSpeed,
+            kTicksPerInch,
+            kMinControlHeight,
+            kMaxControlHeight,
+            kHeightTolerance,
+            kVelocityScalar,
+            kAccelerationScalar
+        );
         
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
@@ -319,6 +346,18 @@ public class Constants {
 
         public static final double kSupplyLimit = 40.0;
 
+        public static final ServoSubsystemConfig kConfig = new ServoSubsystemConfig(
+            Ports.HORIZONTAL_ELEVATOR_LEADER,
+            new ArrayList<>(),
+            Ports.CANBUS,
+            kMaxFalconEncoderSpeed,
+            kTicksPerInch,
+            kMinExtension,
+            kMaxExtension,
+            kExtensionTolerance,
+            kVelocityScalar,
+            kAccelerationScalar
+        );
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
@@ -362,6 +401,19 @@ public class Constants {
         public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 3.0 : 5.0;
 
         public static final double kSupplyCurrentLimit = 60.0; //30.0 - 40
+
+        public static final ServoSubsystemConfig kConfig = new ServoSubsystemConfig(
+            Ports.SHOULDER,
+            new ArrayList<>(),
+            Ports.CANBUS,
+            kMaxEncoderVelocity,
+            kEncoderUnitsPerDegree,
+            kMinControlAngle,
+            kMaxControlAngle,
+            kAngleTolerance,
+            kVelocityScalar,
+            kAccelerationScalar
+        );
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
@@ -415,6 +467,19 @@ public class Constants {
         public static final double kSupplyCurrentLimit = 30.0;
 
         public static final double kLowCurrentMode = 3.5;
+
+        public static final ServoSubsystemConfig kConfig = new ServoSubsystemConfig(
+            Ports.WRIST,
+            new ArrayList<>(),
+            Ports.CANBUS,
+            kMaxFalconEncoderSpeed,
+            kEncoderUnitsPerDegree,
+            kMinControlAngle,
+            kMaxControlAngle,
+            kAngleTolerance,
+            kVelocityScalar,
+            kAccelerationScalar
+        );
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
@@ -483,15 +548,23 @@ public class Constants {
         public static final double kEncoderUnitsPerWinchRotation = kMotorRotationsPerWinchRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = kEncoderUnitsPerWinchRotation / 360.0;
 
-        public static final double kMinControlAngle = 0.0;
-        public static final double kMaxControlAngle = 90.0;
-
-        public static final double kAngleTolerance = 2.0;
-
         public static final double kVelocityScalar = 0.25;
         public static final double kAccelerationScalar = 1.0;
 
         public static final double kSupplyCurrentLimit = 30.0;
+
+        public static final ServoSubsystemConfig kConfig = new ServoSubsystemConfig(
+            Ports.WINCH,
+            new ArrayList<>(),
+            Ports.CANBUS,
+            kMaxFalconEncoderSpeed,
+            kEncoderUnitsPerDegree,
+            0.0,
+            90.0,
+            2.0,
+            kVelocityScalar,
+            kAccelerationScalar
+        );
 
         public static final TalonPIDF kPIDF = new TalonPIDF(
             0,

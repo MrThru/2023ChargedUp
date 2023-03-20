@@ -38,12 +38,9 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
 
     
     public CubeIntake() {
-        super(Ports.CUBE_INTAKE_WRIST, Ports.CANBUS, Constants.kMaxFalconEncoderSpeed, Constants.CubeIntake.kEncoderUnitsPerDegree, 
-                Constants.CubeIntake.kMinControlAngle, Constants.CubeIntake.kMaxControlAngle,
-                Constants.CubeIntake.kAngleTolerance, Constants.CubeIntake.kVelocityScalar, 
-                Constants.CubeIntake.kAccelerationScalar, Constants.CubeIntake.kCurrentZeroingConfig, 
+        super(Constants.CubeIntake.kConfig, Constants.CubeIntake.kCurrentZeroingConfig,
                 new MagEncoder(Ports.INTAKE_WRIST_ENCODER, true), Constants.CubeIntake.kEncoderInfo);
-        super.leader.setPIDF(Constants.CubeIntake.kStandardPID);
+        leader.setPIDF(Constants.CubeIntake.kStandardPID);
         setSupplyCurrentLimit(Constants.CubeIntake.kSupplyCurrentLimit);
         setPositionToAbsolute();
         stop();

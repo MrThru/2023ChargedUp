@@ -25,12 +25,8 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public Wrist() {
-        super(Ports.WRIST, Ports.CANBUS, Constants.kMaxFalconEncoderSpeed, Constants.Wrist.kEncoderUnitsPerDegree, 
-                Constants.Wrist.kMinControlAngle, Constants.Wrist.kMaxControlAngle, 
-                Constants.Wrist.kAngleTolerance, Constants.Wrist.kVelocityScalar, 
-                Constants.Wrist.kAccelerationScalar, Constants.Wrist.kCurrentZeroingConfig, 
+        super(Constants.Wrist.kConfig, Constants.Wrist.kCurrentZeroingConfig,
                 new CanEncoder(Ports.WRIST_ENCODER, false), Constants.Wrist.kAbsoluteEncoderInfo);
-
         leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(4.0));
         leader.setPIDF(Constants.Wrist.kPIDF);

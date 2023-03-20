@@ -1,8 +1,5 @@
 package com.team1323.frc2023.subsystems.servo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 
@@ -10,18 +7,8 @@ public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
     private final CurrentZeroingConfig zeroingConfig;
     protected boolean isZeroed = false;
 
-    public ServoSubsystemWithCurrentZeroing(int portNumber, String canBus, double maxEncoderVelocity, double encoderUnitsPerOutputUnit, 
-            double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
-            double cruiseVelocityScalar, double accelerationScalar, CurrentZeroingConfig zeroingConfig) {
-        this(portNumber, new ArrayList<>(), canBus, maxEncoderVelocity, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
-                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar, zeroingConfig);
-    }
-
-    public ServoSubsystemWithCurrentZeroing(int portNumber, List<Integer> followerPortNumbers, String canBus, 
-            double maxEncoderVelocity, double encoderUnitsPerOutputUnit, double minOutputUnits, double maxOutputUnits, double outputUnitTolerance, 
-            double cruiseVelocityScalar, double accelerationScalar, CurrentZeroingConfig zeroingConfig) {
-        super(portNumber, followerPortNumbers, canBus, maxEncoderVelocity, encoderUnitsPerOutputUnit, minOutputUnits, maxOutputUnits, 
-                outputUnitTolerance, cruiseVelocityScalar, accelerationScalar);
+    public ServoSubsystemWithCurrentZeroing(ServoSubsystemConfig servoConfig, CurrentZeroingConfig zeroingConfig) {
+        super(servoConfig);
         this.zeroingConfig = zeroingConfig;
     }
 

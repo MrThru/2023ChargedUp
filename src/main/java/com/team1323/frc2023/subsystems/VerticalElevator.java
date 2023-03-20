@@ -3,7 +3,6 @@ package com.team1323.frc2023.subsystems;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
-import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
@@ -21,12 +20,7 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
     }
 
     public VerticalElevator() {
-        super(Ports.VERTICAL_ELEVATOR_LEADER, Ports.CANBUS, Constants.kMaxFalconEncoderSpeed,
-                Constants.VerticalElevator.kTicksPerInch, Constants.VerticalElevator.kMinControlHeight, 
-                Constants.VerticalElevator.kMaxControlHeight, Constants.VerticalElevator.kHeightTolerance, 
-                Constants.VerticalElevator.kVelocityScalar, Constants.VerticalElevator.kAccelerationScalar,
-                Constants.VerticalElevator.kCurrentZeroingConfig);
-
+        super(Constants.VerticalElevator.kConfig, Constants.VerticalElevator.kCurrentZeroingConfig);
         leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
         leader.setInverted(TalonFXInvertType.Clockwise);
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(0.5));

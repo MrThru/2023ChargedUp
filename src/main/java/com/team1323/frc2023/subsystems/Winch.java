@@ -1,7 +1,6 @@
 package com.team1323.frc2023.subsystems;
 
 import com.team1323.frc2023.Constants;
-import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystem;
 
@@ -17,12 +16,8 @@ public class Winch extends ServoSubsystem {
     }
     
     public Winch() {
-        super(Ports.WINCH, null, Constants.kMaxFalconEncoderSpeed, Constants.Winch.kEncoderUnitsPerDegree, 
-                Constants.Winch.kMinControlAngle, Constants.Winch.kMaxControlAngle, 
-                Constants.Winch.kAngleTolerance, Constants.Winch.kVelocityScalar, 
-                Constants.Winch.kAccelerationScalar);
-
-        super.leader.setPIDF(Constants.Winch.kPIDF);
+        super(Constants.Winch.kConfig);
+        leader.setPIDF(Constants.Winch.kPIDF);
         setSupplyCurrentLimit(Constants.Winch.kSupplyCurrentLimit);
         zeroPosition();
         stop();
