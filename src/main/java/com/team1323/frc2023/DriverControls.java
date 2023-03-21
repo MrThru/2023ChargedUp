@@ -502,13 +502,16 @@ public class DriverControls implements Loop {
         } else {
             wrist.lockPosition();
         }*/
-        if(claw.getRPM() <= 100 && coDriver.rightTrigger.isBeingPressed() && claw.rumbleStopwatch.getTime() > 1.0) {
+        /*if(claw.getRPM() <= 100 && coDriver.rightTrigger.isBeingPressed() && claw.rumbleStopwatch.getTime() > 1.0) {
             driver.rumble(1.0, 2.0);
-        }
+        }*/
         if(tunnel.getCubeEnteredNotifier()) {
             //driver.rumble(1.0, 2.0);
         }
-
+        if(claw.needsToNotifyDrivers()) {
+            System.out.println("Rumbling controller for cone");
+            driver.rumble(1.0, 1.0);
+        }
 
     }
 

@@ -345,6 +345,8 @@ public class Constants {
         public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 4.0 : 4.0;
 
         public static final double kSupplyLimit = 40.0;
+        public static final double kStatorLimit = 200.0;
+        public static final double kWeakStatorLimit = 10.0;
 
         public static final ServoSubsystemConfig kConfig = new ServoSubsystemConfig(
             Ports.HORIZONTAL_ELEVATOR_LEADER,
@@ -357,6 +359,14 @@ public class Constants {
             kExtensionTolerance,
             kVelocityScalar,
             kAccelerationScalar
+        );
+
+        public static final TalonPIDF kWeakPID = new TalonPIDF(
+            0,
+            0.0025,
+            0.0,
+            0.0,
+            kFalconMotionMagicFeedForward
         );
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
@@ -503,7 +513,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 280.722656 : 98.85, 
+            Settings.kIsUsingCompBot ? 280.722656 : 32.2, 
             0.0, 
             -149, 
             139.6

@@ -13,6 +13,7 @@ import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 import com.team1323.lib.util.Netlink;
+import com.team1323.lib.util.Stopwatch;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -30,24 +31,39 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
         leader.setInverted(TalonFXInvertType.Clockwise);
         leader.setPIDF(Constants.HorizontalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);
+        setStatorCurrentLimit(Constants.HorizontalElevator.kStatorLimit);
         zeroPosition();
         isZeroed = true;
     }
 
+    private Stopwatch onTargetStopwatch = new Stopwatch();
+    private boolean weakPIDEnabled = false;
     Loop loop = new Loop() {
 
         @Override
         public void onStart(double timestamp) {
-            
+            setStatorCurrentLimit(Constants.HorizontalElevator.kStatorLimit);
+
         }
 
         @Override
         public void onLoop(double timestamp) {
+            if(isOnTarget()) {
+                onTargetStopwatch.startIfNotRunning();
+            } else {
+                onTargetStopwatch.reset();
+            }
+            if(!weakPIDEnabled && onTargetStopwatch.getTime() > 0.5) {
+                weakPIDEnabled = true;
+                setStatorCurrentLimit(Constants.HorizontalElevator.kWeakStatorLimit);
+                System.out.println("Horizontal Weak Current");
+            }
+
         }
 
         @Override
         public void onStop(double timestamp) {
-            
+            setStatorCurrentLimit(Constants.HorizontalElevator.kStatorLimit);
         }
         
     };
@@ -80,6 +96,8 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
     @Override
     public void setPosition(double outputUnits) {
         System.out.println(String.format("Horizontal elevator being set to %.2f", outputUnits));
+        setStatorCurrentLimit(Constants.HorizontalElevator.kStatorLimit);
+        weakPIDEnabled = false;
         super.setPosition(outputUnits);
     }
 

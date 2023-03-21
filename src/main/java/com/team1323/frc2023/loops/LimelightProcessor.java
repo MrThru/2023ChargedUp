@@ -94,7 +94,7 @@ public class LimelightProcessor implements Loop {
 			previousHeartbeat = currentHeartbeat;
 		} else {
 			lastUpdateStopwatch.startIfNotRunning();
-			if (lastUpdateStopwatch.getTime() > 1.0) {
+			if (lastUpdateStopwatch.getTime() > 0.5) {
 				SmartDashboard.putBoolean("Limelight Connected", false);
 			}
 		}

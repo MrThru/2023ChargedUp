@@ -121,6 +121,16 @@ public class Claw extends Subsystem {
         setPercentSpeed(state.speed);
     }
 
+    private boolean needsToNotifyDrivers = false;
+    private boolean driversNotifed = false;
+    public boolean needsToNotifyDrivers() {
+        if(needsToNotifyDrivers) {
+            needsToNotifyDrivers = false;
+            return true;
+        }
+        return false;
+    }
+
     private double looperStartTime = 0;
 
     Loop loop = new Loop() {
@@ -192,8 +202,17 @@ public class Claw extends Subsystem {
                 conformToState(ControlState.OFF);
                 //setCurrentHoldingObject(HoldingObject.None);
             }
-            if(stateChanged)
+            if(stateChanged) {
                 stateChanged = false;
+            }
+            
+            if(getCurrentHoldingObject() == HoldingObject.Cone && !driversNotifed) {
+                driversNotifed = true;
+                needsToNotifyDrivers = true;
+            } else if(getCurrentHoldingObject() != HoldingObject.Cone) {
+                needsToNotifyDrivers = false;
+                driversNotifed = false;
+            }
         }
 
         @Override

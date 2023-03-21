@@ -73,11 +73,11 @@ public class TwoConesOneCubeMidMode extends TwoConesOneCubeBaseMode {
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
             NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.RIGHT), quadrant);
             Superstructure.getInstance().scoringSequence(nodeLocation);
-            runAction(new WaitForRemainingTimeAction(0.5, startTime));
-            if (Swerve.getInstance().getDistanceToTargetPosition() <= 4.0) {
+            runAction(new WaitForRemainingTimeAction(0.625, startTime));
+            if (Swerve.getInstance().getDistanceToTargetPosition() <= 6.0) {
                 Claw.getInstance().conformToState(Claw.ControlState.CONE_OUTAKE);
             }
-            runAction(new WaitForRemainingTimeAction(0.1, startTime));
+            runAction(new WaitForRemainingTimeAction(0.25, startTime));
             if (Claw.getInstance().getState() == Claw.ControlState.CONE_OUTAKE) {
                 Claw.getInstance().setCurrentHoldingObject(HoldingObject.None);
             }
