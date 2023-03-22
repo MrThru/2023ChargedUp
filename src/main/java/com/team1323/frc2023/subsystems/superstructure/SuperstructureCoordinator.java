@@ -48,7 +48,7 @@ public class SuperstructureCoordinator {
     private static final double kVerticalHeightForStow = 4.25;
     private static final double kShoulderAngleForHorizontalRetraction = -60.0;
     private static final double kShoulderAngleForHorizontalExtension = 20.0;
-    private static final double kShoulderAngleForEscapingElevator = 90.0;
+    private static final double kShoulderAngleForEscapingElevator = 135.0;
     private static final double kHorizontalExtensionForMinShoulderReach = 0.25;
     private static final double kHorizontalExtensionForUprightShoulder = 6.0;
     private static final double kHorizontalExtensionForGridClearance = 15.0;

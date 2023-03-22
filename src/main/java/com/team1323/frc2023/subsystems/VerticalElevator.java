@@ -92,5 +92,7 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
         SmartDashboard.putNumber("Vertical Elevator Encoder Position", periodicIO.position);
         SmartDashboard.putBoolean("Vertical Elevator Is On Target", isOnTarget());
         SmartDashboard.putNumber("Vertical Elevator Velocity", getVelocityOutputUnitsPerSecond());
+        SmartDashboard.putNumber("Vertical Elevator Voltage", leader.getMotorOutputVoltage());
+        SmartDashboard.putNumber("Vertical Elevator Bus Voltage", leader.getBusVoltage());
     }
 }

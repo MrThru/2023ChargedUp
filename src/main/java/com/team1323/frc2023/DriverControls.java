@@ -17,6 +17,7 @@ import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Claw;
+import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.LEDs;
@@ -36,12 +37,10 @@ import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.GridTracker;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
-import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -370,6 +369,7 @@ public class DriverControls implements Loop {
             }
         } else if(coDriver.bButton.longPressed()) {
             if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
+                claw.setCurrentHoldingObject(HoldingObject.None);
                 s.coneIntakeSequence();
                 LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
                 System.out.println("Intaking Cone Request");

@@ -236,7 +236,7 @@ public class Tunnel extends Subsystem {
                     if(getRearBanner() || !getFrontBanner()) {
                         bannerActivatedStopwatch.reset();
                     }
-                    if(bannerActivatedStopwatch.getTime() > 0.05) {
+                    if(bannerActivatedStopwatch.getTime() > 0.04) {
                         // if(frontRollerTalon.getStatorCurrent() > 7.0)
                         setAllSpeeds(0);
                         bannerActivatedStopwatch.reset();
@@ -251,7 +251,7 @@ public class Tunnel extends Subsystem {
                     break;
                 case EJECT_ONE:
                     if(getFrontBanner()) {
-                        setRollerSpeeds(0.25, 1.0);
+                        setRollerSpeeds(0.2, 0.10);
                         cubeEjectedStopwatch.reset();
                     } else {
                         cubeEjectedStopwatch.startIfNotRunning();

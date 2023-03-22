@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
+import com.team1323.frc2023.DriverControls;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
@@ -131,7 +132,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
             } else {
                 onTargetStopwatch.reset();
             }
-            if(onTargetStopwatch.getTime() > 0.5 && !isCurrentLimited) {
+            if(onTargetStopwatch.getTime() > (DriverControls.getInstance().getInAuto() ? 0.5 : 0.1) && !isCurrentLimited) {
                 isCurrentLimited = true;
                 onTargetStopwatch.reset();
                 setStatorCurrentLimit(15.0);

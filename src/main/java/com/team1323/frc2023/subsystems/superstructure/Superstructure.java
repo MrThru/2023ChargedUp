@@ -564,7 +564,7 @@ public class Superstructure extends Subsystem {
 
 	public void coneHighScoringSequence(Pose2d scoringPose) {
 		scoringSequence(scoringPose, coordinator::getConeHighScoringChoreography,
-				Claw.ControlState.CONE_OUTAKE, new VisionPIDBuilder().build(), false, true);
+				Claw.ControlState.CONE_OUTAKE, new VisionPIDBuilder().withOnTargetTime(0.25).build(), false, true);
 	}
 
 	public void cubeLowScoringSequence(Pose2d scoringPose) {
