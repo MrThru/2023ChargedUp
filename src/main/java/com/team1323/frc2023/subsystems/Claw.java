@@ -175,7 +175,7 @@ public class Claw extends Subsystem {
                     stopwatch.start();
                 }
                 if(stopwatch.getTime() > 0.5) {
-                    claw.setStatorCurrentLimit(10.0, 0.01);
+                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
                 }
                 if(Util.isInRange(encUnitsToRPM(periodicIO.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 0) && stopwatch.getTime() > 0.5) {
                     setCurrentHoldingObject(HoldingObject.Cube);

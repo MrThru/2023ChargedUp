@@ -428,7 +428,7 @@ public class Constants {
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
-            0.7, //0.04
+            0.9, //0.04
             0.0001,
             0.0,
             1.3 //kFalconMotionMagicFeedForward
