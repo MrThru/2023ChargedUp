@@ -2,6 +2,7 @@ package com.team1323.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
@@ -35,7 +36,8 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
         leader.setPIDF(Constants.Shoulder.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
-        setSupplyCurrentLimit(Constants.Shoulder.kSupplyCurrentLimit);
+        leader.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, Constants.Shoulder.kContinuousSupplyCurrentLimit, 
+                Constants.Shoulder.kTriggerSupplyCurrentLimit, 0.5));
         setPositionToAbsolute();
         stop();
     }

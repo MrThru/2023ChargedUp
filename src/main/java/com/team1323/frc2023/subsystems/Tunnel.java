@@ -236,15 +236,15 @@ public class Tunnel extends Subsystem {
                     if(getRearBanner() || !getFrontBanner()) {
                         bannerActivatedStopwatch.reset();
                     }
-                    if(bannerActivatedStopwatch.getTime() > 0.04) {
+                    if(bannerActivatedStopwatch.getTime() > 0.05) {
                         // if(frontRollerTalon.getStatorCurrent() > 7.0)
-                        setAllSpeeds(0);
                         bannerActivatedStopwatch.reset();
+                        setAllSpeeds(0);
                     }
                     if(getFrontBanner()) {
                         bannerActivatedStopwatch.startIfNotRunning();
                     } else {
-                        setRollerSpeeds(0.15, 1.0);
+                        setRollerSpeeds(0.1, 1.0);
                         setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                         bannerActivatedStopwatch.reset();
                     }
@@ -255,7 +255,7 @@ public class Tunnel extends Subsystem {
                         cubeEjectedStopwatch.reset();
                     } else {
                         cubeEjectedStopwatch.startIfNotRunning();
-                        if(cubeEjectedStopwatch.getTime() > 0.01) {
+                        if(cubeEjectedStopwatch.getTime() > 0.01) { //0.01
                             if(!allowSingleIntakeMode()) {
                                 setState(State.COMMUNITY);
                             } else {
@@ -281,9 +281,21 @@ public class Tunnel extends Subsystem {
                     setTunnelEntranceSpeed(0.25);
                     break;
                 case SPIT_HANDOFF:
-                    setRollerSpeed(0.15);
-                    setConveyorSpeed(1.00); //0.25
-                    setTunnelEntranceSpeed(0.25);
+                    if(getFrontBanner()) {
+                        setRollerSpeeds(0.15, 1.0);
+                        cubeEjectedStopwatch.reset();
+                    } else {
+                        cubeEjectedStopwatch.startIfNotRunning();
+                        if(cubeEjectedStopwatch.getTime() > 0.1) {
+                            if(!allowSingleIntakeMode()) {
+                                setState(State.COMMUNITY);
+                            } else {
+                                setState(State.SINGLE_INTAKE);
+                                queueShutdown(true);
+                            }
+                            cubeEjectedStopwatch.reset();
+                        }
+                    }
                     break;
                 case HOLD:
                     setRollerSpeed(Constants.Tunnel.kHoldFrontRollerSpeed);

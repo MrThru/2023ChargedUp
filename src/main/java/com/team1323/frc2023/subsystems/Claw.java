@@ -157,7 +157,7 @@ public class Claw extends Subsystem {
                     stopwatch.start(); //To ensure that the cone intake isnt a false trigger when it starts to spin
                     stopwatch2.reset();
                 }
-                if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 1.0) {
+                if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 0.75) {
                     stopwatch2.startIfNotRunning();
                     if(stopwatch2.getTime() > 0.25) {
                         setCurrentHoldingObject(HoldingObject.Cone);
@@ -205,7 +205,7 @@ public class Claw extends Subsystem {
             if(stateChanged) {
                 stateChanged = false;
             }
-            
+
             if(getCurrentHoldingObject() == HoldingObject.Cone && !driversNotifed) {
                 driversNotifed = true;
                 needsToNotifyDrivers = true;

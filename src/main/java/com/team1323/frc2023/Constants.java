@@ -405,12 +405,13 @@ public class Constants {
         public static final double kMinControlAngle = -97.5;
         public static final double kMaxControlAngle = 180.0;
 
-        public static final double kAngleTolerance = 4.0;
+        public static final double kAngleTolerance = 6.0;
 
         public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
         public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 3.0 : 5.0;
 
-        public static final double kSupplyCurrentLimit = 60.0; //30.0 - 40
+        public static final double kTriggerSupplyCurrentLimit = 150.0; //30.0 - 40
+        public static final double kContinuousSupplyCurrentLimit = 60.0;
 
         public static final ServoSubsystemConfig kConfig = new ServoSubsystemConfig(
             Ports.SHOULDER,
@@ -427,7 +428,7 @@ public class Constants {
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
-            0.65, //0.04
+            0.7, //0.04
             0.0001,
             0.0,
             1.3 //kFalconMotionMagicFeedForward

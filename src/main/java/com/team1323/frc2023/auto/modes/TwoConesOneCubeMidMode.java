@@ -27,6 +27,7 @@ import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
+import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.SynchronousPIDF;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -61,6 +62,12 @@ public class TwoConesOneCubeMidMode extends TwoConesOneCubeBaseMode {
                     new VisionPIDBuilder()
                             .withLateralPID(new SynchronousPIDF(0.07, 0.0, 0.0))
                             .withForwardPID(new SynchronousPIDF(0.02, 0.0, 0.0))
+                            .withDecelerationRamp(new TwoPointRamp(
+                                new Translation2d(1.0, 0.2),
+                                new Translation2d(60.0, 0.4),
+                                1.0,
+                                true
+                            ))
                             .build());
             runAction(new WaitToIntakeAction(Claw.HoldingObject.Cone, 4.0));
         } else {

@@ -56,7 +56,7 @@ public class SuperstructureCoordinator {
     public static final double kCubeMidScoringHorizontalExtension = 16.5;
     public static final double kCubeHighScoringHorizontalExtension = 31.0;
     public static final double kConeIntakingWristAngle = 85.26; //85.26
-    public static final double kCubeHoldingWristAngle = 105.0;
+    public static final double kCubeHoldingWristAngle = 106.0;
 
     private final VerticalElevator verticalElevator;
     private final HorizontalElevator horizontalElevator;
@@ -258,7 +258,7 @@ public class SuperstructureCoordinator {
                         wrist.angleRequest(finalPosition.wristAngle)
                     ).withPrerequisite(shoulderEscapedPrereq),
                     horizontalElevator.extensionRequest(finalPosition.horizontalExtension)
-                            .withPrerequisite(() -> shoulder.getPosition() < kShoulderAngleForHorizontalExtension)
+                            .withPrerequisite(() -> shoulder.getPosition() < 90.0)
                 )
             );
         }
@@ -299,9 +299,9 @@ public class SuperstructureCoordinator {
 
     public Request getCubeIntakeChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            1.0,
-            4.6875, //7.0
-            -87.4,
+            0.5, // 1.0
+            0.5, // 4.6875
+            -66.0, // -87.4
             kCubeHoldingWristAngle
         );
 
