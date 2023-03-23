@@ -116,6 +116,23 @@ public class ScoringPoses {
         return getScoringPose(nodeLocation);
     }
 
+    public static NodeLocation getNearestConeNodeLocation(Pose2d robotPose) {
+        AprilTag nearestAprilTag = getNearestAprilTag(robotPose);
+        Grid nearestGrid = kAprilTagToGridMap.get(nearestAprilTag);
+        NodeLocation leftNode = new NodeLocation(nearestGrid, Row.TOP, Column.LEFT);
+        NodeLocation rightNode = new NodeLocation(nearestGrid, Row.TOP, Column.RIGHT);
+        NodeLocation closestNode = getScoringPose(leftNode).getTranslation().distance(robotPose.getTranslation()) <
+                getScoringPose(rightNode).getTranslation().distance(robotPose.getTranslation()) ? leftNode : rightNode;
+        
+        return closestNode;
+    }
+
+    public static NodeLocation getNearestCubeNodeLocation(Pose2d robotPose) {
+        AprilTag nearestAprilTag = getNearestAprilTag(robotPose);
+
+        return new NodeLocation(kAprilTagToGridMap.get(nearestAprilTag), Row.TOP, Column.CENTER);
+    }
+
     public static Pose2d getClosestScoringPosition(Pose2d robotPose) {
         List<Pose2d> getScoringPositions = Arrays.asList(ScoringPoses.getLeftScoringPose(Swerve.getInstance().getPose()), ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()),
                 ScoringPoses.getRightScoringPose(Swerve.getInstance().getPose()));
