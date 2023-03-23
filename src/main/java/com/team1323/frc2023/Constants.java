@@ -536,7 +536,7 @@ public class Constants {
 
 
         public static final double kIntakeCubeStatorCurrentLimit = 15.0;
-        public static final double kIntakeCubeVelocityThreshold = 500.0;
+        public static final double kIntakeCubeVelocityThreshold = 1500.0;
         
         
         public static final double kIntakeCubeSpeed = 0.25;

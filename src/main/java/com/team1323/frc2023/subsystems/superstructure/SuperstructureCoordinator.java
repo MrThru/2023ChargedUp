@@ -299,9 +299,9 @@ public class SuperstructureCoordinator {
 
     public Request getCubeIntakeChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            0.5, // 1.0
-            0.5, // 4.6875
-            -66.0, // -87.4
+            2.0, // 1.0
+            4.6875, // 4.6875
+            -87.4, // -87.4
             kCubeHoldingWristAngle
         );
 
