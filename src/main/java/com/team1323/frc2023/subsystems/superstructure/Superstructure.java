@@ -520,6 +520,7 @@ public class Superstructure extends Subsystem {
 		}
 
 		Pose2d scoringPose = ScoringPoses.getScoringPose(nodeLocation);
+		VisionPIDController visionPIDController = new VisionPIDBuilder().build();
 		ChoreographyProvider scoringChoreo = coordinator::getConeStowChoreography;
 		Claw.ControlState clawScoringState;
 		boolean useTrajectory = true;
@@ -543,13 +544,17 @@ public class Superstructure extends Subsystem {
 			clawScoringState = Claw.ControlState.CONE_OUTAKE;
 
 			if (nodeLocation.row == Row.MIDDLE) {
+				visionPIDController = new VisionPIDBuilder()
+						.withTolerance(2.0)
+						.withOnTargetTime(0.1)
+						.build();
 				scoringChoreo = coordinator::getConeMidScoringChoreography;
 			} else if (nodeLocation.row == Row.TOP) {
 				scoringChoreo = coordinator::getConeHighScoringChoreography;
 			}
 		}
 
-		scoringSequence(scoringPose, scoringChoreo, clawScoringState, new VisionPIDBuilder().build(), useTrajectory, useRetro);
+		scoringSequence(scoringPose, scoringChoreo, clawScoringState, visionPIDController, useTrajectory, useRetro);
 		//request(swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), useTrajectory));
 	}
 
