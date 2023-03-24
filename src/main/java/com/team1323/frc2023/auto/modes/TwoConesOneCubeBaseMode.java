@@ -44,7 +44,7 @@ public abstract class TwoConesOneCubeBaseMode extends AutoModeBase {
         Rotation2d targetHeading = Rotation2d.fromDegrees(quadrant.hasBump() ? -170 : 180);
         runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, targetHeading, 0.75, quadrant));
         runAction(new WaitToEjectObjectAction(1.5));
-        Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
+        Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getCommunityConeHoldChoreography());
 
         // Intake cube and score it
         runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
