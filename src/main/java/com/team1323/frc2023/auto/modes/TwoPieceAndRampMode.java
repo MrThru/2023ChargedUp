@@ -23,6 +23,7 @@ import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
+import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.SynchronousPIDF;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
@@ -50,6 +51,12 @@ public class TwoPieceAndRampMode extends TwoConesOneCubeBaseMode {
                     new VisionPIDBuilder()
                             .withLateralPID(new SynchronousPIDF(0.07, 0.0, 0.0))
                             .withForwardPID(new SynchronousPIDF(0.02, 0.0, 0.0))
+                            .withDecelerationRamp(new TwoPointRamp(
+                                new Translation2d(1.0, 0.2),
+                                new Translation2d(60.0, 0.4),
+                                1.0,
+                                true
+                            ))
                             .build());
             runAction(new WaitToIntakeAction(Claw.HoldingObject.Cone, Util.limit(kTimeToStartBalancing - currentTime(), 0, 4)));
         } else {
@@ -67,7 +74,7 @@ public class TwoPieceAndRampMode extends TwoConesOneCubeBaseMode {
         runAction(new WaitToFinishPathAction(2.0));
         Swerve.getInstance().startBalancePID();
         CubeIntake.getInstance().conformToState(CubeIntake.State.STOWED);
-        runAction(new WaitForRemainingTimeAction(0.25, startTime));
+        runAction(new WaitForRemainingTimeAction(0.375, startTime));
         Swerve.getInstance().zukLockDrivePosition();
         System.out.println("Auto Done in: " + currentTime());
     }

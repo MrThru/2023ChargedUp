@@ -235,9 +235,9 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToBridgePath(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(135)));
-            waypoints.add(new Pose2d(new Translation2d(146.5, 108.19), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(146.5 + 6.0, 108.19), Rotation2d.fromDegrees(180)));
         
-            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
     }
 }

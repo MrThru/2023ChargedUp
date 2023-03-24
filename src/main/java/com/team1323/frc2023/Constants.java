@@ -153,7 +153,7 @@ public class Constants {
     public static final double kSwerveEncoderToWheelRatio = 6.53; // 6.75 : 6.06
     public static final double kSwerveEncUnitsPerWheelRev = kSwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
     public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
-    public static final double kSwerveModuleRotationTolerance = 4.5;
+    public static final double kSwerveModuleRotationTolerance = 10.0;
     public static final double kSwerveMotionMagicTolerance = 2.0;
     
     public static final int kCANTimeoutMs = 10; // use for important on the fly updates
@@ -396,7 +396,7 @@ public class Constants {
     }
 
     public static class Shoulder {
-        public static final double kMotorRotationsPerShoulderRotation = 61.728395;// 69.444444;
+        public static final double kMotorRotationsPerShoulderRotation = 69.444444; //61.728395;// 69.444444;
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
         public static final double kEncoderUnitsPerDegree = 4096.0 / 360.0; //kEncoderUnitsPerShoulderRotation / 360.0;
 
@@ -428,10 +428,10 @@ public class Constants {
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
-            0.9, //0.04
-            0.0001,
+            1.0, // 0.9
+            0.0, // 0.0001
             0.0,
-            1.3 //kFalconMotionMagicFeedForward
+            1.475 //kFalconMotionMagicFeedForward : 1.3
         );
 
         private static final TalonPIDF kCompPIDF = new TalonPIDF(
@@ -444,7 +444,7 @@ public class Constants {
             
         public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
-        public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.03 : 0.03; //0.039062
+        public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.03 : 0.025; //0.039062
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 

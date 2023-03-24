@@ -453,12 +453,12 @@ public class Swerve extends Subsystem{
 
 	public void zukLockDrivePosition() {
 		setState(ControlState.POSITION);
+		modules.forEach((m) -> m.setDriveOpenLoop(0));;
 		modules.get(0).setModuleAngle(45.0);
 		modules.get(1).setModuleAngle(-45.0);
 		modules.get(2).setModuleAngle(45.0);
 		modules.get(3).setModuleAngle(-45.0);
 		isDriveLocked = false;
-		modules.forEach((m) -> m.setDriveOpenLoop(0));;
 	}
 	
 	/** Puts drive motors into closed-loop velocity mode */
