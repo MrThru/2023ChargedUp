@@ -4,28 +4,23 @@
 
 package com.team1323.frc2023.subsystems.swerve;
 
-import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.lib.util.Stopwatch;
 import com.team1323.lib.util.SynchronousPIDF;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
-/** Add your docs here. */
-public class BalancePIDController {
+public class PIDBalanceController implements BalanceController {
     private final double kPitchDeadband = 7.5;
     private final double kOnTargetTime = 0.5;
     private final double kScalarTolerance = 4.0;
     private double kPIDScalar = 1.0;//Vernon
     SynchronousPIDF mainPIDF = new SynchronousPIDF(0.005, 0, 0, 0);
-    Rotation2d targetPitch = Rotation2d.fromDegrees(0);
+    Rotation2d targetPitch = Rotation2d.identity();
     boolean isOnTarget = false;
     Stopwatch onTargetStopwatch = new Stopwatch();
 
-    public BalancePIDController() {
-
-    }
-
+    @Override
     public void start(Rotation2d targetPitch) {
         isOnTarget = false;
         this.targetPitch = targetPitch;
@@ -33,6 +28,7 @@ public class BalancePIDController {
         kPIDScalar = 1.0;
     }
     
+    @Override
     public Translation2d update(Rotation2d robotPitch, double timestamp) {
         double error = Math.toDegrees(targetPitch.distance(robotPitch));
         if(Math.abs(error) < kScalarTolerance) {
@@ -50,9 +46,8 @@ public class BalancePIDController {
         return new Translation2d(output, 0);
     }
     
+    @Override
     public boolean isOnTarget() {
         return isOnTarget;
     }
-
-
 }

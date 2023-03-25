@@ -109,7 +109,7 @@ public class Swerve extends Subsystem{
 		return false;
 	}
 
-	BalancePIDController balanceController = new BalancePIDController();
+	BalanceController balanceController = new NonlinearBalanceController();
 	
 	//Name says it all
 	TrajectoryGenerator generator;
