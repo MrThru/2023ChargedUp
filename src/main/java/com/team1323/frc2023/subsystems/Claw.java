@@ -159,7 +159,7 @@ public class Claw extends Subsystem {
                 }
                 if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 0.75) {
                     stopwatch2.startIfNotRunning();
-                    if(stopwatch2.getTime() > 0.25) {
+                    if(stopwatch2.getTime() > 0.02) { // 0.25
                         setCurrentHoldingObject(HoldingObject.Cone);
                         LEDs.getInstance().configLEDs(LEDColors.YELLOW);
                         claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent, 0.01);
@@ -177,7 +177,7 @@ public class Claw extends Subsystem {
                 if(stopwatch.getTime() > 0.5) {
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
                 }
-                if(Util.isInRange(encUnitsToRPM(periodicIO.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 0) && stopwatch.getTime() > 0.5) {
+                if(Util.isInRange(encUnitsToRPM(periodicIO.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 0) && stopwatch.getTime() > 0.75) {
                     setCurrentHoldingObject(HoldingObject.Cube);
                     LEDs.getInstance().configLEDs(LEDColors.PURPLE);
                     stopwatch.reset();

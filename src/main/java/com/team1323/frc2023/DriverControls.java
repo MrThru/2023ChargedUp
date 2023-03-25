@@ -322,7 +322,7 @@ public class DriverControls implements Loop {
             }*/
         } else if(coDriver.aButton.isBeingPressed()) {
             if(tunnel.getRearBanner()) {
-                s.postIntakeState(0.25);
+                s.postIntakeState(0.375); //0.25
             }
         } else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState(1.0);

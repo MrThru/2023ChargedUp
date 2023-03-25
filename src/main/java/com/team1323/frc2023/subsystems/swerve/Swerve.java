@@ -896,10 +896,10 @@ public class Swerve extends Subsystem{
 			}
 			break;
 			case POSITION:
-				if (moduleAnglesOnTarget() && !isDriveLocked) {
+				/*if (moduleAnglesOnTarget() && !isDriveLocked) {
 					modules.forEach((m) -> m.setDrivePositionTarget(0.0));
 					this.isDriveLocked = true;
-				}
+				}*/
 			break;
 			case ROTATION:
 			setDriveOutput(inverseKinematics.updateDriveVectors(new Translation2d(), Util.deadBand(rotationCorrection, 0.1), pose, false));

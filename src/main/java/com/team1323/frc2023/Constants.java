@@ -530,8 +530,8 @@ public class Constants {
 
     public static class Claw {
         
-        public static final double kIntakeConeStatorCurrentLimit = 200.0;
-        public static final double kIntakeConeStatorHoldCurrent = 30.0;
+        public static final double kIntakeConeStatorCurrentLimit = 200.0; //200.0
+        public static final double kIntakeConeStatorHoldCurrent = 30.0; //30.0
         public static final double kIntakeConeVelocityThreshold = 200.0;
 
 

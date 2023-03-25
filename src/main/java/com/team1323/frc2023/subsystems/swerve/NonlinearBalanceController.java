@@ -9,7 +9,7 @@ public class NonlinearBalanceController implements BalanceController {
 
     private final TwoPointRamp outputRamp = new TwoPointRamp(
         new Translation2d(kPitchDeadband, 0.03),
-        new Translation2d(16.0, 0.1),
+        new Translation2d(16.0, 0.2),
         2.0,
         true
     );
