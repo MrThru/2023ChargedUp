@@ -54,9 +54,9 @@ public class SuperstructureCoordinator {
     private static final double kHorizontalExtensionForGridClearance = 15.0;
 
     public static final double kCubeMidScoringHorizontalExtension = 16.5;
-    public static final double kCubeHighScoringHorizontalExtension = 31.0;
+    public static final double kCubeHighScoringHorizontalExtension = 30.0;
     public static final double kConeIntakingWristAngle = 85.26; //85.26
-    public static final double kCubeHoldingWristAngle = 106.0;
+    public static final double kCubeHoldingWristAngle = 110.0; //106.0
 
     private final VerticalElevator verticalElevator;
     private final HorizontalElevator horizontalElevator;
@@ -557,7 +557,7 @@ public class SuperstructureCoordinator {
 
     public Request getCubeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            16.0,
+            16.5,
             kCubeHighScoringHorizontalExtension,
             55.0,
             kCubeHoldingWristAngle

@@ -252,7 +252,7 @@ public class Superstructure extends Subsystem {
 			cubeIntake.stateRequest(CubeIntake.State.STOWED),
 			new SequentialRequest(
 				waitRequest(waitTime),
-				verticalElevator.heightRequest(0.25)
+				verticalElevator.heightRequest(0.5)
 			)
 		));
 	}
@@ -589,7 +589,7 @@ public class Superstructure extends Subsystem {
 
 	public void cubeHighScoringSequence(Pose2d scoringPose, boolean stopSwerveWhenDone) {
 		cubeScoringSequence(scoringPose, coordinator::getCubeHighScoringChoreography,
-				SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, 0.1875, false, this::objectAwareStow, stopSwerveWhenDone);
+				SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, 0.125, false, this::objectAwareStow, stopSwerveWhenDone);
 	}
 
 	public void tripleCubeScoringSequence() {

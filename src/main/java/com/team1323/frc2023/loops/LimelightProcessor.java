@@ -71,6 +71,8 @@ public class LimelightProcessor implements Loop {
 
 	private final Stopwatch lastUpdateStopwatch = new Stopwatch();
 	private double previousHeartbeat = -1.0;
+
+	private boolean limelightConnected = true;
 	
 	private LimelightProcessor() {}
 	
@@ -82,7 +84,8 @@ public class LimelightProcessor implements Loop {
 		double currentHeartbeat = LimelightHelpers.getLimelightNTDouble(kLimelightName, "hb");
 		if (currentHeartbeat > previousHeartbeat) {
 			lastUpdateStopwatch.reset();
-			SmartDashboard.putBoolean("Limelight Connected", true);
+			limelightConnected = true;
+			SmartDashboard.putBoolean("Limelight Connected", limelightConnected);
 
 			if (!Netlink.getBooleanValue("Limelight Disabled") /*&& VerticalElevator.getInstance().getPosition() <= 16.0*/) {
 				LimelightResults results = LimelightHelpers.getLatestResults(kLimelightName);
@@ -95,7 +98,8 @@ public class LimelightProcessor implements Loop {
 		} else {
 			lastUpdateStopwatch.startIfNotRunning();
 			if (lastUpdateStopwatch.getTime() > 0.5) {
-				SmartDashboard.putBoolean("Limelight Connected", false);
+				limelightConnected = false;
+				SmartDashboard.putBoolean("Limelight Connected", limelightConnected);
 			}
 		}
 	}
@@ -357,6 +361,9 @@ public class LimelightProcessor implements Loop {
 		return intakingPose;
 	}
 
+	public boolean isConnected() {
+		return limelightConnected;
+	}
 	public void setPipeline(Pipeline pipeline) {
 		LimelightHelpers.setPipelineIndex(kLimelightName, pipeline.index);
 	}

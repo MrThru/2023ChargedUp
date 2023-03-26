@@ -65,7 +65,7 @@ public class TwoPieceAndRampMode extends TwoConesOneCubeBaseMode {
 
         // Get on the bridge and balance
         Pigeon2IMU.getInstance().resetRoll();
-        runAction(new SetTrajectoryAction(trajectories.thirdPieceToBridgePath, Rotation2d.fromDegrees(0), 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.thirdPieceToBridgePath, Rotation2d.fromDegrees(0), 1.0, quadrant));
         if (Claw.getInstance().getCurrentHoldingObject() != HoldingObject.Cone) {
             Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
         }

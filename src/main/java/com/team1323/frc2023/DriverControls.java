@@ -41,6 +41,7 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -86,7 +87,7 @@ public class DriverControls implements Loop {
         return inAuto;
     }
 
-    private NodeLocation.Row targetScoringRow = NodeLocation.Row.BOTTOM;
+    private NodeLocation.Row targetScoringRow = NodeLocation.Row.MIDDLE;
     private Tunnel.State lastTunnelState = Tunnel.State.OFF;
 
     public DriverControls() {
@@ -222,6 +223,7 @@ public class DriverControls implements Loop {
             System.out.println("Cone Intaking Sequence" + s.coneIntakingSequence);
             if(!s.coneIntakingSequence) {
                 System.out.println("Detected Object When Tracking: " + claw.getCurrentHoldingObject().toString());
+                boolean limelightConnected = LimelightProcessor.getInstance().isConnected();
                 if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
                     Pose2d leftScoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
                     Pose2d rightScoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
@@ -234,15 +236,31 @@ public class DriverControls implements Loop {
                     }
                     System.out.println("Target scoring row: " + targetScoringRow.toString());
                     if(targetScoringRow == NodeLocation.Row.TOP) {
-                        s.coneHighScoringSequence(closestScoringPose);
+                        if(limelightConnected) {
+                            s.coneHighScoringSequence(closestScoringPose);
+                        } else {
+                            s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
+                        }
                     } else if(targetScoringRow == NodeLocation.Row.MIDDLE) {
-                        s.coneMidScoringSequence(closestScoringPose);
+                        if(limelightConnected) {
+                            s.coneMidScoringSequence(closestScoringPose);
+                        } else {
+                            s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
+                        }
                     }
                 } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
                     if(targetScoringRow == NodeLocation.Row.TOP) {
-                        s.cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), true);
+                        if(limelightConnected) {
+                            s.cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), true);
+                        } else {
+                            s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
+                        }
                     } else if(targetScoringRow == NodeLocation.Row.MIDDLE) {
-                        s.cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), true);
+                        if(limelightConnected) {
+                            s.cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), true);
+                        } else {
+                            s.request(SuperstructureCoordinator.getInstance().getCubeMidScoringChoreography());
+                        }
                     }
                 }
                 if(targetScoringRow == NodeLocation.Row.BOTTOM && !tunnel.allowSingleIntakeMode()) {
@@ -250,6 +268,10 @@ public class DriverControls implements Loop {
                 }
                 GridTracker.getInstance().addRobotScorePosition(null, targetScoringRow, null);
             }
+        } else if(driver.leftTrigger.wasReleased()) {
+            swerve.stop(); //POOFS!!!
+            swerve.resetVisionPID();
+            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         }
 
         if(driver.rightBumper.wasActivated()) {
@@ -322,7 +344,7 @@ public class DriverControls implements Loop {
             }*/
         } else if(coDriver.aButton.isBeingPressed()) {
             if(tunnel.getRearBanner()) {
-                s.postIntakeState(0.375); //0.25
+                s.postIntakeState(0.25); //0.25
             }
         } else if(coDriver.aButton.wasReleased()) {
             s.postIntakeState(1.0);
@@ -336,6 +358,7 @@ public class DriverControls implements Loop {
             } else {
                 claw.conformToState(Claw.ControlState.CUBE_OUTAKE);
             }
+            System.out.println(claw.getCurrentHoldingObject().toString() + " object manually ejected");
         } else if(coDriver.rightCenterClick.wasReleased()) {
             //claw.conformToState(Claw.ControlState.OFF);
             claw.setCurrentHoldingObject(Claw.HoldingObject.None);
@@ -420,6 +443,7 @@ public class DriverControls implements Loop {
             //lastTunnelState = tunnel.getState();
             tunnel.setState(Tunnel.State.SPIT);
             cubeIntake.setIntakeSpeed(0.5);
+            System.out.println("Right Bumper Activated at " + DriverStation.getMatchTime());
         } else if(coDriver.rightBumper.wasReleased()) {
             //lastTunnelState = (lastTunnelState == Tunnel.State.SPIT) ? Tunnel.State.OFF : lastTunnelState;
             tunnel.setState(Tunnel.State.OFF);
