@@ -122,6 +122,8 @@ public class DriverControls implements Loop {
             LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         }
         SmartDashboard.putBoolean("Subsystems Coast Mode", false);
+        SmartDashboard.putBoolean("Swerve Coast Mode", false);
+
         swerve.setDriveNeutralMode(NeutralMode.Brake);
         cubeIntake.lockPosition();
         leds.configLEDs(LEDs.LEDColors.TWINKLE);
@@ -430,6 +432,7 @@ public class DriverControls implements Loop {
 
 
         if(coDriver.leftTrigger.wasActivated()/*  && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())*/) {
+            s.request(new EmptyRequest());
             cubeIntake.conformToState(CubeIntake.State.INTAKE);
             tunnel.setState(Tunnel.State.COMMUNITY);
             verticalElevator.setPosition(2.0);

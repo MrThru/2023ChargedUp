@@ -254,6 +254,8 @@ public class Constants {
         public static final double kScoreFrontRollerSpeed = 0.25;
 
         public static final double kTunnelEntranceSpeed = 0.75;
+
+        // public static final double
         public static final TalonPIDF kConveyorPID = new TalonPIDF(
             0,
             0,
@@ -514,7 +516,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 280.722656 : 28.9, 
+            Settings.kIsUsingCompBot ? 274.746094 : 208.652344, 
             0.0, 
             -149, 
             139.6

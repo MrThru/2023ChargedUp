@@ -30,7 +30,7 @@ public class Tunnel extends Subsystem {
     LazyPhoenix5TalonFX tunnelEntrance, conveyorTalon, frontRollerTalon;
     DigitalInput frontBanner, rearBanner;
 
-    private boolean cubeEjected = false;
+    private boolean rearBannerDetected = false;
 
     private static Tunnel instance = null;
     public static Tunnel getInstance() {
@@ -171,28 +171,28 @@ public class Tunnel extends Subsystem {
         public void onLoop(double timestamp) {
             if(stateChanged) {
                 pendingShutdown = false;
+                rearBannerDetected = false;
                 queueShutdownStopwatch.reset();
                 bannerActivatedStopwatch.reset();
                 firstBannerActivatedStopwatch.reset();
-                cubeEjected = false;
             }
             switch(currentState) {
                 //ToDo: Send straight through to claw, if the claw is empty
                 case COMMUNITY:
                     if(allowSingleIntakeMode()) {
-                        setRollerSpeeds(0.1, 1.0);
+                        setRollerSpeeds(0.1, 0.5);
                         setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                         bannerActivatedStopwatch.reset();
                     } else {
                         if(getFrontBanner()) {
                             bannerActivatedStopwatch.startIfNotRunning();
-                            if(bannerActivatedStopwatch.getTime() > 0.06) {
+                            if(bannerActivatedStopwatch.getTime() > 0.02) {
                                 setRollerSpeeds(0, 0);
                             }
                             if(getRearBanner()) {
                                 if(getCubeIntakeBanner()) {
                                     setState(State.TRIPLE_CUBE_HOLD);
-                                } else if(cubeIntake.getState() == CubeIntake.State.FLOOR && bannerActivatedStopwatch.getTime() > 0.06) {
+                                } else if(cubeIntake.getState() == CubeIntake.State.FLOOR && bannerActivatedStopwatch.getTime() > 0.02) {
                                     //setState(State.OFF);
                                     cubeIntake.setIntakeSpeed(0);
                                 }
@@ -206,7 +206,7 @@ public class Tunnel extends Subsystem {
 
                         } else {
                             bannerActivatedStopwatch.reset();
-                            setRollerSpeeds(0.1, 1.0);
+                            setRollerSpeeds(0.1, 0.5);
                             setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                             if(getRearBanner()) {
                                 if(cubeIntake.getState() == CubeIntake.State.FLOOR) {
@@ -236,7 +236,11 @@ public class Tunnel extends Subsystem {
                     if(getRearBanner() || !getFrontBanner()) {
                         bannerActivatedStopwatch.reset();
                     }
-                    if(bannerActivatedStopwatch.getTime() > 0.03) { //0.05
+                    if (getRearBanner() && !getFrontBanner()) {
+                        rearBannerDetected = true;
+                    }
+
+                    if(bannerActivatedStopwatch.getTime() > 0.02) { //0.05
                         // if(frontRollerTalon.getStatorCurrent() > 7.0)
                         bannerActivatedStopwatch.reset();
                         setAllSpeeds(0);
@@ -244,14 +248,14 @@ public class Tunnel extends Subsystem {
                     if(getFrontBanner()) {
                         bannerActivatedStopwatch.startIfNotRunning();
                     } else {
-                        setRollerSpeeds(0.15, 1.0);
+                        setRollerSpeeds(0.10, rearBannerDetected ? 0.75 : 1.0);
                         setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                         bannerActivatedStopwatch.reset();
                     }
                     break;
                 case EJECT_ONE:
                     if(getFrontBanner()) {
-                        setRollerSpeeds(0.15, 0.15); //0.2 : 0.1 : 0.15 0.05
+                        setRollerSpeeds(0.15, 0.1); //0.2 : 0.1 : 0.15 0.05
                         cubeEjectedStopwatch.reset();
                     } else {
                         cubeEjectedStopwatch.startIfNotRunning();
@@ -277,12 +281,12 @@ public class Tunnel extends Subsystem {
                     break;
                 case SPIT:
                     setRollerSpeed(0.25); //0.15
-                    setConveyorSpeed(1.0); //0.25
+                    setConveyorSpeed(0.5); //0.25
                     setTunnelEntranceSpeed(0.25);
                     break;
                 case SPIT_HANDOFF:
                     if(getFrontBanner()) {
-                        setRollerSpeeds(0.2, 1.0); //Top Roller = 0.2
+                        setRollerSpeeds(0.2, 0.5); //Top Roller = 0.2
                         cubeEjectedStopwatch.reset();
                     } else {
                         cubeEjectedStopwatch.startIfNotRunning();
@@ -300,7 +304,7 @@ public class Tunnel extends Subsystem {
                 case MANUAL:
                     break;
                 case REVERSE:
-                    setRollerSpeeds(-0.25, -0.35);
+                    setRollerSpeeds(-0.25, -0.175);
                     setTunnelEntranceSpeed(-0.25);
                     break;
                 case OFF:

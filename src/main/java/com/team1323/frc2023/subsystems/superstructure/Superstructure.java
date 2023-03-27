@@ -252,7 +252,7 @@ public class Superstructure extends Subsystem {
 			cubeIntake.stateRequest(CubeIntake.State.STOWED),
 			new SequentialRequest(
 				waitRequest(waitTime),
-				verticalElevator.heightRequest(0.5)
+				verticalElevator.heightRequest(0.25)
 			)
 		));
 	}

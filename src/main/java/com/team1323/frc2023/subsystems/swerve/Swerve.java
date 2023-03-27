@@ -1270,11 +1270,11 @@ public class Swerve extends Subsystem{
 
 		SmartDashboard.putString("Swerve State", currentState.toString());
 
-		if(Netlink.getBooleanValue("Subsystems Coast Mode") && neutralModeIsBrake) {
+		if(Netlink.getBooleanValue("Swerve Coast Mode") && neutralModeIsBrake) {
 			setDriveNeutralMode(NeutralMode.Coast);
 			setRotationNeutralMode(NeutralMode.Coast);
 			neutralModeIsBrake = false;
-		} else if(!neutralModeIsBrake && !Netlink.getBooleanValue("Subsystems Coast Mode")) {
+		} else if(!neutralModeIsBrake && !Netlink.getBooleanValue("Swerve Coast Mode")) {
 			setDriveNeutralMode(NeutralMode.Brake);
 			setRotationNeutralMode(NeutralMode.Brake);
 			neutralModeIsBrake = true;
