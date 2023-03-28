@@ -195,8 +195,10 @@ public class Tunnel extends Subsystem {
                                 } else if(cubeIntake.getState() == CubeIntake.State.FLOOR && bannerActivatedStopwatch.getTime() > Constants.Tunnel.kFrontBannerStopTime) {
                                     //setState(State.OFF);
                                     cubeIntake.setIntakeSpeed(0);
+                                } else {
+                                    setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed/2);
+                                    cubeIntake.setIntakeSpeed(CubeIntake.State.INTAKE.intakeSpeed/2);
                                 }
-                                setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                             } else {
                                 if(!getCubeIntakeBanner() && cubeIntake.getState() == CubeIntake.State.FLOOR) {
                                     //setState(State.OFF);
@@ -255,7 +257,7 @@ public class Tunnel extends Subsystem {
                     break;
                 case EJECT_ONE:
                     if(getFrontBanner()) {
-                        setRollerSpeeds(0.15, 0.1); //0.2 : 0.1 : 0.15 0.05
+                        setRollerSpeeds(0.20, 0.1); //0.2 : 0.1 : 0.15 0.05
                         cubeEjectedStopwatch.reset();
                     } else {
                         cubeEjectedStopwatch.startIfNotRunning();

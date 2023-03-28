@@ -251,7 +251,7 @@ public class Superstructure extends Subsystem {
 			new LambdaRequest(() -> {
 				cubeIntake.conformToState(CubeIntake.State.INTAKE);
 				tunnel.setState(Tunnel.State.COMMUNITY);
-				verticalElevator.setPosition(2.0);
+				verticalElevator.setPosition(1.5);
 			})
 		));
 	}
