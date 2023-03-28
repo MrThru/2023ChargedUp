@@ -107,7 +107,7 @@ public class Constants {
     public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 292.2: 329.475;
     public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 221.0 : 144.19;
     public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 103.0 : 225.0;
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 298.4 : 216.4;
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 319.9 : 216.4;
     
     //Swerve Module Positions (relative to the center of the drive base)
     public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
@@ -203,7 +203,7 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.025;
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             1,
-            Settings.kIsUsingCompBot ? -67 : -13.227750, //124.287924 
+            Settings.kIsUsingCompBot ? -66.023345 : -13.227750, //124.287924 
             109, 
             -45,
             115
@@ -255,7 +255,7 @@ public class Constants {
 
         public static final double kTunnelEntranceSpeed = 0.75;
 
-        // public static final double
+        public static final double kFrontBannerStopTime = 0.02;
         public static final TalonPIDF kConveyorPID = new TalonPIDF(
             0,
             0,
@@ -450,7 +450,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 3.339844 : 293.203125, 
+            Settings.kIsUsingCompBot ? 4.658203 : 293.203125, 
             177.0, 
             -95.0,
             185.0
@@ -496,7 +496,7 @@ public class Constants {
 
         private static final TalonPIDF kPracticePIDF = new TalonPIDF(
             0,
-            0.01,
+            0.08,
             0.00005,
             0.3,
             kFalconMotionMagicFeedForward
@@ -516,7 +516,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 274.746094 : 208.652344, 
+            Settings.kIsUsingCompBot ? 278.0 : 208.652344, 
             0.0, 
             -149, 
             139.6

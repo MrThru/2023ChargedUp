@@ -186,13 +186,13 @@ public class Tunnel extends Subsystem {
                     } else {
                         if(getFrontBanner()) {
                             bannerActivatedStopwatch.startIfNotRunning();
-                            if(bannerActivatedStopwatch.getTime() > 0.02) {
+                            if(bannerActivatedStopwatch.getTime() > Constants.Tunnel.kFrontBannerStopTime) {
                                 setRollerSpeeds(0, 0);
                             }
                             if(getRearBanner()) {
                                 if(getCubeIntakeBanner()) {
                                     setState(State.TRIPLE_CUBE_HOLD);
-                                } else if(cubeIntake.getState() == CubeIntake.State.FLOOR && bannerActivatedStopwatch.getTime() > 0.02) {
+                                } else if(cubeIntake.getState() == CubeIntake.State.FLOOR && bannerActivatedStopwatch.getTime() > Constants.Tunnel.kFrontBannerStopTime) {
                                     //setState(State.OFF);
                                     cubeIntake.setIntakeSpeed(0);
                                 }
@@ -240,7 +240,7 @@ public class Tunnel extends Subsystem {
                         rearBannerDetected = true;
                     }
 
-                    if(bannerActivatedStopwatch.getTime() > 0.02) { //0.05
+                    if(bannerActivatedStopwatch.getTime() > Constants.Tunnel.kFrontBannerStopTime) { //0.05
                         // if(frontRollerTalon.getStatorCurrent() > 7.0)
                         bannerActivatedStopwatch.reset();
                         setAllSpeeds(0);
@@ -281,7 +281,7 @@ public class Tunnel extends Subsystem {
                     break;
                 case SPIT:
                     setRollerSpeed(0.25); //0.15
-                    setConveyorSpeed(0.5); //0.25
+                    setConveyorSpeed(1.0); //0.25
                     setTunnelEntranceSpeed(0.25);
                     break;
                 case SPIT_HANDOFF:
@@ -304,7 +304,7 @@ public class Tunnel extends Subsystem {
                 case MANUAL:
                     break;
                 case REVERSE:
-                    setRollerSpeeds(-0.25, -0.175);
+                    setRollerSpeeds(-0.25, -1.0);
                     setTunnelEntranceSpeed(-0.25);
                     break;
                 case OFF:

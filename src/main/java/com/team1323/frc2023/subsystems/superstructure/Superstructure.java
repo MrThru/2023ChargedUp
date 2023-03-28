@@ -246,6 +246,15 @@ public class Superstructure extends Subsystem {
 			cubeIntake.stateRequest(CubeIntake.State.INTAKE)
 		));
 	}
+	public void communityIntakeState() {
+		request(new ParallelRequest(
+			new LambdaRequest(() -> {
+				cubeIntake.conformToState(CubeIntake.State.INTAKE);
+				tunnel.setState(Tunnel.State.COMMUNITY);
+				verticalElevator.setPosition(2.0);
+			})
+		));
+	}
 	public void postIntakeState(double waitTime) {
 		request(new ParallelRequest(
 			tunnel.queueShutdownRequest(),

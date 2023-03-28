@@ -338,19 +338,27 @@ public class DriverControls implements Loop {
         }
 
         if(coDriver.aButton.wasActivated()) {
-            s.intakeState(Tunnel.State.SINGLE_INTAKE);
+            if(tunnel.getFrontBanner()) {
+                s.communityIntakeState();
+            } else {
+                s.intakeState(Tunnel.State.SINGLE_INTAKE);
+            }
             LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
             /*if(tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
             } else if(!tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
                 tunnel.stateRequest(Tunnel.State.SINGLE_INTAKE);
             }*/
         } else if(coDriver.aButton.isBeingPressed()) {
-            if(tunnel.getRearBanner()) {
+            if(tunnel.getRearBanner() && tunnel.getState() == Tunnel.State.SINGLE_INTAKE) {
                 s.postIntakeState(0.25); //0.25
             }
         } else if(coDriver.aButton.wasReleased()) {
-            s.postIntakeState(1.0);
-            tunnel.queueShutdown(true);
+            if(tunnel.getState() == Tunnel.State.COMMUNITY || tunnel.getState() == Tunnel.State.TRIPLE_CUBE_HOLD) {
+                cubeIntake.conformToState(CubeIntake.State.FLOOR);
+            } else {
+                s.postIntakeState(1.0);
+                tunnel.queueShutdown(true);
+            }
         }
         SmartDashboard.putNumber("RB Pressed", (coDriver.rightBumper.isBeingPressed() ? 1 : 0));
 
@@ -432,10 +440,7 @@ public class DriverControls implements Loop {
 
 
         if(coDriver.leftTrigger.wasActivated()/*  && AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())*/) {
-            s.request(new EmptyRequest());
-            cubeIntake.conformToState(CubeIntake.State.INTAKE);
-            tunnel.setState(Tunnel.State.COMMUNITY);
-            verticalElevator.setPosition(2.0);
+            s.communityIntakeState();
         } else if(coDriver.leftTrigger.wasReleased()) {
             //verticalElevator.setPosition(0.25);
             cubeIntake.conformToState(CubeIntake.State.FLOOR);
@@ -711,8 +716,8 @@ public class DriverControls implements Loop {
         if(testController.aButton.wasActivated()) {
             //horizontalElevator.setPosition(20.0);
             //verticalElevator.setPosition(10.0);
-            //wrist.setPosition(-90);
-            shoulder.setPosition(-45);
+            wrist.setPosition(-90);
+            //shoulder.setPosition(-45);
             //cubeIntake.setPosition(Constants.CubeIntake.kIntakeAngle);
             // cubeIntake.setIntakeSpeed(0.25);
             // tunnel.setState(Tunnel.State.MANUAL);
@@ -722,8 +727,8 @@ public class DriverControls implements Loop {
         if(testController.bButton.wasActivated()) {
             //horizontalElevator.setPosition(0.5);
             //verticalElevator.setPosition(0.5);
-            //wrist.setPosition(0);
-            shoulder.setPosition(90);
+            wrist.setPosition(0);
+            //shoulder.setPosition(90);
             //cubeIntake.setPosition(100);
             // cubeIntake.setIntakeSpeed(0.0);
             // tunnel.setState(Tunnel.State.OFF);
@@ -732,8 +737,8 @@ public class DriverControls implements Loop {
         if(testController.yButton.wasActivated()) {
             //horizontalElevator.setPosition(30.0);
             //verticalElevator.setPosition(19.0);
-            //wrist.setPosition(90);
-            shoulder.setPosition(169.0);
+            wrist.setPosition(90);
+            //shoulder.setPosition(169.0);
             //cubeIntake.setPosition(0);
 
         }
@@ -741,8 +746,7 @@ public class DriverControls implements Loop {
         if (testController.POV0.wasActivated()) {
             s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
         } else if (testController.POV90.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getShelfChoreography());
-            claw.conformToState(Claw.ControlState.CONE_INTAKE);
+            s.request(SuperstructureCoordinator.getInstance().getCubeIntakeChoreography());
         } else if (testController.POV180.wasActivated()) {
             s.objectAwareStowSequence();
         } else if (testController.POV270.wasActivated()) {

@@ -314,7 +314,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.1,
             6.1,
-            Settings.kIsUsingCompBot ? -95.0 : -97.5,
+            Settings.kIsUsingCompBot ? -95.0 : -95.0,
             133.5
         );
 

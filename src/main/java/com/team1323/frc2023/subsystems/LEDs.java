@@ -5,17 +5,13 @@
 package com.team1323.frc2023.subsystems;
 
 import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
-import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation;
-import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.team1323.frc2023.Ports;
-import com.team1323.frc2023.Settings;
-import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.util.Stopwatch;
 
@@ -90,6 +86,7 @@ public class LEDs extends Subsystem {
         return currentLEDMode;
     }
 
+    private boolean ledsConfigured = false;
     public void configLEDs(LEDColors ledColors) {
         this.mRed = ledColors.r;
         this.mGreen = ledColors.g;
@@ -99,6 +96,7 @@ public class LEDs extends Subsystem {
         if(ledColors.ledMode == LEDMode.BLINK_SOLID) {
             blinkStopwatch.start();
         }
+        ledsConfigured = false;
     }
 
     public void setBlinkMode(LEDBlink ledblink) {
@@ -111,23 +109,27 @@ public class LEDs extends Subsystem {
 
     private final Stopwatch blinkStopwatch = new Stopwatch();
     private static final double kBlinkRateSeconds = 0.25;
+    private static final int kNumLEDs = 1690;
 
     @Override
     public void writePeriodicOutputs() {
+        if(ledsConfigured) {
+            return;
+        }
         if (selectedLEDType == LEDMode.SOLID) {
             candle.setLEDs(mRed, mGreen, mBlue);
         } else if (selectedLEDType == LEDMode.RAINBOW) {
-            RainbowAnimation animation = new RainbowAnimation(0.25, 0.25, 400);
+            RainbowAnimation animation = new RainbowAnimation(0.25, 0.25, kNumLEDs);
             candle.animate(animation);
         } else if (selectedLEDType == LEDMode.FIRE) {
             FireAnimation fireAnimation = new FireAnimation(1, 1, 1690, 1, 0.25);
             candle.animate(fireAnimation);
         } else if (selectedLEDType == LEDMode.TWINKLE) {
-            TwinkleAnimation twinkleAnimation = new TwinkleAnimation(255, 255, 255, 127, 0.25, 400,
+            TwinkleAnimation twinkleAnimation = new TwinkleAnimation(255, 255, 255, 127, 0.25, kNumLEDs,
                     TwinklePercent.Percent76);
             candle.animate(twinkleAnimation);
         } else if (selectedLEDType == LEDMode.STROBE) {
-            candle.animate(new StrobeAnimation(100, 100, 100, 50, 0.25, 400));
+            candle.animate(new StrobeAnimation(100, 100, 100, 50, 0.25, kNumLEDs));
         } else if (selectedLEDType == LEDMode.BLINK_SOLID) {
             // candle.animate()
             double time = blinkStopwatch.getTime();
@@ -139,6 +141,7 @@ public class LEDs extends Subsystem {
                 blinkStopwatch.start();
             }
         }
+        ledsConfigured = true;
 
     }
 
