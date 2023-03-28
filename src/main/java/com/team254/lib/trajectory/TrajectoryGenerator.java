@@ -92,7 +92,7 @@ public class TrajectoryGenerator {
 
     private Pose2d secondConePickupPose = new Pose2d(new Translation2d(269.5, 26.5), Rotation2d.fromDegrees(0));
     private Pose2d thirdConePickupPose = new Pose2d(new Translation2d(278.0, 80.5), Rotation2d.fromDegrees(45))
-                .transformBy(Pose2d.fromTranslation(new Translation2d(-12, 4)));
+                .transformBy(Pose2d.fromTranslation(new Translation2d(-12, 0)));
     
     public class TrajectorySet {
         public class MirroredTrajectory {

@@ -53,7 +53,7 @@ public abstract class TwoConesOneCubeBaseMode extends AutoModeBase {
         Claw.getInstance().conformToState(Claw.ControlState.CUBE_INTAKE);
         runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
         Superstructure.getInstance().postIntakeState(0);
-        runAction(new WaitToPassXCoordinateAction(257.0, quadrant, 1.5));
+        runAction(new WaitToPassXCoordinateAction(242.0, quadrant, 1.5));
         Superstructure.getInstance().handOffCubeState(SuperstructureCoordinator.getInstance()::getAutoCubeHoldChoreography);
         runAction(new WaitToPassXCoordinateAction(110, quadrant, 1.5));
         runAction(new WaitToIntakeAction(HoldingObject.Cube, 1.5));
