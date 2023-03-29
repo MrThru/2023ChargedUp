@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Request;
@@ -208,7 +209,7 @@ public class Tunnel extends Subsystem {
 
                         } else {
                             bannerActivatedStopwatch.reset();
-                            setRollerSpeeds(0.1, 0.5);
+                            setRollerSpeeds(0.1, 0.2);
                             setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                             if(getRearBanner()) {
                                 if(cubeIntake.getState() == CubeIntake.State.FLOOR) {
@@ -250,7 +251,7 @@ public class Tunnel extends Subsystem {
                     if(getFrontBanner()) {
                         bannerActivatedStopwatch.startIfNotRunning();
                     } else {
-                        setRollerSpeeds(0.10, rearBannerDetected ? 0.75 : 1.0);
+                        setRollerSpeeds(Settings.kIsUsingCompBot ? 0.08 : 0.1, rearBannerDetected ? 0.75 : 1.0);
                         setTunnelEntranceSpeed(Constants.Tunnel.kTunnelEntranceSpeed);
                         bannerActivatedStopwatch.reset();
                     }

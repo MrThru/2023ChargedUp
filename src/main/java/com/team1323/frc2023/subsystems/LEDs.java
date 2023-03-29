@@ -113,9 +113,10 @@ public class LEDs extends Subsystem {
 
     @Override
     public void writePeriodicOutputs() {
-        if(ledsConfigured) {
+        if(ledsConfigured && selectedLEDType != LEDMode.BLINK_SOLID) {
             return;
         }
+        
         if (selectedLEDType == LEDMode.SOLID) {
             candle.setLEDs(mRed, mGreen, mBlue);
         } else if (selectedLEDType == LEDMode.RAINBOW) {

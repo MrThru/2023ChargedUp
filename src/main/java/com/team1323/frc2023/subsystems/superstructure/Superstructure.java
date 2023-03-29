@@ -251,7 +251,7 @@ public class Superstructure extends Subsystem {
 			new LambdaRequest(() -> {
 				cubeIntake.conformToState(CubeIntake.State.INTAKE);
 				tunnel.setState(Tunnel.State.COMMUNITY);
-				verticalElevator.setPosition(1.5);
+				verticalElevator.setPosition(1.66);
 			})
 		));
 	}
@@ -598,7 +598,7 @@ public class Superstructure extends Subsystem {
 
 	public void cubeHighScoringSequence(Pose2d scoringPose, boolean stopSwerveWhenDone) {
 		cubeScoringSequence(scoringPose, coordinator::getCubeHighScoringChoreography,
-				SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, 0.125, false, this::objectAwareStow, stopSwerveWhenDone);
+				SuperstructureCoordinator.kCubeHighScoringHorizontalExtension, 0.0, false, this::objectAwareStow, stopSwerveWhenDone);
 	}
 
 	public void tripleCubeScoringSequence() {
