@@ -48,7 +48,7 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
 
         @Override
         public void onLoop(double timestamp) {
-            if(isOnTarget()) {
+            if(isOnTarget() && getPosition() > 2.0) {
                 onTargetStopwatch.startIfNotRunning();
             } else {
                 onTargetStopwatch.reset();

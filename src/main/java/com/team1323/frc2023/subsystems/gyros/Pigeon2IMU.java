@@ -41,7 +41,7 @@ public class Pigeon2IMU extends Gyro {
 
     private double rollOffset = 0;
     public void resetRoll() {
-        rollOffset = getRoll().getDegrees();
+        rollOffset = pigeon.getRoll();
     }
     @Override
     public Rotation2d getRoll() {

@@ -127,7 +127,6 @@ public class DriverControls implements Loop {
         swerve.setDriveNeutralMode(NeutralMode.Brake);
         cubeIntake.lockPosition();
         leds.configLEDs(LEDs.LEDColors.TWINKLE);
-        Pigeon2IMU.getInstance().resetRoll();
     }
 
     @Override
