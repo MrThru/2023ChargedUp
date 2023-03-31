@@ -46,7 +46,7 @@ public class TwoPieceAndRampMode extends TwoConesOneCubeBaseMode {
         Pose2d coneIntakingPosition = LimelightProcessor.getInstance().getRobotConePickupPosition(AutoZones.mirror(Constants.kSecondPickupConePosition, quadrant));
         LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         if(!coneIntakingPosition.equals(Pose2d.identity())) {
-            coneIntakingPosition = coneIntakingPosition.transformBy(Pose2d.fromTranslation(new Translation2d(quadrant.hasBump() ? 4 : 0, (quadrant == Quadrant.TOP_RIGHT) ? 6 : 0)));
+            coneIntakingPosition = coneIntakingPosition.transformBy(Pose2d.fromTranslation(new Translation2d(quadrant.hasBump() ? 4 : 0, (quadrant == Quadrant.TOP_RIGHT) ? 3 : 0)));
             Swerve.getInstance().startVisionPID(coneIntakingPosition, coneIntakingPosition.getRotation(), false,
                     new VisionPIDBuilder()
                             .withLateralPID(new SynchronousPIDF(0.07, 0.0, 0.0))
