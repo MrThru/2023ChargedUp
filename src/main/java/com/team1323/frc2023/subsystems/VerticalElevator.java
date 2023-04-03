@@ -23,7 +23,7 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
         super(Constants.VerticalElevator.kConfig, Constants.VerticalElevator.kCurrentZeroingConfig);
         leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
         leader.setInverted(TalonFXInvertType.Clockwise);
-        leader.config_IntegralZone(0, outputUnitsToEncoderUnits(0.5));
+        leader.configIntegralZone(0, outputUnitsToEncoderUnits(0.5));
         leader.setPIDF(Constants.VerticalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.VerticalElevator.kSupplyCurrentLimit);
         leader.setSelectedSensorPosition(0);

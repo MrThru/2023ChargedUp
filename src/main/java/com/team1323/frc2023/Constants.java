@@ -7,11 +7,11 @@ import java.util.List;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemConfig;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
+import com.team1323.lib.drivers.MotorController.MotorPIDF;
 import com.team1323.lib.math.geometry.Pose3d;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team1323.lib.util.InterpolatingDouble;
 import com.team1323.lib.util.InterpolatingTreeMap;
-import com.team254.drivers.LazyPhoenix5TalonFX.TalonPIDF;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -209,21 +209,21 @@ public class Constants {
             115
         );
 
-        private static final TalonPIDF kPracticePID = new TalonPIDF(0, 
+        private static final MotorPIDF kPracticePID = new MotorPIDF(0, 
             0.0174999237, 
             0,
             0.6, 
             kFalconMotionMagicFeedForward
         );
 
-        private static final TalonPIDF kCompPID = new TalonPIDF(0, 
+        private static final MotorPIDF kCompPID = new MotorPIDF(0, 
             0.0174999237, 
             0,
             0.6, 
             kFalconMotionMagicFeedForward
         );
 
-        public static final TalonPIDF kStandardPID = Settings.kIsUsingCompBot ? kCompPID : kPracticePID;
+        public static final MotorPIDF kStandardPID = Settings.kIsUsingCompBot ? kCompPID : kPracticePID;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             0.1,
@@ -256,7 +256,7 @@ public class Constants {
         public static final double kTunnelEntranceSpeed = 0.75;
 
         public static final double kFrontBannerStopTime = 0.02;
-        public static final TalonPIDF kConveyorPID = new TalonPIDF(
+        public static final MotorPIDF kConveyorPID = new MotorPIDF(
             0,
             0,
             0,
@@ -264,7 +264,7 @@ public class Constants {
             0.048
         );
 
-        public static final TalonPIDF kFrontRollerPID = new TalonPIDF(
+        public static final MotorPIDF kFrontRollerPID = new MotorPIDF(
             0,
             0,
             0,
@@ -272,7 +272,7 @@ public class Constants {
             0.048
         );
         
-        public static final TalonPIDF kTunnelEntrance = new TalonPIDF(
+        public static final MotorPIDF kTunnelEntrance = new MotorPIDF(
             0, 
             0, 
             0,
@@ -307,7 +307,7 @@ public class Constants {
             kAccelerationScalar
         );
         
-        private static final TalonPIDF kPracticePIDF = new TalonPIDF(
+        private static final MotorPIDF kPracticePIDF = new MotorPIDF(
             0,
             0.01,
             0.0,
@@ -315,7 +315,7 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
 
-        private static final TalonPIDF kCompPIDF = new TalonPIDF(
+        private static final MotorPIDF kCompPIDF = new MotorPIDF(
             0,
             0.01,
             0.0,
@@ -323,7 +323,7 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
             
-        public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
+        public static final MotorPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
         public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.043750 : 0.048438;
 
@@ -363,7 +363,7 @@ public class Constants {
             kAccelerationScalar
         );
 
-        public static final TalonPIDF kWeakPID = new TalonPIDF(
+        public static final MotorPIDF kWeakPID = new MotorPIDF(
             0,
             0.0025,
             0.0,
@@ -371,7 +371,7 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
 
-        private static final TalonPIDF kPracticePIDF = new TalonPIDF(
+        private static final MotorPIDF kPracticePIDF = new MotorPIDF(
             0,
             0.01,
             0.0,
@@ -379,7 +379,7 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
 
-        private static final TalonPIDF kCompPIDF = new TalonPIDF(
+        private static final MotorPIDF kCompPIDF = new MotorPIDF(
             0,
             0.01,
             0.0,
@@ -387,7 +387,7 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
             
-        public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
+        public static final MotorPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.05,
@@ -428,7 +428,7 @@ public class Constants {
             kAccelerationScalar
         );
 
-        private static final TalonPIDF kPracticePIDF = new TalonPIDF(
+        private static final MotorPIDF kPracticePIDF = new MotorPIDF(
             0,
             1.0, // 0.9
             0.0, // 0.0001
@@ -436,7 +436,7 @@ public class Constants {
             1.475 //kFalconMotionMagicFeedForward : 1.3
         );
 
-        private static final TalonPIDF kCompPIDF = new TalonPIDF(
+        private static final MotorPIDF kCompPIDF = new MotorPIDF(
             0,
             1.0,
             0.0,
@@ -444,7 +444,7 @@ public class Constants {
             1.475 //kFalconMotionMagicFeedForward
         );
             
-        public static final TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
+        public static final MotorPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
         public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.025 : 0.025;
 
@@ -494,7 +494,7 @@ public class Constants {
             kAccelerationScalar
         );
 
-        private static final TalonPIDF kPracticePIDF = new TalonPIDF(
+        private static final MotorPIDF kPracticePIDF = new MotorPIDF(
             0,
             0.08,
             0.00005,
@@ -502,7 +502,7 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
 
-        private static final TalonPIDF kCompPIDF = new TalonPIDF(
+        private static final MotorPIDF kCompPIDF = new MotorPIDF(
             0,
             0.06, // TODO: Check this
             0.00005,
@@ -510,7 +510,7 @@ public class Constants {
             kFalconMotionMagicFeedForward
         );
 
-        public static TalonPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
+        public static MotorPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
         public static final double kArbitraryFeedForward = 0.0;
 
@@ -545,7 +545,7 @@ public class Constants {
         public static final double kIntakeCubeSpeed = 0.25;
         public static final double kIntakeConeSpeed = 0.80;
 
-        public static final TalonPIDF kPID = new TalonPIDF(
+        public static final MotorPIDF kPID = new MotorPIDF(
             0, 
             0.0, 
             0.0, 
@@ -580,7 +580,7 @@ public class Constants {
             kAccelerationScalar
         );
 
-        public static final TalonPIDF kPIDF = new TalonPIDF(
+        public static final MotorPIDF kPIDF = new MotorPIDF(
             0,
             0.0,
             0.0,

@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
+import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyPhoenix5TalonFX;
@@ -22,9 +23,9 @@ import com.team254.drivers.LazyPhoenix5TalonFX;
 public abstract class ServoSubsystem extends Subsystem {
     protected final ServoSubsystemConfig config;
 
-    protected LazyPhoenix5TalonFX leader;
-    protected List<LazyPhoenix5TalonFX> allMotors;
-    protected List<LazyPhoenix5TalonFX> followers;
+    protected MotorController leader;
+    protected List<MotorController> allMotors;
+    protected List<MotorController> followers;
 
     protected PeriodicIO periodicIO = new PeriodicIO();
 
@@ -41,41 +42,34 @@ public abstract class ServoSubsystem extends Subsystem {
     }
 
     private void configureMotors() {
-        leader.configForwardSoftLimitThreshold(outputUnitsToEncoderUnits(config.maxOutputUnits), Constants.kCANTimeoutMs);
-        leader.configReverseSoftLimitThreshold(outputUnitsToEncoderUnits(config.minOutputUnits), Constants.kCANTimeoutMs);
+        leader.configForwardSoftLimitThreshold(outputUnitsToEncoderUnits(config.maxOutputUnits));
+        leader.configReverseSoftLimitThreshold(outputUnitsToEncoderUnits(config.minOutputUnits));
         enableLimits(true);
 
-        leader.configMotionCruiseVelocity(config.maxEncoderVelocity * config.cruiseVelocityScalar, Constants.kCANTimeoutMs);
-        leader.configMotionAcceleration(config.maxEncoderVelocity * config.accelerationScalar, Constants.kCANTimeoutMs);
+        leader.configMotionCruiseVelocity(config.maxEncoderVelocity * config.cruiseVelocityScalar);
+        leader.configMotionAcceleration(config.maxEncoderVelocity * config.accelerationScalar);
 
         followers.forEach(f -> f.set(ControlMode.Follower, config.leaderPortNumber));
     }
 
-    protected void setPIDF(int slotIndex, double p, double i, double d, double f) {
-        leader.config_kP(slotIndex, p, Constants.kCANTimeoutMs);
-        leader.config_kI(slotIndex, i, Constants.kCANTimeoutMs);
-        leader.config_kD(slotIndex, d, Constants.kCANTimeoutMs);
-        leader.config_kF(slotIndex, f, Constants.kCANTimeoutMs);
-    }
-
     protected void enableLimits(boolean enable) {
-        leader.configForwardSoftLimitEnable(enable, Constants.kCANTimeoutMs);
-        leader.configReverseSoftLimitEnable(enable, Constants.kCANTimeoutMs);
+        leader.configForwardSoftLimitEnable(enable);
+        leader.configReverseSoftLimitEnable(enable);
     }
 
     protected void setSupplyCurrentLimit(double amps) {
         SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(true, amps, amps, 0.25);
-        allMotors.forEach(m -> m.configSupplyCurrentLimit(currentLimitConfiguration, Constants.kCANTimeoutMs));
+        allMotors.forEach(m -> m.configSupplyCurrentLimit(amps));
     }
 
     protected void setStatorCurrentLimit(double amps) {
         StatorCurrentLimitConfiguration currentLimitConfiguration = new StatorCurrentLimitConfiguration(true, amps, amps, 0.1);
-        allMotors.forEach(m -> m.configStatorCurrentLimit(currentLimitConfiguration));
+        allMotors.forEach(m -> m.configStatorCurrentLimit(amps));
     }
 
     protected void disableStatorCurrentLimit() {
         StatorCurrentLimitConfiguration currentLimitConfiguration = new StatorCurrentLimitConfiguration(false, 200.0, 200.0, 0.1);
-        allMotors.forEach(m -> m.configStatorCurrentLimit(currentLimitConfiguration));
+        allMotors.forEach(m -> m.disableStatorCurrentLimit());
     }
 
     protected double encoderUnitsToOutputUnits(double encoderUnits) {
@@ -87,7 +81,7 @@ public abstract class ServoSubsystem extends Subsystem {
     }
 
     public double getVelocityOutputUnitsPerSecond() {
-        double encoderUnitsPer100Ms = leader.getSelectedSensorVelocity();
+        double encoderUnitsPer100Ms = leader.getVelocityEncoderUnitsPer100Ms();
         double encoderUnitsPerSecond = encoderUnitsPer100Ms * 10.0;
         return encoderUnitsToOutputUnits(encoderUnitsPerSecond);
     }

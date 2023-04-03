@@ -33,7 +33,7 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
         leader.configRemoteFeedbackFilter(Ports.SHOULDER_ENCODER, RemoteSensorSource.CANCoder, 0);
         leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, Constants.kCANTimeoutMs);
         leader.setSensorPhase(false);
-        leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
+        leader.configIntegralZone(0, outputUnitsToEncoderUnits(2.0));
         leader.setPIDF(Constants.Shoulder.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
         leader.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, Constants.Shoulder.kContinuousSupplyCurrentLimit, 

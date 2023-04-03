@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Settings;
+import com.team1323.lib.drivers.MotorController.MotorPIDF;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -120,7 +121,7 @@ public class LazyPhoenix5TalonFX extends TalonFX {
         super.config_kF(slotIndex, kF);
     }
     
-    public void setPIDF(TalonPIDF talonPIDF) {
+    public void setPIDF(MotorPIDF talonPIDF) {
         this.setPIDF(talonPIDF.slotIndex, talonPIDF.kP, talonPIDF.kI, talonPIDF.kD, talonPIDF.kF);
     }
     
@@ -146,22 +147,5 @@ public class LazyPhoenix5TalonFX extends TalonFX {
     public double getSelectedSensorVelocity() {
         if(kSimulated) return 0;
         return super.getSelectedSensorVelocity();
-    }
-
-
-    public static class TalonPIDF {
-        public final int slotIndex;
-        public final double kP;
-        public final double kI;
-        public final double kD;
-        public final double kF;
-
-        public TalonPIDF(int slotIndex, double kP, double kI, double kD, double kF) {
-            this.slotIndex = slotIndex;
-            this.kP = kP;
-            this.kI = kI;
-            this.kD = kD;
-            this.kF = kF;
-        }
     }
 }

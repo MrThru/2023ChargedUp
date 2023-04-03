@@ -28,7 +28,7 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
         super(Constants.Wrist.kConfig, Constants.Wrist.kCurrentZeroingConfig,
                 new CanEncoder(Ports.WRIST_ENCODER, false), Constants.Wrist.kAbsoluteEncoderInfo);
         leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
-        leader.config_IntegralZone(0, outputUnitsToEncoderUnits(4.0));
+        leader.configIntegralZone(0, outputUnitsToEncoderUnits(4.0));
         leader.setPIDF(Constants.Wrist.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
