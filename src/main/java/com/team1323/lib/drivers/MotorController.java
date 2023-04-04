@@ -1,28 +1,29 @@
 package com.team1323.lib.drivers;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 
 public interface MotorController {
-    public void configForwardSoftLimitThreshold(double encoderUnits);
-    public void configReverseSoftLimitThreshold(double encoderUnits);
-    public void configForwardSoftLimitEnable(boolean enable);
-    public void configReverseSoftLimitEnable(boolean enable);
+    public ErrorCode configForwardSoftLimitThreshold(double encoderUnits);
+    public ErrorCode configReverseSoftLimitThreshold(double encoderUnits);
+    public ErrorCode configForwardSoftLimitEnable(boolean enable);
+    public ErrorCode configReverseSoftLimitEnable(boolean enable);
 
-    public void configMotionCruiseVelocity(double encoderUnitsPer100Ms);
-    public void configMotionAcceleration(double encoderUnitsPer100MsPerSecond);
+    public ErrorCode configMotionCruiseVelocity(double encoderUnitsPer100Ms);
+    public ErrorCode configMotionAcceleration(double encoderUnitsPer100MsPerSecond);
 
-    public void configSupplyCurrentLimit(double amps);
-    public void configStatorCurrentLimit(double amps);
-    public void disableStatorCurrentLimit();
+    public ErrorCode configSupplyCurrentLimit(double amps);
+    public ErrorCode configStatorCurrentLimit(double amps);
+    public ErrorCode disableStatorCurrentLimit();
 
     public double getSupplyCurrent();
     public double getStatorCurrent();
 
     public double getVelocityEncoderUnitsPer100Ms();
     public double getSelectedSensorPosition();
-    public double setSelectedSensorPosition(double encoderUnits);
+    public ErrorCode setSelectedSensorPosition(double encoderUnits);
 
     public void useIntegratedSensor();
     public void useCANCoder(int cancoderId);
@@ -31,7 +32,7 @@ public interface MotorController {
     public void setNeutralMode(NeutralMode neutralMode);
 
     public void setPIDF(MotorPIDF pidf);
-    public void configIntegralZone(int slotIndex, double integralZoneEncoderUnits);
+    public ErrorCode config_IntegralZone(int slotIndex, double integralZoneEncoderUnits);
 
     public void set(ControlMode mode, double demand);
     public void set(ControlMode mode, double demand, double arbitraryFeedForward);
