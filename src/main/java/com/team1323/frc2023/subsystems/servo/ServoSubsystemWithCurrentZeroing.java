@@ -1,14 +1,17 @@
 package com.team1323.frc2023.subsystems.servo;
 
+import java.util.List;
+
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.lib.drivers.MotorController;
 
-public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
+public abstract class ServoSubsystemWithCurrentZeroing<M extends MotorController> extends ServoSubsystem<M> {
     private final CurrentZeroingConfig zeroingConfig;
     protected boolean isZeroed = false;
 
-    public ServoSubsystemWithCurrentZeroing(ServoSubsystemConfig servoConfig, CurrentZeroingConfig zeroingConfig) {
-        super(servoConfig);
+    public ServoSubsystemWithCurrentZeroing(M leader, List<M> followers, ServoSubsystemConfig servoConfig, CurrentZeroingConfig zeroingConfig) {
+        super(leader, followers, servoConfig);
         this.zeroingConfig = zeroingConfig;
     }
 
@@ -33,7 +36,7 @@ public abstract class ServoSubsystemWithCurrentZeroing extends ServoSubsystem {
 
         @Override
         public void onLoop(double timestamp) {
-            if (!isZeroed && leader.getSupplyCurrent() > zeroingConfig.triggerSupplyCurrent) {
+            if (!isZeroed && leader.getSupplyAmps() > zeroingConfig.triggerSupplyCurrent) {
                 zeroPosition();
                 enableLimits(true);
                 isZeroed = true;

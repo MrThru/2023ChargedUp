@@ -13,12 +13,10 @@ import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Request;
-import com.team1323.lib.drivers.TalonFXFactory;
+import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Stopwatch;
-import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Have a single state named "detect" that will handle
@@ -28,7 +26,7 @@ public class Tunnel extends Subsystem {
     CubeIntake cubeIntake;
     Claw claw;
 
-    LazyPhoenix5TalonFX tunnelEntrance, conveyorTalon, frontRollerTalon;
+    Phoenix5FXMotorController tunnelEntrance, conveyorTalon, frontRollerTalon;
     DigitalInput frontBanner, rearBanner;
 
     private boolean rearBannerDetected = false;
@@ -45,9 +43,12 @@ public class Tunnel extends Subsystem {
         cubeIntake = CubeIntake.getInstance();
         claw = Claw.getInstance();
 
-        tunnelEntrance = TalonFXFactory.createRollerTalon(Ports.TUNNEL_ENTRANCE_TALON, Ports.CANBUS);
-        conveyorTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS);
-        frontRollerTalon = TalonFXFactory.createRollerTalon(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS);
+        tunnelEntrance = new Phoenix5FXMotorController(Ports.TUNNEL_ENTRANCE_TALON, Ports.CANBUS);
+        conveyorTalon = new Phoenix5FXMotorController(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS);
+        frontRollerTalon = new Phoenix5FXMotorController(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS);
+        tunnelEntrance.configureAsRoller();
+        conveyorTalon.configureAsRoller();
+        frontRollerTalon.configureAsRoller();
 
         frontBanner = new DigitalInput(Ports.TUNNEL_FRONT_BANNER);
         rearBanner = new DigitalInput(Ports.TUNNEL_REAR_BANNER);

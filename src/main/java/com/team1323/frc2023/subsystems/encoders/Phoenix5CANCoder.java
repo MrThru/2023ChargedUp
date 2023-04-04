@@ -7,10 +7,10 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.team1323.frc2023.Ports;
 
-public class CanEncoder implements AbsoluteEncoder {
+public class Phoenix5CANCoder implements AbsoluteEncoder {
     private final CANCoder encoder;
 
-    public CanEncoder(int deviceId, boolean isReversed) {
+    public Phoenix5CANCoder(int deviceId, boolean isReversed) {
         encoder = new CANCoder(deviceId, Ports.CANBUS);
         CANCoderConfiguration config = new CANCoderConfiguration();
         config.sensorDirection = isReversed;
@@ -26,7 +26,7 @@ public class CanEncoder implements AbsoluteEncoder {
     }
 
     @Override
-    public void setPosition(double position) {
-        encoder.setPosition(position);
+    public void setPosition(double degrees) {
+        encoder.setPosition(degrees);
     }
 }

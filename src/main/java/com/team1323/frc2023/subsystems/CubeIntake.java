@@ -5,6 +5,8 @@
 package com.team1323.frc2023.subsystems;
 
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
@@ -16,18 +18,17 @@ import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.encoders.MagEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
-import com.team1323.lib.drivers.TalonFXFactory;
+import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Stopwatch;
-import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
-public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
+public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorController> {
 
-    LazyPhoenix5TalonFX intakeRoller;
+    Phoenix5FXMotorController intakeRoller;
     DigitalInput banner;
     
     private static CubeIntake instance = null;
@@ -39,7 +40,8 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
 
     
     public CubeIntake() {
-        super(Constants.CubeIntake.kConfig, Constants.CubeIntake.kCurrentZeroingConfig,
+        super(new Phoenix5FXMotorController(Constants.CubeIntake.kConfig.leaderPortNumber, Constants.CubeIntake.kConfig.canBus),
+                new ArrayList<>(), Constants.CubeIntake.kConfig, Constants.CubeIntake.kCurrentZeroingConfig,
                 new MagEncoder(Ports.INTAKE_WRIST_ENCODER, true), Constants.CubeIntake.kEncoderInfo);
         leader.setPIDF(Constants.CubeIntake.kStandardPID);
         setSupplyCurrentLimit(Constants.CubeIntake.kSupplyCurrentLimit);
@@ -49,7 +51,8 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
 
         
         
-        intakeRoller = TalonFXFactory.createRollerTalon(Ports.CUBE_INTAKE, Ports.CANBUS);
+        intakeRoller = new Phoenix5FXMotorController(Ports.CUBE_INTAKE, Ports.CANBUS);
+        intakeRoller.configureAsRoller();
         intakeRoller.setInverted(TalonFXInvertType.CounterClockwise);
         intakeRoller.setNeutralMode(NeutralMode.Brake);
         setIntakeCurrent(Constants.CubeIntake.kStandardIntakeCurrentLimit);
@@ -89,7 +92,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         intakeRoller.set(ControlMode.PercentOutput, intakeSpeed);   
     }
     public void setIntakeCurrent(double amps) {
-        intakeRoller.setStatorCurrentLimit(amps, amps);
+        intakeRoller.setStatorCurrentLimit(amps, 0.1);
     }
     public void setHoldMode() {
         conformToState(State.FLOOR);
@@ -203,7 +206,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder {
         SmartDashboard.putNumber("Cube Intake RPM", intakeRoller.getSelectedSensorVelocity() * 600 / 2048);
         SmartDashboard.putNumber("Cube Intake Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));
         SmartDashboard.putBoolean("Cube Intake Banner", getBanner());
-        SmartDashboard.putNumber("Cube Intake Stator Current", leader.getStatorCurrent());
+        SmartDashboard.putNumber("Cube Intake Stator Current", leader.getStatorAmps());
     }
     @Override
     public void stop() {

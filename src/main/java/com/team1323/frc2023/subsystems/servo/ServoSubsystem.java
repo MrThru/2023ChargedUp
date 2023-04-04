@@ -2,39 +2,32 @@ package com.team1323.frc2023.subsystems.servo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.lib.drivers.MotorController;
-import com.team1323.lib.drivers.TalonFXFactory;
 import com.team1323.lib.util.Util;
-import com.team254.drivers.LazyPhoenix5TalonFX;
 
 /**
  * A class which can serve as the base for any subsystem that is primarily controlled
  * with MotionMagic running on a Talon FX.
  */
-public abstract class ServoSubsystem extends Subsystem {
+public abstract class ServoSubsystem<M extends MotorController> extends Subsystem {
     protected final ServoSubsystemConfig config;
 
-    protected MotorController leader;
-    protected List<MotorController> allMotors;
-    protected List<MotorController> followers;
+    protected final M leader;
+    protected final List<M> allMotors;
+    protected final List<M> followers;
 
     protected PeriodicIO periodicIO = new PeriodicIO();
 
-    public ServoSubsystem(ServoSubsystemConfig config) {
+    public ServoSubsystem(M leader, List<M> followers, ServoSubsystemConfig config) {
         this.config = config;
-        leader = TalonFXFactory.createServoTalon(config.leaderPortNumber, config.canBus);
-        followers = config.followerPortNumbers.stream()
-                .map(port -> TalonFXFactory.createServoTalon(port, config.canBus))
-                .collect(Collectors.toList());
+        this.leader = leader;
+        leader.configureAsServo();
+        this.followers = followers;
+        followers.forEach(f -> f.configureAsServo());
         allMotors = new ArrayList<>();
         allMotors.add(leader);
         allMotors.addAll(followers);
@@ -58,17 +51,14 @@ public abstract class ServoSubsystem extends Subsystem {
     }
 
     protected void setSupplyCurrentLimit(double amps) {
-        SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(true, amps, amps, 0.25);
         allMotors.forEach(m -> m.configSupplyCurrentLimit(amps));
     }
 
     protected void setStatorCurrentLimit(double amps) {
-        StatorCurrentLimitConfiguration currentLimitConfiguration = new StatorCurrentLimitConfiguration(true, amps, amps, 0.1);
         allMotors.forEach(m -> m.configStatorCurrentLimit(amps));
     }
 
     protected void disableStatorCurrentLimit() {
-        StatorCurrentLimitConfiguration currentLimitConfiguration = new StatorCurrentLimitConfiguration(false, 200.0, 200.0, 0.1);
         allMotors.forEach(m -> m.disableStatorCurrentLimit());
     }
 
@@ -159,7 +149,7 @@ public abstract class ServoSubsystem extends Subsystem {
 
     @Override
     public void writePeriodicOutputs() {
-        leader.set(periodicIO.controlMode, periodicIO.demand, DemandType.ArbitraryFeedForward, periodicIO.arbitraryFeedForward);
+        leader.set(periodicIO.controlMode, periodicIO.demand, periodicIO.arbitraryFeedForward);
     }
 
     @Override

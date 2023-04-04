@@ -4,20 +4,22 @@
 
 package com.team1323.frc2023.subsystems;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
+import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Stopwatch;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
+public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing<Phoenix5FXMotorController> {
     private static HorizontalElevator instance = null;
     public static HorizontalElevator getInstance() {
         if(instance == null)
@@ -26,8 +28,9 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
     }
 
     public HorizontalElevator() {
-        super(Constants.HorizontalElevator.kConfig, Constants.HorizontalElevator.kCurrentZeroingConfig);
-        leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
+        super(new Phoenix5FXMotorController(Constants.HorizontalElevator.kConfig.leaderPortNumber, Constants.HorizontalElevator.kConfig.canBus),
+                new ArrayList<>(), Constants.HorizontalElevator.kConfig, Constants.HorizontalElevator.kCurrentZeroingConfig);
+        leader.useIntegratedSensor();
         leader.setInverted(TalonFXInvertType.Clockwise);
         leader.setPIDF(Constants.HorizontalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);
@@ -43,7 +46,6 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing {
         @Override
         public void onStart(double timestamp) {
             setStatorCurrentLimit(Constants.HorizontalElevator.kStatorLimit);
-
         }
 
         @Override

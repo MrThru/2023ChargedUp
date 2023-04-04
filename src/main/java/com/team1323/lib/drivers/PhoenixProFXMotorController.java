@@ -3,9 +3,14 @@ package com.team1323.lib.drivers;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenixpro.StatusCode;
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
+import com.ctre.phoenixpro.controls.ControlRequest;
+import com.ctre.phoenixpro.controls.Follower;
+import com.ctre.phoenixpro.controls.MotionMagicVoltage;
+import com.ctre.phoenixpro.controls.VoltageOut;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenixpro.signals.InvertedValue;
@@ -18,12 +23,47 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
 
     private final TalonFXConfiguration configuration = new TalonFXConfiguration();
 
+    private final VoltageOut voltageOutRequest = new VoltageOut(0.0, true, false);
+    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0, true, 0.0, 0, false);
+    private final Follower followerRequest = new Follower(0, false);
+
+    private ControlRequest currentControlRequest = voltageOutRequest;
+
     public PhoenixProFXMotorController(int deviceId) {
         super(deviceId);
     }
 
     public PhoenixProFXMotorController(int deviceId, String canBus) {
         super(deviceId, canBus);
+    }
+
+    private void configureDefaultSettings() {
+        configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        configuration.MotorOutput.DutyCycleNeutralDeadband = 0.0;
+        configuration.MotorOutput.PeakForwardDutyCycle = 1.0;
+        configuration.MotorOutput.PeakReverseDutyCycle = -1.0;
+
+        configuration.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.0;
+        configuration.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.0;
+
+        configuration.Voltage.PeakForwardVoltage = 16.0;
+        configuration.Voltage.PeakReverseVoltage = -16.0;
+
+        applyConfig();
+    }
+
+    @Override
+    public void configureAsRoller() {
+        configureDefaultSettings();
+        useIntegratedSensor();
+        configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
+        configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
+        applyConfig();
+    }
+
+    @Override
+    public void configureAsServo() {
+        configureDefaultSettings();
     }
 
     private double getEncoderResolution() {
@@ -107,6 +147,16 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
     }
 
     @Override
+    public ErrorCode configSupplyCurrentLimit(SupplyCurrentLimitConfiguration currentLimitConfig) {
+        configuration.CurrentLimits.SupplyCurrentLimit = currentLimitConfig.currentLimit;
+        configuration.CurrentLimits.SupplyCurrentThreshold = currentLimitConfig.triggerThresholdCurrent;
+        configuration.CurrentLimits.SupplyTimeThreshold = currentLimitConfig.triggerThresholdTime;
+        configuration.CurrentLimits.SupplyCurrentLimitEnable = currentLimitConfig.enable;
+
+        return applyConfig();
+    }
+
+    @Override
     public ErrorCode configStatorCurrentLimit(double amps) {
         configuration.CurrentLimits.StatorCurrentLimit = amps;
         configuration.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -121,13 +171,13 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
     }
 
     @Override
-    public double getSupplyCurrent() {
-        
+    public double getSupplyAmps() {
+        return Math.abs(this.getSupplyCurrent().getValue());
     }
 
     @Override
-    public double getStatorCurrent() {
-
+    public double getStatorAmps() {
+        return Math.abs(this.getStatorCurrent().getValue());
     }
 
     @Override
@@ -200,18 +250,36 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
 
     @Override
     public ErrorCode config_IntegralZone(int slotIndex, double integralZoneEncoderUnits) {
-        
+        // Integral zone is no longer configurable with Phoenix Pro
+        return ErrorCode.OK;
     }
 
     @Override
     public void set(ControlMode mode, double demand) {
-        // TODO Auto-generated method stub
-        
+        set(mode, demand, 0.0);
     }
 
     @Override
     public void set(ControlMode mode, double demand, double arbitraryFeedForward) {
-        // TODO Auto-generated method stub
-        
+        switch (mode) {
+            case PercentOutput:
+                voltageOutRequest.Output = demand * 12.0;
+                currentControlRequest = voltageOutRequest;
+                break;
+            case MotionMagic:
+                motionMagicRequest.Position = encoderUnitsToEncoderRotations(demand);
+                motionMagicRequest.FeedForward = arbitraryFeedForward * 12.0;
+                currentControlRequest = motionMagicRequest;
+                break;
+            case Follower:
+                followerRequest.MasterID = (int) demand;
+                currentControlRequest = followerRequest;
+                break;
+            default:
+                System.out.println(String.format("Unexpected control mode for Phoenix Pro motor! %s", mode.toString()));
+                break;
+        }
+
+        this.setControl(currentControlRequest);
     }
 }

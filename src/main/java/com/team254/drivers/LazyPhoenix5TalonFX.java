@@ -106,12 +106,12 @@ public class LazyPhoenix5TalonFX extends TalonFX {
         return mLastSetPositionErrorCode;
     }
 
-    public void setSupplyCurrentLimit(double amps, double timeout) {
-        super.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, amps, amps, timeout));
+    public void setSupplyCurrentLimit(double amps, double triggerThresholdTime) {
+        super.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, amps, amps, triggerThresholdTime));
     }
 
-    public void setStatorCurrentLimit(double amps, double triggerThreshold) {
-        super.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, amps, amps, triggerThreshold));
+    public void setStatorCurrentLimit(double amps, double triggerThresholdTime) {
+        super.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, amps, amps, triggerThresholdTime));
     }
 
     public void setPIDF(int slotIndex, double kP, double kI, double kD, double kF) {

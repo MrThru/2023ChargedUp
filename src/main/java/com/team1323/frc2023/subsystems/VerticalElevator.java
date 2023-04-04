@@ -1,6 +1,7 @@
 package com.team1323.frc2023.subsystems;
 
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.loops.ILooper;
@@ -8,10 +9,11 @@ import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
+import com.team1323.lib.drivers.Phoenix5FXMotorController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
+public class VerticalElevator extends ServoSubsystemWithCurrentZeroing<Phoenix5FXMotorController> {
     private static VerticalElevator instance = null;
     public static VerticalElevator getInstance() {
         if(instance == null)
@@ -20,10 +22,11 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing {
     }
 
     public VerticalElevator() {
-        super(Constants.VerticalElevator.kConfig, Constants.VerticalElevator.kCurrentZeroingConfig);
-        leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
+        super(new Phoenix5FXMotorController(Constants.VerticalElevator.kConfig.leaderPortNumber, Constants.VerticalElevator.kConfig.canBus),
+                new ArrayList<>(), Constants.VerticalElevator.kConfig, Constants.VerticalElevator.kCurrentZeroingConfig);
+        leader.useIntegratedSensor();
         leader.setInverted(TalonFXInvertType.Clockwise);
-        leader.configIntegralZone(0, outputUnitsToEncoderUnits(0.5));
+        leader.config_IntegralZone(0, outputUnitsToEncoderUnits(0.5));
         leader.setPIDF(Constants.VerticalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.VerticalElevator.kSupplyCurrentLimit);
         leader.setSelectedSensorPosition(0);

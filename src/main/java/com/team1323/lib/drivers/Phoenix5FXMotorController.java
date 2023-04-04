@@ -3,6 +3,7 @@ package com.team1323.lib.drivers;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -17,6 +18,37 @@ public class Phoenix5FXMotorController extends LazyPhoenix5TalonFX implements Mo
 
     public Phoenix5FXMotorController(int deviceNumber, String canBus) {
         super(deviceNumber, canBus);
+    }
+
+    private void configureDefaultSettings() {
+        this.configVoltageCompSaturation(12.0, Constants.kCANTimeoutMs);
+        this.enableVoltageCompensation(true);
+
+        this.setNeutralMode(NeutralMode.Brake);
+
+        this.configClosedloopRamp(0.0, Constants.kCANTimeoutMs);
+        this.configOpenloopRamp(0.0, Constants.kCANTimeoutMs);
+
+        this.configPeakOutputForward(1.0, Constants.kCANTimeoutMs);
+        this.configPeakOutputReverse(-1.0, Constants.kCANTimeoutMs);
+
+        this.configNominalOutputForward(0.0, Constants.kCANTimeoutMs);
+        this.configNominalOutputReverse(0.0, Constants.kCANTimeoutMs);
+
+        this.configNeutralDeadband(0.001, Constants.kCANTimeoutMs);
+    }
+
+    @Override
+    public void configureAsRoller() {
+        configureDefaultSettings();
+        useIntegratedSensor();
+        this.configForwardSoftLimitEnable(false, Constants.kCANTimeoutMs);
+        this.configReverseSoftLimitEnable(false, Constants.kCANTimeoutMs);
+    }
+
+    @Override
+    public void configureAsServo() {
+        configureDefaultSettings();
     }
 
     @Override
@@ -35,6 +67,16 @@ public class Phoenix5FXMotorController extends LazyPhoenix5TalonFX implements Mo
     public ErrorCode disableStatorCurrentLimit() {
         StatorCurrentLimitConfiguration currentLimitConfiguration = new StatorCurrentLimitConfiguration(false, 200.0, 200.0, 0.1);
         return this.configStatorCurrentLimit(currentLimitConfiguration);
+    }
+
+    @Override
+    public double getSupplyAmps() {
+        return Math.abs(this.getSupplyCurrent());
+    }
+
+    @Override
+    public double getStatorAmps() {
+        return Math.abs(this.getStatorCurrent());
     }
 
     @Override

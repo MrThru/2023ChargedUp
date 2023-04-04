@@ -1,21 +1,23 @@
 package com.team1323.frc2023.subsystems;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
-import com.team1323.frc2023.subsystems.encoders.CanEncoder;
+import com.team1323.frc2023.subsystems.encoders.Phoenix5CANCoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
+import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
+public class Wrist extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorController> {
     private static Wrist instance = null;
     public static Wrist getInstance() {
         if (instance == null) {
@@ -25,10 +27,11 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     public Wrist() {
-        super(Constants.Wrist.kConfig, Constants.Wrist.kCurrentZeroingConfig,
-                new CanEncoder(Ports.WRIST_ENCODER, false), Constants.Wrist.kAbsoluteEncoderInfo);
-        leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.kCANTimeoutMs);
-        leader.configIntegralZone(0, outputUnitsToEncoderUnits(4.0));
+        super(new Phoenix5FXMotorController(Constants.Wrist.kConfig.leaderPortNumber, Constants.Wrist.kConfig.canBus),
+                new ArrayList<>(), Constants.Wrist.kConfig, Constants.Wrist.kCurrentZeroingConfig,
+                new Phoenix5CANCoder(Ports.WRIST_ENCODER, false), Constants.Wrist.kAbsoluteEncoderInfo);
+        leader.useIntegratedSensor();
+        leader.config_IntegralZone(0, outputUnitsToEncoderUnits(4.0));
         leader.setPIDF(Constants.Wrist.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
         setSupplyCurrentLimit(Constants.Wrist.kSupplyCurrentLimit);
@@ -72,13 +75,6 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
         super.registerEnabledLoops(enabledLooper);
         enabledLooper.register(loop);
     }
-    @Override
-    public void setStatorCurrentLimit(double amps) {
-        super.setStatorCurrentLimit(amps);
-    }
-    public void enableCoastMode(boolean enable) {
-        leader.setNeutralMode((enable) ? NeutralMode.Brake : NeutralMode.Coast);
-    }
 
     public Request angleRequest(double degrees) {
         return new Request() {
@@ -98,19 +94,7 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
             }
         };
     }
-    public Request enableCoastModeRequest(boolean enable) {
-        return new Request() {
-            @Override
-            public void act() {
-                enableCoastMode(enable);
-            }
 
-            @Override
-            public boolean isFinished() {
-                return true;
-            }
-        };
-    }
     public Request setStatorCurrentLimitRequest(double amps) {
         return new Request() {
             @Override
@@ -124,6 +108,7 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder {
             }
         };
     }
+
     public Request setCurrentAtTargetRequest(double amps) {
         return new Request() {
             @Override

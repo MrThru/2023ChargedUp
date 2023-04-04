@@ -1,27 +1,30 @@
 package com.team1323.frc2023.subsystems.servo;
 
+import java.util.List;
+
 import com.team1323.frc2023.subsystems.encoders.AbsoluteEncoder;
+import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.util.Util;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-public abstract class ServoSubsystemWithAbsoluteEncoder extends ServoSubsystemWithCurrentZeroing {
+public abstract class ServoSubsystemWithAbsoluteEncoder<M extends MotorController> extends ServoSubsystemWithCurrentZeroing<M> {
     private static final int kMaxPositionResets = 50;
 
     protected final AbsoluteEncoder absoluteEncoder;
     private final AbsoluteEncoderInfo absoluteEncoderInfo;
     private int numPositionResets = 0;
 
-    public ServoSubsystemWithAbsoluteEncoder(ServoSubsystemConfig servoConfig, CurrentZeroingConfig currentZeroingConfig, 
+    public ServoSubsystemWithAbsoluteEncoder(M leader, List<M> followers, ServoSubsystemConfig servoConfig, CurrentZeroingConfig currentZeroingConfig, 
             AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
-        super(servoConfig, currentZeroingConfig);
+        super(leader, followers, servoConfig, currentZeroingConfig);
         absoluteEncoder = encoder;
         absoluteEncoderInfo = encoderInfo;
         isZeroed = true;
     }
 
-    protected void setSensorPosition(double position) {
-        leader.setSelectedSensorPosition(position);
+    protected void setSensorPosition(double encoderUnits) {
+        leader.setSelectedSensorPosition(encoderUnits);
     }
 
     public void setPositionToAbsolute() {

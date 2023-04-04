@@ -3,9 +3,13 @@ package com.team1323.lib.drivers;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 
 public interface MotorController {
+    public void configureAsRoller();
+    public void configureAsServo();
+
     public ErrorCode configForwardSoftLimitThreshold(double encoderUnits);
     public ErrorCode configReverseSoftLimitThreshold(double encoderUnits);
     public ErrorCode configForwardSoftLimitEnable(boolean enable);
@@ -15,11 +19,12 @@ public interface MotorController {
     public ErrorCode configMotionAcceleration(double encoderUnitsPer100MsPerSecond);
 
     public ErrorCode configSupplyCurrentLimit(double amps);
+    public ErrorCode configSupplyCurrentLimit(SupplyCurrentLimitConfiguration currentLimitConfig);
     public ErrorCode configStatorCurrentLimit(double amps);
     public ErrorCode disableStatorCurrentLimit();
 
-    public double getSupplyCurrent();
-    public double getStatorCurrent();
+    public double getSupplyAmps();
+    public double getStatorAmps();
 
     public double getVelocityEncoderUnitsPer100Ms();
     public double getSelectedSensorPosition();

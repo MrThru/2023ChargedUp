@@ -1,24 +1,25 @@
 package com.team1323.frc2023.subsystems;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
-import com.team1323.frc2023.subsystems.encoders.CanEncoder;
+import com.team1323.frc2023.subsystems.encoders.PhoenixProCANCoder;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
+import com.team1323.lib.drivers.PhoenixProFXMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
+public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<PhoenixProFXMotorController> {
     private static Shoulder instance = null;
     public static Shoulder getInstance() {
         if (instance == null) {
@@ -28,12 +29,11 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
     }
     
     public Shoulder() {
-        super(Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
-                new CanEncoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
-        leader.configRemoteFeedbackFilter(Ports.SHOULDER_ENCODER, RemoteSensorSource.CANCoder, 0);
-        leader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, Constants.kCANTimeoutMs);
-        leader.setSensorPhase(false);
-        leader.configIntegralZone(0, outputUnitsToEncoderUnits(2.0));
+        super(new PhoenixProFXMotorController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus),
+                new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
+                new PhoenixProCANCoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
+        leader.useCANCoder(Ports.SHOULDER_ENCODER);
+        leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
         leader.setPIDF(Constants.Shoulder.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
         leader.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, Constants.Shoulder.kContinuousSupplyCurrentLimit, 
@@ -43,8 +43,8 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder {
     }
 
     @Override
-    protected void setSensorPosition(double position) {
-        absoluteEncoder.setPosition( position / 4096.0 * 360.0);
+    protected void setSensorPosition(double encoderUnits) {
+        absoluteEncoder.setPosition(encoderUnits / 4096.0 * 360.0);
     }
 
     public void setAccelerationScalar(double scalar) {

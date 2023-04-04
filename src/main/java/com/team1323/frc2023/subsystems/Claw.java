@@ -12,10 +12,9 @@ import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.LEDs.LEDColors;
 import com.team1323.frc2023.subsystems.requests.Request;
-import com.team1323.lib.drivers.TalonFXFactory;
+import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Stopwatch;
 import com.team1323.lib.util.Util;
-import com.team254.drivers.LazyPhoenix5TalonFX;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /** Add your docs here. */
 public class Claw extends Subsystem {
 
-    LazyPhoenix5TalonFX claw;
+    Phoenix5FXMotorController claw;
 
     private double targetRPM = 0;
     private final Stopwatch stopwatch = new Stopwatch();
@@ -38,11 +37,11 @@ public class Claw extends Subsystem {
     
      
     public Claw() {
-        claw = TalonFXFactory.createRollerTalon(Ports.CLAW, Ports.CANBUS);
+        claw = new Phoenix5FXMotorController(Ports.CLAW, Ports.CANBUS);
+        claw.configureAsRoller();
         claw.setSupplyCurrentLimit(200, 0.1);
         claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.01);
         claw.setInverted(TalonFXInvertType.Clockwise);
-        claw.configNeutralDeadband(0);
 
         claw.setPIDF(Constants.Claw.kPID);
     }
