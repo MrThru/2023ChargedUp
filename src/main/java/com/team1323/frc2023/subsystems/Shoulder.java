@@ -9,17 +9,17 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
-import com.team1323.frc2023.subsystems.encoders.PhoenixProCANCoder;
+import com.team1323.frc2023.subsystems.encoders.Phoenix5CANCoder;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
-import com.team1323.lib.drivers.PhoenixProFXMotorController;
+import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<PhoenixProFXMotorController> {
+public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorController> {
     private static Shoulder instance = null;
     public static Shoulder getInstance() {
         if (instance == null) {
@@ -29,9 +29,9 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<PhoenixProFXMoto
     }
     
     public Shoulder() {
-        super(new PhoenixProFXMotorController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus, Ports.SHOULDER_ENCODER),
+        super(new Phoenix5FXMotorController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus),
                 new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
-                new PhoenixProCANCoder(Ports.SHOULDER_ENCODER, true, Constants.Shoulder.kCANCoderMagnetOffset), Constants.Shoulder.kAbsoluteEncoderInfo);
+                new Phoenix5CANCoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
         leader.useCANCoder(Ports.SHOULDER_ENCODER);
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
         leader.setPIDF(Constants.Shoulder.kPIDF);
@@ -44,8 +44,7 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<PhoenixProFXMoto
 
     @Override
     protected void setSensorPosition(double encoderUnits) {
-        //absoluteEncoder.setPosition(encoderUnits / 4096.0 * 360.0);
-        //leader.setSelectedSensorPosition(encoderUnits);
+        absoluteEncoder.setPosition(encoderUnits / 4096.0 * 360.0);
     }
 
     public void setAccelerationScalar(double scalar) {
