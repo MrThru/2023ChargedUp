@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.DriveMotionPlanner;
@@ -115,17 +116,39 @@ public class TrajectoryGenerator {
                 double default_vel,
                 int slowdown_chunks
             ) {
+                Function<List<Pose2d>, Trajectory<TimedState<Pose2dWithCurvature>>> trajectorySupplier = poses ->
+                        generateTrajectory(reversed, poses, constraints, max_vel, max_accel, max_decel,
+                                max_voltage, default_vel, slowdown_chunks);
+                generateMirroredTrajectories(waypoints, trajectorySupplier);
+            }
+
+            public MirroredTrajectory(
+                boolean reversed,
+                final WaypointList waypoints,
+                final List<TimingConstraint<Pose2dWithCurvature>> constraints,
+                double start_vel,  // inches/s
+                double end_vel,  // inches/s
+                double max_vel,  // inches/s
+                double max_accel,  // inches/s^2
+                double max_decel,
+                double max_voltage,
+                double default_vel,
+                int slowdown_chunks
+            ) {
+                Function<List<Pose2d>, Trajectory<TimedState<Pose2dWithCurvature>>> trajectorySupplier = poses ->
+                        generateTrajectory(reversed, poses, constraints, start_vel, end_vel, max_vel,
+                                max_accel, max_decel, max_voltage, default_vel, slowdown_chunks);
+                generateMirroredTrajectories(waypoints, trajectorySupplier);
+            }
+
+            private void generateMirroredTrajectories(final WaypointList waypoints, Function<List<Pose2d>, Trajectory<TimedState<Pose2dWithCurvature>>> trajectorySupplier) {
                 if (waypoints.hasOffsetsForQuadrant(Quadrant.BOTTOM_LEFT)) {
                     for (Quadrant quadrant : Quadrant.values()) {
-                        Trajectory<TimedState<Pose2dWithCurvature>> trajectory =
-                                generateTrajectory(reversed, waypoints.getWaypointsForQuadrant(quadrant), constraints, 
-                                        max_vel, max_accel, max_decel, max_voltage, default_vel, slowdown_chunks);
+                        Trajectory<TimedState<Pose2dWithCurvature>> trajectory = trajectorySupplier.apply(waypoints.getWaypointsForQuadrant(quadrant));
                         trajectoryMap.put(quadrant, trajectory);
                     }
                 } else {
-                    Trajectory<TimedState<Pose2dWithCurvature>> bottomLeftTrajectory =
-                            generateTrajectory(reversed, waypoints.getWaypointsForQuadrant(Quadrant.BOTTOM_LEFT), constraints, 
-                                    max_vel, max_accel, max_decel, max_voltage, default_vel, slowdown_chunks);
+                    Trajectory<TimedState<Pose2dWithCurvature>> bottomLeftTrajectory = trajectorySupplier.apply(waypoints.getWaypointsForQuadrant(Quadrant.BOTTOM_LEFT));
                     trajectoryMap.put(Quadrant.BOTTOM_LEFT, bottomLeftTrajectory);
 
                     for (Quadrant quadrant : Quadrant.values()) {
@@ -134,9 +157,7 @@ public class TrajectoryGenerator {
                         }
 
                         if (waypoints.hasOffsetsForQuadrant(quadrant)) {
-                            Trajectory<TimedState<Pose2dWithCurvature>> trajectory =
-                                    generateTrajectory(reversed, waypoints.getWaypointsForQuadrant(quadrant), constraints, 
-                                            max_vel, max_accel, max_decel, max_voltage, default_vel, slowdown_chunks);
+                            Trajectory<TimedState<Pose2dWithCurvature>> trajectory = trajectorySupplier.apply(waypoints.getWaypointsForQuadrant(quadrant));
                             trajectoryMap.put(quadrant, trajectory);
                         } else {
                             trajectoryMap.put(quadrant, AutoZones.mirror(bottomLeftTrajectory, quadrant));
@@ -238,7 +259,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(135)));
             waypoints.add(new Pose2d(new Translation2d(146.5 + 18.0, 108.19), Rotation2d.fromDegrees(180)));
         
-            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 0.0, 36.0, 96.0, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
     }
 }
