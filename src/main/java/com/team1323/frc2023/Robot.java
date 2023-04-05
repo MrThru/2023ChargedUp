@@ -89,7 +89,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotPeriodic() {
 		subsystems.outputToSmartDashboard();
-		robotState.outputToSmartDashboard();
 		Netlink.getInstance().update();
 		SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
 		SmartDashboard.putNumber("Match time", DriverStation.getMatchTime());

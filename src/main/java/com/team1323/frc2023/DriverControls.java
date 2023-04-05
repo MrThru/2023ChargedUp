@@ -474,9 +474,10 @@ public class DriverControls implements Loop {
             }
         }
 
-        if(coDriver.POV180.wasActivated()) {
+        if(coDriver.POV180.wasActivated() || coDriver.POV135.wasActivated() || coDriver.POV225.wasActivated()) {
             cubeIntake.conformToState(CubeIntake.State.FLOOR);
-        } else if(coDriver.POV180.wasReleased()) {
+        } else if((coDriver.POV180.wasReleased() || coDriver.POV135.wasReleased() || coDriver.POV225.wasReleased()) && 
+                    !(coDriver.POV180.isBeingPressed() || coDriver.POV135.isBeingPressed() || coDriver.POV225.isBeingPressed())) {
             cubeIntake.conformToState(CubeIntake.State.STOWED);
         }
 
@@ -715,8 +716,8 @@ public class DriverControls implements Loop {
         if(testController.aButton.wasActivated()) {
             //horizontalElevator.setPosition(20.0);
             //verticalElevator.setPosition(10.0);
-            wrist.setPosition(-90);
-            //shoulder.setPosition(-45);
+            //wrist.setPosition(-90);
+            shoulder.setPosition(-45);
             //cubeIntake.setPosition(Constants.CubeIntake.kIntakeAngle);
             // cubeIntake.setIntakeSpeed(0.25);
             // tunnel.setState(Tunnel.State.MANUAL);
@@ -726,8 +727,8 @@ public class DriverControls implements Loop {
         if(testController.bButton.wasActivated()) {
             //horizontalElevator.setPosition(0.5);
             //verticalElevator.setPosition(0.5);
-            wrist.setPosition(0);
-            //shoulder.setPosition(90);
+            //wrist.setPosition(0);
+            shoulder.setPosition(90);
             //cubeIntake.setPosition(100);
             // cubeIntake.setIntakeSpeed(0.0);
             // tunnel.setState(Tunnel.State.OFF);
@@ -736,8 +737,8 @@ public class DriverControls implements Loop {
         if(testController.yButton.wasActivated()) {
             //horizontalElevator.setPosition(30.0);
             //verticalElevator.setPosition(19.0);
-            wrist.setPosition(90);
-            //shoulder.setPosition(169.0);
+            //wrist.setPosition(90);
+            shoulder.setPosition(169.0);
             //cubeIntake.setPosition(0);
 
         }

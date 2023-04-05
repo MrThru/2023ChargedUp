@@ -9,11 +9,12 @@ import com.team1323.frc2023.Ports;
 public class PhoenixProCANCoder implements AbsoluteEncoder {
     private final CANcoder encoder;
 
-    public PhoenixProCANCoder(int deviceId, boolean isReversed) {
+    public PhoenixProCANCoder(int deviceId, boolean isReversed, double magnetOffset) {
         encoder = new CANcoder(deviceId, Ports.CANBUS);
         CANcoderConfiguration configuration = new CANcoderConfiguration();
         configuration.MagnetSensor.SensorDirection = isReversed ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
-        configuration.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+        configuration.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+        configuration.MagnetSensor.MagnetOffset = magnetOffset;
         encoder.getConfigurator().apply(configuration);
     }
 

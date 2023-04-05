@@ -37,6 +37,11 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
         super(deviceId, canBus);
     }
 
+    public PhoenixProFXMotorController(int deviceId, String canBus, int cancoderId) {
+        super(deviceId, canBus);
+        useCANCoder(cancoderId);
+    }
+
     private void configureDefaultSettings() {
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configuration.MotorOutput.DutyCycleNeutralDeadband = 0.0;

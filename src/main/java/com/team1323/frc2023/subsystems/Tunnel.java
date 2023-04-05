@@ -348,13 +348,9 @@ public class Tunnel extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putNumber("Conveyor RPM", encUnitsToRPM(conveyorTalon.getSelectedSensorVelocity()));
-        SmartDashboard.putNumber("Roller RPM", encUnitsToRPM(frontRollerTalon.getSelectedSensorVelocity()));
-        SmartDashboard.putNumber("Cube Entrance RPM", encUnitsToRPM(tunnelEntrance.getSelectedSensorVelocity()));
         SmartDashboard.putBoolean("Tunnel Front Banner", getFrontBanner());
         SmartDashboard.putBoolean("Tunnel Rear Banner", getRearBanner());
         SmartDashboard.putString("Tunnel Control State", currentState.toString());
-        SmartDashboard.putNumber("Tunnel Top Roller Current", frontRollerTalon.getStatorCurrent());
         SmartDashboard.putNumber("Tunnel Floor Percent Output", conveyorSpeed);
     }
 

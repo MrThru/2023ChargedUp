@@ -257,14 +257,7 @@ public class Claw extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putNumber("Claw Target RPM", targetRPM);
-        SmartDashboard.putNumber("Claw RPM", encUnitsToRPM(claw.getSelectedSensorVelocity()));
-        SmartDashboard.putNumber("Claw RPM detla", periodicIO.dv);
-        SmartDashboard.putString("Current Holding Object", getCurrentHoldingObject().toString());
         SmartDashboard.putString("Claw Left Right Offset Mode", flipConeOffsetMode(getCurrentConeOffset()).toString());
-        SmartDashboard.putNumber("Claw Current", claw.getOutputCurrent());
-        SmartDashboard.putString("Claw State", getState().toString());
-        SmartDashboard.putNumber("Claw Stator Current", claw.getStatorCurrent());
 
     }
 

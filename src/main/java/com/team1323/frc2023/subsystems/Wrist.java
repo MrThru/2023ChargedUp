@@ -129,7 +129,6 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorCont
 			neutralModeIsBrake = true;
 		}
         SmartDashboard.putNumber("Wrist Angle", getPosition());
-        SmartDashboard.putNumber("Wrist Encoder Position", periodicIO.position);
         SmartDashboard.putNumber("Wrist Absolute Encoder", absoluteEncoder.getDegrees());
         SmartDashboard.putBoolean("Wrist On Target", isOnTarget());
         SmartDashboard.putNumber("Wrist Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));

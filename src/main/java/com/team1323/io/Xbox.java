@@ -12,7 +12,7 @@ public class Xbox extends XboxController{
     private boolean rumbling = false;
     public ButtonCheck aButton, bButton, xButton, yButton, startButton, backButton,
     	leftBumper, rightBumper, leftCenterClick, rightCenterClick, leftTrigger, 
-    	rightTrigger, POV0, POV90, POV180, POV270;
+    	rightTrigger, POV0, POV90, POV180, POV270, POV135, POV225;
     public static final int A_BUTTON = 1;
     public static final int B_BUTTON = 2;
     public static final int X_BUTTON = 3;
@@ -29,6 +29,8 @@ public class Xbox extends XboxController{
     public static final int POV_90 = -5;
     public static final int POV_180 = -6;
     public static final int POV_270 = -7;
+	public static final int POV_135 = -8;
+	public static final int POV_225 = -9;
     
     public void setDeadband(double deadband){
     	DEAD_BAND = deadband;
@@ -52,6 +54,8 @@ public class Xbox extends XboxController{
         POV90 = new ButtonCheck(POV_90);
         POV180 = new ButtonCheck(POV_180);
         POV270 = new ButtonCheck(POV_270);
+		POV135 = new ButtonCheck(POV_135);
+		POV225 = new ButtonCheck(POV_225);
    }
     
     @Override
@@ -169,6 +173,12 @@ public class Xbox extends XboxController{
     				case POV_270:
     					buttonCheck = (getPOV() == 270);
     					break;
+					case POV_135:
+						buttonCheck = (getPOV() == 135);
+						break;
+					case POV_225:
+						buttonCheck = (getPOV() == 225);
+						break;
     				default:
     					buttonCheck = false;
     					break;

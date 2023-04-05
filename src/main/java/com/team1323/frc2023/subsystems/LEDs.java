@@ -148,8 +148,6 @@ public class LEDs extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putString("LEDs Mode", getLEDType().toString());
-        SmartDashboard.putNumberArray("LED RGB Values", new Double[]{(double) mRed, (double) mGreen, (double) mBlue});
     }
 
     public Request ledModeRequest(LEDColors desiredColor) {

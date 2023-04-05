@@ -92,8 +92,6 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing<Phoenix5F
     public void outputTelemetry() {
         SmartDashboard.putNumber("Vertical Elevator Height", getPosition());
         SmartDashboard.putNumber("Vertical Elevator Target Height", encoderUnitsToOutputUnits(periodicIO.demand));
-        SmartDashboard.putNumber("Vertical Elevator Encoder Position", periodicIO.position);
         SmartDashboard.putBoolean("Vertical Elevator Is On Target", isOnTarget());
-        SmartDashboard.putNumber("Vertical Elevator Velocity", getVelocityOutputUnitsPerSecond());
     }
 }

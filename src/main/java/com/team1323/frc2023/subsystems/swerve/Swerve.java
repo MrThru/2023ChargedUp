@@ -1262,11 +1262,9 @@ public class Swerve extends Subsystem{
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
 		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getDegrees()});
-		SmartDashboard.putNumberArray("Robot Velocity", new double[]{velocity.dx, velocity.dy, velocity.dtheta});
 		
 		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getDegrees());
 		
-		SmartDashboard.putString("Swerve Last Drive Vector", lastDriveVector.toString());
 
 		SmartDashboard.putString("Swerve State", currentState.toString());
 

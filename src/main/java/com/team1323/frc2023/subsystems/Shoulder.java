@@ -29,9 +29,9 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<PhoenixProFXMoto
     }
     
     public Shoulder() {
-        super(new PhoenixProFXMotorController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus),
+        super(new PhoenixProFXMotorController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus, Ports.SHOULDER_ENCODER),
                 new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
-                new PhoenixProCANCoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
+                new PhoenixProCANCoder(Ports.SHOULDER_ENCODER, true, Constants.Shoulder.kCANCoderMagnetOffset), Constants.Shoulder.kAbsoluteEncoderInfo);
         leader.useCANCoder(Ports.SHOULDER_ENCODER);
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
         leader.setPIDF(Constants.Shoulder.kPIDF);
@@ -44,7 +44,8 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<PhoenixProFXMoto
 
     @Override
     protected void setSensorPosition(double encoderUnits) {
-        absoluteEncoder.setPosition(encoderUnits / 4096.0 * 360.0);
+        //absoluteEncoder.setPosition(encoderUnits / 4096.0 * 360.0);
+        //leader.setSelectedSensorPosition(encoderUnits);
     }
 
     public void setAccelerationScalar(double scalar) {
@@ -117,7 +118,6 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<PhoenixProFXMoto
         SmartDashboard.putNumber("Shoulder Angle", getPosition());
         SmartDashboard.putNumber("Shoulder Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));
 
-        SmartDashboard.putNumber("Shoulder Encoder Position", periodicIO.position);
         SmartDashboard.putNumber("Shoulder Absolute Encoder", absoluteEncoder.getDegrees());
         SmartDashboard.putBoolean("Shoulder Is On Target", isOnTarget());
     }
