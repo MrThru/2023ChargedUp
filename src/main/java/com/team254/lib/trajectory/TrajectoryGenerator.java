@@ -228,7 +228,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2dWithQuadrantOffsets(secondConePickupPose)
                     .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 3.0))));
             
-            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 120.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 120.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private MirroredTrajectory getSlowSecondPiecePickupPath() {
@@ -237,7 +237,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2dWithQuadrantOffsets(secondConePickupPose)
                     .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 3.0))));
             
-            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 120.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 120.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPieceToCubeScore() {
@@ -256,7 +256,7 @@ public class TrajectoryGenerator {
                     .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 6))));
             waypoints.add(thirdConePickupPose);
             
-            return new MirroredTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private MirroredTrajectory getSlowCubeScoreToThirdPiece() {
@@ -267,7 +267,7 @@ public class TrajectoryGenerator {
                     .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 6))));
             waypoints.add(thirdConePickupPose);
             
-            return new MirroredTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToSecondConeColumn() {
