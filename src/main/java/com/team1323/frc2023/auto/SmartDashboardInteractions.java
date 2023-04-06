@@ -1,8 +1,9 @@
 package com.team1323.frc2023.auto;
 
 import com.team1323.frc2023.auto.modes.StandStillMode;
-import com.team1323.frc2023.auto.modes.TwoConesOneCubeMidMode;
-import com.team1323.frc2023.auto.modes.TwoPieceAndRampMode;
+import com.team1323.frc2023.auto.modes.HighLinkMode;
+import com.team1323.frc2023.auto.modes.MidLinkMode;
+import com.team1323.frc2023.auto.modes.TwoMidPieceAndRampMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.field.AutoZones.StartingSide;
@@ -26,6 +27,7 @@ public class SmartDashboardInteractions {
         modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
         modeChooser.addOption(AutoOption.TWO_CONES_ONE_CUBE.name, AutoOption.TWO_CONES_ONE_CUBE);
         modeChooser.addOption(AutoOption.STAND_STILL.name, AutoOption.STAND_STILL);
+        modeChooser.addOption(AutoOption.HIGH_LINK.name, AutoOption.HIGH_LINK);
 
         sideChooser = new SendableChooser<StartingSide>();
         sideChooser.setDefaultOption(DEFAULT_SIDE.toString(), DEFAULT_SIDE);
@@ -81,7 +83,8 @@ public class SmartDashboardInteractions {
     }
 
     enum AutoOption{
-        STAND_STILL("Stand Still"), TWO_CONES_ONE_CUBE("Two Cones One Cube"), TWO_PIECE_RAMP("Two Piece Ramp");
+        STAND_STILL("Stand Still"), TWO_CONES_ONE_CUBE("Two Cones One Cube"), TWO_PIECE_RAMP("Two Piece Ramp"),
+        HIGH_LINK("High Link");
 
     	public final String name;
     	
@@ -95,9 +98,11 @@ public class SmartDashboardInteractions {
             case STAND_STILL:
                 return new StandStillMode();
             case TWO_CONES_ONE_CUBE:
-                return new TwoConesOneCubeMidMode(quadrant);
+                return new MidLinkMode(quadrant);
             case TWO_PIECE_RAMP:
-                return new TwoPieceAndRampMode(quadrant);
+                return new TwoMidPieceAndRampMode(quadrant);
+            case HIGH_LINK:
+                return new HighLinkMode(quadrant);
             default:
                 System.out.println("ERROR: unexpected auto mode: " + option);
                 return new StandStillMode();

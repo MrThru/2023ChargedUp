@@ -25,10 +25,10 @@ import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public abstract class TwoConesOneCubeBaseMode extends AutoModeBase {
+public abstract class MidLinkBaseMode extends AutoModeBase {
     protected final Quadrant quadrant;
 
-    public TwoConesOneCubeBaseMode(Quadrant quadrant) {
+    public MidLinkBaseMode(Quadrant quadrant) {
         this.quadrant = quadrant;
     }
 

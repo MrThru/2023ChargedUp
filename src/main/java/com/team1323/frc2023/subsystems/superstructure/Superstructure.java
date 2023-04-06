@@ -559,6 +559,9 @@ public class Superstructure extends Subsystem {
 						.build();
 				scoringChoreo = coordinator::getConeMidScoringChoreography;
 			} else if (nodeLocation.row == Row.TOP) {
+				visionPIDController = new VisionPIDBuilder()
+						.withOnTargetTime(0.25)
+						.build();
 				scoringChoreo = coordinator::getConeHighScoringChoreography;
 			}
 		}
@@ -631,7 +634,6 @@ public class Superstructure extends Subsystem {
 	public void coneHighScoreManual() {
 		request(new SequentialRequest(
 			coordinator.getConeHighScoringChoreography(),
-			waitRequest(0.125),
 			claw.stateRequest(Claw.ControlState.CONE_OUTAKE)
 		));
 	}

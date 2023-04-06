@@ -4,48 +4,37 @@
 
 package com.team1323.frc2023.auto.modes;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.auto.AutoModeEndedException;
 import com.team1323.frc2023.auto.actions.SetTrajectoryAction;
 import com.team1323.frc2023.auto.actions.WaitForRemainingTimeAction;
+import com.team1323.frc2023.auto.actions.WaitForShoulderToPassAngleAction;
 import com.team1323.frc2023.auto.actions.WaitToFinishPathAction;
 import com.team1323.frc2023.auto.actions.WaitToIntakeAction;
-import com.team1323.frc2023.auto.actions.WaitToPassXCoordinateAction;
 import com.team1323.frc2023.field.AutoZones;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
-import com.team1323.frc2023.field.NodeLocation;
-import com.team1323.frc2023.field.NodeLocation.Column;
-import com.team1323.frc2023.field.NodeLocation.Grid;
-import com.team1323.frc2023.field.NodeLocation.Row;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
+import com.team1323.frc2023.subsystems.CubeIntake;
+import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
+import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.SynchronousPIDF;
+import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
-import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.timing.TimedState;
 
 /** Add your docs here. */
-public class TwoConesOneCubeMidMode extends TwoConesOneCubeBaseMode {
-    @Override
-    public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.secondPiecePickupPath.get(Quadrant.TOP_LEFT), trajectories.secondPieceToCubeScore.get(Quadrant.TOP_LEFT),
-                    trajectories.cubeScoreToThirdPiece.get(Quadrant.TOP_LEFT), trajectories.thirdPieceToSecondConeColumn.get(Quadrant.TOP_LEFT), 
-                    trajectories.thirdPieceToBridgePath.get(Quadrant.TOP_LEFT));
-    }
-    
-    public TwoConesOneCubeMidMode(Quadrant quadrant) {
+public class TwoMidPieceAndRampMode extends MidLinkBaseMode {
+    private static final double kTimeToStartBalancing = 11.5;
+
+    public TwoMidPieceAndRampMode(Quadrant quadrant) {
         super(quadrant);
     }
 
@@ -69,30 +58,25 @@ public class TwoConesOneCubeMidMode extends TwoConesOneCubeBaseMode {
                                 true
                             ))
                             .build());
-            runAction(new WaitToIntakeAction(Claw.HoldingObject.Cone, 4.0));
+            runAction(new WaitToIntakeAction(Claw.HoldingObject.Cone, Util.limit(kTimeToStartBalancing - currentTime(), 0, 4)));
         } else {
-            runAction(new WaitToFinishPathAction(4.0));
+            runAction(new WaitToFinishPathAction(Util.limit(kTimeToStartBalancing - currentTime(), 0, 4)));
         }
 
-        // Score the second cone
-        runAction(new SetTrajectoryAction(trajectories.thirdPieceToSecondConeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant));
-        runAction(new WaitToPassXCoordinateAction(110, quadrant));
-        if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
-            NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.RIGHT), quadrant);
-            Superstructure.getInstance().scoringSequence(nodeLocation);
-            runAction(new WaitForRemainingTimeAction(0.625, startTime));
-            if (Swerve.getInstance().getDistanceToTargetPosition() <= 6.0) {
-                Claw.getInstance().conformToState(Claw.ControlState.CONE_OUTAKE);
-            }
-            runAction(new WaitForRemainingTimeAction(0.25, startTime));
-            if (Claw.getInstance().getState() == Claw.ControlState.CONE_OUTAKE) {
-                Claw.getInstance().setCurrentHoldingObject(HoldingObject.None);
-            }
-        } else {
-            runAction(new WaitToFinishPathAction());
-            Superstructure.getInstance().objectAwareStowSequence();
+        // Get on the bridge and balance
+        Pigeon2IMU.getInstance().resetRoll();
+        runAction(new SetTrajectoryAction(trajectories.thirdPieceToBridgePath, Rotation2d.fromDegrees(0), 1.0, quadrant));
+        if (Claw.getInstance().getCurrentHoldingObject() != HoldingObject.Cone) {
+            Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
         }
-
+        runAction(new WaitForShoulderToPassAngleAction(90.0, 2.0));
+        CubeIntake.getInstance().conformToState(CubeIntake.State.FLOOR);
+        runAction(new WaitToFinishPathAction(2.0));
+        Swerve.getInstance().startBalancePID();
+        CubeIntake.getInstance().conformToState(CubeIntake.State.STOWED);
+        runAction(new WaitForRemainingTimeAction(0.375, startTime));
+        Swerve.getInstance().zukLockDrivePosition();
         System.out.println("Auto Done in: " + currentTime());
     }
+
 }
