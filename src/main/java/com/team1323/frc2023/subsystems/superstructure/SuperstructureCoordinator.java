@@ -339,10 +339,10 @@ public class SuperstructureCoordinator {
             double preemptiveLiftSeconds = 0.0;
             if (Util.isInRange(finalPosition.shoulderAngle, 45.0, 90.0)) {
                 shoulderClearanceAngle = finalPosition.shoulderAngle;
-                preemptiveLiftSeconds = 0.35;
+                preemptiveLiftSeconds = 1.0;
             } else if (finalPosition.shoulderAngle < 45.0) {
                 shoulderClearanceAngle = 45.0;
-                preemptiveLiftSeconds = 0.35;
+                preemptiveLiftSeconds = 1.0;
             }
 
             System.out.println("Branch 1");
@@ -417,14 +417,14 @@ public class SuperstructureCoordinator {
                 double preemptiveLiftSeconds = 0.0;
                 if (Util.isInRange(finalPosition.shoulderAngle, 45.0, 90.0)) {
                     shoulderClearanceAngle = finalPosition.shoulderAngle;
-                    preemptiveLiftSeconds = 0.75;
+                    preemptiveLiftSeconds = 2.0;
                 } else if (finalPosition.shoulderAngle < 45.0) {
                     shoulderClearanceAngle = 45.0;
-                    preemptiveLiftSeconds = 0.75;
+                    preemptiveLiftSeconds = 2.0;
                 }
 
                 System.out.println("Branch 5");
-                return new SequentialRequest(
+                return new ParallelRequest(
                     new ParallelRequest(
                         shoulder.angleRequest(shoulderClearanceAngle),
                         horizontalElevator.extensionRequest(kHorizontalExtensionForUprightShoulder)
@@ -524,7 +524,7 @@ public class SuperstructureCoordinator {
         System.out.println("Cone high scoring choreo");
 
         return new SequentialRequest(
-            getHighChoreography(finalPosition, 1.15),
+            getHighChoreography(finalPosition, 2.5),
             Superstructure.getInstance().waitRequest(0.125)
         );
     }

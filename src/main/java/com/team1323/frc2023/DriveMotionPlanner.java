@@ -274,7 +274,12 @@ public class DriveMotionPlanner implements CSVWritable {
             }
         } else {
             // TODO Possibly switch to a pose stabilizing controller?
-            mOutput = Translation2d.identity();
+            TimedState<Pose2dWithCurvature> end_state = mCurrentTrajectory.getState();
+            if (end_state.velocity() != 0.0) {
+                mOutput = Translation2d.fromPolar(end_state.state().getRotation(), Math.abs(end_state.velocity() / Constants.kSwerveMaxSpeedInchesPerSecond));
+            } else {
+                mOutput = Translation2d.identity();
+            }
             System.out.println("Motion planner done, returning zero trajectory");
         }
         return mOutput;

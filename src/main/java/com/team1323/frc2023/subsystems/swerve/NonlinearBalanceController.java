@@ -6,7 +6,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 public class NonlinearBalanceController implements BalanceController {
-    private static final double kPitchDeadband = 7.0;
+    private static final double kPitchDeadband = 5.0;
 
     private final TwoPointRamp outputRamp = Settings.kIsUsingCompBot ?
     new TwoPointRamp(
@@ -17,7 +17,7 @@ public class NonlinearBalanceController implements BalanceController {
     ) :
     new TwoPointRamp(
         new Translation2d(kPitchDeadband, 0.03),
-        new Translation2d(16.0, 0.2),
+        new Translation2d(16.0, 0.25),
         2.0,
         true
     );

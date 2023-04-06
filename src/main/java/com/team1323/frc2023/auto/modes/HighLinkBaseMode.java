@@ -49,9 +49,10 @@ public class HighLinkBaseMode extends AutoModeBase {
         // Intake cube and score it
         runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
         Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
-        runAction(new WaitToIntakeCubeAction(1.5));
+        runAction(new WaitToIntakeCubeAction(1.5, true));
         Claw.getInstance().conformToState(Claw.ControlState.CUBE_INTAKE);
         runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
+        runAction(new WaitToIntakeCubeAction(1.0));
         Superstructure.getInstance().postIntakeState(0);
         runAction(new WaitToPassXCoordinateAction(242.0, quadrant, 1.5));
         Superstructure.getInstance().handOffCubeState(SuperstructureCoordinator.getInstance()::getAutoCubeHoldChoreography);

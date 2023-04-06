@@ -29,6 +29,8 @@ import com.team254.lib.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.RobotController;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -92,6 +94,7 @@ public class Robot extends TimedRobot {
 		Netlink.getInstance().update();
 		SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
 		SmartDashboard.putNumber("Match time", DriverStation.getMatchTime());
+		SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
 	}
 
 	@Override

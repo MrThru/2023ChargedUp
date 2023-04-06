@@ -1,6 +1,7 @@
 package com.team1323.frc2023.auto;
 
 import com.team1323.frc2023.auto.modes.StandStillMode;
+import com.team1323.frc2023.auto.modes.TwoHighPieceAndRampMode;
 import com.team1323.frc2023.auto.modes.HighLinkMode;
 import com.team1323.frc2023.auto.modes.MidLinkMode;
 import com.team1323.frc2023.auto.modes.TwoMidPieceAndRampMode;
@@ -28,6 +29,7 @@ public class SmartDashboardInteractions {
         modeChooser.addOption(AutoOption.TWO_CONES_ONE_CUBE.name, AutoOption.TWO_CONES_ONE_CUBE);
         modeChooser.addOption(AutoOption.STAND_STILL.name, AutoOption.STAND_STILL);
         modeChooser.addOption(AutoOption.HIGH_LINK.name, AutoOption.HIGH_LINK);
+        modeChooser.addOption(AutoOption.HIGH_AND_RAMP.name, AutoOption.HIGH_AND_RAMP);
 
         sideChooser = new SendableChooser<StartingSide>();
         sideChooser.setDefaultOption(DEFAULT_SIDE.toString(), DEFAULT_SIDE);
@@ -84,7 +86,7 @@ public class SmartDashboardInteractions {
 
     enum AutoOption{
         STAND_STILL("Stand Still"), TWO_CONES_ONE_CUBE("Two Cones One Cube"), TWO_PIECE_RAMP("Two Piece Ramp"),
-        HIGH_LINK("High Link");
+        HIGH_LINK("High Link"), HIGH_AND_RAMP("High and Ramp");
 
     	public final String name;
     	
@@ -103,6 +105,8 @@ public class SmartDashboardInteractions {
                 return new TwoMidPieceAndRampMode(quadrant);
             case HIGH_LINK:
                 return new HighLinkMode(quadrant);
+            case HIGH_AND_RAMP:
+                return new TwoHighPieceAndRampMode(quadrant);
             default:
                 System.out.println("ERROR: unexpected auto mode: " + option);
                 return new StandStillMode();

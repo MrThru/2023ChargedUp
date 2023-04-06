@@ -12,15 +12,20 @@ public class WaitToIntakeCubeAction implements Action {
     private final double timeoutSeconds;
     private final Stopwatch timeoutStopwatch = new Stopwatch();
     private final Tunnel tunnel;
+    private boolean useFirstBanner = false;
 
     public WaitToIntakeCubeAction(double timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
         tunnel = Tunnel.getInstance();
     }
+    public WaitToIntakeCubeAction(double timeoutSeconds, boolean useFirstBanner) {
+        this(timeoutSeconds);
+        this.useFirstBanner = useFirstBanner;
+    }
 
     @Override
     public boolean isFinished() {
-        return timeoutStopwatch.getTime() >= timeoutSeconds || (tunnel.getRearBanner() || tunnel.getFrontBanner());
+        return timeoutStopwatch.getTime() >= timeoutSeconds || (tunnel.getRearBanner() || tunnel.getFrontBanner() || (useFirstBanner && tunnel.getCubeIntakeBanner()));
     }
 
     @Override
