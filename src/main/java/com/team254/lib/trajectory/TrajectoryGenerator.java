@@ -19,6 +19,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
+import com.team254.lib.trajectory.timing.VelocityLimitRegionConstraint;
 
 import edu.wpi.first.wpilibj.Timer;
 
@@ -282,8 +283,16 @@ public class TrajectoryGenerator {
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(135)));
             waypoints.add(new Pose2d(new Translation2d(146.5 + 18.0, 108.19), Rotation2d.fromDegrees(180)));
+
+            List<TimingConstraint<Pose2dWithCurvature>> constraints = Arrays.asList(
+                new VelocityLimitRegionConstraint<>(
+                    new Translation2d(177, 86),
+                    new Translation2d(210, 131),
+                    72.0
+                )
+            );
         
-            return generateTrajectory(false, waypoints, Arrays.asList(), 0.0, 36.0, 72.0, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
+            return generateTrajectory(false, waypoints, constraints, 48.0, 36.0, 120.0, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
     }
 }
