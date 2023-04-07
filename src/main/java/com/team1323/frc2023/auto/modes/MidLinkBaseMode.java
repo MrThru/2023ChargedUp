@@ -42,7 +42,7 @@ public abstract class MidLinkBaseMode extends AutoModeBase {
         Superstructure.getInstance().coneMidScoreManual();
         runAction(new WaitForSuperstructureAction(2.0));
         Rotation2d targetHeading = Rotation2d.fromDegrees(quadrant.hasBump() ? -170 : 180);
-        runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, targetHeading, 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.slowSecondPiecePickupPath, targetHeading, 0.75, quadrant));
         runAction(new WaitToEjectObjectAction(1.5));
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getCommunityConeHoldChoreography());
 
@@ -51,7 +51,7 @@ public abstract class MidLinkBaseMode extends AutoModeBase {
         Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
         runAction(new WaitToIntakeCubeAction(1.5));
         Claw.getInstance().conformToState(Claw.ControlState.CUBE_INTAKE);
-        runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.slowSecondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
         Superstructure.getInstance().postIntakeState(0);
         runAction(new WaitToPassXCoordinateAction(242.0, quadrant, 1.5));
         Superstructure.getInstance().handOffCubeState(SuperstructureCoordinator.getInstance()::getAutoCubeHoldChoreography);
@@ -66,7 +66,7 @@ public abstract class MidLinkBaseMode extends AutoModeBase {
 
         // Intake second cone
         LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR);
-        runAction(new SetTrajectoryAction(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.slowCubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(140.0, quadrant));
         Superstructure.getInstance().coneIntakeWithoutScanSequence();
         runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 240.0 : 230.0, quadrant));

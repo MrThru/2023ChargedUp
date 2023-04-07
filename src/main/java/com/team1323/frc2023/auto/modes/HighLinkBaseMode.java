@@ -45,7 +45,7 @@ public class HighLinkBaseMode extends AutoModeBase {
         Superstructure.getInstance().coneHighScoreManual();
         runAction(new WaitForSuperstructureAction(2.0));
         Rotation2d targetHeading = Rotation2d.fromDegrees(quadrant.hasBump() ? -170 : 180);
-        runAction(new SetTrajectoryAction(trajectories.slowSecondPiecePickupPath, targetHeading, 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, targetHeading, 0.75, quadrant));
         runAction(new WaitToEjectObjectAction(1.5));
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getCommunityConeHoldChoreography());
 
@@ -71,7 +71,7 @@ public class HighLinkBaseMode extends AutoModeBase {
 
         // Intake second cone
         LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR);
-        runAction(new SetTrajectoryAction(trajectories.slowCubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(140.0, quadrant));
         Superstructure.getInstance().coneIntakeWithoutScanSequence();
         runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 240.0 : 230.0, quadrant));
