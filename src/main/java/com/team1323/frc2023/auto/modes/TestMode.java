@@ -14,7 +14,7 @@ public class TestMode extends AutoModeBase {
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
         return Arrays.stream(Quadrant.values())
-                .map(quadrant -> trajectories.thirdPieceToBridgePath.get(quadrant))
+                .map(quadrant -> trajectories.slowSecondPiecePickupPath.get(quadrant))
                 .toList();
     }
 
