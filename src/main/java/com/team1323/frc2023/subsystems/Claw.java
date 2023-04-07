@@ -87,7 +87,7 @@ public class Claw extends Subsystem {
     }
 
     public enum ControlState {
-        OFF(0.0), CUBE_INTAKE(-0.5), CUBE_OUTAKE(0.3), CONE_INTAKE(1.0), CONE_OUTAKE(-1.0);
+        OFF(0.0), CUBE_INTAKE(-0.5), CUBE_OUTAKE(0.3), CONE_INTAKE(1.0), CONE_OUTAKE(-1.0), AUTO_CONE_HOLD(0.5);
         double speed;
         ControlState(double speed) {
             this.speed = speed;
@@ -200,6 +200,10 @@ public class Claw extends Subsystem {
                 if(getCurrentHoldingObject() == HoldingObject.None && stopwatch.getTime() > 3.0) {
                     conformToState(ControlState.OFF);
                     stopwatch.reset();
+                }
+            } else if (currentState == ControlState.AUTO_CONE_HOLD) {
+                if (stateChanged) {
+                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent, 0.01);
                 }
             } else if(currentState == ControlState.OFF) {
                 conformToState(ControlState.OFF);

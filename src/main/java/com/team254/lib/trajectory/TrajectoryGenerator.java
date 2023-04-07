@@ -182,6 +182,7 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory cubeScoreToThirdPiece;
         public final MirroredTrajectory slowCubeScoreToThirdPiece;
         public final MirroredTrajectory thirdPieceToSecondConeColumn;
+        public final MirroredTrajectory thirdPieceToEdgeColumn;
         public final MirroredTrajectory thirdPieceToBridgePath;
 
         // Teleop Paths
@@ -198,6 +199,7 @@ public class TrajectoryGenerator {
             cubeScoreToThirdPiece = getCubeScoreToThirdPiece();
             slowCubeScoreToThirdPiece = getSlowCubeScoreToThirdPiece();
             thirdPieceToSecondConeColumn = new MirroredTrajectory(getThirdPieceToSecondConeColumn());
+            thirdPieceToEdgeColumn = new MirroredTrajectory(getThirdPieceToEdgeColumn());
             thirdPieceToBridgePath = new MirroredTrajectory(getThirdPieceToBridgePath());
 
             // Teleop paths
@@ -228,7 +230,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2dWithQuadrantOffsets(secondConePickupPose)
                     .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 3.0))));
             
-            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 120.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 144.0, 240.0, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
         private MirroredTrajectory getSlowSecondPiecePickupPath() {
@@ -243,9 +245,10 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPieceToCubeScore() {
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(secondConePickupPose.getTranslation(), Rotation2d.fromDegrees(180)));
-            waypoints.add(new Pose2d(new Translation2d(74.3125 + 12.0, 42.19), Rotation2d.fromDegrees(170)));
+            waypoints.add(new Pose2d(new Translation2d(125, 30), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(new Translation2d(74.3125 + 12.0, 42.19), Rotation2d.fromDegrees(160)));
             
-            return generateTrajectory(false, waypoints, Arrays.asList(), 120, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 120, 240, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
 
         private MirroredTrajectory getCubeScoreToThirdPiece() {
@@ -275,6 +278,15 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(-135)));
             waypoints.add(new Pose2d(new Translation2d(152.57, 34.28), Rotation2d.fromDegrees(180)));
             waypoints.add(new Pose2d(new Translation2d(71.0, 64.0), Rotation2d.fromDegrees(130)));
+            
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToEdgeColumn() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(-135)));
+            waypoints.add(new Pose2d(new Translation2d(152.57, 34.28), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(-170)));
             
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
         }

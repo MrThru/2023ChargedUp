@@ -184,7 +184,6 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMoto
                 conformToState(desiredState);
             }
 
-
             public String toString() {
                 return String.format("CubeIntakeRequest(state = %s)", desiredState);
             }

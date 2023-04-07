@@ -256,14 +256,18 @@ public class Superstructure extends Subsystem {
 		));
 	}
 	public void postIntakeState(double waitTime) {
-		request(new ParallelRequest(
+		request(getPostIntakeState(waitTime));
+	}
+
+	public Request getPostIntakeState(double waitTime) {
+		return new ParallelRequest(
 			tunnel.queueShutdownRequest(),
 			cubeIntake.stateRequest(CubeIntake.State.STOWED),
 			new SequentialRequest(
 				waitRequest(waitTime),
 				verticalElevator.heightRequest(0.25)
 			)
-		));
+		);
 	}
 
 
@@ -375,7 +379,11 @@ public class Superstructure extends Subsystem {
 	}
 
 	public void handOffCubeState(ChoreographyProvider stowChoreo) {
-		request(new SequentialRequest(	
+		request(getHandOffCubeState(stowChoreo));
+	}
+
+	public Request getHandOffCubeState(ChoreographyProvider stowChoreo) {
+		return new SequentialRequest(	
 			getHandOffCubeSequence(),
 			tunnel.stateRequest(Tunnel.State.SPIT_HANDOFF),
 			new ParallelRequest(
@@ -384,7 +392,7 @@ public class Superstructure extends Subsystem {
 			).withPrerequisite(
 				() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube
 			)
-		));
+		);
 	}
 
 	public void shelfSequence(boolean left) {
@@ -634,7 +642,8 @@ public class Superstructure extends Subsystem {
 	public void coneHighScoreManual() {
 		request(new SequentialRequest(
 			coordinator.getConeHighScoringChoreography(),
-			claw.stateRequest(Claw.ControlState.CONE_OUTAKE)
+			claw.stateRequest(Claw.ControlState.CONE_OUTAKE),
+			waitRequest(0.125)
 		));
 	}
 

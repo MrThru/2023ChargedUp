@@ -57,16 +57,16 @@ public class HighLinkMode extends HighLinkBaseMode {
         }
 
         // Score the second cone
-        runAction(new SetTrajectoryAction(trajectories.thirdPieceToSecondConeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant));
-        runAction(new WaitToPassXCoordinateAction(110, quadrant));
+        runAction(new SetTrajectoryAction(trajectories.thirdPieceToEdgeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant));
+        runAction(new WaitToPassXCoordinateAction(120, quadrant));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
-            NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.TOP, Column.RIGHT), quadrant);
+            NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.LEFT), quadrant);
             Superstructure.getInstance().scoringSequence(nodeLocation);
-            runAction(new WaitForRemainingTimeAction(0.625, startTime));
+            runAction(new WaitForRemainingTimeAction(0.5, startTime));
             if (Swerve.getInstance().getDistanceToTargetPosition() <= 6.0) {
                 Claw.getInstance().conformToState(Claw.ControlState.CONE_OUTAKE);
             }
-            runAction(new WaitForRemainingTimeAction(0.25, startTime));
+            runAction(new WaitForRemainingTimeAction(0.125, startTime));
             if (Claw.getInstance().getState() == Claw.ControlState.CONE_OUTAKE) {
                 Claw.getInstance().setCurrentHoldingObject(HoldingObject.None);
             }
