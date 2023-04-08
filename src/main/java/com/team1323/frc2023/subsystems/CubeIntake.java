@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.DriverControls;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.encoders.MagEncoder;
@@ -138,7 +139,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMoto
             if(onTargetStopwatch.getTime() > (DriverControls.getInstance().getInAuto() ? 0.5 : 0.1) && !isCurrentLimited) {
                 isCurrentLimited = true;
                 onTargetStopwatch.reset();
-                setStatorCurrentLimit(15.0);
+                setStatorCurrentLimit(20.0);
             }
             /*if(getBanner() && !intakeCurrentLimitSet) {
                 setIntakeCurrent(Constants.CubeIntake.kLowerIntakeCurrentLimit);

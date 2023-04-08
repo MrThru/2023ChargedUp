@@ -288,7 +288,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.25, //0.875
             0.25, //0.25  230.26
-            -55.76, //-50.76 : -55.76
+            Settings.kIsUsingCompBot ? -55.76 : -52.76, //-50.76 : -55.76
             kConeIntakingWristAngle //90 38.6 35 
         );
 
@@ -485,7 +485,7 @@ public class SuperstructureCoordinator {
 
     public Request getShelfChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            12.5, //VERN!!
+            Settings.kIsUsingCompBot ? 12.5 : 13.5, //VERN!!
             7.25,
             37.56,
             -9.06

@@ -196,7 +196,7 @@ public class TrajectoryGenerator {
             // Auto Paths
             secondPiecePickupPath = getSecondPiecePickupPath();
             slowSecondPiecePickupPath = getSlowSecondPiecePickupPath();
-            secondPieceToCubeScore = new MirroredTrajectory(getSecondPieceToCubeScore());
+            secondPieceToCubeScore = getSecondPieceToCubeScore();
             slowSecondPieceToCubeScore = new MirroredTrajectory(getSlowSecondPieceToCubeScore());
             cubeScoreToThirdPiece = getCubeScoreToThirdPiece();
             slowCubeScoreToThirdPiece = getSlowCubeScoreToThirdPiece();
@@ -230,7 +230,9 @@ public class TrajectoryGenerator {
             WaypointList waypoints = new WaypointList();
             waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(10)));
             waypoints.add(new Pose2dWithQuadrantOffsets(secondConePickupPose)
-                    .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 3.0))));
+                    .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 3.0)))
+                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, -3)))
+                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, -3))));
             
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 144.0, 240.0, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
@@ -244,13 +246,15 @@ public class TrajectoryGenerator {
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 144.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getSecondPieceToCubeScore() {
-            List<Pose2d> waypoints = new ArrayList<>();
+        private MirroredTrajectory getSecondPieceToCubeScore() {
+            WaypointList waypoints = new WaypointList();
             waypoints.add(new Pose2d(secondConePickupPose.getTranslation(), Rotation2d.fromDegrees(180)));
             waypoints.add(new Pose2d(new Translation2d(125, 30), Rotation2d.fromDegrees(180)));
-            waypoints.add(new Pose2d(new Translation2d(74.3125 + 12.0, 42.19), Rotation2d.fromDegrees(160)));
+            waypoints.add(new Pose2dWithQuadrantOffsets(new Pose2d(new Translation2d(74.3125 + 12.0, 42.19), Rotation2d.fromDegrees(160)))
+                    .withOffset(Quadrant.BOTTOM_LEFT, new Pose2d(new Translation2d(8, 0), Rotation2d.fromDegrees(0)))
+                    .withOffset(Quadrant.BOTTOM_RIGHT, new Pose2d(new Translation2d(8, 0), Rotation2d.fromDegrees(0))));
             
-            return generateTrajectory(false, waypoints, Arrays.asList(), 120, 240, kMaxDecel, kMaxVoltage, 48.0, 1);
+            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 120, 240, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getSlowSecondPieceToCubeScore() {

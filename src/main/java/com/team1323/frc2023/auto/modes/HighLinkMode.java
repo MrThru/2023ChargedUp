@@ -58,13 +58,17 @@ public class HighLinkMode extends HighLinkBaseMode {
 
         // Score the second cone
         runAction(new SetTrajectoryAction(trajectories.thirdPieceToEdgeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant));
-        runAction(new WaitToPassXCoordinateAction(120, quadrant));
+        runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 106 : 120, quadrant));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cone) {
             NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.LEFT), quadrant);
             Superstructure.getInstance().scoringSequence(nodeLocation);
             runAction(new WaitForRemainingTimeAction(0.5, startTime));
-            if (Swerve.getInstance().getDistanceToTargetPosition() <= 6.0) {
+            double distanceToTarget = Swerve.getInstance().getDistanceToTargetPosition();
+            if (distanceToTarget <= 8.0) {
+                System.out.println("Ejecting cone early");
                 Claw.getInstance().conformToState(Claw.ControlState.CONE_OUTAKE);
+            } else {
+                System.out.println(String.format("Not ejecting early, distance to target was vern time aka %.2f", distanceToTarget));
             }
             runAction(new WaitForRemainingTimeAction(0.125, startTime));
             if (Claw.getInstance().getState() == Claw.ControlState.CONE_OUTAKE) {

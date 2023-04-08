@@ -60,7 +60,11 @@ public class HighLinkBaseMode extends AutoModeBase {
             Superstructure.getInstance().getPostIntakeState(0),
             Superstructure.getInstance().getHandOffCubeState(SuperstructureCoordinator.getInstance()::getHalfCubeStowChoreography)
         ));
-        runAction(new WaitToPassXCoordinateAction(100, quadrant, 1.5));
+        if (quadrant.hasBump()) {
+            runAction(new WaitToFinishPathAction(1.5));
+        } else {
+            runAction(new WaitToPassXCoordinateAction(100, quadrant, 1.5));
+        }
         runAction(new WaitToIntakeAction(HoldingObject.Cube, 1.5));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
             Superstructure.getInstance().cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
