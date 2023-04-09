@@ -27,8 +27,8 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 public class HighLinkMode extends HighLinkBaseMode {
-    public HighLinkMode(Quadrant quadrant) {
-        super(quadrant);
+    public HighLinkMode(Quadrant quadrant, boolean scoreCubeHigh) {
+        super(quadrant, scoreCubeHigh);
     }
     
     @Override

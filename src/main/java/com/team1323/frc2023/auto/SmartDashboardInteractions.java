@@ -17,7 +17,7 @@ public class SmartDashboardInteractions {
     private static final String SELECTED_AUTO_MODE = "selected_auto_mode";
     private static final String SELECTED_SIDE = "selected_side";
     
-    private static final AutoOption DEFAULT_MODE = AutoOption.TWO_PIECE_RAMP;
+    private static final AutoOption DEFAULT_MODE = AutoOption.TWO_MID_AND_RAMP;
     private static final StartingSide DEFAULT_SIDE = StartingSide.LEFT;
 
     private SendableChooser<AutoOption> modeChooser;
@@ -26,10 +26,12 @@ public class SmartDashboardInteractions {
     public void initWithDefaults(){
     	modeChooser = new SendableChooser<AutoOption>();
         modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
-        modeChooser.addOption(AutoOption.TWO_CONES_ONE_CUBE.name, AutoOption.TWO_CONES_ONE_CUBE);
+        modeChooser.addOption(AutoOption.TWO_HIGH_AND_RAMP.name, AutoOption.TWO_HIGH_AND_RAMP);
+        modeChooser.addOption(AutoOption.HIGH_MID_AND_RAMP.name, AutoOption.HIGH_MID_AND_RAMP);
+        modeChooser.addOption(AutoOption.THREE_MID.name, AutoOption.THREE_MID);
+        modeChooser.addOption(AutoOption.TWO_HIGH_ONE_MID.name, AutoOption.TWO_HIGH_ONE_MID);
+        modeChooser.addOption(AutoOption.ONE_HIGH_TWO_MID.name, AutoOption.ONE_HIGH_TWO_MID);
         modeChooser.addOption(AutoOption.STAND_STILL.name, AutoOption.STAND_STILL);
-        modeChooser.addOption(AutoOption.HIGH_LINK.name, AutoOption.HIGH_LINK);
-        modeChooser.addOption(AutoOption.HIGH_AND_RAMP.name, AutoOption.HIGH_AND_RAMP);
 
         sideChooser = new SendableChooser<StartingSide>();
         sideChooser.setDefaultOption(DEFAULT_SIDE.toString(), DEFAULT_SIDE);
@@ -85,8 +87,9 @@ public class SmartDashboardInteractions {
     }
 
     enum AutoOption{
-        STAND_STILL("Stand Still"), TWO_CONES_ONE_CUBE("Two Cones One Cube"), TWO_PIECE_RAMP("Two Piece Ramp"),
-        HIGH_LINK("High Link"), HIGH_AND_RAMP("High and Ramp");
+        STAND_STILL("Stand Still"), THREE_MID("3 Mid"), TWO_MID_AND_RAMP("2 Mid + Ramp"),
+        TWO_HIGH_ONE_MID("2 High + 1 Mid"), TWO_HIGH_AND_RAMP("2 High + Ramp"),
+        ONE_HIGH_TWO_MID("1 High + 2 Mid"), HIGH_MID_AND_RAMP("1 High + 1 Mid + Ramp");
 
     	public final String name;
     	
@@ -99,14 +102,18 @@ public class SmartDashboardInteractions {
     	switch(option){
             case STAND_STILL:
                 return new StandStillMode();
-            case TWO_CONES_ONE_CUBE:
+            case THREE_MID:
                 return new MidLinkMode(quadrant);
-            case TWO_PIECE_RAMP:
+            case TWO_MID_AND_RAMP:
                 return new TwoMidPieceAndRampMode(quadrant);
-            case HIGH_LINK:
-                return new HighLinkMode(quadrant);
-            case HIGH_AND_RAMP:
-                return new TwoHighPieceAndRampMode(quadrant);
+            case TWO_HIGH_ONE_MID:
+                return new HighLinkMode(quadrant, true);
+            case TWO_HIGH_AND_RAMP:
+                return new TwoHighPieceAndRampMode(quadrant, true);
+            case ONE_HIGH_TWO_MID:
+                return new HighLinkMode(quadrant, false);
+            case HIGH_MID_AND_RAMP:
+                return new TwoHighPieceAndRampMode(quadrant, false);
             default:
                 System.out.println("ERROR: unexpected auto mode: " + option);
                 return new StandStillMode();

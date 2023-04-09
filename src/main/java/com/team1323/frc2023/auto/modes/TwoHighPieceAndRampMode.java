@@ -29,8 +29,8 @@ import com.team254.lib.geometry.Translation2d;
 public class TwoHighPieceAndRampMode extends HighLinkBaseMode {
     private static final double kTimeToStartBalancing = 11.5;
 
-    public TwoHighPieceAndRampMode(Quadrant quadrant) {
-        super(quadrant);
+    public TwoHighPieceAndRampMode(Quadrant quadrant, boolean scoreCubeHigh) {
+        super(quadrant, scoreCubeHigh);
     }
 
     @Override
