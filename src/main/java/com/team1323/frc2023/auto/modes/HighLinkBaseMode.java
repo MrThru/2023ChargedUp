@@ -17,6 +17,7 @@ import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.Claw;
+import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.Tunnel;
@@ -50,9 +51,10 @@ public class HighLinkBaseMode extends AutoModeBase {
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getCommunityConeHoldChoreography());
 
         // Intake cube and score it
-        runAction(new WaitToPassXCoordinateAction(200.0, quadrant));
+        runAction(new WaitToPassXCoordinateAction(160.0, quadrant));
         Superstructure.getInstance().intakeState(Tunnel.State.SINGLE_INTAKE);
         runAction(new WaitToIntakeCubeAction(1.5, true));
+        CubeIntake.getInstance().setPosition(CubeIntake.getInstance().getPosition() - 5.0);
         Claw.getInstance().conformToState(Claw.ControlState.CUBE_INTAKE);
         runAction(new SetTrajectoryAction(trajectories.secondPieceToCubeScore, Rotation2d.fromDegrees(180), 0.75, quadrant));
         runAction(new WaitToIntakeCubeAction(1.0));
