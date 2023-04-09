@@ -253,8 +253,8 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(secondConePickupPose.getTranslation(), Rotation2d.fromDegrees(180)));
             waypoints.add(new Pose2d(new Translation2d(125, 30), Rotation2d.fromDegrees(180)));
             waypoints.add(new Pose2dWithQuadrantOffsets(new Pose2d(new Translation2d(74.3125 + 12.0, 42.19), Rotation2d.fromDegrees(160)))
-                    .withOffset(Quadrant.BOTTOM_LEFT, new Pose2d(new Translation2d(8, 0), Rotation2d.fromDegrees(0)))
-                    .withOffset(Quadrant.BOTTOM_RIGHT, new Pose2d(new Translation2d(8, 0), Rotation2d.fromDegrees(0))));
+                    .withOffset(Quadrant.BOTTOM_LEFT, new Pose2d(new Translation2d(12, 0), Rotation2d.fromDegrees(0)))
+                    .withOffset(Quadrant.BOTTOM_RIGHT, new Pose2d(new Translation2d(12, 0), Rotation2d.fromDegrees(0))));
             
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 120, 240, kMaxDecel, kMaxVoltage, 48.0, 1);
         }

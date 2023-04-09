@@ -47,7 +47,7 @@ public class HighLinkBaseMode extends AutoModeBase {
         Claw.getInstance().conformToState(Claw.ControlState.AUTO_CONE_HOLD);
         Superstructure.getInstance().coneHighScoreManual();
         runAction(new WaitForSuperstructureAction(2.0));
-        Rotation2d targetHeading = Rotation2d.fromDegrees(quadrant.hasBump() ? -175 : 180);
+        Rotation2d targetHeading = Rotation2d.fromDegrees(quadrant.hasBump() ? -170 : 180);
         runAction(new SetTrajectoryAction(trajectories.secondPiecePickupPath, targetHeading, 0.75, quadrant));
         runAction(new WaitToEjectObjectAction(1.5));
         Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getCommunityConeHoldChoreography());
