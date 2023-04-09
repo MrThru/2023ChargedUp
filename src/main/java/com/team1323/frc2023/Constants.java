@@ -175,7 +175,7 @@ public class Constants {
         public static final double kMaxControlAngle = 110;
 
         public static final double kStartingAngle = 0;
-        public static final double kIntakeAngle = -2.5;
+        public static final double kIntakeAngle = Settings.kIsUsingCompBot ? -2.5 : -0.5;
         public static final double kFloorAngle = -38.75;
 
         public static final double kAngleTolerance = Settings.kIsUsingCompBot ? 2.0 : 1.0;
@@ -452,7 +452,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 1.845703 : 267.187500, 
+            Settings.kIsUsingCompBot ? 1.845703 : 256.640625, 
             177.0, 
             -95.0,
             185.0
