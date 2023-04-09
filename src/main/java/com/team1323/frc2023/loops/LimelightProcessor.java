@@ -80,7 +80,7 @@ public class LimelightProcessor implements Loop {
 	public void onStart(double timestamp) {}
 	
 	@Override 
-	public void onLoop(double timestamp) {
+	public synchronized void onLoop(double timestamp) {
 		double currentHeartbeat = LimelightHelpers.getLimelightNTDouble(kLimelightName, "hb");
 		if (currentHeartbeat > previousHeartbeat) {
 			lastUpdateStopwatch.reset();
@@ -327,7 +327,7 @@ public class LimelightProcessor implements Loop {
 		return Claw.getInstance().getCurrentConeOffset().offset;
 	}
 
-	public Translation2d getNearestConePosition(Translation2d trueFieldPosition) {
+	public synchronized Translation2d getNearestConePosition(Translation2d trueFieldPosition) {
 		final double kNearestConeTolerance = 36.0;
 
 		List<Translation2d> conePositions = coneGoalTracker.getTracks().stream()

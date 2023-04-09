@@ -27,7 +27,6 @@ import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
-import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.requests.EmptyRequest;
 import com.team1323.frc2023.subsystems.requests.ParallelRequest;
 import com.team1323.frc2023.subsystems.requests.SequentialRequest;
@@ -35,6 +34,7 @@ import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.GridTracker;
+import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Pose2d;
@@ -252,7 +252,7 @@ public class DriverControls implements Loop {
                 } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
                     if(targetScoringRow == NodeLocation.Row.TOP) {
                         if(limelightConnected) {
-                            s.cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), true);
+                            s.cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), new VisionPIDBuilder().build(), true);
                         } else {
                             s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
                         }

@@ -24,7 +24,10 @@ import com.team1323.frc2023.subsystems.superstructure.ChoreographyProvider;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
+import com.team1323.lib.math.TwoPointRamp;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.Timer;
 
@@ -75,7 +78,18 @@ public class HighLinkBaseMode extends AutoModeBase {
         runAction(new WaitToIntakeAction(HoldingObject.Cube, 1.5));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
             if (scoreCubeHigh) {
-                Superstructure.getInstance().cubeHighScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
+                Superstructure.getInstance().cubeHighScoringSequence(
+                    ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), 
+                    new VisionPIDBuilder()
+                            .withDecelerationRamp(new TwoPointRamp(
+                                new Translation2d(1.0, 0.1),
+                                new Translation2d(60.0, 0.5),
+                                1.0,
+                                true
+                            ))
+                            .build(),
+                    false
+                );
             } else {
                 Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
             }
