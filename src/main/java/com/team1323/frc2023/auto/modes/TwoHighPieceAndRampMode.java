@@ -64,12 +64,12 @@ public class TwoHighPieceAndRampMode extends HighLinkBaseMode {
         if (Claw.getInstance().getCurrentHoldingObject() != HoldingObject.Cone) {
             Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
         }
-        runAction(new WaitForShoulderToPassAngleAction(90.0, 2.0));
+        runAction(new WaitForShoulderToPassAngleAction(70.0, 2.0));
         CubeIntake.getInstance().conformToState(CubeIntake.State.FLOOR);
         runAction(new WaitToFinishPathAction(2.0));
         Swerve.getInstance().startBalancePID();
         CubeIntake.getInstance().conformToState(CubeIntake.State.STOWED);
-        runAction(new WaitForRemainingTimeAction(0.375, startTime));
+        runAction(new WaitForRemainingTimeAction(0.25, startTime));
         Swerve.getInstance().zukLockDrivePosition();
         System.out.println("Auto Done in: " + currentTime());
     }

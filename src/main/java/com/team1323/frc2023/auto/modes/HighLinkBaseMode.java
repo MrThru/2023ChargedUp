@@ -103,6 +103,6 @@ public class HighLinkBaseMode extends AutoModeBase {
         runAction(new SetTrajectoryAction(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(140.0, quadrant));
         Superstructure.getInstance().coneIntakeWithoutScanSequence();
-        runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 240.0 : 230.0, quadrant));
+        runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 234.0 : 230.0, quadrant));
     }
 }
