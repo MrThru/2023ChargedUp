@@ -37,6 +37,7 @@ import com.team1323.frc2023.vision.GridTracker;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
+import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -89,6 +90,7 @@ public class DriverControls implements Loop {
 
     private NodeLocation.Row targetScoringRow = NodeLocation.Row.MIDDLE;
     private Tunnel.State lastTunnelState = Tunnel.State.OFF;
+    private boolean balanceRumbleActivated = false;
 
     public DriverControls() {
         driver = new Xbox(0);
@@ -538,13 +540,18 @@ public class DriverControls implements Loop {
             driver.rumble(1.0, 2.0);
         }*/
         if(tunnel.getCubeEnteredNotifier()) {
-            //driver.rumble(1.0, 2.0);
+            driver.rumble(1.0, 1.0);
         }
         if(claw.needsToNotifyDrivers()) {
             System.out.println("Rumbling controller for cone");
             driver.rumble(1.0, 1.0);
         }
-
+        if(Util.isInRange(DriverStation.getMatchTime(), 0.0, 15.0) && !balanceRumbleActivated) {
+            balanceRumbleActivated = true;
+            coDriver.rumble(1.0, 2.0);
+            driver.rumble(1.0, 2.0);
+        }
+        
     }
 
     private void manualMode() {
