@@ -203,7 +203,7 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.025;
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             1,
-            Settings.kIsUsingCompBot ? -76.934288 : -357.864012, //124.287924 
+            Settings.kIsUsingCompBot ? -334.137878 : -357.864012, //124.287924 
             109, 
             -45,
             115
@@ -400,9 +400,9 @@ public class Constants {
     public static class Shoulder {
         public static final double kMotorRotationsPerShoulderRotation = 69.444444; //61.728395;// 69.444444;
         public static final double kEncoderUnitsPerShoulderRotation = kMotorRotationsPerShoulderRotation * 2048.0;
-        public static final double kEncoderUnitsPerDegree = 4096.0 / 360.0; //kEncoderUnitsPerShoulderRotation / 360.0;
+        public static final double kEncoderUnitsPerDegree = Settings.kIsUsingShoulderCANCoder ? 4096.0 / 360.0 : kEncoderUnitsPerShoulderRotation / 360.0;
 
-        public static final double kMaxEncoderVelocity = kMaxFalconRotationsPerSecond / 10.0 / kMotorRotationsPerShoulderRotation * 4096.0;
+        public static final double kMaxCANCoderVelocity = kMaxFalconRotationsPerSecond / 10.0 / kMotorRotationsPerShoulderRotation * 4096.0;
 
         public static final double kMinControlAngle = -97.5;
         public static final double kMaxControlAngle = 180.0;
@@ -419,7 +419,7 @@ public class Constants {
             Ports.SHOULDER,
             new ArrayList<>(),
             Ports.CANBUS,
-            kMaxEncoderVelocity,
+            Settings.kIsUsingShoulderCANCoder ? kMaxCANCoderVelocity : kMaxFalconEncoderSpeed,
             kEncoderUnitsPerDegree,
             kMinControlAngle,
             kMaxControlAngle,
@@ -430,18 +430,18 @@ public class Constants {
 
         private static final MotorPIDF kPracticePIDF = new MotorPIDF(
             0,
-            1.0, // 1.0 : 55.0
+            Settings.kIsUsingShoulderCANCoder ? 1.0 : 0.04, // 1.0 : 55.0
             0.0,
             0.0,
-            1.475 // 1.475 : 10.0
+            Settings.kIsUsingShoulderCANCoder ? 1.475 : kFalconMotionMagicFeedForward // 1.475 : 10.0
         );
 
         private static final MotorPIDF kCompPIDF = new MotorPIDF(
             0,
-            1.0,
+            Settings.kIsUsingShoulderCANCoder ? 1.0 : 0.04,
             0.0,
             0.0,
-            1.475 //kFalconMotionMagicFeedForward
+            Settings.kIsUsingShoulderCANCoder ? 1.475 : kFalconMotionMagicFeedForward
         );
             
         public static final MotorPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
@@ -452,8 +452,8 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 1.845703 : 244.511719, 
-            177.0, 
+            Settings.kIsUsingCompBot ? 28.916016 : 244.511719, 
+            Settings.kIsUsingCompBot ? 177.0 : 174.0, 
             -95.0,
             185.0
         );
@@ -518,7 +518,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 278.0 : 208.652344, 
+            Settings.kIsUsingCompBot ? 267.099609 : 208.652344, 
             0.0, 
             -149, 
             139.6

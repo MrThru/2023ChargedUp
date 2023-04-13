@@ -175,7 +175,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             0.25,
-            170.0,
+            169.0,
             Constants.Wrist.kMinControlAngle
         );
         Request zeroingRequest = zeroHorizontalElevator ?
@@ -288,7 +288,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.25, //0.875
             0.25, //0.25  230.26
-            Settings.kIsUsingCompBot ? -55.76 : -50.76, //-50.76 : -55.76
+            Settings.kIsUsingCompBot ? -53.76 : -50.76, //-50.76 : -55.76
             kConeIntakingWristAngle //90 38.6 35 
         );
 
@@ -339,10 +339,10 @@ public class SuperstructureCoordinator {
             double preemptiveLiftSeconds = 0.0;
             if (Util.isInRange(finalPosition.shoulderAngle, 45.0, 90.0)) {
                 shoulderClearanceAngle = finalPosition.shoulderAngle;
-                preemptiveLiftSeconds = 1.0;
+                preemptiveLiftSeconds = Settings.kIsUsingShoulderCANCoder ? 1.0 : 0.35;
             } else if (finalPosition.shoulderAngle < 45.0) {
                 shoulderClearanceAngle = 45.0;
-                preemptiveLiftSeconds = 1.0;
+                preemptiveLiftSeconds = Settings.kIsUsingShoulderCANCoder ? 1.0 : 0.35;
             }
 
             System.out.println("Branch 1");
@@ -485,7 +485,7 @@ public class SuperstructureCoordinator {
 
     public Request getShelfChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            Settings.kIsUsingCompBot ? 12.5 : 13.5, //VERN!!
+            Settings.kIsUsingCompBot ? 13.0 : 13.5, //VERN!!
             7.25,
             37.56,
             -9.06

@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.encoders.Phoenix5CANCoder;
@@ -32,7 +33,11 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorC
         super(new Phoenix5FXMotorController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus),
                 new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
                 new Phoenix5CANCoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
-        leader.useCANCoder(Ports.SHOULDER_ENCODER);
+        if (Settings.kIsUsingShoulderCANCoder) {
+            leader.useCANCoder(Ports.SHOULDER_ENCODER);
+        } else {
+            leader.useIntegratedSensor();
+        }
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(2.0));
         leader.setPIDF(Constants.Shoulder.kPIDF);
         leader.setInverted(TalonFXInvertType.CounterClockwise);
@@ -44,7 +49,11 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorC
 
     @Override
     protected void setSensorPosition(double encoderUnits) {
-        absoluteEncoder.setPosition(encoderUnits / 4096.0 * 360.0);
+        if (Settings.kIsUsingShoulderCANCoder) {
+            absoluteEncoder.setPosition(encoderUnits / 4096.0 * 360.0);
+        } else {
+            super.setSensorPosition(encoderUnits);
+        }
     }
 
     public void setAccelerationScalar(double scalar) {
