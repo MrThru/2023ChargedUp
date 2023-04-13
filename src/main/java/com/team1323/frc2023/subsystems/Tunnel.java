@@ -259,7 +259,7 @@ public class Tunnel extends Subsystem {
                     break;
                 case EJECT_ONE:
                     if(getFrontBanner()) {
-                        setRollerSpeeds(0.20, 0.1); //0.2 : 0.1 : 0.15 0.05
+                        setRollerSpeeds(0.225, 0.075); //0.2 : 0.1 : 0.15 0.05
                         cubeEjectedStopwatch.reset();
                     } else {
                         cubeEjectedStopwatch.startIfNotRunning();
