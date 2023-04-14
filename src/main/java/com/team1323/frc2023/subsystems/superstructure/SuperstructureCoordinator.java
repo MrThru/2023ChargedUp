@@ -557,7 +557,7 @@ public class SuperstructureCoordinator {
 
     public Request getCubeHighScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            16.5,
+            15.0, //16.5
             kCubeHighScoringHorizontalExtension,
             55.0,
             kCubeHoldingWristAngle

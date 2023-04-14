@@ -104,7 +104,6 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMoto
     }
 
     private boolean isCurrentLimited = false;
-    private boolean intakeCurrentLimitSet = false;
     private Stopwatch onTargetStopwatch = new Stopwatch();
     @Override
     public void setPosition(double outputUnits) {

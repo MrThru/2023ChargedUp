@@ -500,6 +500,7 @@ public class DriverControls implements Loop {
         if(cubeIntake.getState() == CubeIntake.State.INTAKE) {
             cubeIntake.acceptManualInput(-coDriver.getLeftY() * 0.1);
         }
+        
         double rightStickY = -coDriver.getRightY() * 0.15;
         verticalElevator.acceptManualInput(rightStickY);
         if (Math.abs(rightStickY) != 0) {

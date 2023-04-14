@@ -12,6 +12,7 @@ import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.util.Stopwatch;
 
@@ -113,6 +114,8 @@ public class LEDs extends Subsystem {
 
     @Override
     public void writePeriodicOutputs() {
+        if(!Settings.kIsUsingCompBot)
+            return;
         if(ledsConfigured && selectedLEDType != LEDMode.BLINK_SOLID) {
             return;
         }

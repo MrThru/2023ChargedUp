@@ -200,7 +200,7 @@ public class Constants {
             kAccelerationScalar
         );
 
-        public static final double kArbitraryFeedForward = 0.025;
+        public static final double kArbitraryFeedForward = 0.027; //0.025
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             1,
             Settings.kIsUsingCompBot ? -334.137878 : -357.864012, //124.287924 
@@ -220,7 +220,7 @@ public class Constants {
             0.0174999237, 
             0,
             0.6, 
-            kFalconMotionMagicFeedForward
+            0.044
         );
 
         public static final MotorPIDF kStandardPID = Settings.kIsUsingCompBot ? kCompPID : kPracticePID;
