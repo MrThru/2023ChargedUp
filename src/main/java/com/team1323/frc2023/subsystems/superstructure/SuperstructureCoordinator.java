@@ -485,7 +485,7 @@ public class SuperstructureCoordinator {
 
     public Request getShelfChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
-            Settings.kIsUsingCompBot ? 13.0 : 13.5, //VERN!!
+            Settings.kIsUsingCompBot ? 13.0 : 14.0, //VERN!!
             7.25,
             37.56,
             -9.06
