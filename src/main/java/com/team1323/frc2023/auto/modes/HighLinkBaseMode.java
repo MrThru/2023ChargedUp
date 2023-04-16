@@ -96,6 +96,7 @@ public class HighLinkBaseMode extends AutoModeBase {
             runAction(new WaitToEjectObjectAction(4.0));
         } else {
             runAction(new WaitToFinishPathAction(2.0));
+            Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
         }
 
         // Intake second cone
