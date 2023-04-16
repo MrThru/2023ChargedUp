@@ -82,12 +82,12 @@ public class LimelightProcessor implements Loop {
 	@Override 
 	public synchronized void onLoop(double timestamp) {
 		double currentHeartbeat = LimelightHelpers.getLimelightNTDouble(kLimelightName, "hb");
-		if (currentHeartbeat > previousHeartbeat) {
+		if (currentHeartbeat != previousHeartbeat) {
 			lastUpdateStopwatch.reset();
 			limelightConnected = true;
 			SmartDashboard.putBoolean("Limelight Connected", limelightConnected);
 
-			if (!Netlink.getBooleanValue("Limelight Disabled") /*&& VerticalElevator.getInstance().getPosition() <= 16.0*/) {
+			if (!Netlink.getBooleanValue("Limelight Disabled")) {
 				LimelightResults results = LimelightHelpers.getLatestResults(kLimelightName);
 				handleFiducialTargets(results, timestamp);
 				handleRetroTargets(results, timestamp);
