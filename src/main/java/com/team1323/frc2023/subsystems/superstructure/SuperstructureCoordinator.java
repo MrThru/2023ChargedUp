@@ -175,7 +175,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             0.25,
-            Settings.kIsUsingCompBot ? 169.0 : 164.0,
+            Settings.kIsUsingCompBot ? 169.0 : 160.0,
             Constants.Wrist.kMinControlAngle
         );
         Request zeroingRequest = zeroHorizontalElevator ?
@@ -197,7 +197,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             0.25,
-            147.0,
+            140.0,
             95.0
         );
 
@@ -210,7 +210,7 @@ public class SuperstructureCoordinator {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
             0.25,
-            158.0,
+            140.0,
             98.0
         );
 

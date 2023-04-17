@@ -5,6 +5,7 @@ import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeEndedException;
 import com.team1323.frc2023.auto.actions.ResetPoseAction;
 import com.team1323.frc2023.auto.actions.SetTrajectoryAction;
+import com.team1323.frc2023.auto.actions.WaitAction;
 import com.team1323.frc2023.auto.actions.WaitForSuperstructureAction;
 import com.team1323.frc2023.auto.actions.WaitToEjectObjectAction;
 import com.team1323.frc2023.auto.actions.WaitToFinishPathAction;
@@ -34,6 +35,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class HighLinkBaseMode extends AutoModeBase {
     protected final Quadrant quadrant;
     protected final boolean scoreCubeHigh;
+    private boolean scoredCube = false;
 
     public HighLinkBaseMode(Quadrant quadrant, boolean scoreCubeHigh) {
         this.quadrant = quadrant;
@@ -72,10 +74,11 @@ public class HighLinkBaseMode extends AutoModeBase {
         ));
         if (quadrant.hasBump()) {
             runAction(new WaitToFinishPathAction(1.5));
+            runAction(new WaitToIntakeAction(HoldingObject.Cube, 0.75));
         } else {
             runAction(new WaitToPassXCoordinateAction(100, quadrant, 1.5));
+            runAction(new WaitToIntakeAction(HoldingObject.Cube, 1.5));
         }
-        runAction(new WaitToIntakeAction(HoldingObject.Cube, 1.5));
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
             if (scoreCubeHigh) {
                 Superstructure.getInstance().cubeHighScoringSequence(
@@ -93,15 +96,20 @@ public class HighLinkBaseMode extends AutoModeBase {
             } else {
                 Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
             }
+            scoredCube = true;
             runAction(new WaitToEjectObjectAction(4.0));
         } else {
             runAction(new WaitToFinishPathAction(2.0));
-            Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
+            scoredCube = false;
         }
 
         // Intake second cone
         LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR);
         runAction(new SetTrajectoryAction(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
+        if(!scoredCube) {
+            runAction(new WaitAction(0.5));
+            Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
+        }
         runAction(new WaitToPassXCoordinateAction(140.0, quadrant));
         Superstructure.getInstance().coneIntakeWithoutScanSequence();
         runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 234.0 : 230.0, quadrant));

@@ -35,7 +35,7 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing<Phoenix
         leader.setPIDF(Constants.HorizontalElevator.kPIDF);
         setSupplyCurrentLimit(Constants.HorizontalElevator.kSupplyLimit);
         setStatorCurrentLimit(Constants.HorizontalElevator.kStatorLimit);
-        zeroPosition();
+        leader.setSelectedSensorPosition(0);
         isZeroed = true;
     }
 

@@ -25,6 +25,7 @@ import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
+import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.math.TwoPointRamp;
@@ -74,6 +75,11 @@ public class MidLinkMode extends MidLinkBaseMode {
             runAction(new WaitToFinishPathAction(4.0));
         }
 
+
+        if (Claw.getInstance().getCurrentHoldingObject() != HoldingObject.Cone) {
+            Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
+        }
+        
         // Score the second cone
         runAction(new SetTrajectoryAction(trajectories.thirdPieceToSecondConeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant));
         runAction(new WaitToPassXCoordinateAction(110, quadrant));

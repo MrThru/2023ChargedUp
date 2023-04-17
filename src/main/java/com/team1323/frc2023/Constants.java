@@ -390,9 +390,9 @@ public class Constants {
         public static final MotorPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
-            -0.05,
-            0.8,
-            0.0,
+            -0.1,
+            5.0, //0.8
+            -0.3,
             0.25
         );
     }
@@ -518,7 +518,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 267.099609 : 187.031250, 
+            Settings.kIsUsingCompBot ? 267.099609 : 108.457031, 
             0.0, 
             -149, 
             139.6
