@@ -5,6 +5,7 @@ import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeEndedException;
 import com.team1323.frc2023.auto.actions.ResetPoseAction;
 import com.team1323.frc2023.auto.actions.SetTrajectoryAction;
+import com.team1323.frc2023.auto.actions.WaitAction;
 import com.team1323.frc2023.auto.actions.WaitForSuperstructureAction;
 import com.team1323.frc2023.auto.actions.WaitToEjectObjectAction;
 import com.team1323.frc2023.auto.actions.WaitToFinishPathAction;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public abstract class MidLinkBaseMode extends AutoModeBase {
     protected final Quadrant quadrant;
+    private boolean scoredCube = false;
 
     public MidLinkBaseMode(Quadrant quadrant) {
         this.quadrant = quadrant;
@@ -60,13 +62,19 @@ public abstract class MidLinkBaseMode extends AutoModeBase {
         if (Claw.getInstance().getCurrentHoldingObject() == HoldingObject.Cube) {
             Superstructure.getInstance().cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false);
             runAction(new WaitToEjectObjectAction(4.0));
+            scoredCube = true;
         } else {
             runAction(new WaitToFinishPathAction(2.0));
+            scoredCube = false;
         }
 
         // Intake second cone
         LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR);
         runAction(new SetTrajectoryAction(trajectories.slowCubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant));
+        if(!scoredCube) {
+            runAction(new WaitAction(0.5));
+            Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false));
+        }
         runAction(new WaitToPassXCoordinateAction(140.0, quadrant));
         Superstructure.getInstance().coneIntakeWithoutScanSequence();
         runAction(new WaitToPassXCoordinateAction(quadrant.hasBump() ? 240.0 : 230.0, quadrant));
