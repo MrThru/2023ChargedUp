@@ -518,7 +518,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 267.099609 : 108.457031, 
+            Settings.kIsUsingCompBot ? 210.937 : 108.457031, 
             0.0, 
             -149, 
             139.6
