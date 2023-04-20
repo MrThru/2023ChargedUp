@@ -175,7 +175,7 @@ public class Constants {
         public static final double kMaxControlAngle = 110;
 
         public static final double kStartingAngle = 0;
-        public static final double kIntakeAngle = Settings.kIsUsingCompBot ? -2.5 : -0.5;
+        public static final double kIntakeAngle = Settings.kIsUsingCompBot ? -3.75 : -0.5;
         public static final double kFloorAngle = -38.75;
 
         public static final double kAngleTolerance = Settings.kIsUsingCompBot ? 2.0 : 1.0;
@@ -392,7 +392,7 @@ public class Constants {
         public static final CurrentZeroingConfig kCurrentZeroingConfig = new CurrentZeroingConfig(
             -0.1,
             5.0, //0.8
-            -0.3,
+            -0.2,
             0.25
         );
     }
