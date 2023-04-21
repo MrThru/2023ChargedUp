@@ -64,7 +64,7 @@ public class TwoHighPieceAndRampMode extends HighLinkBaseMode {
         if (Claw.getInstance().getCurrentHoldingObject() != HoldingObject.Cone) {
             Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
         }
-        runAction(new WaitForShoulderToPassAngleAction(70.0, 2.0));
+        runAction(new WaitForShoulderToPassAngleAction(60.0, 2.0));
         CubeIntake.getInstance().conformToState(CubeIntake.State.FLOOR);
         runAction(new WaitToFinishPathAction(2.0));
         Swerve.getInstance().startBalancePID();
