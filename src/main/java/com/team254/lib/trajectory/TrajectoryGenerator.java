@@ -234,8 +234,8 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2dWithQuadrantOffsets(secondConePickupPose)
                     .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 6.0)))
                     .withOffset(Quadrant.TOP_LEFT, Pose2d.fromTranslation(new Translation2d(0.0, 6.0)))
-                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 0)))
-                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 0))));
+                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, -3)))
+                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, -3))));
             
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 144.0, 240.0, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
