@@ -161,6 +161,13 @@ public class DriverControls implements Loop {
         double swerveXInput = -driver.getLeftY();
         double swerveRotationInput = -driver.getRightX(); //+ (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0));
         
+        Translation2d currentTranslationVector = Translation2d.identity();
+        if(Netlink.getBooleanValue("Driving Rotation Offset Enabled")) {
+            currentTranslationVector = new Translation2d(swerveXInput, swerveYInput).rotateBy(Rotation2d.fromDegrees(Netlink.getNumberValue("Driving Rotation Offset")));
+            swerveXInput = currentTranslationVector.x();
+            swerveYInput = currentTranslationVector.y();
+        }
+        
         swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, (Netlink.getBooleanValue("Slow Driving Enabled")/* || driver.leftTrigger.isBeingPressed()*/));
         
         SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
