@@ -6,6 +6,8 @@ package com.team1323.frc2023;
 
 import java.util.Set;
 
+import org.littletonrobotics.junction.LoggedRobot;
+
 import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.AutoModeExecuter;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
@@ -27,9 +29,8 @@ import com.team1323.lib.util.Netlink;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 /**
@@ -38,7 +39,7 @@ import edu.wpi.first.wpilibj.RobotController;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
 
 	private SubsystemManager subsystems;
 

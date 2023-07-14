@@ -1,6 +1,8 @@
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.
 
+src/main/java/com/team1323/frc2023/BuildConstants.java
+
 ### C++ ###
 # Prerequisites
 *.d
