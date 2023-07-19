@@ -13,37 +13,45 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.DriverControls;
 import com.team1323.frc2023.Ports;
-import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.encoders.AbsoluteEncoder;
 import com.team1323.frc2023.subsystems.encoders.MagEncoder;
+import com.team1323.frc2023.subsystems.encoders.SimulatedAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoderInputs;
+import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
+import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Stopwatch;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/** Add your docs here. */
-public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorController> {
-
+public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWithAbsoluteEncoderInputs> {
     Phoenix5FXMotorController intakeRoller;
     DigitalInput banner;
     
     private static CubeIntake instance = null;
     public static CubeIntake getInstance() {
-        if(instance == null)
-            instance = new CubeIntake();
+        if (instance == null) {
+            if (RobotBase.isReal()) {
+                instance = new CubeIntake(new Phoenix5FXMotorController(Constants.CubeIntake.kConfig.leaderPortNumber, Constants.CubeIntake.kConfig.canBus),
+                        new MagEncoder(Ports.INTAKE_WRIST_ENCODER, true));
+            } else {
+                instance = new CubeIntake(new SimulatedMotorController(), new SimulatedAbsoluteEncoder());
+            }
+        }
+
         return instance;
     }
-
     
-    public CubeIntake() {
-        super(new Phoenix5FXMotorController(Constants.CubeIntake.kConfig.leaderPortNumber, Constants.CubeIntake.kConfig.canBus),
-                new ArrayList<>(), Constants.CubeIntake.kConfig, Constants.CubeIntake.kCurrentZeroingConfig,
-                new MagEncoder(Ports.INTAKE_WRIST_ENCODER, true), Constants.CubeIntake.kEncoderInfo);
+    public CubeIntake(MotorController leader, AbsoluteEncoder absoluteEncoder) {
+        super(leader, new ArrayList<>(), Constants.CubeIntake.kConfig, Constants.CubeIntake.kCurrentZeroingConfig,
+                absoluteEncoder, Constants.CubeIntake.kEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());
         leader.setPIDF(Constants.CubeIntake.kStandardPID);
         setSupplyCurrentLimit(Constants.CubeIntake.kSupplyCurrentLimit);
         setPositionToAbsolute();
@@ -115,7 +123,7 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMoto
     }
 
     private void updateArbitraryFeedForward() {
-        periodicIO.arbitraryFeedForward = (Math.cos(Math.toRadians(getPosition())) * Constants.CubeIntake.kArbitraryFeedForward);
+        outputs.arbitraryFeedForward = (Math.cos(Math.toRadians(getPosition())) * Constants.CubeIntake.kArbitraryFeedForward);
     }
 
     private Loop loop = new Loop() {
@@ -200,10 +208,10 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMoto
 			neutralModeIsBrake = true;
 		}
         SmartDashboard.putNumber("Cube Intake Angle", getPosition());
-        SmartDashboard.putNumber("Cube Intake Encoder Position", periodicIO.position);
+        SmartDashboard.putNumber("Cube Intake Encoder Position", inputs.position);
         SmartDashboard.putNumber("Cube Intake Absolute Encoder", absoluteEncoder.getDegrees());
         SmartDashboard.putNumber("Cube Intake RPM", intakeRoller.getSelectedSensorVelocity() * 600 / 2048);
-        SmartDashboard.putNumber("Cube Intake Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));
+        SmartDashboard.putNumber("Cube Intake Target Angle", encoderUnitsToOutputUnits(outputs.demand));
         SmartDashboard.putBoolean("Cube Intake Banner", getBanner());
         SmartDashboard.putNumber("Cube Intake Stator Current", leader.getStatorAmps());
     }

@@ -8,19 +8,25 @@ import com.team1323.lib.util.Util;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-public abstract class ServoSubsystemWithAbsoluteEncoder<M extends MotorController> extends ServoSubsystemWithCurrentZeroing<M> {
+public abstract class ServoSubsystemWithAbsoluteEncoder<Inputs extends ServoSubsystemWithAbsoluteEncoderInputs> extends ServoSubsystemWithCurrentZeroing<Inputs> {
     private static final int kMaxPositionResets = 50;
 
     protected final AbsoluteEncoder absoluteEncoder;
     private final AbsoluteEncoderInfo absoluteEncoderInfo;
     private int numPositionResets = 0;
 
-    public ServoSubsystemWithAbsoluteEncoder(M leader, List<M> followers, ServoSubsystemConfig servoConfig, CurrentZeroingConfig currentZeroingConfig, 
-            AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo) {
-        super(leader, followers, servoConfig, currentZeroingConfig);
+    public ServoSubsystemWithAbsoluteEncoder(MotorController leader, List<MotorController> followers, ServoSubsystemConfig servoConfig, CurrentZeroingConfig currentZeroingConfig, 
+            AbsoluteEncoder encoder, AbsoluteEncoderInfo encoderInfo, Inputs inputs) {
+        super(leader, followers, servoConfig, currentZeroingConfig, inputs);
         absoluteEncoder = encoder;
         absoluteEncoderInfo = encoderInfo;
         isZeroed = true;
+    }
+
+    @Override
+    protected void updateInputsFromIO() {
+        super.updateInputsFromIO();
+        inputs.absoluteEncoderDegrees = absoluteEncoder.getDegrees();
     }
 
     protected void setSensorPosition(double encoderUnits) {
@@ -39,7 +45,7 @@ public abstract class ServoSubsystemWithAbsoluteEncoder<M extends MotorControlle
         }   
 
         if (absoluteSubsystemAngle > absoluteEncoderInfo.maxInitialSubsystemAngle || absoluteSubsystemAngle < absoluteEncoderInfo.minInitialSubsystemAngle) {
-            DriverStation.reportError("Servo subsystem is out of bounds", true);
+            DriverStation.reportError(String.format("%s position is out of bounds", config.logTableName), false);
             hasEmergency = true;
         } else {
             hasEmergency = false;

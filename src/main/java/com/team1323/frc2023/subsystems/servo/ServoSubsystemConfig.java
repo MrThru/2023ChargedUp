@@ -13,11 +13,12 @@ public class ServoSubsystemConfig {
     public final double outputUnitTolerance;
     public final double cruiseVelocityScalar;
     public final double accelerationScalar;
+    public final String logTableName;
 
     public ServoSubsystemConfig(int leaderPortNumber, List<Integer> followerPortNumbers,
             String canBus, double maxEncoderVelocity, double encoderUnitsPerOutputUnit,
             double minOutputUnits, double maxOutputUnits, double outputUnitTolerance,
-            double cruiseVelocityScalar, double accelerationScalar) {
+            double cruiseVelocityScalar, double accelerationScalar, String logTableName) {
         this.leaderPortNumber = leaderPortNumber;
         this.followerPortNumbers = followerPortNumbers;
         this.canBus = canBus;
@@ -28,5 +29,6 @@ public class ServoSubsystemConfig {
         this.outputUnitTolerance = outputUnitTolerance;
         this.cruiseVelocityScalar = cruiseVelocityScalar;
         this.accelerationScalar = accelerationScalar;
+        this.logTableName = logTableName;
     }
 }

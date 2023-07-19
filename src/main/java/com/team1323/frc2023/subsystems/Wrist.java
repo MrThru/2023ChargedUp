@@ -8,28 +8,38 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.encoders.AbsoluteEncoder;
 import com.team1323.frc2023.subsystems.encoders.Phoenix5CANCoder;
+import com.team1323.frc2023.subsystems.encoders.SimulatedAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoderInputs;
+import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
+import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Wrist extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorController> {
+public class Wrist extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWithAbsoluteEncoderInputs> {
     private static Wrist instance = null;
     public static Wrist getInstance() {
         if (instance == null) {
-            instance = new Wrist();
+            if (RobotBase.isReal()) {
+                instance = new Wrist(new Phoenix5FXMotorController(Constants.Wrist.kConfig.leaderPortNumber, Constants.Wrist.kConfig.canBus),
+                        new Phoenix5CANCoder(Ports.WRIST_ENCODER, false));
+            } else {
+                instance = new Wrist(new SimulatedMotorController(), new SimulatedAbsoluteEncoder());
+            }
         }
         return instance;
     }
 
-    public Wrist() {
-        super(new Phoenix5FXMotorController(Constants.Wrist.kConfig.leaderPortNumber, Constants.Wrist.kConfig.canBus),
-                new ArrayList<>(), Constants.Wrist.kConfig, Constants.Wrist.kCurrentZeroingConfig,
-                new Phoenix5CANCoder(Ports.WRIST_ENCODER, false), Constants.Wrist.kAbsoluteEncoderInfo);
+    private Wrist(MotorController leader, AbsoluteEncoder absoluteEncoder) {
+        super(leader, new ArrayList<>(), Constants.Wrist.kConfig, Constants.Wrist.kCurrentZeroingConfig,
+                absoluteEncoder, Constants.Wrist.kAbsoluteEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());
         leader.useIntegratedSensor();
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(4.0));
         leader.setPIDF(Constants.Wrist.kPIDF);
@@ -46,7 +56,7 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorCont
      */
     private void updateArbitraryFeedForward() {
         Rotation2d currentAngle = Rotation2d.fromDegrees(getPosition());
-        periodicIO.arbitraryFeedForward = Constants.Wrist.kArbitraryFeedForward * currentAngle.cos();
+        outputs.arbitraryFeedForward = Constants.Wrist.kArbitraryFeedForward * currentAngle.cos();
     }
 
     
@@ -131,6 +141,6 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorCont
         SmartDashboard.putNumber("Wrist Angle", getPosition());
         SmartDashboard.putNumber("Wrist Absolute Encoder", absoluteEncoder.getDegrees());
         SmartDashboard.putBoolean("Wrist On Target", isOnTarget());
-        SmartDashboard.putNumber("Wrist Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));
+        SmartDashboard.putNumber("Wrist Target Angle", encoderUnitsToOutputUnits(outputs.demand));
     }
 }

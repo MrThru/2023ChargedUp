@@ -10,29 +10,39 @@ import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.encoders.AbsoluteEncoder;
 import com.team1323.frc2023.subsystems.encoders.Phoenix5CANCoder;
+import com.team1323.frc2023.subsystems.encoders.SimulatedAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoderInputs;
+import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
+import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorController> {
+public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWithAbsoluteEncoderInputs> {
     private static Shoulder instance = null;
     public static Shoulder getInstance() {
         if (instance == null) {
-            instance = new Shoulder();
+            if (RobotBase.isReal()) {
+                instance = new Shoulder(new Phoenix5FXMotorController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus),
+                        new Phoenix5CANCoder(Ports.SHOULDER_ENCODER, true));
+            } else {
+                instance = new Shoulder(new SimulatedMotorController(), new SimulatedAbsoluteEncoder());
+            }
         }
         return instance;
     }
     
-    public Shoulder() {
-        super(new Phoenix5FXMotorController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus),
-                new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
-                new Phoenix5CANCoder(Ports.SHOULDER_ENCODER, true), Constants.Shoulder.kAbsoluteEncoderInfo);
+    public Shoulder(MotorController leader, AbsoluteEncoder absoluteEncoder) {
+        super(leader, new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
+                absoluteEncoder, Constants.Shoulder.kAbsoluteEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());
         if (Settings.kIsUsingShoulderCANCoder) {
             leader.useCANCoder(Ports.SHOULDER_ENCODER);
         } else {
@@ -66,7 +76,7 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorC
      */
     private void updateArbitraryFeedForward() {
         Rotation2d currentAngle = Rotation2d.fromDegrees(getPosition());
-        periodicIO.arbitraryFeedForward = Constants.Shoulder.kArbitraryFeedForward * currentAngle.cos();
+        outputs.arbitraryFeedForward = Constants.Shoulder.kArbitraryFeedForward * currentAngle.cos();
     }
 
     private Loop loop = new Loop() {
@@ -124,7 +134,7 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<Phoenix5FXMotorC
 			neutralModeIsBrake = true;
 		}
         SmartDashboard.putNumber("Shoulder Angle", getPosition());
-        SmartDashboard.putNumber("Shoulder Target Angle", encoderUnitsToOutputUnits(periodicIO.demand));
+        SmartDashboard.putNumber("Shoulder Target Angle", encoderUnitsToOutputUnits(outputs.demand));
 
         SmartDashboard.putNumber("Shoulder Absolute Encoder", absoluteEncoder.getDegrees());
         SmartDashboard.putBoolean("Shoulder Is On Target", isOnTarget());

@@ -197,7 +197,8 @@ public class Constants {
             kMaxControlAngle,
             kAngleTolerance,
             kVelocityScalar,
-            kAccelerationScalar
+            kAccelerationScalar,
+            "CubeIntake"
         );
 
         public static final double kArbitraryFeedForward = 0.027; //0.025
@@ -304,7 +305,8 @@ public class Constants {
             kMaxControlHeight,
             kHeightTolerance,
             kVelocityScalar,
-            kAccelerationScalar
+            kAccelerationScalar,
+            "VerticalElevator"
         );
         
         private static final MotorPIDF kPracticePIDF = new MotorPIDF(
@@ -360,7 +362,8 @@ public class Constants {
             kMaxExtension,
             kExtensionTolerance,
             kVelocityScalar,
-            kAccelerationScalar
+            kAccelerationScalar,
+            "HorizontalElevator"
         );
 
         public static final MotorPIDF kWeakPID = new MotorPIDF(
@@ -425,7 +428,8 @@ public class Constants {
             kMaxControlAngle,
             kAngleTolerance,
             kVelocityScalar,
-            kAccelerationScalar
+            kAccelerationScalar,
+            "Shoulder"
         );
 
         private static final MotorPIDF kPracticePIDF = new MotorPIDF(
@@ -493,7 +497,8 @@ public class Constants {
             kMaxControlAngle,
             kAngleTolerance,
             kVelocityScalar,
-            kAccelerationScalar
+            kAccelerationScalar,
+            "Wrist"
         );
 
         private static final MotorPIDF kPracticePIDF = new MotorPIDF(
@@ -579,7 +584,8 @@ public class Constants {
             90.0,
             2.0,
             kVelocityScalar,
-            kAccelerationScalar
+            kAccelerationScalar,
+            "Winch"
         );
 
         public static final MotorPIDF kPIDF = new MotorPIDF(

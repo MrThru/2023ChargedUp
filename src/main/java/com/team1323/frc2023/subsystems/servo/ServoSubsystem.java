@@ -3,6 +3,9 @@ package com.team1323.frc2023.subsystems.servo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
@@ -13,21 +16,22 @@ import com.team1323.lib.util.Util;
  * A class which can serve as the base for any subsystem that is primarily controlled
  * with MotionMagic running on a Talon FX.
  */
-public abstract class ServoSubsystem<M extends MotorController> extends Subsystem {
+public abstract class ServoSubsystem<Inputs extends ServoSubsystemInputsAutoLogged> extends Subsystem {
     protected final ServoSubsystemConfig config;
 
-    protected final M leader;
-    protected final List<M> allMotors;
-    protected final List<M> followers;
+    protected final MotorController leader;
+    protected final List<MotorController> allMotors;
+    protected final List<MotorController> followers;
 
-    protected PeriodicIO periodicIO = new PeriodicIO();
+    protected final Inputs inputs;
+    protected final ServoSubsystemOutputs outputs = new ServoSubsystemOutputs();
 
-    public ServoSubsystem(M leader, List<M> followers, ServoSubsystemConfig config) {
+    public ServoSubsystem(MotorController leader, List<MotorController> followers, 
+            ServoSubsystemConfig config, Inputs inputs) {
         this.config = config;
+        this.inputs = inputs;
         this.leader = leader;
-        leader.configureAsServo();
         this.followers = followers;
-        followers.forEach(f -> f.configureAsServo());
         allMotors = new ArrayList<>();
         allMotors.add(leader);
         allMotors.addAll(followers);
@@ -35,6 +39,8 @@ public abstract class ServoSubsystem<M extends MotorController> extends Subsyste
     }
 
     private void configureMotors() {
+        allMotors.forEach(MotorController::configureAsServo);
+
         leader.configForwardSoftLimitThreshold(outputUnitsToEncoderUnits(config.maxOutputUnits));
         leader.configReverseSoftLimitThreshold(outputUnitsToEncoderUnits(config.minOutputUnits));
         enableLimits(true);
@@ -81,13 +87,13 @@ public abstract class ServoSubsystem<M extends MotorController> extends Subsyste
     }
 
     public double getPosition() {
-        return encoderUnitsToOutputUnits(periodicIO.position);
+        return encoderUnitsToOutputUnits(inputs.position);
     }
 
     public void setPosition(double outputUnits) {
         double boundedOutputUnits = Util.limit(outputUnits, config.minOutputUnits, config.maxOutputUnits);
-        periodicIO.demand = outputUnitsToEncoderUnits(boundedOutputUnits);
-        periodicIO.controlMode = ControlMode.MotionMagic;
+        outputs.demand = outputUnitsToEncoderUnits(boundedOutputUnits);
+        outputs.controlMode = ControlMode.MotionMagic;
     }
 
     public void setPositionWithCruiseVelocity(double outputUnits, double cruiseVelocityScalar) {
@@ -96,27 +102,27 @@ public abstract class ServoSubsystem<M extends MotorController> extends Subsyste
     }
 
     public void lockPosition() {
-        periodicIO.demand = periodicIO.position;
-        periodicIO.controlMode = ControlMode.MotionMagic;
+        outputs.demand = inputs.position;
+        outputs.controlMode = ControlMode.MotionMagic;
     }
 
     protected void setOpenLoop(double percent) {
-        periodicIO.demand = percent;
-        periodicIO.controlMode = ControlMode.PercentOutput;
+        outputs.demand = percent;
+        outputs.controlMode = ControlMode.PercentOutput;
     }
 
     public boolean isAtPosition(double position) {
-        return periodicIO.controlMode == ControlMode.MotionMagic &&
+        return outputs.controlMode == ControlMode.MotionMagic &&
                 Math.abs(position - getPosition()) <= config.outputUnitTolerance;
     }
 
     public boolean isOnTarget() {
-        return isAtPosition(encoderUnitsToOutputUnits(periodicIO.demand));
+        return isAtPosition(encoderUnitsToOutputUnits(outputs.demand));
     }
 
     public boolean isWithinTolerance(double tolerance) {
-        return Math.abs(encoderUnitsToOutputUnits(periodicIO.demand) - getPosition()) <= tolerance &&
-            periodicIO.controlMode == ControlMode.MotionMagic;
+        return Math.abs(encoderUnitsToOutputUnits(outputs.demand) - getPosition()) <= tolerance &&
+            outputs.controlMode == ControlMode.MotionMagic;
     }
 
     public Prerequisite willReachPositionWithinTime(double outputUnits, double seconds) {
@@ -137,19 +143,25 @@ public abstract class ServoSubsystem<M extends MotorController> extends Subsyste
     public void acceptManualInput(double input) {
         if (input != 0.0) {
             setOpenLoop(input);
-        } else if (periodicIO.controlMode == ControlMode.PercentOutput) {
+        } else if (outputs.controlMode == ControlMode.PercentOutput) {
             lockPosition();
         }
     }
 
+    protected void updateInputsFromIO() {
+        inputs.position = leader.getSelectedSensorPosition();
+        inputs.velocity = leader.getVelocityEncoderUnitsPer100Ms();
+    }
+
     @Override
     public void readPeriodicInputs() {
-        periodicIO.position = leader.getSelectedSensorPosition();
+        updateInputsFromIO();
+        Logger.getInstance().processInputs(config.logTableName, inputs);
     }
 
     @Override
     public void writePeriodicOutputs() {
-        leader.set(periodicIO.controlMode, periodicIO.demand, periodicIO.arbitraryFeedForward);
+        leader.set(outputs.controlMode, outputs.demand, outputs.arbitraryFeedForward);
     }
 
     @Override
@@ -157,9 +169,13 @@ public abstract class ServoSubsystem<M extends MotorController> extends Subsyste
         setOpenLoop(0.0);
     }
 
-    public class PeriodicIO {
+    @AutoLog
+    public static class ServoSubsystemInputs {
         public double position;
+        public double velocity;
+    }
 
+    public static class ServoSubsystemOutputs {
         public double demand = 0.0;
         public ControlMode controlMode = ControlMode.PercentOutput;
         public double arbitraryFeedForward = 0.0;

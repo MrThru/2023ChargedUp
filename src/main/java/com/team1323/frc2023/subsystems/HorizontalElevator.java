@@ -13,23 +13,32 @@ import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
+import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroingInputs;
+import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
+import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Stopwatch;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing<Phoenix5FXMotorController> {
+public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing<ServoSubsystemWithCurrentZeroingInputs> {
     private static HorizontalElevator instance = null;
     public static HorizontalElevator getInstance() {
-        if(instance == null)
-            instance = new HorizontalElevator();
+        if (instance == null) {
+            if (RobotBase.isReal()) {
+                instance = new HorizontalElevator(new Phoenix5FXMotorController(Constants.HorizontalElevator.kConfig.leaderPortNumber, Constants.HorizontalElevator.kConfig.canBus));
+            } else {
+                instance = new HorizontalElevator(new SimulatedMotorController());
+            }
+        }
         return instance;
     }
 
-    public HorizontalElevator() {
-        super(new Phoenix5FXMotorController(Constants.HorizontalElevator.kConfig.leaderPortNumber, Constants.HorizontalElevator.kConfig.canBus),
-                new ArrayList<>(), Constants.HorizontalElevator.kConfig, Constants.HorizontalElevator.kCurrentZeroingConfig);
+    private HorizontalElevator(MotorController leader) {
+        super(leader, new ArrayList<>(), Constants.HorizontalElevator.kConfig,
+                Constants.HorizontalElevator.kCurrentZeroingConfig, new ServoSubsystemWithCurrentZeroingInputs());
         leader.useIntegratedSensor();
         leader.setInverted(TalonFXInvertType.Clockwise);
         leader.setPIDF(Constants.HorizontalElevator.kPIDF);
@@ -114,7 +123,7 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing<Phoenix
 			neutralModeIsBrake = true;
 		}
         SmartDashboard.putNumber("Horizontal Elevator Height", getPosition());
-        SmartDashboard.putNumber("Horizontal Elevator Encoder Position", periodicIO.position); 
+        SmartDashboard.putNumber("Horizontal Elevator Encoder Position", inputs.position); 
         SmartDashboard.putBoolean("Horizontal Elevator on Target", isOnTarget());
     }
 

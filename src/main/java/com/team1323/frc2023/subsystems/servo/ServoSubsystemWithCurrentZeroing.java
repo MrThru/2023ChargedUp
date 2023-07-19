@@ -6,13 +6,20 @@ import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.lib.drivers.MotorController;
 
-public abstract class ServoSubsystemWithCurrentZeroing<M extends MotorController> extends ServoSubsystem<M> {
+public abstract class ServoSubsystemWithCurrentZeroing<Inputs extends ServoSubsystemWithCurrentZeroingInputs> extends ServoSubsystem<Inputs> {
     private final CurrentZeroingConfig zeroingConfig;
     protected boolean isZeroed = false;
 
-    public ServoSubsystemWithCurrentZeroing(M leader, List<M> followers, ServoSubsystemConfig servoConfig, CurrentZeroingConfig zeroingConfig) {
-        super(leader, followers, servoConfig);
+    public ServoSubsystemWithCurrentZeroing(MotorController leader, List<MotorController> followers, 
+            ServoSubsystemConfig servoConfig, CurrentZeroingConfig zeroingConfig, Inputs inputs) {
+        super(leader, followers, servoConfig, inputs);
         this.zeroingConfig = zeroingConfig;
+    }
+
+    @Override
+    protected void updateInputsFromIO() {
+        super.updateInputsFromIO();
+        inputs.supplyCurrent = leader.getSupplyAmps();
     }
 
     @Override
