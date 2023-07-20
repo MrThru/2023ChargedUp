@@ -4,6 +4,9 @@
 
 package com.team1323.frc2023.subsystems;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
@@ -12,40 +15,48 @@ import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.LEDs.LEDColors;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
+import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Stopwatch;
 import com.team1323.lib.util.Util;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class Claw extends Subsystem {
+    private static Claw instance = null;
+    public static Claw getInstance() {
+        if (instance == null) {
+            if (RobotBase.isReal()) {
+                instance = new Claw(new Phoenix5FXMotorController(Ports.CLAW, Ports.CANBUS));
+            } else {
+                instance = new Claw(new SimulatedMotorController());
+            }
+        }
 
-    Phoenix5FXMotorController claw;
+        return instance;
+    }
+
+    MotorController claw;
 
     private double targetRPM = 0;
     private final Stopwatch stopwatch = new Stopwatch();
     private Stopwatch stopwatch2 = new Stopwatch();
     public final Stopwatch rumbleStopwatch = new Stopwatch();
-    private static Claw instance = null;
-    public static Claw getInstance() {
-        if(instance == null)
-            instance = new Claw();
-        return instance;
-    }
-    
+
+    private final ClawInputsAutoLogged inputs = new ClawInputsAutoLogged();
      
-    public Claw() {
-        claw = new Phoenix5FXMotorController(Ports.CLAW, Ports.CANBUS);
+    public Claw(MotorController motor) {
+        claw = motor;
         claw.configureAsRoller();
-        claw.setSupplyCurrentLimit(200, 0.1);
-        claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.01);
+        claw.configSupplyCurrentLimit(200);
+        claw.configStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit);
         claw.setInverted(TalonFXInvertType.Clockwise);
 
         claw.setPIDF(Constants.Claw.kPID);
     }
-    private PeriodicIO periodicIO = new PeriodicIO();
 
     public enum ConeOffset {
         Center(0.0), Right(-Constants.Claw.kConeOffset), Left(Constants.Claw.kConeOffset);
@@ -114,7 +125,7 @@ public class Claw extends Subsystem {
     }
     public void conformToState(ControlState state) {
         if(state == ControlState.CUBE_OUTAKE || state == ControlState.CONE_OUTAKE) {
-            claw.setStatorCurrentLimit(100, 0.001);
+            claw.configStatorCurrentLimit(100);
         }
         setState(state);
         setPercentSpeed(state.speed);
@@ -151,31 +162,31 @@ public class Claw extends Subsystem {
             }
             if(currentState == ControlState.CONE_INTAKE) {
                 if(stateChanged) {
-                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.01);
+                    claw.configStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit);
                     rumbleStopwatch.start();
                     stopwatch.start(); //To ensure that the cone intake isnt a false trigger when it starts to spin
                     stopwatch2.reset();
                 }
-                if(encUnitsToRPM(periodicIO.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 0.75) {
+                if(encUnitsToRPM(inputs.velocity) < Constants.Claw.kIntakeConeVelocityThreshold && stopwatch.getTime() > 0.75) {
                     stopwatch2.startIfNotRunning();
                     if(stopwatch2.getTime() > 0.02) { // 0.25
                         setCurrentHoldingObject(HoldingObject.Cone);
                         LEDs.getInstance().configLEDs(LEDColors.YELLOW);
-                        claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent, 0.01);
+                        claw.configStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent);
                         stopwatch.reset();
                     }
                 }
 
             } else if(currentState == ControlState.CUBE_INTAKE) {
                 if(stateChanged) {
-                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
-                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit, 0.01);
+                    claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit);
+                    claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit);
 
                     stopwatch.start();
                 }
-                if(Util.isInRange(encUnitsToRPM(periodicIO.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 0) && stopwatch.getTime() > 1.0) {
-                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit, 0.01);
-                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit, 0.01);
+                if(Util.isInRange(encUnitsToRPM(inputs.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 0) && stopwatch.getTime() > 1.0) {
+                    claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit);
+                    claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit);
                     setCurrentHoldingObject(HoldingObject.Cube);
                     LEDs.getInstance().configLEDs(LEDColors.PURPLE);
                     stopwatch.reset();
@@ -203,7 +214,7 @@ public class Claw extends Subsystem {
                 }
             } else if (currentState == ControlState.AUTO_CONE_HOLD) {
                 if (stateChanged) {
-                    claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorHoldCurrent, 0.01);
+                    claw.configStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit);
                 }
             } else if(currentState == ControlState.OFF) {
                 conformToState(ControlState.OFF);
@@ -245,18 +256,14 @@ public class Claw extends Subsystem {
     }
 
     public double getRPM() {
-        return encUnitsToRPM(periodicIO.velocity);
+        return encUnitsToRPM(inputs.velocity);
     }
     private double previousTimestamp = 0;
 
     @Override
     public void readPeriodicInputs() {
-        double currentVelocity = claw.getSelectedSensorVelocity();
-        periodicIO.dv = (currentVelocity - periodicIO.velocity) / (Timer.getFPGATimestamp() - previousTimestamp);        
-        periodicIO.velocity = currentVelocity;
-        
-        periodicIO.supplyCurrent = claw.getSupplyCurrent();
-        periodicIO.statorCurrent = claw.getStatorCurrent();
+        inputs.velocity = claw.getVelocityEncoderUnitsPer100Ms();
+        Logger.getInstance().processInputs("Claw", inputs);
     }
 
     @Override
@@ -280,22 +287,21 @@ public class Claw extends Subsystem {
     }
 
     public void reset() {
-        claw.setStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit, 0.001);
+        claw.configStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit);
     }
+
     public void resetCurrentHolding() {
         setCurrentHoldingObject(HoldingObject.None);
     }
+
     @Override
     public void stop() {
         //resetCurrentHolding();
         conformToState(ControlState.OFF);
     }
 
-    private class PeriodicIO {
-        double velocity = 0;
-        double dv = 0;
-        double supplyCurrent = 0;
-        double statorCurrent = 0;
+    @AutoLog
+    public static class ClawInputs {
+        public double velocity;
     }
-
 }

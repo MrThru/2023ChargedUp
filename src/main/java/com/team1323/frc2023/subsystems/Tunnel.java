@@ -4,6 +4,9 @@
 
 package com.team1323.frc2023.subsystems;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
@@ -12,46 +15,61 @@ import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.subsystems.digitalinputs.IDigitalInput;
+import com.team1323.frc2023.subsystems.digitalinputs.RioDigitalInput;
+import com.team1323.frc2023.subsystems.digitalinputs.SimulatedDigitalInput;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
+import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Stopwatch;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/** Have a single state named "detect" that will handle
- * the tunnels indexing.
- */
 public class Tunnel extends Subsystem {
-    CubeIntake cubeIntake;
-    Claw claw;
-
-    Phoenix5FXMotorController tunnelEntrance, conveyorTalon, frontRollerTalon;
-    DigitalInput frontBanner, rearBanner;
-
-    private boolean rearBannerDetected = false;
-
     private static Tunnel instance = null;
     public static Tunnel getInstance() {
-        if(instance == null)
-            instance = new Tunnel();
+        if (instance == null) {
+            if (RobotBase.isReal()) {
+                instance = new Tunnel(new Phoenix5FXMotorController(Ports.TUNNEL_ENTRANCE_TALON, Ports.CANBUS),
+                        new Phoenix5FXMotorController(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS),
+                        new Phoenix5FXMotorController(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS),
+                        new RioDigitalInput(Ports.TUNNEL_FRONT_BANNER),
+                        new RioDigitalInput(Ports.TUNNEL_REAR_BANNER),
+                        new RioDigitalInput(Ports.INTAKE_BANNER));
+            } else {
+                instance = new Tunnel(new SimulatedMotorController(), new SimulatedMotorController(), new SimulatedMotorController(),
+                        new SimulatedDigitalInput(), new SimulatedDigitalInput(), new SimulatedDigitalInput());
+            }
+        }
+
         return instance;
     }
 
+    private final CubeIntake cubeIntake;
 
-    public Tunnel() {
+    private final MotorController tunnelEntrance, conveyorTalon, frontRollerTalon;
+    private final IDigitalInput frontBanner, rearBanner, intakeBanner;
+
+    private final TunnelInputsAutoLogged inputs = new TunnelInputsAutoLogged();
+
+    private boolean rearBannerDetected = false;
+
+    public Tunnel(MotorController entrance, MotorController conveyor, MotorController topRoller,
+            IDigitalInput frontBanner, IDigitalInput rearBanner, IDigitalInput intakeBanner) {
         cubeIntake = CubeIntake.getInstance();
-        claw = Claw.getInstance();
 
-        tunnelEntrance = new Phoenix5FXMotorController(Ports.TUNNEL_ENTRANCE_TALON, Ports.CANBUS);
-        conveyorTalon = new Phoenix5FXMotorController(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS);
-        frontRollerTalon = new Phoenix5FXMotorController(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS);
+        tunnelEntrance = entrance;
+        conveyorTalon = conveyor;
+        frontRollerTalon = topRoller;
         tunnelEntrance.configureAsRoller();
         conveyorTalon.configureAsRoller();
         frontRollerTalon.configureAsRoller();
 
-        frontBanner = new DigitalInput(Ports.TUNNEL_FRONT_BANNER);
-        rearBanner = new DigitalInput(Ports.TUNNEL_REAR_BANNER);
+        this.frontBanner = frontBanner;
+        this.rearBanner = rearBanner;
+        this.intakeBanner = intakeBanner;
 
         conveyorTalon.setInverted(TalonFXInvertType.CounterClockwise);
         frontRollerTalon.setInverted(TalonFXInvertType.Clockwise);
@@ -62,7 +80,6 @@ public class Tunnel extends Subsystem {
         tunnelEntrance.setInverted(TalonFXInvertType.Clockwise);
 
         frontRollerTalon.setNeutralMode(NeutralMode.Brake);
-        
     }
 
     public enum State {
@@ -76,12 +93,6 @@ public class Tunnel extends Subsystem {
     public void setState(State state) {
         currentState = state;
         stateChanged = true;
-    }
-    public void setConveyorSpeedOfTopRoller(double percent) {
-        setConveyorSpeed(frontRollerTalon.getMotorOutputPercent() * Constants.Tunnel.kTopRollerRatio / Constants.Tunnel.kFloorRatio);
-    }
-    public void setTopRollerSpeedOfConveyor(double perecent) {
-        setRollerSpeed(conveyorTalon.getMotorOutputPercent() * Constants.Tunnel.kFloorRatio / Constants.Tunnel.kTopRollerRatio);
     }
 
     public void setTunnelEntranceSpeed(double speed) {
@@ -134,13 +145,13 @@ public class Tunnel extends Subsystem {
     }
 
     public boolean getFrontBanner() {
-        return frontBanner.get();
+        return inputs.frontBannerValue;
     }
     public boolean getRearBanner() {
-        return rearBanner.get();
+        return inputs.rearBannerValue;
     }
     public boolean getCubeIntakeBanner() {
-        return cubeIntake.getBanner();
+        return inputs.intakeBannerValue;
     }
     /*True if all the banners(front, rear, and entrance) are false*/
     public boolean allowSingleIntakeMode() {
@@ -340,16 +351,23 @@ public class Tunnel extends Subsystem {
         enabledLooper.register(loop);
     }
 
-
+    @Override
+    public void readPeriodicInputs() {
+        inputs.frontBannerValue = frontBanner.get();
+        inputs.rearBannerValue = rearBanner.get();
+        inputs.intakeBannerValue = intakeBanner.get();
+        Logger.getInstance().processInputs("Tunnel", inputs);
+    }
     
     public double getCubeCount() {
-        return (frontBanner.get() ? 1 : 0) + (rearBanner.get() ? 1 : 0);
+        return (getFrontBanner() ? 1 : 0) + (getRearBanner() ? 1 : 0);
     }
 
     @Override
     public void outputTelemetry() {
         SmartDashboard.putBoolean("Tunnel Front Banner", getFrontBanner());
         SmartDashboard.putBoolean("Tunnel Rear Banner", getRearBanner());
+        SmartDashboard.putBoolean("Cube Intake Banner", getCubeIntakeBanner());
         SmartDashboard.putString("Tunnel Control State", currentState.toString());
         SmartDashboard.putNumber("Tunnel Floor Percent Output", conveyorSpeed);
     }
@@ -367,6 +385,7 @@ public class Tunnel extends Subsystem {
             }
         };
     }
+
     public Request ejectOneRequest() {
         return new Request() {
             @Override
@@ -380,6 +399,7 @@ public class Tunnel extends Subsystem {
             }
         };
     }
+
     public Request queueShutdownRequest() {
         return new Request() {  
             @Override
@@ -388,10 +408,18 @@ public class Tunnel extends Subsystem {
             }
         };
     }
+
     @Override
     public void stop() {
         setState(State.OFF);
         setConveyorSpeed(0);
         setRollerSpeed(0);        
+    }
+
+    @AutoLog
+    public static class TunnelInputs {
+        public boolean frontBannerValue;
+        public boolean rearBannerValue;
+        public boolean intakeBannerValue;
     }
 }

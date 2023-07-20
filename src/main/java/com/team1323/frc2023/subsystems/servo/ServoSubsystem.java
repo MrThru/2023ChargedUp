@@ -77,7 +77,7 @@ public abstract class ServoSubsystem<Inputs extends ServoSubsystemInputsAutoLogg
     }
 
     public double getVelocityOutputUnitsPerSecond() {
-        double encoderUnitsPer100Ms = leader.getVelocityEncoderUnitsPer100Ms();
+        double encoderUnitsPer100Ms = inputs.velocity;
         double encoderUnitsPerSecond = encoderUnitsPer100Ms * 10.0;
         return encoderUnitsToOutputUnits(encoderUnitsPerSecond);
     }
