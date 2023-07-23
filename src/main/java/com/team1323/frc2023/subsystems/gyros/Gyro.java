@@ -4,19 +4,18 @@
 
 package com.team1323.frc2023.subsystems.gyros;
 
-import com.team254.lib.geometry.Rotation2d;
-
-/** Add your docs here. */
-public abstract class Gyro {
+public interface Gyro {
     
+    public void setYaw(double angle);
 
-    public abstract void setAngle(double angle);
+    public double getYaw();
 
-    public abstract Rotation2d getYaw();
+    public double getPitch();
 
-    public abstract Rotation2d getPitch();
+    public double getRoll();
 
-    public abstract Rotation2d getRoll();
+    public double[] getYPR();
 
-    public abstract double[] getYPR();
+    public void resetRoll();
+
 }

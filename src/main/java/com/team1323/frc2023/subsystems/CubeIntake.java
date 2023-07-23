@@ -15,19 +15,15 @@ import com.team1323.frc2023.DriverControls;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
-import com.team1323.frc2023.subsystems.encoders.AbsoluteEncoder;
 import com.team1323.frc2023.subsystems.encoders.MagEncoder;
-import com.team1323.frc2023.subsystems.encoders.SimulatedAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoderInputs;
 import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
-import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Stopwatch;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWithAbsoluteEncoderInputs> {
@@ -36,21 +32,16 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystem
     private static CubeIntake instance = null;
     public static CubeIntake getInstance() {
         if (instance == null) {
-            if (RobotBase.isReal()) {
-                instance = new CubeIntake(new Phoenix5FXMotorController(Constants.CubeIntake.kConfig.leaderPortNumber, Constants.CubeIntake.kConfig.canBus),
-                        new Phoenix5FXMotorController(Ports.CUBE_INTAKE, Ports.CANBUS),
-                        new MagEncoder(Ports.INTAKE_WRIST_ENCODER, true));
-            } else {
-                instance = new CubeIntake(new SimulatedMotorController(), new SimulatedMotorController(), new SimulatedAbsoluteEncoder());
-            }
+            instance = new CubeIntake();
         }
-
         return instance;
     }
     
-    public CubeIntake(MotorController servo, MotorController roller, AbsoluteEncoder absoluteEncoder) {
-        super(servo, new ArrayList<>(), Constants.CubeIntake.kConfig, Constants.CubeIntake.kCurrentZeroingConfig,
-                absoluteEncoder, Constants.CubeIntake.kEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());
+    public CubeIntake() {
+        super(Phoenix5FXMotorController.createRealOrSimulatedController(Constants.CubeIntake.kConfig.leaderPortNumber, Constants.CubeIntake.kConfig.canBus), 
+                new ArrayList<>(), Constants.CubeIntake.kConfig, Constants.CubeIntake.kCurrentZeroingConfig,
+                MagEncoder.createRealOrSimulatedEncoder(Ports.INTAKE_WRIST_ENCODER, true), 
+                Constants.CubeIntake.kEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());
         leader.setPIDF(Constants.CubeIntake.kStandardPID);
         setSupplyCurrentLimit(Constants.CubeIntake.kSupplyCurrentLimit);
         setPositionToAbsolute();
@@ -59,10 +50,9 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystem
 
         
         
-        intakeRoller = roller;
+        intakeRoller = Phoenix5FXMotorController.createRealOrSimulatedController(Ports.CUBE_INTAKE, Ports.CANBUS);
         intakeRoller.configureAsRoller();
         intakeRoller.setInverted(TalonFXInvertType.CounterClockwise);
-        intakeRoller.setNeutralMode(NeutralMode.Brake);
         setIntakeCurrent(Constants.CubeIntake.kStandardIntakeCurrentLimit);
     }
 

@@ -17,6 +17,14 @@ public class SimulatedMotorController implements MotorController {
     }
 
     @Override
+    public void configureAsCoaxialSwerveRotation() {
+    }
+
+    @Override
+    public void configureAsCoaxialSwerveDrive() {
+    }
+
+    @Override
     public ErrorCode configForwardSoftLimitThreshold(double encoderUnits) {
         return ErrorCode.OK;
     }
@@ -77,6 +85,11 @@ public class SimulatedMotorController implements MotorController {
     }
 
     @Override
+    public double getAppliedVoltage() {
+        return 0.0;
+    }
+
+    @Override
     public double getVelocityEncoderUnitsPer100Ms() {
         return 0.0;
     }
@@ -117,11 +130,20 @@ public class SimulatedMotorController implements MotorController {
     }
 
     @Override
+    public void selectProfileSlot(int slotIndex) {
+    }
+
+    @Override
     public void set(ControlMode mode, double demand) {
     }
 
     @Override
     public void set(ControlMode mode, double demand, double arbitraryFeedForward) {
+    }
+
+    @Override
+    public boolean isConnected() {
+        return true;
     }
     
 }

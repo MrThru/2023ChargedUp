@@ -4,4 +4,6 @@ public interface AbsoluteEncoder {
     public double getDegrees();
 
     public void setPosition(double degrees);
+
+    public boolean isConnected();
 }

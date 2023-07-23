@@ -9,6 +9,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 public interface MotorController {
     public void configureAsRoller();
     public void configureAsServo();
+    public void configureAsCoaxialSwerveRotation();
+    public void configureAsCoaxialSwerveDrive();
 
     public ErrorCode configForwardSoftLimitThreshold(double encoderUnits);
     public ErrorCode configReverseSoftLimitThreshold(double encoderUnits);
@@ -25,6 +27,7 @@ public interface MotorController {
 
     public double getSupplyAmps();
     public double getStatorAmps();
+    public double getAppliedVoltage();
 
     public double getVelocityEncoderUnitsPer100Ms();
     public double getSelectedSensorPosition();
@@ -38,9 +41,12 @@ public interface MotorController {
 
     public void setPIDF(MotorPIDF pidf);
     public ErrorCode config_IntegralZone(int slotIndex, double integralZoneEncoderUnits);
+    public void selectProfileSlot(int slotIndex);
 
     public void set(ControlMode mode, double demand);
     public void set(ControlMode mode, double demand, double arbitraryFeedForward);
+
+    public boolean isConnected();
 
     public static class MotorPIDF {
         public final int slotIndex;

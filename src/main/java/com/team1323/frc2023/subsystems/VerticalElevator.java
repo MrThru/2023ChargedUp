@@ -10,30 +10,22 @@ import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroingInputs;
-import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
-import com.team1323.lib.drivers.SimulatedMotorController;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VerticalElevator extends ServoSubsystemWithCurrentZeroing<ServoSubsystemWithCurrentZeroingInputs> {
     private static VerticalElevator instance = null;
     public static VerticalElevator getInstance() {
         if (instance == null) {
-            if (RobotBase.isReal()) {
-                instance = new VerticalElevator(new Phoenix5FXMotorController(Constants.VerticalElevator.kConfig.leaderPortNumber, Constants.VerticalElevator.kConfig.canBus));
-            } else {
-                instance = new VerticalElevator(new SimulatedMotorController());
-            }
+            instance = new VerticalElevator();
         }
-        
         return instance;
     }
 
-    private VerticalElevator(MotorController leader) {
-        super(leader, new ArrayList<>(), Constants.VerticalElevator.kConfig, 
-                Constants.VerticalElevator.kCurrentZeroingConfig, new ServoSubsystemWithCurrentZeroingInputs());
+    private VerticalElevator() {
+        super(Phoenix5FXMotorController.createRealOrSimulatedController(Constants.VerticalElevator.kConfig.leaderPortNumber, Constants.VerticalElevator.kConfig.canBus), 
+                new ArrayList<>(), Constants.VerticalElevator.kConfig, Constants.VerticalElevator.kCurrentZeroingConfig, new ServoSubsystemWithCurrentZeroingInputs());
         leader.useIntegratedSensor();
         leader.setInverted(TalonFXInvertType.Clockwise);
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(0.5));

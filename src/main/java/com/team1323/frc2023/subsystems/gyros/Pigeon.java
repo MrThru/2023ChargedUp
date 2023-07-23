@@ -2,28 +2,19 @@ package com.team1323.frc2023.subsystems.gyros;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
-import com.team1323.frc2023.Ports;
-import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
-public class Pigeon extends Gyro{
-	private static Pigeon instance = null;
-	public static Pigeon getInstance(){
-		if(instance == null){
-			instance = new Pigeon();
-		}
-		return instance;
+public class Pigeon implements Gyro {
+	private final PigeonIMU pigeon;
+	private double rollOffset = 0.0;
+
+	public static Gyro createRealOrSimulatedGyro(int deviceId) {
+		return RobotBase.isReal() ? new Pigeon(deviceId) : new SimulatedGyro();
 	}
-	
-	private PigeonIMU pigeon;
     
-	private Pigeon(){
-		try{
-			pigeon = new PigeonIMU(Ports.PIGEON);
-		}catch(Exception e){
-			System.out.println(e);
-		}
+	private Pigeon(int deviceId){
+		pigeon = new PigeonIMU(deviceId);
 	}
 	
 	public boolean isGood(PigeonIMU imu){
@@ -31,11 +22,8 @@ public class Pigeon extends Gyro{
 	}
 	
 	@Override
-	public Rotation2d getYaw(){
-		if(RobotBase.isReal()){
-			return Rotation2d.fromDegrees(pigeon.getFusedHeading());
-		}
-		return new Rotation2d();
+	public double getYaw(){
+		return pigeon.getFusedHeading();
 	}
 
 	public double getRawPitch(){
@@ -43,35 +31,39 @@ public class Pigeon extends Gyro{
 		pigeon.getYawPitchRoll(ypr);
 		return ypr[1];
 	}
-	public Rotation2d getPitch() {
-		return Rotation2d.fromDegrees(getRawPitch());
+
+	@Override
+	public double getPitch() {
+		return getRawPitch();
 	}
+
 	public double getRawRoll(){
 		double[] ypr = new double[3];
 		pigeon.getYawPitchRoll(ypr);
 		return ypr[2];
 	}
-	public Rotation2d getRoll() {
-		return Rotation2d.fromDegrees(getRawRoll());
+
+	@Override
+	public double getRoll() {
+		return getRawRoll() - rollOffset;
 	}
+
+	@Override
 	public double[] getYPR(){
 		double[] ypr = new double[3];
 		pigeon.getYawPitchRoll(ypr);
 		return ypr;
 	}
+
+	@Override
+	public void resetRoll() {
+		rollOffset = getRawRoll();
+	}
 	
-	public void setAngle(double angle){
+	@Override
+	public void setYaw(double angle){
 		pigeon.setFusedHeading(angle * 64.0, 10);
 		pigeon.setYaw(-angle, 10);
 		System.out.println("Pigeon angle set to: " + angle);
 	}
-	
-	public void outputToSmartDashboard(){
-		/*SmartDashboard.putBoolean("Pigeon 1 Good", isGood(pigeon));
-		SmartDashboard.putBoolean("Pigeon 2 Good", isGood(secondPigeon));
-		SmartDashboard.putNumber("Pigeon 1 Yaw", pigeon.getFusedHeading());
-		SmartDashboard.putNumber("Pigeon 2 Yaw", secondPigeon.getFusedHeading());*/
-	}
-
-
 }

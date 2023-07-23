@@ -17,33 +17,19 @@ import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.digitalinputs.IDigitalInput;
 import com.team1323.frc2023.subsystems.digitalinputs.RioDigitalInput;
-import com.team1323.frc2023.subsystems.digitalinputs.SimulatedDigitalInput;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
-import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Stopwatch;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Tunnel extends Subsystem {
     private static Tunnel instance = null;
     public static Tunnel getInstance() {
         if (instance == null) {
-            if (RobotBase.isReal()) {
-                instance = new Tunnel(new Phoenix5FXMotorController(Ports.TUNNEL_ENTRANCE_TALON, Ports.CANBUS),
-                        new Phoenix5FXMotorController(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS),
-                        new Phoenix5FXMotorController(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS),
-                        new RioDigitalInput(Ports.TUNNEL_FRONT_BANNER),
-                        new RioDigitalInput(Ports.TUNNEL_REAR_BANNER),
-                        new RioDigitalInput(Ports.INTAKE_BANNER));
-            } else {
-                instance = new Tunnel(new SimulatedMotorController(), new SimulatedMotorController(), new SimulatedMotorController(),
-                        new SimulatedDigitalInput(), new SimulatedDigitalInput(), new SimulatedDigitalInput());
-            }
+            instance = new Tunnel();
         }
-
         return instance;
     }
 
@@ -56,20 +42,19 @@ public class Tunnel extends Subsystem {
 
     private boolean rearBannerDetected = false;
 
-    public Tunnel(MotorController entrance, MotorController conveyor, MotorController topRoller,
-            IDigitalInput frontBanner, IDigitalInput rearBanner, IDigitalInput intakeBanner) {
+    private Tunnel() {
         cubeIntake = CubeIntake.getInstance();
 
-        tunnelEntrance = entrance;
-        conveyorTalon = conveyor;
-        frontRollerTalon = topRoller;
+        tunnelEntrance = Phoenix5FXMotorController.createRealOrSimulatedController(Ports.TUNNEL_ENTRANCE_TALON, Ports.CANBUS);
+        conveyorTalon = Phoenix5FXMotorController.createRealOrSimulatedController(Ports.TUNNEL_CONVEYOR_TALON, Ports.CANBUS);
+        frontRollerTalon = Phoenix5FXMotorController.createRealOrSimulatedController(Ports.TUNNEL_ROLLER_TALON, Ports.CANBUS);
         tunnelEntrance.configureAsRoller();
         conveyorTalon.configureAsRoller();
         frontRollerTalon.configureAsRoller();
 
-        this.frontBanner = frontBanner;
-        this.rearBanner = rearBanner;
-        this.intakeBanner = intakeBanner;
+        this.frontBanner = RioDigitalInput.createRealOrSimulatedInput(Ports.TUNNEL_FRONT_BANNER);
+        this.rearBanner = RioDigitalInput.createRealOrSimulatedInput(Ports.TUNNEL_REAR_BANNER);
+        this.intakeBanner = RioDigitalInput.createRealOrSimulatedInput(Ports.INTAKE_BANNER);
 
         conveyorTalon.setInverted(TalonFXInvertType.CounterClockwise);
         frontRollerTalon.setInverted(TalonFXInvertType.Clockwise);

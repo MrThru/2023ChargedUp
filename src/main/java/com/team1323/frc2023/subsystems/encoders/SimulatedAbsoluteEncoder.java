@@ -11,4 +11,9 @@ public class SimulatedAbsoluteEncoder implements AbsoluteEncoder {
     public void setPosition(double degrees) {
     }
     
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
 }

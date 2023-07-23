@@ -10,39 +10,31 @@ import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
-import com.team1323.frc2023.subsystems.encoders.AbsoluteEncoder;
 import com.team1323.frc2023.subsystems.encoders.Phoenix5CANCoder;
-import com.team1323.frc2023.subsystems.encoders.SimulatedAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoderInputs;
-import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
-import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWithAbsoluteEncoderInputs> {
     private static Shoulder instance = null;
     public static Shoulder getInstance() {
         if (instance == null) {
-            if (RobotBase.isReal()) {
-                instance = new Shoulder(new Phoenix5FXMotorController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus),
-                        new Phoenix5CANCoder(Ports.SHOULDER_ENCODER, true));
-            } else {
-                instance = new Shoulder(new SimulatedMotorController(), new SimulatedAbsoluteEncoder());
-            }
+            instance = new Shoulder();
         }
         return instance;
     }
     
-    public Shoulder(MotorController leader, AbsoluteEncoder absoluteEncoder) {
-        super(leader, new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
-                absoluteEncoder, Constants.Shoulder.kAbsoluteEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());
+    public Shoulder() {
+        super(Phoenix5FXMotorController.createRealOrSimulatedController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus), 
+                new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
+                Phoenix5CANCoder.createRealOrSimulatedEncoder(Ports.SHOULDER_ENCODER, true), 
+                Constants.Shoulder.kAbsoluteEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());
         if (Settings.kIsUsingShoulderCANCoder) {
             leader.useCANCoder(Ports.SHOULDER_ENCODER);
         } else {

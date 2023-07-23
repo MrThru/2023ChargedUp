@@ -5,47 +5,44 @@
 package com.team1323.frc2023.subsystems.gyros;
 
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.team1323.frc2023.Ports;
-import com.team254.lib.geometry.Rotation2d;
 
-/** Add your docs here. */
-public class Pigeon2IMU extends Gyro {
+import edu.wpi.first.wpilibj.RobotBase;
+
+public class Pigeon2IMU implements Gyro {
     Pigeon2 pigeon;
+    private double rollOffset = 0.0;
 
-    private static Pigeon2IMU instance = null;
-    public static Pigeon2IMU getInstance() {
-        if(instance == null)
-            instance = new Pigeon2IMU();
-        return instance;
+    public static Gyro createRealOrSimulatedGyro(int deviceId, String canBus) {
+        return RobotBase.isReal() ? new Pigeon2IMU(deviceId, canBus) : new SimulatedGyro();
     }
 
-    public Pigeon2IMU() {
-        pigeon = new Pigeon2(Ports.PIGEON, Ports.CANBUS);
-
+    private Pigeon2IMU(int deviceId, String canBus) {
+        pigeon = new Pigeon2(deviceId, canBus);
     }
 
     @Override
-    public void setAngle(double angle) {
+    public void setYaw(double angle) {
         pigeon.setYaw(angle);
     }
 
     @Override
-    public Rotation2d getYaw() {
-        return Rotation2d.fromDegrees(pigeon.getYaw());
+    public double getYaw() {
+        return pigeon.getYaw();
     }
 
     @Override
-    public Rotation2d getPitch() {
-        return Rotation2d.fromDegrees(pigeon.getPitch());
+    public double getPitch() {
+        return pigeon.getPitch();
     }
 
-    private double rollOffset = 0;
+    @Override
     public void resetRoll() {
         rollOffset = pigeon.getRoll();
     }
+
     @Override
-    public Rotation2d getRoll() {
-        return Rotation2d.fromDegrees(pigeon.getRoll() - rollOffset);
+    public double getRoll() {
+        return pigeon.getRoll() - rollOffset;
     }
     
     @Override

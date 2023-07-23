@@ -8,38 +8,30 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
-import com.team1323.frc2023.subsystems.encoders.AbsoluteEncoder;
 import com.team1323.frc2023.subsystems.encoders.Phoenix5CANCoder;
-import com.team1323.frc2023.subsystems.encoders.SimulatedAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoderInputs;
-import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
-import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Wrist extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWithAbsoluteEncoderInputs> {
     private static Wrist instance = null;
     public static Wrist getInstance() {
         if (instance == null) {
-            if (RobotBase.isReal()) {
-                instance = new Wrist(new Phoenix5FXMotorController(Constants.Wrist.kConfig.leaderPortNumber, Constants.Wrist.kConfig.canBus),
-                        new Phoenix5CANCoder(Ports.WRIST_ENCODER, false));
-            } else {
-                instance = new Wrist(new SimulatedMotorController(), new SimulatedAbsoluteEncoder());
-            }
+            instance = new Wrist();
         }
         return instance;
     }
 
-    private Wrist(MotorController leader, AbsoluteEncoder absoluteEncoder) {
-        super(leader, new ArrayList<>(), Constants.Wrist.kConfig, Constants.Wrist.kCurrentZeroingConfig,
-                absoluteEncoder, Constants.Wrist.kAbsoluteEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());
+    private Wrist() {
+        super(Phoenix5FXMotorController.createRealOrSimulatedController(Constants.Wrist.kConfig.leaderPortNumber, Constants.Wrist.kConfig.canBus), 
+                new ArrayList<>(), Constants.Wrist.kConfig, Constants.Wrist.kCurrentZeroingConfig,
+                Phoenix5CANCoder.createRealOrSimulatedEncoder(Ports.WRIST_ENCODER, false), 
+                Constants.Wrist.kAbsoluteEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());
         leader.useIntegratedSensor();
         leader.config_IntegralZone(0, outputUnitsToEncoderUnits(4.0));
         leader.setPIDF(Constants.Wrist.kPIDF);

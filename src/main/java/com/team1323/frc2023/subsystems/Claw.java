@@ -17,11 +17,9 @@ import com.team1323.frc2023.subsystems.LEDs.LEDColors;
 import com.team1323.frc2023.subsystems.requests.Request;
 import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
-import com.team1323.lib.drivers.SimulatedMotorController;
 import com.team1323.lib.util.Stopwatch;
 import com.team1323.lib.util.Util;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
@@ -29,13 +27,8 @@ public class Claw extends Subsystem {
     private static Claw instance = null;
     public static Claw getInstance() {
         if (instance == null) {
-            if (RobotBase.isReal()) {
-                instance = new Claw(new Phoenix5FXMotorController(Ports.CLAW, Ports.CANBUS));
-            } else {
-                instance = new Claw(new SimulatedMotorController());
-            }
+            instance = new Claw();
         }
-
         return instance;
     }
 
@@ -48,8 +41,8 @@ public class Claw extends Subsystem {
 
     private final ClawInputsAutoLogged inputs = new ClawInputsAutoLogged();
      
-    public Claw(MotorController motor) {
-        claw = motor;
+    private Claw() {
+        claw = Phoenix5FXMotorController.createRealOrSimulatedController(Ports.CLAW, Ports.CANBUS);
         claw.configureAsRoller();
         claw.configSupplyCurrentLimit(200);
         claw.configStatorCurrentLimit(Constants.Claw.kIntakeConeStatorCurrentLimit);

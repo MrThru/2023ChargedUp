@@ -14,7 +14,6 @@ import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.CubeIntake;
-import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
@@ -59,7 +58,7 @@ public class TwoHighPieceAndRampMode extends HighLinkBaseMode {
         }
 
         // Get on the bridge and balance
-        Pigeon2IMU.getInstance().resetRoll();
+        Swerve.getInstance().resetGyroRoll();
         runAction(new SetTrajectoryAction(trajectories.thirdPieceToBridgePath, Rotation2d.fromDegrees(0), 0.75, quadrant));
         if (Claw.getInstance().getCurrentHoldingObject() != HoldingObject.Cone) {
             Superstructure.getInstance().request(SuperstructureCoordinator.getInstance().getConeStowChoreography());

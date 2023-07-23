@@ -126,7 +126,7 @@ public class DriverControls implements Loop {
         SmartDashboard.putBoolean("Subsystems Coast Mode", false);
         SmartDashboard.putBoolean("Swerve Coast Mode", false);
 
-        swerve.setDriveNeutralMode(NeutralMode.Brake);
+        swerve.setModuleNeutralModes(NeutralMode.Brake);
         cubeIntake.lockPosition();
         leds.configLEDs(LEDs.LEDColors.TWINKLE);
     }

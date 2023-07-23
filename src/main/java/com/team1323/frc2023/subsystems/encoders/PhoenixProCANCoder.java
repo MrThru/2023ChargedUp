@@ -1,15 +1,22 @@
 package com.team1323.frc2023.subsystems.encoders;
 
+import com.ctre.phoenixpro.StatusCode;
 import com.ctre.phoenixpro.configs.CANcoderConfiguration;
 import com.ctre.phoenixpro.hardware.CANcoder;
 import com.ctre.phoenixpro.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenixpro.signals.SensorDirectionValue;
 import com.team1323.frc2023.Ports;
 
+import edu.wpi.first.wpilibj.RobotBase;
+
 public class PhoenixProCANCoder implements AbsoluteEncoder {
     private final CANcoder encoder;
 
-    public PhoenixProCANCoder(int deviceId, boolean isReversed, double magnetOffset) {
+    public static AbsoluteEncoder createRealOrSimulatedEncoder(int deviceId, boolean isReversed, double magnetOffset) {
+        return RobotBase.isReal() ? new PhoenixProCANCoder(deviceId, isReversed, magnetOffset) : new SimulatedAbsoluteEncoder();
+    }
+
+    private PhoenixProCANCoder(int deviceId, boolean isReversed, double magnetOffset) {
         encoder = new CANcoder(deviceId, Ports.CANBUS);
         CANcoderConfiguration configuration = new CANcoderConfiguration();
         configuration.MagnetSensor.SensorDirection = isReversed ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
@@ -26,5 +33,10 @@ public class PhoenixProCANCoder implements AbsoluteEncoder {
     @Override
     public void setPosition(double degrees) {
         encoder.setPosition(degrees / 360.0);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return encoder.getAbsolutePosition().getError() == StatusCode.OK;
     }
 }
