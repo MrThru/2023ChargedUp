@@ -19,8 +19,9 @@ import com.team254.lib.geometry.Translation2d;
 public class Constants {
     /*All distance measurements are in inches, unless otherwise noted.*/
 
+    public static final double kMainThreadDt = 0.02;
     public static final double kLooperDt = 0.01;
-    public static final double kAutoAimPredictionTime = 0.14; // 0.14
+    public static final double kAutoAimPredictionTime = 0.14;
 
     public static final double kEpsilon = 0.0001;
     

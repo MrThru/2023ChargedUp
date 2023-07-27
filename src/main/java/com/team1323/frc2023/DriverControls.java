@@ -79,14 +79,6 @@ public class DriverControls implements Loop {
     private Superstructure s;
 
     private final boolean oneControllerMode = false;
-    private boolean inAuto = true;
-    public void setAutoMode(boolean auto) {
-        inAuto = auto;
-    }
-
-    public boolean getInAuto() {
-        return inAuto;
-    }
 
     private NodeLocation.Row targetScoringRow = NodeLocation.Row.MIDDLE;
     private Tunnel.State lastTunnelState = Tunnel.State.OFF;
@@ -118,11 +110,7 @@ public class DriverControls implements Loop {
 
     @Override
     public void onStart(double timestamp) {
-        if (inAuto) {
-            swerve.requireModuleConfiguration();
-        } else {
-            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
-        }
+        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
         SmartDashboard.putBoolean("Subsystems Coast Mode", false);
         SmartDashboard.putBoolean("Swerve Coast Mode", false);
 
@@ -133,26 +121,23 @@ public class DriverControls implements Loop {
 
     @Override
     public void onLoop(double timestamp) {
-        if(inAuto) {
-            // Any auto-specific LED controls can go here
-        } else {
-            driver.update();
-			coDriver.update();
-            //singleController.update();
-            //testController.update();
-            if(oneControllerMode)
-                singleController.update();
-            if(!oneControllerMode) 
-                twoControllerMode();;;;;;;
-            SmartDashboard.putNumber("timestamp", timestamp);
-        }
+        driver.update();
+        coDriver.update();
+        //singleController.update();
+        //testController.update();
+        if(oneControllerMode)
+            singleController.update();
+        if(!oneControllerMode) 
+            twoControllerMode();;;;;;;
+        SmartDashboard.putNumber("timestamp", timestamp);
     }
 
     @Override
     public void onStop(double timestamp) {
-        if(!inAuto) {
-            SmartDashboard.putBoolean("Subsystems Coast Mode", true);
-        }
+        // TODO: Make this only occur after teleop ends. Currently, this onStop will be
+        // called whenever auto OR teleop ends. Changes to SynchronousLoop will likely
+        // be required.
+        SmartDashboard.putBoolean("Subsystems Coast Mode", true);
         subsystems.stop();
     }
 

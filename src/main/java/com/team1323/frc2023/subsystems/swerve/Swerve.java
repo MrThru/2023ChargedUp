@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.DriveMotionPlanner;
 import com.team1323.frc2023.Ports;
-import com.team1323.frc2023.RobotState;
 import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.ILooper;
@@ -33,7 +32,6 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryGenerator;
@@ -92,7 +90,6 @@ public class Swerve extends Subsystem{
 	}
 	
 	//Vision dependencies
-	RobotState robotState;
 	Rotation2d visionTargetHeading = new Rotation2d();
 	VisionPIDController visionPID = new VisionPIDBuilder().build();
 	public boolean isTracking(){
@@ -114,15 +111,11 @@ public class Swerve extends Subsystem{
 	
 	//Odometry variables
 	Pose2d pose;
-	Twist2d velocity = Twist2d.identity();
 	double distanceTraveled;
 	double currentVelocity = 0;
 	double lastUpdateTimestamp = 0;
 	public synchronized Pose2d getPose(){
 		return pose;
-	}
-	public Twist2d getVelocity() {
-		return velocity;
 	}
 	
 	// WPILib odometry
@@ -203,8 +196,6 @@ public class Swerve extends Subsystem{
 		pigeon = Pigeon2IMU.createRealOrSimulatedGyro(Ports.PIGEON, Ports.CANBUS);
 		
 		motionPlanner = new DriveMotionPlanner();
-		
-		robotState = RobotState.getInstance();
 		
 		SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
 			Units.inchesToMeters(Constants.kVehicleToModuleZero),
@@ -640,14 +631,17 @@ public class Swerve extends Subsystem{
 	
 	
 	public synchronized void updateEvadeRevolve() {
+		// TODO: Uncomment this when the swerve's velocity reading is fixed to use SwerveModuleState instead of SwerveModulePosition
+		/*
 		double predictedRotation = inputs.gyroYaw + (velocity.dtheta * 180/Math.PI) * 0.1;
-		double rotationDifference = predictedRotation /*pigeonAngle.getUnboundedDegrees()*/ - startingRotationValue;
+		double rotationDifference = predictedRotation pigeonAngle.getUnboundedDegrees() - startingRotationValue;
 		if(Math.abs(rotationDifference) >= (rotationAmount * totalModulesPivoted * Math.signum(rotationalInput))) {
 			totalModulesPivoted += Math.signum(rotationalInput);
 			currentModuleIndex = (int) Util.boundToScope(0, 4, currentModuleIndex + Math.signum(rotationalInput));
 		}
 		clockwiseCenter = Constants.kModulePositions.get(currentModuleIndex);
 		counterClockwiseCenter = Constants.kModulePositions.get((int) Util.boundToScope(0, 4, currentModuleIndex + 1));
+		*/
 	}
 
 	/** Called every cycle to update the swerve based on its control state */
@@ -783,9 +777,12 @@ public class Swerve extends Subsystem{
 		}
 	}
 
-	public synchronized void updateOdometry(double timestamp, double deltaTime) {
+	public synchronized void updateOdometry(double timestamp) {
 		pose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, Rotation2d.fromDegrees(inputs.gyroYaw), getModulePositions()));
-		velocity = Units.metersToInches(poseEstimator.getDeltaMeters().scaled(1.0 / deltaTime));
+		// TODO: Add a method to the pose estimator (or to the kinematics object) that takes a list of SwerveModuleStates (i.e., velocities)
+		// and returns a Twist2d representing the overall velocity of the robot. This will yield a more accurate velocity for the robot than
+		// the current method of using encoder deltas. This more accurate velocity will be useful for predicting robot motion, expecially
+		// when using a turret to aim at a vision target.
 	}
 
 	public synchronized Pose2d getPoseAtTime(double timeSeconds) {
@@ -920,12 +917,9 @@ public class Swerve extends Subsystem{
 	}
 
 	public SwerveModulePosition[] getModulePositions() {
-		SwerveModulePosition[] positions = new SwerveModulePosition[modules.size()];
-		for (int i = 0; i < modules.size(); i++) {
-			positions[i] = new SwerveModulePosition(Units.inchesToMeters(modules.get(i).getDriveDistanceInches()), 
-					modules.get(i).getAngle());
-		}
-		return positions;
+		return modules.stream()
+				.map(SwerveModule::getPosition)
+				.toArray(SwerveModulePosition[]::new);
 	}
 
 	public Rotation2d getHeading() {
@@ -957,6 +951,8 @@ public class Swerve extends Subsystem{
 		inputs.gyroYaw = pigeon.getYaw();
 		inputs.gyroRoll = pigeon.getRoll();
 		Logger.getInstance().processInputs("Swerve", inputs);
+
+		updateOdometry(Timer.getFPGATimestamp());
 	}
 	
 	@Override
@@ -994,7 +990,6 @@ public class Swerve extends Subsystem{
 	/** Sets the robot's internal position and heading to match that of the given pose. */
 	public synchronized void zeroSensors(Pose2d startingPose){
 		pose = startingPose;
-		robotState.reset(Timer.getFPGATimestamp(), startingPose, Rotation2d.identity());
 		poseEstimator.resetPosition(Rotation2d.fromDegrees(inputs.gyroYaw), getModulePositions(), Units.inchesToMeters(startingPose));
 		distanceTraveled = 0;
 	}
@@ -1032,19 +1027,8 @@ public class Swerve extends Subsystem{
 			SmartDashboard.putString("Heading Controller", headingController.getState().toString());
 			SmartDashboard.putNumber("Target Heading", getTargetHeading().getDegrees());
 			SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
-			SmartDashboard.putString("Robot Velocity", velocity.toString());
 			SmartDashboard.putNumber("Gyro Yaw", inputs.gyroYaw);
 			SmartDashboard.putNumber("Gyro Pitch", inputs.gyroRoll);
-
-			double swerveVelocity =  velocity.norm() / 12.0;
-			double currentTimestamp = Timer.getFPGATimestamp();
-			SmartDashboard.putNumber("Robot Swerve Velocity", swerveVelocity);
-			SmartDashboard.putNumber("Robot Swerve Acceleration", ((swerveVelocity - prevSwerveVelocity)));
-			prevSwerveVelocity = swerveVelocity;
-			lastTimestamp = currentTimestamp;
-			if(swerveVelocity > largestVelocity)
-				largestVelocity = swerveVelocity;
-			SmartDashboard.putNumber("Robot Swerve Peak Velocity", largestVelocity);
 		}
 	}
 

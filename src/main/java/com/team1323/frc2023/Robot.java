@@ -9,27 +9,24 @@ import java.util.Set;
 import org.littletonrobotics.junction.LoggedRobot;
 
 import com.team1323.frc2023.auto.AutoModeBase;
-import com.team1323.frc2023.auto.AutoModeExecuter;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
 import com.team1323.frc2023.auto.modes.TestMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.LimelightProcessor;
-import com.team1323.frc2023.loops.Looper;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
-import com.team1323.frc2023.loops.RobotStateEstimator;
+import com.team1323.frc2023.loops.SynchronousLooper;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.LEDs;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
-import com.team1323.lib.util.CrashTracker;
-import com.team1323.lib.util.Logger;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -43,17 +40,17 @@ public class Robot extends LoggedRobot {
 
 	private SubsystemManager subsystems;
 
-	private AutoModeExecuter autoModeExecuter = null;
 	private TrajectoryGenerator generator = TrajectoryGenerator.getInstance();
 	private QuinticPathTransmitter qTransmitter = QuinticPathTransmitter.getInstance();
 	private SmartDashboardInteractions smartDashboardInteractions = new SmartDashboardInteractions();
 
-	private Looper enabledLooper = new Looper();
-	private Looper disabledLooper = new Looper();
-
-	private RobotState robotState = RobotState.getInstance();
-
 	private DriverControls driverControls;	
+
+	private SynchronousLooper looper;
+
+	public Robot() {
+		super(Constants.kMainThreadDt);
+	}
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -62,21 +59,15 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void robotInit() {
 		driverControls = DriverControls.getInstance();
-		
 		subsystems = driverControls.getSubsystems();
+		looper = new SynchronousLooper(subsystems);
+
 		Swerve.getInstance().zeroSensors();
 
-		Logger.clearLog();
-
-		enabledLooper.register(driverControls);
-		enabledLooper.register(RobotStateEstimator.getInstance());
-		enabledLooper.register(QuinticPathTransmitter.getInstance());
-		enabledLooper.register(LimelightProcessor.getInstance());
-		disabledLooper.register(RobotStateEstimator.getInstance());
-		disabledLooper.register(QuinticPathTransmitter.getInstance());
-		disabledLooper.register(LimelightProcessor.getInstance());
-		subsystems.registerEnabledLoops(enabledLooper);
-		subsystems.registerDisabledLoops(disabledLooper);
+		looper.registerTeleopLoop(driverControls);
+		looper.register(QuinticPathTransmitter.getInstance());
+		// TODO: Convert the limelight into a subsystem and add it to the SubsystemManager as the last subsystem
+		looper.register(LimelightProcessor.getInstance());
 
 		smartDashboardInteractions.initWithDefaults();
 
@@ -91,7 +82,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotPeriodic() {
-		subsystems.outputToSmartDashboard();
+		// TODO: Find a way to make these updates compatible with log replay
 		Netlink.getInstance().update();
 		SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
 		SmartDashboard.putNumber("Match time", DriverStation.getMatchTime());
@@ -100,42 +91,22 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void autonomousInit() {
-		try {
-			SmartDashboard.putBoolean("Subsystems Coast Mode", false);
-			if (autoModeExecuter != null)
-				autoModeExecuter.stop();
-
-			AllianceChooser.update();
-			driverControls.setAutoMode(true);
-			disabledLooper.stop();
-			enabledLooper.start();
-
-			SmartDashboard.putBoolean("Auto", true);
-
-			autoModeExecuter = new AutoModeExecuter();
-			autoModeExecuter.setAutoMode(smartDashboardInteractions.getSelectedAutoMode());
-			autoModeExecuter.start();
-
-
-		} catch (Throwable t) {
-			CrashTracker.logThrowableCrash(t);
-			throw t;
-		}
+		SmartDashboard.putBoolean("Subsystems Coast Mode", false);
+		AllianceChooser.update();
+		looper.startAuto(Timer.getFPGATimestamp());
+		Swerve.getInstance().requireModuleConfiguration();
 	}
 
 	@Override
 	public void teleopInit() {
-		try {
-			AllianceChooser.update();
-			driverControls.setAutoMode(false);
-			disabledLooper.stop();
-			enabledLooper.start();
-			SmartDashboard.putBoolean("Auto", false);
+		// TOOD: Update AllianceChooser to support log replay
+		AllianceChooser.update();
+		looper.startTeleop(Timer.getFPGATimestamp());
+	}
 
-		} catch (Throwable t) {
-			CrashTracker.logThrowableCrash(t);
-			throw t;
-		}
+	@Override
+	public void autonomousPeriodic() {
+		looper.onAutoLoop(Timer.getFPGATimestamp());
 	}
 
 	/**
@@ -143,51 +114,25 @@ public class Robot extends LoggedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		try {
-			enabledLooper.outputToSmartDashboard();
-		} catch (Throwable t) {
-			CrashTracker.logThrowableCrash(t);
-			throw t;
-		}
+		looper.onTeleopLoop(Timer.getFPGATimestamp());
 	}
 
 	@Override
 	public void disabledInit() {
-		try {
-			if (autoModeExecuter != null)
-				autoModeExecuter.stop();
-			AllianceChooser.update();
-			enabledLooper.stop();
-			subsystems.stop();
-			disabledLooper.start();
-			
-			LEDs.getInstance().configLEDs(LEDs.getInstance().disabledLEDColorsMode);;;;;;;;;;;;;;
-
-		} catch (Throwable t) {
-			CrashTracker.logThrowableCrash(t);
-			throw t;
-		}
+		AllianceChooser.update();
+		LEDs.getInstance().configLEDs(LEDs.getInstance().disabledLEDColorsMode);;;;;;;;;;;;;;
+		looper.startDisabled(Timer.getFPGATimestamp());
 	}
 
 	@Override
 	public void disabledPeriodic() {
-		try {
-			disabledLooper.outputToSmartDashboard();
-			smartDashboardInteractions.output();
-			Settings.update();
-			Swerve.getInstance().zeroModuleAngles();
-			Shoulder.getInstance().setAbsolutePositionWithCounter();
-			Wrist.getInstance().setAbsolutePositionWithCounter();
-			CubeIntake.getInstance().setAbsolutePositionWithCounter();
-		} catch (Throwable t) {
-			CrashTracker.logThrowableCrash(t);
-			throw t;
-		}
-	}
-
-	@Override
-	public void testInit() {
-
+		smartDashboardInteractions.output();
+		Settings.update();
+		// TODO: Move this to a Loop
+		Swerve.getInstance().zeroModuleAngles();
+		Shoulder.getInstance().setAbsolutePositionWithCounter();
+		Wrist.getInstance().setAbsolutePositionWithCounter();
+		CubeIntake.getInstance().setAbsolutePositionWithCounter();
 	}
 
 	public void printStackTrace() {
