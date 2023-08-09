@@ -768,6 +768,8 @@ public class LimelightHelpers {
             System.err.println("lljson error: " + e.getMessage());
         }
 
+        // TODO: Record the JSON parse latency as an AdvantageKit input so that it is accurate
+        // during log replay
         long end = System.nanoTime();
         double millis = (end - start) * .000001;
         results.targetingResults.latency_jsonParse = millis;

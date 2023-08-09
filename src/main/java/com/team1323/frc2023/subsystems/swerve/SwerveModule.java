@@ -2,6 +2,7 @@ package com.team1323.frc2023.subsystems.swerve;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.encoders.AbsoluteEncoder;
@@ -27,7 +28,6 @@ public abstract class SwerveModule extends Subsystem {
 
 		rotationAbsoluteEncoder = MagEncoder.createRealOrSimulatedEncoder(Ports.kModuleEncoders[moduleId], flipAbsoluteEncoder);
 		this.encoderOffsetDegrees = encoderOffsetDegrees;
-		resetRotationToAbsolute();
 	}
 
 	// Should be part of each module implementation's loggable inputs
@@ -116,5 +116,15 @@ public abstract class SwerveModule extends Subsystem {
 
 	public void setRotationMotorZeroed(boolean isZeroed) {
 		rotationMotorZeroed = isZeroed;
+	}
+
+	public static class SwerveMotorInfo {
+		public final int deviceId;
+		public final TalonFXInvertType invertType;
+
+		public SwerveMotorInfo(int deviceId, TalonFXInvertType invertType) {
+			this.deviceId = deviceId;
+			this.invertType = invertType;
+		}
 	}
 }

@@ -20,6 +20,7 @@ import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.gyros.Gyro;
 import com.team1323.frc2023.subsystems.gyros.Pigeon2IMU;
 import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.frc2023.subsystems.swerve.SwerveModule.SwerveMotorInfo;
 import com.team1323.frc2023.vision.VisionPIDController;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.math.Units;
@@ -178,18 +179,18 @@ public class Swerve extends Subsystem{
 		 *     |____|_______________|____|
 		 * 		
 		 */
-		frontRight = new CoaxialSwerveModule(0, Ports.FRONT_RIGHT_ROTATION, Ports.FRONT_RIGHT_DRIVE, 
-				new CoaxialSwerveModule.MotorDirectionConfig(TalonFXInvertType.Clockwise, TalonFXInvertType.CounterClockwise), 
-				Constants.kFrontRightEncoderStartingPos, false);
-		frontLeft = new CoaxialSwerveModule(1, Ports.FRONT_LEFT_ROTATION, Ports.FRONT_LEFT_DRIVE, 
-				new CoaxialSwerveModule.MotorDirectionConfig(TalonFXInvertType.Clockwise, TalonFXInvertType.Clockwise), 
-				Constants.kFrontLeftEncoderStartingPos, false);
-		rearLeft = new CoaxialSwerveModule(2, Ports.REAR_LEFT_ROTATION, Ports.REAR_LEFT_DRIVE, 
-				new CoaxialSwerveModule.MotorDirectionConfig(TalonFXInvertType.Clockwise, TalonFXInvertType.Clockwise), 
-				Constants.kRearLeftEncoderStartingPos, false);
-		rearRight = new CoaxialSwerveModule(3, Ports.REAR_RIGHT_ROTATION, Ports.REAR_RIGHT_DRIVE, 
-				new CoaxialSwerveModule.MotorDirectionConfig(TalonFXInvertType.Clockwise, TalonFXInvertType.CounterClockwise), 
-				Constants.kRearRightEncoderStartingPos, false);
+		frontRight = new CoaxialSwerveModule(0, Constants.kFrontRightEncoderStartingPos, false, 
+				new SwerveMotorInfo(Ports.FRONT_RIGHT_ROTATION, TalonFXInvertType.Clockwise),
+				new SwerveMotorInfo(Ports.FRONT_RIGHT_DRIVE, TalonFXInvertType.CounterClockwise));
+		frontLeft = new CoaxialSwerveModule(1, Constants.kFrontLeftEncoderStartingPos, false, 
+				new SwerveMotorInfo(Ports.FRONT_LEFT_ROTATION, TalonFXInvertType.Clockwise),
+				new SwerveMotorInfo(Ports.FRONT_LEFT_DRIVE, TalonFXInvertType.Clockwise));
+		rearLeft = new CoaxialSwerveModule(2, Constants.kRearLeftEncoderStartingPos, false, 
+				new SwerveMotorInfo(Ports.REAR_LEFT_ROTATION, TalonFXInvertType.Clockwise),
+				new SwerveMotorInfo(Ports.REAR_LEFT_DRIVE, TalonFXInvertType.Clockwise));
+		rearRight = new CoaxialSwerveModule(3, Constants.kRearRightEncoderStartingPos, false, 
+				new SwerveMotorInfo(Ports.REAR_RIGHT_ROTATION, TalonFXInvertType.Clockwise),
+				new SwerveMotorInfo(Ports.REAR_RIGHT_DRIVE, TalonFXInvertType.CounterClockwise));
 		
 		modules = Arrays.asList(frontRight, frontLeft, rearLeft, rearRight);
 		

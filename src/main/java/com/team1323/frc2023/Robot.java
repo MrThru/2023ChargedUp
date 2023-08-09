@@ -133,6 +133,8 @@ public class Robot extends LoggedRobot {
 		Shoulder.getInstance().setAbsolutePositionWithCounter();
 		Wrist.getInstance().setAbsolutePositionWithCounter();
 		CubeIntake.getInstance().setAbsolutePositionWithCounter();
+
+		looper.onDisabledLoop(Timer.getFPGATimestamp());
 	}
 
 	public void printStackTrace() {

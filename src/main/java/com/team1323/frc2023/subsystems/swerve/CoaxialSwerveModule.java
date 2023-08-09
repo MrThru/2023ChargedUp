@@ -1,12 +1,15 @@
 package com.team1323.frc2023.subsystems.swerve;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.lib.drivers.MotorController;
@@ -16,21 +19,36 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 public class CoaxialSwerveModule extends SwerveModule {
-    private final MotorController rotationMotor, driveMotor;
+    private final MotorController rotationMotor, leadDriveMotor;
+    private final List<MotorController> allDriveMotors, followerDriveMotors;
     private final CoaxialSwerveInputsAutoLogged inputs = new CoaxialSwerveInputsAutoLogged();
     private final CoaxialSwerveOutputs outputs = new CoaxialSwerveOutputs();
 
-    public CoaxialSwerveModule(int moduleId, int rotationPort, int drivePort,
-            MotorDirectionConfig motorDirectionConfig, double encoderOffset, boolean flipAbsoluteEncoder) {
-        super(moduleId, encoderOffset, flipAbsoluteEncoder);
+    public CoaxialSwerveModule(int moduleId, double encoderOffsetDegrees, boolean flipAbsoluteEncoder,
+            SwerveMotorInfo rotationMotorInfo, SwerveMotorInfo leadDriveMotorInfo, SwerveMotorInfo... followerDriveMotorInfos) {
+        super(moduleId, encoderOffsetDegrees, flipAbsoluteEncoder);
 
-        rotationMotor = Phoenix5FXMotorController.createRealOrSimulatedController(rotationPort, Ports.CANBUS);
+        rotationMotor = Phoenix5FXMotorController.createRealOrSimulatedController(rotationMotorInfo.deviceId, Ports.CANBUS);
         rotationMotor.configureAsCoaxialSwerveRotation();
-        rotationMotor.setInverted(motorDirectionConfig.rotationMotorInvertType);
+        rotationMotor.setInverted(rotationMotorInfo.invertType);
 
-        driveMotor = Phoenix5FXMotorController.createRealOrSimulatedController(drivePort, Ports.CANBUS);
+        leadDriveMotor = createDriveMotor(leadDriveMotorInfo);
+        followerDriveMotors = Arrays.stream(followerDriveMotorInfos)
+                .map(info -> createDriveMotor(info))
+                .toList();
+        allDriveMotors = new ArrayList<>();
+        allDriveMotors.add(leadDriveMotor);
+        allDriveMotors.addAll(followerDriveMotors);
+
+        followerDriveMotors.forEach(m -> m.set(ControlMode.Follower, leadDriveMotorInfo.deviceId));
+    }
+
+    private MotorController createDriveMotor(SwerveMotorInfo motorInfo) {
+        MotorController driveMotor = Phoenix5FXMotorController.createRealOrSimulatedController(motorInfo.deviceId, Ports.CANBUS);
         driveMotor.configureAsCoaxialSwerveDrive();
-        driveMotor.setInverted(motorDirectionConfig.driveMotorInvertType);
+        driveMotor.setInverted(motorInfo.invertType);
+
+        return driveMotor;
     }
 
     @Override
@@ -79,7 +97,7 @@ public class CoaxialSwerveModule extends SwerveModule {
 
     @Override
     public double getDriveVoltage() {
-        return driveMotor.getAppliedVoltage();
+        return leadDriveMotor.getAppliedVoltage();
     }
 
     @Override
@@ -94,7 +112,7 @@ public class CoaxialSwerveModule extends SwerveModule {
     @Override
     public void setNeutralMode(NeutralMode mode) {
         rotationMotor.setNeutralMode(mode);
-        driveMotor.setNeutralMode(mode);
+        allDriveMotors.forEach(m -> m.setNeutralMode(mode));
     }
 
     @Override
@@ -136,7 +154,7 @@ public class CoaxialSwerveModule extends SwerveModule {
             outputs.driveDemand = inchesPerSecondToEncVelocity(driveVector.norm());
         }
 
-        driveMotor.selectProfileSlot(1);
+        leadDriveMotor.selectProfileSlot(1);
         outputs.driveControlMode = ControlMode.Velocity;
     }
 
@@ -156,7 +174,7 @@ public class CoaxialSwerveModule extends SwerveModule {
     public void setClosedLoopPosition(Translation2d driveVector) {
         setAngle(driveVector.direction());
 
-        driveMotor.selectProfileSlot(0);
+        leadDriveMotor.selectProfileSlot(0);
 		outputs.driveControlMode = ControlMode.MotionMagic;
 		outputs.driveDemand = inputs.drivePosition + inchesToEncUnits(driveVector.norm());
     }
@@ -216,8 +234,8 @@ public class CoaxialSwerveModule extends SwerveModule {
     @Override
     public void readPeriodicInputs() {
         inputs.rotationPosition = rotationMotor.getSelectedSensorPosition();
-        inputs.drivePosition = driveMotor.getSelectedSensorPosition();
-        inputs.driveVelocity = driveMotor.getVelocityEncoderUnitsPer100Ms();
+        inputs.drivePosition = leadDriveMotor.getSelectedSensorPosition();
+        inputs.driveVelocity = leadDriveMotor.getVelocityEncoderUnitsPer100Ms();
         inputs.absoluteRotationDegrees = rotationAbsoluteEncoder.getDegrees();
         Logger.getInstance().processInputs(name, inputs);
     }
@@ -225,22 +243,12 @@ public class CoaxialSwerveModule extends SwerveModule {
     @Override
     public void writePeriodicOutputs() {
         rotationMotor.set(outputs.rotationControlMode, outputs.rotationDemand);
-        driveMotor.set(outputs.driveControlMode, outputs.driveDemand);
+        leadDriveMotor.set(outputs.driveControlMode, outputs.driveDemand);
     }
 
     @Override
     public void outputTelemetry() {
         // TODO: Write any outputs to the AdvantageKit logger.
-    }
-
-    public static class MotorDirectionConfig {
-        public final TalonFXInvertType rotationMotorInvertType;
-        public final TalonFXInvertType driveMotorInvertType;
-
-        public MotorDirectionConfig(TalonFXInvertType rotationMotorInvertType, TalonFXInvertType driveMotorInvertType) {
-            this.rotationMotorInvertType = rotationMotorInvertType;
-            this.driveMotorInvertType = driveMotorInvertType;
-        }
     }
 
     @AutoLog
