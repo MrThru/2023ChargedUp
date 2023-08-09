@@ -9,13 +9,14 @@ import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
+import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.requests.EmptyRequest;
 import com.team1323.frc2023.requests.LambdaRequest;
 import com.team1323.frc2023.requests.ParallelRequest;
 import com.team1323.frc2023.requests.Request;
 import com.team1323.frc2023.requests.RequestExecuter;
 import com.team1323.frc2023.requests.SequentialRequest;
-import com.team1323.frc2023.loops.Loop;
+import com.team1323.frc2023.requests.WaitRequest;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.CubeIntake;
@@ -31,7 +32,6 @@ import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Superstructure extends Subsystem {
@@ -121,29 +121,6 @@ public class Superstructure extends Subsystem {
 		Translation2d wristTipPosition = SuperstructureCoordinator.getInstance().getPosition().getWristTipPosition();
 		SmartDashboard.putNumberArray("Wrist Tip Position", new double[]{wristTipPosition.x(), wristTipPosition.y()});
 	}
-	
-	public Request waitRequest(double seconds){
-		return new Request(){
-			double startTime = 0.0;
-			double waitTime = 1.0;
-		
-			@Override
-			public void act() {
-				startTime = Timer.getFPGATimestamp();
-				waitTime = seconds;
-			}
-
-			@Override
-			public boolean isFinished(){
-				return (Timer.getFPGATimestamp() - startTime) > waitTime;
-			}
-
-			@Override
-			public String toString() {
-				return String.format("WaitRequest(time = %.2f)", seconds);
-			}
-		};
-	}
 
 	private Request choreographyRequest(ChoreographyProvider choreoProvider) {
 		return new Request() {
@@ -203,7 +180,7 @@ public class Superstructure extends Subsystem {
 			tunnel.queueShutdownRequest(),
 			cubeIntake.stateRequest(CubeIntake.State.STOWED),
 			new SequentialRequest(
-				waitRequest(waitTime),
+				new WaitRequest(waitTime),
 				verticalElevator.heightRequest(0.25)
 			)
 		);
@@ -297,7 +274,7 @@ public class Superstructure extends Subsystem {
 			choreographyRequest(coordinator::getConeScanChoreography),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().clearConeOffsetBuffer()),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.CONE)),
-			waitRequest(0.375),
+			new WaitRequest(0.375),
 			new LambdaRequest(() -> ScoringPoses.updateConeLateralOffset()),
 			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL)),
 			choreographyRequest(this::conditionalConeStow)
@@ -345,7 +322,7 @@ public class Superstructure extends Subsystem {
 			swerve.startRobotCentricTrajectoryRequest(new Translation2d(-36.0, 0.0), shelfPose.getRotation(), 24.0)
 					.withPrerequisite(() -> claw.getCurrentHoldingObject() == HoldingObject.Cone),
 			new LambdaRequest(() -> swerve.resetVisionPID()),
-			waitRequest(2.0),
+			new WaitRequest(2.0),
 			choreographyRequest(coordinator::getConeStowChoreography)
 		));
 	}
@@ -425,7 +402,7 @@ public class Superstructure extends Subsystem {
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 12.0),
 				new SequentialRequest(
 					new LambdaRequest(() -> claw.conformToState(Claw.ControlState.CUBE_OUTAKE)),
-					waitRequest(0.25),
+					new WaitRequest(0.25),
 					wrist.angleRequest(Constants.Wrist.kMaxControlAngle)
 				).withPrerequisites(horizontalElevator.willReachPositionWithinTime(horizontalExtension, preemptiveScoreSeconds),
 						() -> swerve.getDistanceToTargetPosition() < 4.0 || swerve.isVisionPIDDone())
@@ -451,7 +428,7 @@ public class Superstructure extends Subsystem {
 		return new SequentialRequest(
 			choreographyRequest(scoringChoreo),
 			new LambdaRequest(() -> claw.conformToState(clawScoringState)),
-			waitRequest(1.0),
+			new WaitRequest(1.0),
 			choreographyRequest(stowingChoreo)
 		);
 	}
@@ -536,7 +513,7 @@ public class Superstructure extends Subsystem {
 		request(new SequentialRequest(
 			swerve.visionPIDRequest(scoringPose, scoringPose.getRotation(), false, true),
 			tunnel.stateRequest(Tunnel.State.EJECT_ONE),
-			waitRequest(1.0),
+			new WaitRequest(1.0),
 			new LambdaRequest(() -> swerve.stop()),
 			new LambdaRequest(() -> swerve.resetVisionPID())
 		));
@@ -587,7 +564,7 @@ public class Superstructure extends Subsystem {
 		request(new SequentialRequest(
 			coordinator.getConeHighScoringChoreography(),
 			claw.stateRequest(Claw.ControlState.CONE_OUTAKE),
-			waitRequest(0.125)
+			new WaitRequest(0.125)
 		));
 	}
 

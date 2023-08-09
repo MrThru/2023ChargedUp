@@ -8,6 +8,7 @@ import com.team1323.frc2023.requests.ParallelRequest;
 import com.team1323.frc2023.requests.Prerequisite;
 import com.team1323.frc2023.requests.Request;
 import com.team1323.frc2023.requests.SequentialRequest;
+import com.team1323.frc2023.requests.WaitRequest;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.VerticalElevator;
@@ -525,7 +526,7 @@ public class SuperstructureCoordinator {
 
         return new SequentialRequest(
             getHighChoreography(finalPosition, 2.5),
-            Superstructure.getInstance().waitRequest(0.125)
+            new WaitRequest(0.125)
         );
     }
 
