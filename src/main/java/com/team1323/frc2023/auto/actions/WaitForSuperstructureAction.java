@@ -19,7 +19,7 @@ public class WaitForSuperstructureAction implements Action {
 
 	@Override
 	public boolean isFinished() {
-		return superstructure.requestsCompleted() || timeoutStopwatch.getTime() >= timeoutSeconds;
+		return superstructure.areAllRequestsCompleted() || timeoutStopwatch.getTime() >= timeoutSeconds;
 	}
 
 	@Override

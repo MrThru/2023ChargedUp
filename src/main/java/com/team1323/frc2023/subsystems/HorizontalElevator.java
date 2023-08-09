@@ -11,7 +11,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
-import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.frc2023.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroingInputs;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;

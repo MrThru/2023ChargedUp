@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package com.team1323.frc2023.subsystems.requests;
+package com.team1323.frc2023.requests;
 
 import java.util.ArrayList;
 import java.util.Arrays;

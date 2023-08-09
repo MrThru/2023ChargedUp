@@ -7,8 +7,8 @@ import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.team1323.frc2023.requests.Prerequisite;
 import com.team1323.frc2023.subsystems.Subsystem;
-import com.team1323.frc2023.subsystems.requests.Prerequisite;
 import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.util.Util;
 

@@ -1,4 +1,4 @@
-package com.team1323.frc2023.subsystems.requests;
+package com.team1323.frc2023.requests;
 
 public class EmptyRequest extends Request{
 	

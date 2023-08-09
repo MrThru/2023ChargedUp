@@ -1,9 +1,9 @@
-package com.team1323.frc2023.subsystems.requests;
+package com.team1323.frc2023.requests;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.team1323.frc2023.subsystems.requests.LambdaRequest.VoidInterface;
+import com.team1323.frc2023.requests.LambdaRequest.VoidInterface;
 
 public abstract class Request {
 

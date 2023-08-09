@@ -2,16 +2,16 @@ package com.team1323.frc2023.subsystems.superstructure;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Settings;
+import com.team1323.frc2023.requests.EmptyRequest;
+import com.team1323.frc2023.requests.LambdaRequest;
+import com.team1323.frc2023.requests.ParallelRequest;
+import com.team1323.frc2023.requests.Prerequisite;
+import com.team1323.frc2023.requests.Request;
+import com.team1323.frc2023.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.HorizontalElevator;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
-import com.team1323.frc2023.subsystems.requests.EmptyRequest;
-import com.team1323.frc2023.subsystems.requests.LambdaRequest;
-import com.team1323.frc2023.subsystems.requests.ParallelRequest;
-import com.team1323.frc2023.subsystems.requests.Prerequisite;
-import com.team1323.frc2023.subsystems.requests.Request;
-import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Rotation2d;
 

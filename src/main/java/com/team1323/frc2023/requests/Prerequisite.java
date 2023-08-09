@@ -5,30 +5,11 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package com.team1323.frc2023.subsystems.requests;
+package com.team1323.frc2023.requests;
 
 /**
- * Add your docs here.
+ * A state which must be met before a Request can be acted upon
  */
-public class LambdaRequest extends Request{
-
-    public interface VoidInterface {
-        void f();
-    }
-
-    VoidInterface mF;
-
-    public LambdaRequest(VoidInterface f) {
-        mF = f;
-    }
-
-    @Override
-    public void act() {
-        mF.f();
-    }
-
-    @Override
-    public String toString() {
-        return "LambdaRequest()";
-    }
+public interface Prerequisite {
+    public abstract boolean met();
 }

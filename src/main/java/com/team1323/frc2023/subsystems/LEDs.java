@@ -13,7 +13,7 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.team1323.frc2023.Ports;
 import com.team1323.frc2023.Settings;
-import com.team1323.frc2023.subsystems.requests.Request;
+import com.team1323.frc2023.requests.Request;
 import com.team1323.lib.util.Stopwatch;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

@@ -1,9 +1,5 @@
 package com.team1323.frc2023.subsystems.superstructure;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
@@ -13,6 +9,12 @@ import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
+import com.team1323.frc2023.requests.EmptyRequest;
+import com.team1323.frc2023.requests.LambdaRequest;
+import com.team1323.frc2023.requests.ParallelRequest;
+import com.team1323.frc2023.requests.Request;
+import com.team1323.frc2023.requests.RequestExecuter;
+import com.team1323.frc2023.requests.SequentialRequest;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
@@ -23,11 +25,6 @@ import com.team1323.frc2023.subsystems.Subsystem;
 import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
-import com.team1323.frc2023.subsystems.requests.EmptyRequest;
-import com.team1323.frc2023.subsystems.requests.LambdaRequest;
-import com.team1323.frc2023.subsystems.requests.ParallelRequest;
-import com.team1323.frc2023.subsystems.requests.Request;
-import com.team1323.frc2023.subsystems.requests.SequentialRequest;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.VisionPIDController;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
@@ -54,6 +51,8 @@ public class Superstructure extends Subsystem {
 	public final CubeIntake cubeIntake;
 	public final Wrist wrist;
 	public final Claw claw;
+
+	private final RequestExecuter requestExecuter = new RequestExecuter();
 	
 	public Superstructure() {
 		coordinator = SuperstructureCoordinator.getInstance();
@@ -65,63 +64,16 @@ public class Superstructure extends Subsystem {
 		cubeIntake = CubeIntake.getInstance();
 		tunnel = Tunnel.getInstance();
 		claw = Claw.getInstance();
-		
-		queuedRequests = new ArrayList<>(0);
 	}
 
 	public boolean coneIntakingSequence = false;
 
-	private Request activeRequest = null;
-	private List<Request> queuedRequests = new ArrayList<>();
-	
-	private boolean newRequest = false;
-	private boolean allRequestsCompleted = false;
-	public boolean requestsCompleted(){ return allRequestsCompleted; }
-	
-	private synchronized void setActiveRequest(Request request){
-		if (activeRequest != null) {
-			activeRequest.cleanup();
-		}
-		activeRequest = request;
-		newRequest = true;
-		allRequestsCompleted = false;
-	}
-	
-	private void setQueue(List<Request> requests){
-		clearQueue();
-		for(Request request : requests) {
-			queuedRequests.add(request);
-		}
+	public synchronized void request(Request r) {
+		requestExecuter.request(r);
 	}
 
-	private void setQueue(Request request) {
-		setQueue(Arrays.asList(request));
-	}
-
-	private void clearQueue() {
-		queuedRequests.clear();
-	}
-	
-	public synchronized void request(Request r){
-		setActiveRequest(r);
-		clearQueue();
-	}
-	
-	public synchronized void request(Request active, Request queue){
-		setActiveRequest(active);
-		setQueue(queue);
-	}
-	
-	public void queue(Request request){
-		queuedRequests.add(request);
-	}
-	
-	public void replaceQueue(Request request){
-		setQueue(request);
-	}
-
-	public void printActiveRequest() {
-		System.out.println(String.format("%s", activeRequest));
+	public boolean areAllRequestsCompleted() { 
+		return requestExecuter.isFinished();
 	}
 
 	private final Loop loop = new Loop(){
@@ -138,20 +90,7 @@ public class Superstructure extends Subsystem {
 			swerve.setMaxSpeed(maxSwerveSpeed.value);*/
 
 			synchronized (Superstructure.this) {
-				if(newRequest && activeRequest != null) {
-					activeRequest.act();
-					newRequest = false;
-				} 
-
-				if(activeRequest == null) {
-					if(queuedRequests.isEmpty()) {
-						allRequestsCompleted = true;
-					} else {
-						setActiveRequest(queuedRequests.remove(0));
-					}
-				} else if(activeRequest.isFinished()) {
-					activeRequest = null;
-				}
+				requestExecuter.update();
 			}
 		}
 
