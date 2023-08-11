@@ -30,15 +30,17 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
-public class MidLinkRoutine extends AutoRoutine {
+public class HighLinkRoutine extends AutoRoutine {
     private final Quadrant quadrant;
+    private final boolean scoreCubeHigh;
     private final Swerve swerve;
     private final Claw claw;
     private final Superstructure s;
     private Pose2d coneIntakingPosition;
 
-    public MidLinkRoutine(Quadrant quadrant) {
+    public HighLinkRoutine(Quadrant quadrant, boolean scoreCubeHigh) {
         this.quadrant = quadrant;
+        this.scoreCubeHigh = scoreCubeHigh;
         swerve = Swerve.getInstance();
         claw = Claw.getInstance();
         s = Superstructure.getInstance();
@@ -54,7 +56,7 @@ public class MidLinkRoutine extends AutoRoutine {
 
     @Override
     public Request getRoutine() {
-        final Request baseRoutine = new MidLinkBaseRoutine(quadrant).getRoutine();
+        final Request baseRoutine = new HighLinkBaseRoutine(quadrant, scoreCubeHigh).getRoutine();
 
         final SequentialRequest finishIntakingSecondCone = new SequentialRequest(
             new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL)),
@@ -94,21 +96,29 @@ public class MidLinkRoutine extends AutoRoutine {
         );
 
         final SequentialRequest scoreSecondCone = new SequentialRequest(
-            new SetTrajectoryRequest(trajectories.thirdPieceToSecondConeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant),
-            new WaitToPassXCoordinateRequest(110.0, quadrant, 4.0),
+            new SetTrajectoryRequest(trajectories.thirdPieceToEdgeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant),
+            new WaitToPassXCoordinateRequest(quadrant.hasBump() ? 106 : 120, quadrant, 4.0),
             new IfRequest(
                 () -> claw.getCurrentHoldingObject() == HoldingObject.Cone,
                 new SequentialRequest(
                     new LambdaRequest(() -> {
-                        NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.RIGHT), quadrant);
+                        NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.LEFT), quadrant);
                         s.scoringSequence(nodeLocation);
                     }),
-                    new WaitForRemainingTimeRequest(0.625, runtimeStopwatch),
+                    new WaitForRemainingTimeRequest(0.5, runtimeStopwatch),
                     new IfRequest(
-                        () -> swerve.getDistanceToTargetPosition() <= 6.0,
-                        claw.stateRequest(Claw.ControlState.CONE_OUTAKE)
+                        () -> {
+                            double distanceToTarget = swerve.getDistanceToTargetPosition();
+                            System.out.println(String.format("Distance to target at 0.5s left was %.2f.", distanceToTarget));
+
+                            return distanceToTarget <= 8.0;
+                        },
+                        new SequentialRequest(
+                            new LambdaRequest(() -> System.out.println("Ejecting cone early.")),
+                            claw.stateRequest(Claw.ControlState.CONE_OUTAKE)
+                        )
                     ),
-                    new WaitForRemainingTimeRequest(0.25, runtimeStopwatch),
+                    new WaitForRemainingTimeRequest(0.125, runtimeStopwatch),
                     new IfRequest(
                         () -> claw.getState() == Claw.ControlState.CONE_OUTAKE,
                         new LambdaRequest(() -> claw.setCurrentHoldingObject(HoldingObject.None))
@@ -120,7 +130,7 @@ public class MidLinkRoutine extends AutoRoutine {
                 )
             )
         );
-        
+
         return new SequentialRequest(
             getStartStopwatchRequest(),
             baseRoutine,

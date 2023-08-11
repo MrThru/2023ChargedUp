@@ -57,7 +57,6 @@ public class TwoMidPieceAndRampRoutine extends AutoRoutine {
 
     @Override
     public Request getRoutine() {
-        final Request startStopwatch = runtimeStopwatch.getStartRequest();
         final Request baseRoutine = new MidLinkBaseRoutine(quadrant).getRoutine();
 
         final SequentialRequest finishIntakingSecondCone = new SequentialRequest(
@@ -110,14 +109,12 @@ public class TwoMidPieceAndRampRoutine extends AutoRoutine {
             new LambdaRequest(() -> swerve.zukLockDrivePosition())
         );
 
-        final LambdaRequest printRuntime = new LambdaRequest(() -> System.out.println(String.format("Auto finished in %.2f seconds.", runtimeStopwatch.getTime())));
-
         return new SequentialRequest(
-            startStopwatch,
+            getStartStopwatchRequest(),
             baseRoutine,
             finishIntakingSecondCone,
             getOnBridgeAndBalance,
-            printRuntime
+            getPrintRuntimeRequest()
         );
     }
 }

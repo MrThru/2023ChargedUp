@@ -3,23 +3,20 @@ package com.team1323.frc2023.requests.auto.routines;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.field.AutoZones;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
-import com.team1323.frc2023.field.NodeLocation;
-import com.team1323.frc2023.field.NodeLocation.Column;
-import com.team1323.frc2023.field.NodeLocation.Grid;
-import com.team1323.frc2023.field.NodeLocation.Row;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.requests.IfRequest;
 import com.team1323.frc2023.requests.LambdaRequest;
 import com.team1323.frc2023.requests.Request;
 import com.team1323.frc2023.requests.SequentialRequest;
+import com.team1323.frc2023.requests.WaitForPrereqRequest;
 import com.team1323.frc2023.requests.auto.SetTrajectoryRequest;
 import com.team1323.frc2023.requests.auto.WaitForRemainingTimeRequest;
 import com.team1323.frc2023.requests.auto.WaitToFinishPathRequest;
-import com.team1323.frc2023.requests.auto.WaitToIntakeRequest;
-import com.team1323.frc2023.requests.auto.WaitToPassXCoordinateRequest;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
+import com.team1323.frc2023.subsystems.CubeIntake;
+import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
@@ -30,17 +27,25 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
-public class MidLinkRoutine extends AutoRoutine {
+public class TwoHighPieceAndRampRoutine extends AutoRoutine {
+    private static final double kTimeToStartBalancing = 11.5;
+
     private final Quadrant quadrant;
+    private final boolean scoreCubeHigh;
     private final Swerve swerve;
     private final Claw claw;
+    private final Shoulder shoulder;
+    private final CubeIntake cubeIntake;
     private final Superstructure s;
     private Pose2d coneIntakingPosition;
 
-    public MidLinkRoutine(Quadrant quadrant) {
+    public TwoHighPieceAndRampRoutine(Quadrant quadrant, boolean scoreCubeHigh) {
         this.quadrant = quadrant;
+        this.scoreCubeHigh = scoreCubeHigh;
         swerve = Swerve.getInstance();
         claw = Claw.getInstance();
+        shoulder = Shoulder.getInstance();
+        cubeIntake = CubeIntake.getInstance();
         s = Superstructure.getInstance();
     }
 
@@ -54,7 +59,7 @@ public class MidLinkRoutine extends AutoRoutine {
 
     @Override
     public Request getRoutine() {
-        final Request baseRoutine = new MidLinkBaseRoutine(quadrant).getRoutine();
+        final Request baseRoutine = new HighLinkBaseRoutine(quadrant, scoreCubeHigh).getRoutine();
 
         final SequentialRequest finishIntakingSecondCone = new SequentialRequest(
             new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL)),
@@ -83,49 +88,34 @@ public class MidLinkRoutine extends AutoRoutine {
                                         ))
                                         .build());
                     }),
-                    new WaitToIntakeRequest(HoldingObject.Cone, 4.0)
+                    new WaitForPrereqRequest(() -> claw.getCurrentHoldingObject() == HoldingObject.Cone ||
+                            runtimeStopwatch.getTime() >= kTimeToStartBalancing, 4.0)
                 ),
-                new WaitToFinishPathRequest(4.0)
-            ),
-            new IfRequest(
-                () -> claw.getCurrentHoldingObject() != HoldingObject.Cone,
-                new LambdaRequest(() -> s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography()))
+                new WaitForPrereqRequest(() -> swerve.hasFinishedPath() || runtimeStopwatch.getTime() >= kTimeToStartBalancing, 4.0)
             )
         );
 
-        final SequentialRequest scoreSecondCone = new SequentialRequest(
-            new SetTrajectoryRequest(trajectories.thirdPieceToSecondConeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant),
-            new WaitToPassXCoordinateRequest(110.0, quadrant, 4.0),
+        final SequentialRequest getOnBridgeAndBalance = new SequentialRequest(
+            new LambdaRequest(() -> swerve.resetGyroRoll()),
+            new SetTrajectoryRequest(trajectories.thirdPieceToBridgePath, Rotation2d.fromDegrees(0), 0.75, quadrant),
             new IfRequest(
-                () -> claw.getCurrentHoldingObject() == HoldingObject.Cone,
-                new SequentialRequest(
-                    new LambdaRequest(() -> {
-                        NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.RIGHT), quadrant);
-                        s.scoringSequence(nodeLocation);
-                    }),
-                    new WaitForRemainingTimeRequest(0.625, runtimeStopwatch),
-                    new IfRequest(
-                        () -> swerve.getDistanceToTargetPosition() <= 6.0,
-                        claw.stateRequest(Claw.ControlState.CONE_OUTAKE)
-                    ),
-                    new WaitForRemainingTimeRequest(0.25, runtimeStopwatch),
-                    new IfRequest(
-                        () -> claw.getState() == Claw.ControlState.CONE_OUTAKE,
-                        new LambdaRequest(() -> claw.setCurrentHoldingObject(HoldingObject.None))
-                    )
-                ),
-                new SequentialRequest(
-                    new WaitToFinishPathRequest(4.0),
-                    new LambdaRequest(() -> s.objectAwareStowSequence())
-                )
-            )
+                () -> claw.getCurrentHoldingObject() != HoldingObject.Cone,
+                new LambdaRequest(() -> s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography()))
+            ),
+            new WaitForPrereqRequest(() -> shoulder.getPosition() >= 60.0, 2.0),
+            cubeIntake.stateRequest(CubeIntake.State.FLOOR),
+            new WaitToFinishPathRequest(2.0),
+            new LambdaRequest(() -> swerve.startBalancePID()),
+            cubeIntake.stateRequest(CubeIntake.State.STOWED),
+            new WaitForRemainingTimeRequest(0.25, runtimeStopwatch),
+            new LambdaRequest(() -> swerve.zukLockDrivePosition())
         );
-        
+
         return new SequentialRequest(
             getStartStopwatchRequest(),
             baseRoutine,
             finishIntakingSecondCone,
-            scoreSecondCone,
+            getOnBridgeAndBalance,
             getPrintRuntimeRequest()
         );
     }
