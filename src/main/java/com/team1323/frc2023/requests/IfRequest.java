@@ -16,6 +16,14 @@ public class IfRequest extends Request {
         this.elseBranchRequest = elseBranchRequest;
     }
 
+    @Override
+    public void cleanup() {
+        if (activeRequest != null) {
+            activeRequest.cleanup();
+        }
+        super.cleanup();
+    }
+
     private void startRequestIfAllowed() {
         if (activeRequest.allowed()) {
             activeRequest.act();

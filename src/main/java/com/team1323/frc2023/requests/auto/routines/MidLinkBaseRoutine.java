@@ -36,6 +36,14 @@ public class MidLinkBaseRoutine extends AutoRoutine {
         this.s = Superstructure.getInstance();
     }
 
+    private void setScoredCube(boolean scoredCube) {
+        this.scoredCube = scoredCube;
+    }
+
+    private boolean getScoredCube() {
+        return scoredCube;
+    }
+
     @Override
     public Request getRoutine() {
         final SequentialRequest setUp = new SequentialRequest(
@@ -67,11 +75,11 @@ public class MidLinkBaseRoutine extends AutoRoutine {
                 new SequentialRequest(
                     new LambdaRequest(() -> s.cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), false)),
                     new WaitToEjectObjectRequest(4.0),
-                    new LambdaRequest(() -> MidLinkBaseRoutine.this.scoredCube = true)
+                    new LambdaRequest(() -> setScoredCube(true))
                 ),
                 new SequentialRequest(
                     new WaitToFinishPathRequest(2.0),
-                    new LambdaRequest(() -> MidLinkBaseRoutine.this.scoredCube = false)
+                    new LambdaRequest(() -> setScoredCube(false))
                 )
             )
         );
@@ -80,7 +88,7 @@ public class MidLinkBaseRoutine extends AutoRoutine {
             new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR)),
             new SetTrajectoryRequest(trajectories.slowCubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant),
             new IfRequest(
-                () -> !MidLinkBaseRoutine.this.scoredCube,
+                () -> !getScoredCube(),
                 new SequentialRequest(
                     new WaitRequest(0.5),
                     new LambdaRequest(() -> s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography(false)))

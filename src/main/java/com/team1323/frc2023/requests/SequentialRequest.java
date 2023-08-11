@@ -29,6 +29,9 @@ public class SequentialRequest extends Request {
 
     @Override
     public void cleanup() {
+        if (currentRequest != null) {
+            currentRequest.cleanup();
+        }
         requests.forEach(r -> r.cleanup());
         super.cleanup();
     }
