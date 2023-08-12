@@ -1,10 +1,11 @@
 package com.team1323.frc2023.auto;
 
-import com.team1323.frc2023.auto.modes.StandStillMode;
-import com.team1323.frc2023.auto.modes.TwoHighPieceAndRampMode;
-import com.team1323.frc2023.auto.modes.HighLinkMode;
-import com.team1323.frc2023.auto.modes.MidLinkMode;
-import com.team1323.frc2023.auto.modes.TwoMidPieceAndRampMode;
+import com.team1323.frc2023.auto.routines.AutoRoutine;
+import com.team1323.frc2023.auto.routines.HighLinkRoutine;
+import com.team1323.frc2023.auto.routines.MidLinkRoutine;
+import com.team1323.frc2023.auto.routines.StandStillRoutine;
+import com.team1323.frc2023.auto.routines.TwoHighPieceAndRampRoutine;
+import com.team1323.frc2023.auto.routines.TwoMidPieceAndRampRoutine;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.field.AutoZones.StartingSide;
@@ -43,11 +44,11 @@ public class SmartDashboardInteractions {
         SmartDashboard.putString(SELECTED_SIDE, DEFAULT_SIDE.toString());
     }
     
-    public AutoModeBase getSelectedAutoMode() {
-        AutoOption selectedOption = getSelectedAutoModeEnum();
+    public AutoRoutine getSelectedAutoRoutine() {
+        AutoOption selectedOption = getSelectedAutoEnum();
         StartingSide selectedSide = getSelectedStartingSide();
         Quadrant quadrant = getQuadrant(AllianceChooser.getAlliance(), selectedSide);
-        return createAutoMode(selectedOption, quadrant);
+        return createAutoRoutine(selectedOption, quadrant);
     }
 
     private StartingSide getSelectedStartingSide() {
@@ -76,7 +77,7 @@ public class SmartDashboardInteractions {
         }
     }
     
-    public AutoOption getSelectedAutoModeEnum() {
+    public AutoOption getSelectedAutoEnum() {
     	AutoOption option = (AutoOption) modeChooser.getSelected();
 
         if (option == null) {
@@ -98,30 +99,30 @@ public class SmartDashboardInteractions {
     	}
     }
 
-    private AutoModeBase createAutoMode(AutoOption option, Quadrant quadrant){
+    private AutoRoutine createAutoRoutine(AutoOption option, Quadrant quadrant){
     	switch(option){
             case STAND_STILL:
-                return new StandStillMode();
+                return new StandStillRoutine();
             case THREE_MID:
-                return new MidLinkMode(quadrant);
+                return new MidLinkRoutine(quadrant);
             case TWO_MID_AND_RAMP:
-                return new TwoMidPieceAndRampMode(quadrant);
+                return new TwoMidPieceAndRampRoutine(quadrant);
             case TWO_HIGH_ONE_MID:
-                return new HighLinkMode(quadrant, true);
+                return new HighLinkRoutine(quadrant, true);
             case TWO_HIGH_AND_RAMP:
-                return new TwoHighPieceAndRampMode(quadrant, true);
+                return new TwoHighPieceAndRampRoutine(quadrant, true);
             case ONE_HIGH_TWO_MID:
-                return new HighLinkMode(quadrant, false);
+                return new HighLinkRoutine(quadrant, false);
             case HIGH_MID_AND_RAMP:
-                return new TwoHighPieceAndRampMode(quadrant, false);
+                return new TwoHighPieceAndRampRoutine(quadrant, false);
             default:
-                System.out.println("ERROR: unexpected auto mode: " + option);
-                return new StandStillMode();
+                System.out.println(String.format("ERROR: unexpected auto routine (%s).", option));
+                return new StandStillRoutine();
     	}
     }
     
     public void output(){
-    	SmartDashboard.putString(SELECTED_AUTO_MODE, getSelectedAutoModeEnum().name);
+    	SmartDashboard.putString(SELECTED_AUTO_MODE, getSelectedAutoEnum().name);
         SmartDashboard.putString(SELECTED_SIDE, getSelectedStartingSide().toString());
     }
 }

@@ -8,10 +8,12 @@ import java.util.Set;
 
 import org.littletonrobotics.junction.LoggedRobot;
 
-import com.team1323.frc2023.auto.AutoModeBase;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
-import com.team1323.frc2023.auto.modes.TestMode;
+import com.team1323.frc2023.auto.routines.AutoRoutine;
+import com.team1323.frc2023.auto.routines.HighLinkRoutine;
 import com.team1323.frc2023.field.AllianceChooser;
+import com.team1323.frc2023.field.AutoZones.Quadrant;
+import com.team1323.frc2023.loops.AutoLoop;
 import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
 import com.team1323.frc2023.loops.SynchronousLooper;
@@ -44,6 +46,7 @@ public class Robot extends LoggedRobot {
 	private QuinticPathTransmitter qTransmitter = QuinticPathTransmitter.getInstance();
 	private SmartDashboardInteractions smartDashboardInteractions = new SmartDashboardInteractions();
 
+	private AutoLoop autoLoop;
 	private DriverControls driverControls;	
 
 	private SynchronousLooper looper;
@@ -58,12 +61,14 @@ public class Robot extends LoggedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		autoLoop = new AutoLoop(smartDashboardInteractions);
 		driverControls = DriverControls.getInstance();
 		subsystems = driverControls.getSubsystems();
 		looper = new SynchronousLooper(subsystems);
 
 		Swerve.getInstance().zeroSensors();
 
+		looper.registerAutoLoop(autoLoop);
 		looper.registerTeleopLoop(driverControls);
 		looper.register(QuinticPathTransmitter.getInstance());
 		// TODO: Convert the limelight into a subsystem and add it to the SubsystemManager as the last subsystem
@@ -75,7 +80,7 @@ public class Robot extends LoggedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new TestMode();
+		AutoRoutine auto = new HighLinkRoutine(Quadrant.BOTTOM_LEFT, true);
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}
