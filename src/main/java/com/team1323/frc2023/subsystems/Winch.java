@@ -2,13 +2,13 @@ package com.team1323.frc2023.subsystems;
 
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystem;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemInputsAutoLogged;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Winch extends ServoSubsystem<ServoSubsystemInputsAutoLogged> {
     private static Winch instance = null;
@@ -44,7 +44,6 @@ public class Winch extends ServoSubsystem<ServoSubsystemInputsAutoLogged> {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putNumber("Winch Angle", getPosition());
-        SmartDashboard.putNumber("Winch Encoder Position", inputs.position);
+        Logger.getInstance().recordOutput(getLogKey("Angle"), getPosition());
     }
 }

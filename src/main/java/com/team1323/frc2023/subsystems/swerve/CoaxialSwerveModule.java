@@ -14,6 +14,7 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
+import com.team1323.lib.util.LogUtil;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -248,7 +249,9 @@ public class CoaxialSwerveModule extends SwerveModule {
 
     @Override
     public void outputTelemetry() {
-        // TODO: Write any outputs to the AdvantageKit logger.
+        LogUtil.recordRotation2d(getLogKey("Angle"), getAngle());
+        Logger.getInstance().recordOutput(getLogKey("Inches Driven"), getDriveDistanceInches());
+        Logger.getInstance().recordOutput(getLogKey("Inches Per Second"), getDriveVelocityInchesPerSecond());
     }
 
     @AutoLog

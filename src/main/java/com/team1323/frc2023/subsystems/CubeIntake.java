@@ -7,6 +7,8 @@ package com.team1323.frc2023.subsystems;
 
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
@@ -22,8 +24,6 @@ import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Stopwatch;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWithAbsoluteEncoderInputs> {
     MotorController intakeRoller;
@@ -189,11 +189,9 @@ public class CubeIntake extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystem
             leader.setNeutralMode(NeutralMode.Brake);
 			neutralModeIsBrake = true;
 		}
-        SmartDashboard.putNumber("Cube Intake Angle", getPosition());
-        SmartDashboard.putNumber("Cube Intake Encoder Position", inputs.position);
-        SmartDashboard.putNumber("Cube Intake Absolute Encoder", absoluteEncoder.getDegrees());
-        SmartDashboard.putNumber("Cube Intake Target Angle", encoderUnitsToOutputUnits(outputs.demand));
-        SmartDashboard.putNumber("Cube Intake Stator Current", leader.getStatorAmps());
+
+        Logger.getInstance().recordOutput(getLogKey("Angle"), getPosition());
+        Logger.getInstance().recordOutput(getLogKey("Target Angle"), encoderUnitsToOutputUnits(outputs.demand));
     }
     @Override
     public void stop() {

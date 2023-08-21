@@ -2,6 +2,8 @@ package com.team1323.frc2023.subsystems;
 
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
@@ -15,8 +17,6 @@ import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoderIn
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Wrist extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWithAbsoluteEncoderInputs> {
     private static Wrist instance = null;
@@ -130,9 +130,9 @@ public class Wrist extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWithA
             leader.setNeutralMode(NeutralMode.Brake);
 			neutralModeIsBrake = true;
 		}
-        SmartDashboard.putNumber("Wrist Angle", getPosition());
-        SmartDashboard.putNumber("Wrist Absolute Encoder", absoluteEncoder.getDegrees());
-        SmartDashboard.putBoolean("Wrist On Target", isOnTarget());
-        SmartDashboard.putNumber("Wrist Target Angle", encoderUnitsToOutputUnits(outputs.demand));
+
+        Logger.getInstance().recordOutput(getLogKey("Angle"), getPosition());
+        Logger.getInstance().recordOutput(getLogKey("Target Angle"), encoderUnitsToOutputUnits(outputs.demand));
+        Logger.getInstance().recordOutput(getLogKey("Is On Target"), isOnTarget());
     }
 }

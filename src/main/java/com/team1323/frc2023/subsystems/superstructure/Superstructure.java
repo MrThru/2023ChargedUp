@@ -29,10 +29,9 @@ import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.VisionPIDController;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
+import com.team1323.lib.util.LogUtil;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Superstructure extends Subsystem {
 	private static Superstructure instance = null;
@@ -118,8 +117,8 @@ public class Superstructure extends Subsystem {
 
 	@Override
 	public void outputTelemetry() {
-		Translation2d wristTipPosition = SuperstructureCoordinator.getInstance().getPosition().getWristTipPosition();
-		SmartDashboard.putNumberArray("Wrist Tip Position", new double[]{wristTipPosition.x(), wristTipPosition.y()});
+		Translation2d wristTipPosition = coordinator.getPosition().getWristTipPosition();
+		LogUtil.recordTranslation2d("Superstructure/Wrist Tip Position", wristTipPosition);
 	}
 
 	private Request choreographyRequest(ChoreographyProvider choreoProvider) {

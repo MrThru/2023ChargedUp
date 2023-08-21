@@ -20,8 +20,6 @@ import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Stopwatch;
 import com.team1323.lib.util.Util;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 /** Add your docs here. */
 public class Claw extends Subsystem {
     private static Claw instance = null;
@@ -261,8 +259,8 @@ public class Claw extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putString("Claw Left Right Offset Mode", flipConeOffsetMode(getCurrentConeOffset()).toString());
-
+        Logger.getInstance().recordOutput("Claw/Left Right Offset Mode", flipConeOffsetMode(getCurrentConeOffset()).toString());
+        Logger.getInstance().recordOutput("Claw/RPM", getRPM());
     }
 
     public Request stateRequest(ControlState desiredState) {

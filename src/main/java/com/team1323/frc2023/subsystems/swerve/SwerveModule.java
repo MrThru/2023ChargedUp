@@ -118,6 +118,10 @@ public abstract class SwerveModule extends Subsystem {
 		rotationMotorZeroed = isZeroed;
 	}
 
+	protected String getLogKey(String entryName) {
+		return String.format("%s/%s", name, entryName);
+	}
+
 	public static class SwerveMotorInfo {
 		public final int deviceId;
 		public final TalonFXInvertType invertType;

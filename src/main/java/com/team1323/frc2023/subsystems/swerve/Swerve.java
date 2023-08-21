@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.DriveMotionPlanner;
 import com.team1323.frc2023.Ports;
-import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
@@ -25,6 +24,7 @@ import com.team1323.frc2023.vision.VisionPIDController;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.math.Units;
 import com.team1323.lib.math.vectors.VectorField;
+import com.team1323.lib.util.LogUtil;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.SwerveHeadingController;
 import com.team1323.lib.util.SwerveInverseKinematics;
@@ -1007,12 +1007,9 @@ public class Swerve extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
-		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getDegrees()});
-		
-		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getDegrees());
-		
-
-		SmartDashboard.putString("Swerve State", currentState.toString());
+		LogUtil.recordPose2d("Swerve/Robot Pose", pose);
+		LogUtil.recordRotation2d("Swerve/Heading", pose.getRotation());
+		Logger.getInstance().recordOutput("Swerve/State", currentState.toString());
 
 		if(Netlink.getBooleanValue("Swerve Coast Mode") && neutralModeIsBrake) {
 			setModuleNeutralModes(NeutralMode.Coast);
@@ -1020,16 +1017,6 @@ public class Swerve extends Subsystem{
 		} else if(!neutralModeIsBrake && !Netlink.getBooleanValue("Swerve Coast Mode")) {
 			setModuleNeutralModes(NeutralMode.Brake);
 			neutralModeIsBrake = true;
-		}
-		
-		if(Settings.debugSwerve()){
-			SmartDashboard.putNumber("Robot X", pose.getTranslation().x());
-			SmartDashboard.putNumber("Robot Y", pose.getTranslation().y());
-			SmartDashboard.putString("Heading Controller", headingController.getState().toString());
-			SmartDashboard.putNumber("Target Heading", getTargetHeading().getDegrees());
-			SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
-			SmartDashboard.putNumber("Gyro Yaw", inputs.gyroYaw);
-			SmartDashboard.putNumber("Gyro Pitch", inputs.gyroRoll);
 		}
 	}
 

@@ -6,6 +6,8 @@ package com.team1323.frc2023.subsystems;
 
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
@@ -17,8 +19,6 @@ import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroingInp
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Stopwatch;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing<ServoSubsystemWithCurrentZeroingInputs> {
     private static HorizontalElevator instance = null;
@@ -115,9 +115,9 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing<ServoSu
             leader.setNeutralMode(NeutralMode.Brake);
 			neutralModeIsBrake = true;
 		}
-        SmartDashboard.putNumber("Horizontal Elevator Height", getPosition());
-        SmartDashboard.putNumber("Horizontal Elevator Encoder Position", inputs.position); 
-        SmartDashboard.putBoolean("Horizontal Elevator on Target", isOnTarget());
+
+        Logger.getInstance().recordOutput(getLogKey("Height"), getPosition());
+        Logger.getInstance().recordOutput(getLogKey("Is On Target"), isOnTarget());
     }
 
 }

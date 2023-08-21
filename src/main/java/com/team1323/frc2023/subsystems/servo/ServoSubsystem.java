@@ -148,6 +148,10 @@ public abstract class ServoSubsystem<Inputs extends ServoSubsystemInputsAutoLogg
         }
     }
 
+    protected String getLogKey(String entryName) {
+        return String.format("%s/%s", config.logTableName, entryName);
+    }
+
     protected void updateInputsFromIO() {
         inputs.position = leader.getSelectedSensorPosition();
         inputs.velocity = leader.getVelocityEncoderUnitsPer100Ms();

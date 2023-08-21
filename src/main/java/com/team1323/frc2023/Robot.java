@@ -76,8 +76,6 @@ public class Robot extends LoggedRobot {
 
 		smartDashboardInteractions.initWithDefaults();
 
-		Settings.initializeToggles();
-
 		generator.generateTrajectories();
 
 		AutoRoutine auto = new HighLinkRoutine(Quadrant.BOTTOM_LEFT, true);
@@ -132,7 +130,6 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void disabledPeriodic() {
 		smartDashboardInteractions.output();
-		Settings.update();
 		// TODO: Move this to a Loop
 		Swerve.getInstance().zeroModuleAngles();
 		Shoulder.getInstance().setAbsolutePositionWithCounter();

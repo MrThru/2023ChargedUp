@@ -22,8 +22,6 @@ import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
 import com.team1323.lib.util.Stopwatch;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class Tunnel extends Subsystem {
     private static Tunnel instance = null;
     public static Tunnel getInstance() {
@@ -350,11 +348,8 @@ public class Tunnel extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putBoolean("Tunnel Front Banner", getFrontBanner());
-        SmartDashboard.putBoolean("Tunnel Rear Banner", getRearBanner());
-        SmartDashboard.putBoolean("Cube Intake Banner", getCubeIntakeBanner());
-        SmartDashboard.putString("Tunnel Control State", currentState.toString());
-        SmartDashboard.putNumber("Tunnel Floor Percent Output", conveyorSpeed);
+        Logger.getInstance().recordOutput("Tunnel/Control State", currentState.toString());
+        Logger.getInstance().recordOutput("Tunnel/Floor Percent Output", conveyorSpeed);
     }
 
     public Request stateRequest(State desiredState) {

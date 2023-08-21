@@ -2,6 +2,8 @@ package com.team1323.frc2023.subsystems;
 
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.loops.ILooper;
@@ -11,8 +13,6 @@ import com.team1323.frc2023.requests.Request;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroingInputs;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VerticalElevator extends ServoSubsystemWithCurrentZeroing<ServoSubsystemWithCurrentZeroingInputs> {
     private static VerticalElevator instance = null;
@@ -92,8 +92,8 @@ public class VerticalElevator extends ServoSubsystemWithCurrentZeroing<ServoSubs
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putNumber("Vertical Elevator Height", getPosition());
-        SmartDashboard.putNumber("Vertical Elevator Target Height", encoderUnitsToOutputUnits(outputs.demand));
-        SmartDashboard.putBoolean("Vertical Elevator Is On Target", isOnTarget());
+        Logger.getInstance().recordOutput(getLogKey("Height"), getPosition());
+        Logger.getInstance().recordOutput(getLogKey("Target Height"), encoderUnitsToOutputUnits(outputs.demand));
+        Logger.getInstance().recordOutput(getLogKey("Is On Target"), isOnTarget());
     }
 }
