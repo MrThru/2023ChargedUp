@@ -11,14 +11,13 @@ import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.field.NodeLocation.Column;
 import com.team1323.frc2023.field.NodeLocation.Grid;
 import com.team1323.frc2023.field.NodeLocation.Row;
-import com.team1323.frc2023.loops.LimelightProcessor;
+import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.AprilTagTracker.AprilTag;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ScoringPoses {
     // All length measurements are in inches
@@ -52,8 +51,7 @@ public class ScoringPoses {
     );
 
     public static void updateConeLateralOffset() {
-        double offset = LimelightProcessor.getInstance().getRetroConeLeftRightOffset();
-        SmartDashboard.putNumber("Cone Left-Right offset", offset);
+        double offset = Claw.getInstance().getCurrentConeOffset().offset;
         coneLateralOffset = Double.isNaN(offset) ? 0.0 : offset;
     }
 

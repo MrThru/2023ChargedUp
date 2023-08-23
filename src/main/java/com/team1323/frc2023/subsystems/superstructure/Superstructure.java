@@ -1,14 +1,11 @@
 package com.team1323.frc2023.subsystems.superstructure;
 
 import com.team1323.frc2023.Constants;
-import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.NodeLocation.Column;
 import com.team1323.frc2023.field.NodeLocation.Row;
 import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.ILooper;
-import com.team1323.frc2023.loops.LimelightProcessor;
-import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.requests.EmptyRequest;
 import com.team1323.frc2023.requests.LambdaRequest;
@@ -27,6 +24,8 @@ import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.VerticalElevator;
 import com.team1323.frc2023.subsystems.Wrist;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.LimelightManager;
+import com.team1323.frc2023.vision.LimelightManager.ProcessingMode;
 import com.team1323.frc2023.vision.VisionPIDController;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.util.LogUtil;
@@ -238,10 +237,6 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
-	public void coneStowSequence() {
-		request(getConeStowSequence());
-	}
-
 	public Request objectAwareStow() {
 		if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
 			return new ParallelRequest(
@@ -258,26 +253,6 @@ public class Superstructure extends Subsystem {
 
 	public void objectAwareStowSequence() {
 		request(objectAwareStow());
-	}
-
-	private Request conditionalConeStow() {
-		if (AllianceChooser.getCommunityBoundingBox().pointWithinBox(swerve.getPose().getTranslation())) {
-			return coordinator.getCommunityConeHoldChoreography();
-		}
-
-		return coordinator.getConeStowChoreography();
-	}
-
-	private Request getConeStowSequence() {
-		return new SequentialRequest(
-			choreographyRequest(coordinator::getConeScanChoreography),
-			new LambdaRequest(() -> LimelightProcessor.getInstance().clearConeOffsetBuffer()),
-			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.CONE)),
-			new WaitRequest(0.375),
-			new LambdaRequest(() -> ScoringPoses.updateConeLateralOffset()),
-			new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL)),
-			choreographyRequest(this::conditionalConeStow)
-		);
 	}
 
 	private Request getHandOffCubeSequence() {
@@ -361,7 +336,7 @@ public class Superstructure extends Subsystem {
 	private void scoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo, 
 			Claw.ControlState clawScoringState, VisionPIDController controller, boolean useTrajectory, boolean useRetro) {
 		Request switchToRetroRequest = useRetro ? 
-				new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.RETRO))
+				new LambdaRequest(() -> LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_RETRO))
 						.withPrerequisite(() -> swerve.getDistanceToTargetPosition() < 18.0) :
 				new EmptyRequest();
 		request(new SequentialRequest(

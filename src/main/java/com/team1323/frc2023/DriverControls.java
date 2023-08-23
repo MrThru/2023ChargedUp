@@ -13,12 +13,10 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
-import com.team1323.frc2023.loops.LimelightProcessor;
-import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
+import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.requests.EmptyRequest;
 import com.team1323.frc2023.requests.ParallelRequest;
 import com.team1323.frc2023.requests.SequentialRequest;
-import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.CubeIntake;
@@ -34,6 +32,8 @@ import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.GridTracker;
+import com.team1323.frc2023.vision.LimelightManager;
+import com.team1323.frc2023.vision.LimelightManager.ProcessingMode;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
@@ -59,36 +59,31 @@ public class DriverControls implements Loop {
         return instance;
     }
 
-	Xbox driver, coDriver, singleController, testController;
+	Xbox driver, coDriver;
     //PS4 driver;
 
-    private Swerve swerve;
-    private VerticalElevator verticalElevator;
-    private HorizontalElevator horizontalElevator;
-    private Shoulder shoulder;
-    private Wrist wrist;
-    private Claw claw;
-    private CubeIntake cubeIntake;
-    private Tunnel tunnel;
+    private final Swerve swerve;
+    private final VerticalElevator verticalElevator;
+    private final HorizontalElevator horizontalElevator;
+    private final Shoulder shoulder;
+    private final Wrist wrist;
+    private final Claw claw;
+    private final CubeIntake cubeIntake;
+    private final Tunnel tunnel;
+    private final Superstructure s;
+    private final LimelightManager limelights;
 
-    private LEDs leds;
+    private final LEDs leds;
 
-    private SubsystemManager subsystems;
+    private final SubsystemManager subsystems;
     public SubsystemManager getSubsystems(){ return subsystems; }
 
-    private Superstructure s;
-
-    private final boolean oneControllerMode = false;
-
     private NodeLocation.Row targetScoringRow = NodeLocation.Row.MIDDLE;
-    private Tunnel.State lastTunnelState = Tunnel.State.OFF;
     private boolean balanceRumbleActivated = false;
 
     public DriverControls() {
         driver = new Xbox(0);
 		coDriver = new Xbox(1);
-        testController = new Xbox(4);
-        singleController = new Xbox(5);
         driver.setDeadband(0.0);
 		coDriver.setDeadband(0.6); //0.6
 
@@ -100,17 +95,19 @@ public class DriverControls implements Loop {
         claw = Claw.getInstance();
         cubeIntake = CubeIntake.getInstance();
         tunnel = Tunnel.getInstance();
+        limelights = LimelightManager.getInstance();
 
         leds = LEDs.getInstance();
 
         s = Superstructure.getInstance();
 
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, horizontalElevator, wrist, shoulder, claw, leds, s));
+        // The swerve should come before the limelight manager in the list below
+        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, horizontalElevator, wrist, shoulder, claw, leds, s, limelights));
     }
 
     @Override
     public void onStart(double timestamp) {
-        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+        limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
         SmartDashboard.putBoolean("Subsystems Coast Mode", false);
         SmartDashboard.putBoolean("Swerve Coast Mode", false);
 
@@ -123,12 +120,7 @@ public class DriverControls implements Loop {
     public void onLoop(double timestamp) {
         driver.update();
         coDriver.update();
-        //singleController.update();
-        //testController.update();
-        if(oneControllerMode)
-            singleController.update();
-        if(!oneControllerMode) 
-            twoControllerMode();;;;;;;
+        twoControllerMode();;;;;;;
         SmartDashboard.putNumber("timestamp", timestamp);
     }
 
@@ -211,14 +203,14 @@ public class DriverControls implements Loop {
         if (driver.startButton.wasActivated()) {
             swerve.stop();
             swerve.resetVisionPID();
-            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+            limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
         }
 
         if (driver.leftTrigger.wasActivated()) {
             System.out.println("Cone Intaking Sequence" + s.coneIntakingSequence);
             if(!s.coneIntakingSequence) {
                 System.out.println("Detected Object When Tracking: " + claw.getCurrentHoldingObject().toString());
-                boolean limelightConnected = LimelightProcessor.getInstance().isConnected();
+                boolean limelightConnected = limelights.areActiveLimelightsConnected();
                 if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
                     Pose2d leftScoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
                     Pose2d rightScoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
@@ -266,7 +258,7 @@ public class DriverControls implements Loop {
         } else if(driver.leftTrigger.wasReleased()) {
             swerve.stop(); //POOFS!!!
             swerve.resetVisionPID();
-            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+            limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
         }
 
         if(driver.rightBumper.wasActivated()) {
@@ -280,7 +272,7 @@ public class DriverControls implements Loop {
         if(coDriver.startButton.wasActivated()) {
             if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube)
                 s.manualShelfSequence();
-            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+            limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
         } else if(coDriver.startButton.wasReleased()) {
             s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
         }
@@ -288,7 +280,7 @@ public class DriverControls implements Loop {
         if(coDriver.rightTrigger.wasActivated()) {
             if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube)
                 s.shuttleIntakeSequence(false);
-            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+            limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
         } else if(coDriver.rightTrigger.wasReleased()) {
             s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
         }
@@ -336,7 +328,7 @@ public class DriverControls implements Loop {
             } else {
                 s.intakeState(Tunnel.State.SINGLE_INTAKE);
             }
-            LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+            limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
             /*if(tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
             } else if(!tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
                 tunnel.stateRequest(Tunnel.State.SINGLE_INTAKE);
@@ -397,7 +389,7 @@ public class DriverControls implements Loop {
             if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
                 claw.setCurrentHoldingObject(HoldingObject.None);
                 s.coneIntakeSequence();
-                LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+                limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
                 System.out.println("Intaking Cone Request");
             }
         }
@@ -546,236 +538,4 @@ public class DriverControls implements Loop {
         }
         
     }
-
-    private void manualMode() {
-        double swerveYInput = -driver.getLeftX();
-        double swerveXInput = -driver.getLeftY();
-        double swerveRotationInput = -(driver.getRightX() + (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0));
-        
-        swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, (Netlink.getBooleanValue("Slow Driving Enabled") || driver.leftTrigger.isBeingPressed()));
-        
-        SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
-
-        if (driver.startButton.wasActivated()) {
-            //swerve.setVelocity(Rotation2d.fromDegrees(180), 36.0);
-            //swerve.setState(Swerve.ControlState.NEUTRAL);
-            NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
-            Pose2d scoringPose = ScoringPoses.getScoringPose(dashboardNodeLocation);
-            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            s.scoringSequence(dashboardNodeLocation);
-        }
-
-        if (driver.backButton.wasActivated()) {
-            swerve.temporarilyDisableHeadingController();
-            swerve.zeroSensors(new Pose2d());
-            swerve.resetAveragedDirection();
-        }
-
-        double verticalElevatorYInput = -coDriver.getLeftY() * 0.2;
-        double horizontalElevatorYInput = -coDriver.getRightY() * 0.2;
-        double shoulderYInput = -testController.getLeftY() * 0.25;
-        double wristAngleYInput = -testController.getRightY() * 0.25;
-
-        verticalElevator.acceptManualInput(verticalElevatorYInput);
-        horizontalElevator.acceptManualInput(horizontalElevatorYInput);
-        shoulder.acceptManualInput(shoulderYInput);
-        wrist.acceptManualInput(wristAngleYInput);
-        //cubeIntake.acceptManualInput(shoulderYInput);
-
-        SmartDashboard.putNumber("Vertical Elevator Manual Input", verticalElevatorYInput);
-        SmartDashboard.putNumber("Shoulder Manual Input", shoulderYInput);
-        
-        if (coDriver.aButton.shortReleased()) {
-            s.request(new SequentialRequest(
-                SuperstructureCoordinator.getInstance().getConeIntakeChoreography(),
-                claw.stateRequest(Claw.ControlState.CONE_INTAKE)
-            ));
-            //SuperstructureCoordinator.getInstance().getConeIntakeChoreography();
-        } else if(coDriver.aButton.longPressed()) {
-            s.request(new SequentialRequest(
-                SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
-                new ParallelRequest(
-                    tunnel.stateRequest(Tunnel.State.EJECT_ONE),
-                    claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
-                )
-            ));        
-        }
-        if (coDriver.bButton.wasActivated()) {
-            //LimelightHelper.setPipelineIndex("limelight", 3);
-            if(claw.getState() == Claw.ControlState.CONE_INTAKE) {
-                s.coneStowSequence();
-            } else if(claw.getState() == Claw.ControlState.CUBE_INTAKE) {
-                s.request(SuperstructureCoordinator.getInstance().getCubeStowChoreography());
-            } else {
-                s.request(SuperstructureCoordinator.getInstance().getFullStowChoreography(true));
-            }
-        }
-        if(coDriver.yButton.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
-            
-        }
-        if (coDriver.xButton.wasActivated()) {
-            s.request(new SequentialRequest(
-                SuperstructureCoordinator.getInstance().getCubeIntakeChoreography(),
-                new ParallelRequest(
-                    tunnel.stateRequest(Tunnel.State.EJECT_ONE),
-                    claw.stateRequest(Claw.ControlState.CUBE_INTAKE)
-                )
-            ));
-            //SuperstructureCoordinator.getInstance().getCubeIntakeChoreography();
-        } 
-        /*if(testController.yButton.wasActivated()) {
-            shoulder.setPosition(0);
-        }*/
-
-        
-        /*if(coDriver.aButton.wasActivated()) {
-            s.intakeState(Tunnel.State.DETECT);
-        } else if(coDriver.aButton.wasReleased()) {
-            s.postIntakeState();
-        }
-
-        if(coDriver.bButton.wasActivated()) {
-            s.intakeState(Tunnel.State.COMMUNITY);
-        } else if(coDriver.bButton.wasReleased()) {
-            s.postIntakeState();
-        } */
-
-        /*if(testController.aButton.wasActivated()) {
-            claw.conformToState(Claw.ControlState.CONE_INTAKE);
-            //claw.setPercentSpeed(0.5);
-        }
-        if(testController.bButton.wasActivated()) {
-            claw.reset();
-            claw.conformToState(Claw.ControlState.CONE_OUTAKE);
-        } else if(testController.bButton.wasReleased()) {
-            claw.conformToState(Claw.ControlState.OFF);
-        }*/
-        
-        /*if(testController.aButton.wasActivated()) {
-            tunnel.setState(Tunnel.State.MANUAL);
-            tunnel.setConveyorSpeed(Netlink.getNumberValue("Tunnel Manual Conveyor Speed"));
-        } else if(testController.aButton.wasReleased()) {
-            tunnel.setConveyorSpeed(0);
-        }
-
-        if(testController.bButton.wasActivated()) {
-            tunnel.setState(Tunnel.State.MANUAL);
-            tunnel.setRollerSpeed(Netlink.getNumberValue("Tunnel Manual Top Roller Speed"));
-        } else if(testController.bButton.wasReleased()) {
-            tunnel.setRollerSpeed(0);
-        }*/
-
-        /*if(testController.xButton.wasActivated()) {
-            s.intakeState(Tunnel.State.SPIT);
-        } else if(testController.xButton.wasReleased()) {
-            cubeIntake.setIntakeSpeed(0.0);
-            tunnel.setState(Tunnel.State.OFF);
-        }*/
-
-        /*if(testController.xButton.wasActivated()) {
-            s.intakeState(Tunnel.State.DETECT);
-        } else if(testController.xButton.wasReleased()) {
-            //cubeIntake.setIntakeSpeed(0.0);
-            s.postIntakeState();
-        }*/
-        
-        /*
-        if(coDriver.aButton.wasActivated()) {
-            s.intakeState(Tunnel.State.SPIT);
-        } else if(coDriver.aButton.wasReleased()) {
-            s.postIntakeState();
-        }
-
-        if(coDriver.bButton.wasActivated()) {
-        } else if(coDriver.bButton.wasReleased()) {
-            s.postIntakeState();
-        }
-        if(coDriver.yButton.wasActivated()) {
-            cubeIntake.setIntakeCurrent(10.0);
-        }
-        if(coDriver.xButton.wasActivated()) {
-            cubeIntake.setIntakeCurrent(10);
-            cubeIntake.setIntakeSpeed(0.1);
-            cubeIntake.setPosition(Constants.CubeIntake.kIntakeAngle);
-            verticalElevator.setPosition(4.0);
-        } else if(coDriver.xButton.wasReleased()) {
-            //cubeIntake.setIntakeCurrent(120);
-            cubeIntake.setIntakeSpeed(0);
-        }*/
-        /*s
-        if(coDriver.aButton.wasActivated()) {
-            tunnel.setFrontSpeed(0.25);
-            cubeIntake.setIntakeSpeed(0.25);
-        } else if(coDriver.aButton.wasReleased()) {
-            tunnel.setFrontSpeed(0.0);
-            cubeIntake.setIntakeSpeed(0);
-        }*/
-
-
-        if(testController.aButton.wasActivated()) {
-            //horizontalElevator.setPosition(20.0);
-            //verticalElevator.setPosition(10.0);
-            //wrist.setPosition(-90);
-            shoulder.setPosition(-45);
-            //cubeIntake.setPosition(Constants.CubeIntake.kIntakeAngle);
-            // cubeIntake.setIntakeSpeed(0.25);
-            // tunnel.setState(Tunnel.State.MANUAL);
-            // tunnel.setAllSpeeds(0.25);
-            // claw.conformToState(Claw.ControlState.CUBE_OUTAKE);
-        }
-        if(testController.bButton.wasActivated()) {
-            //horizontalElevator.setPosition(0.5);
-            //verticalElevator.setPosition(0.5);
-            //wrist.setPosition(0);
-            shoulder.setPosition(90);
-            //cubeIntake.setPosition(100);
-            // cubeIntake.setIntakeSpeed(0.0);
-            // tunnel.setState(Tunnel.State.OFF);
-            // claw.conformToState(Claw.ControlState.OFF);
-        }
-        if(testController.yButton.wasActivated()) {
-            //horizontalElevator.setPosition(30.0);
-            //verticalElevator.setPosition(19.0);
-            //wrist.setPosition(90);
-            shoulder.setPosition(169.0);
-            //cubeIntake.setPosition(0);
-
-        }
-
-        if (testController.POV0.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
-        } else if (testController.POV90.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getCubeIntakeChoreography());
-        } else if (testController.POV180.wasActivated()) {
-            s.objectAwareStowSequence();
-        } else if (testController.POV270.wasActivated()) {
-            s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
-        }
-
-        // D-pad controls for vision PID
-        if (coDriver.POV0.wasActivated()) {
-            Pose2d scoringPose = ScoringPoses.getCenterScoringPose(swerve.getPose());
-            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            //s.cubeHighScoringSequence(scoringPose);
-            swerve.startVisionPID(scoringPose, scoringPose.getRotation(), false);
-        } else if (coDriver.POV270.wasActivated()) {
-            Pose2d scoringPose = ScoringPoses.getRightScoringPose(swerve.getPose());
-            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            //s.coneMidScoringSequence(scoringPose);
-            swerve.startVisionPID(scoringPose, scoringPose.getRotation(), false);
-        } else if (coDriver.POV90.wasActivated()) {
-            Pose2d scoringPose = ScoringPoses.getLeftScoringPose(swerve.getPose());
-            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0});
-            //s.coneHighScoringSequence(scoringPose);
-            swerve.startVisionPID(scoringPose, scoringPose.getRotation(), false);
-        }
-
-        if(coDriver.backButton.wasActivated()) {
-            s.neutralState();
-        }
-
-    }
-    
-    private void oneControllerMode() {}
 }

@@ -14,7 +14,6 @@ import com.team1323.frc2023.auto.routines.HighLinkRoutine;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.loops.AutoLoop;
-import com.team1323.frc2023.loops.LimelightProcessor;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
 import com.team1323.frc2023.loops.SynchronousLooper;
 import com.team1323.frc2023.subsystems.CubeIntake;
@@ -71,8 +70,6 @@ public class Robot extends LoggedRobot {
 		looper.registerAutoLoop(autoLoop);
 		looper.registerTeleopLoop(driverControls);
 		looper.register(QuinticPathTransmitter.getInstance());
-		// TODO: Convert the limelight into a subsystem and add it to the SubsystemManager as the last subsystem
-		looper.register(LimelightProcessor.getInstance());
 
 		smartDashboardInteractions.initWithDefaults();
 

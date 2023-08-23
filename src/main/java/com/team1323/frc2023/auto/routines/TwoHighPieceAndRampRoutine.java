@@ -6,8 +6,6 @@ import com.team1323.frc2023.auto.WaitForRemainingTimeRequest;
 import com.team1323.frc2023.auto.WaitToFinishPathRequest;
 import com.team1323.frc2023.field.AutoZones;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
-import com.team1323.frc2023.loops.LimelightProcessor;
-import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.requests.IfRequest;
 import com.team1323.frc2023.requests.LambdaRequest;
 import com.team1323.frc2023.requests.Request;
@@ -20,6 +18,8 @@ import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.LimelightManager;
+import com.team1323.frc2023.vision.LimelightManager.ProcessingMode;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.SynchronousPIDF;
@@ -62,10 +62,10 @@ public class TwoHighPieceAndRampRoutine extends AutoRoutine {
         final Request baseRoutine = new HighLinkBaseRoutine(quadrant, scoreCubeHigh).getRoutine();
 
         final SequentialRequest finishIntakingSecondCone = new SequentialRequest(
-            new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL)),
+            new LambdaRequest(() -> LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_FIDUCIAL)),
             new IfRequest(
                 () -> {
-                    Pose2d intakingPosition = LimelightProcessor.getInstance()
+                    Pose2d intakingPosition = LimelightManager.getInstance()
                             .getRobotConePickupPosition(AutoZones.mirror(Constants.kSecondPickupConePosition, quadrant));
                     setConeIntakingPosition(intakingPosition);
 

@@ -8,7 +8,6 @@ import com.team1323.frc2023.subsystems.servo.ServoSubsystemConfig;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder.AbsoluteEncoderInfo;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithCurrentZeroing.CurrentZeroingConfig;
 import com.team1323.lib.drivers.MotorController.MotorPIDF;
-import com.team1323.lib.math.geometry.Pose3d;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team1323.lib.util.InterpolatingDouble;
 import com.team1323.lib.util.InterpolatingTreeMap;
@@ -53,14 +52,6 @@ public class Constants {
     public static final double kWheelbaseLength = 24.75;
     public static final double kWheelbaseWidth = 24.75;
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
-    
-    //Camera Constants (X and Y are with respect to the turret's center)
-    public static final double kCameraYOffset = 0.0;
-    public static final double kCameraXOffset = 3.86;
-    public static final double kCameraZOffset = 52.614;
-    public static final double kCameraYawAngleDegrees = 0.0;
-    public static final double kCameraPitchAngleDegrees = Settings.kIsUsingCompBot ? 29.5 : 29.5;
-    public static final Pose3d kCameraPose = new Pose3d(new Vector3d(kCameraXOffset, kCameraYOffset, kCameraZOffset), Rotation2d.fromDegrees(kCameraPitchAngleDegrees));
 
     //Limelight
     public static final double kHorizontalFOV = 59.6; // degrees

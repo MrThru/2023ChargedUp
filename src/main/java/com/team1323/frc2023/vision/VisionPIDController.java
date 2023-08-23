@@ -3,10 +3,9 @@ package com.team1323.frc2023.vision;
 import com.team1323.frc2023.DriveMotionPlanner;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
-import com.team1323.frc2023.loops.LimelightProcessor;
-import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.subsystems.LEDs;
 import com.team1323.frc2023.subsystems.LEDs.LEDColors;
+import com.team1323.frc2023.vision.LimelightManager.ProcessingMode;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.Stopwatch;
 import com.team1323.lib.util.SynchronousPIDF;
@@ -58,7 +57,7 @@ public class VisionPIDController {
     }
 
     public void start(Pose2d currentPose, Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, boolean useRetroTarget) {
-        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+        LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
         lateralPID.setSetpoint(0.0);
         forwardPID.setSetpoint(0.0);
         targetPosition = desiredFieldPose.getTranslation();
@@ -174,7 +173,7 @@ public class VisionPIDController {
         boolean isCloseEnoughForRetro = error.norm() < kDistanceThresholdForRetroSwitch &&
                 Math.abs(error.y()) < kLateralThresholdForRetroSwitch;
         if (useRetroTarget && isCloseEnoughForRetro) {
-            LimelightProcessor.getInstance().setPipeline(Pipeline.RETRO);
+            LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_RETRO);
             currentPhase = TrackingPhase.RETRO;
         }
 
@@ -191,7 +190,7 @@ public class VisionPIDController {
 
     private void finish() {
         onTargetStopwatch.reset();
-        LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL);
+        LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
         targetReached = true;
     }
 

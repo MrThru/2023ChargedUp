@@ -11,8 +11,6 @@ import com.team1323.frc2023.auto.WaitToIntakeRequest;
 import com.team1323.frc2023.auto.WaitToPassXCoordinateRequest;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.field.ScoringPoses;
-import com.team1323.frc2023.loops.LimelightProcessor;
-import com.team1323.frc2023.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2023.requests.IfRequest;
 import com.team1323.frc2023.requests.LambdaRequest;
 import com.team1323.frc2023.requests.Request;
@@ -25,6 +23,8 @@ import com.team1323.frc2023.subsystems.Tunnel;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.superstructure.SuperstructureCoordinator;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.LimelightManager;
+import com.team1323.frc2023.vision.LimelightManager.ProcessingMode;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.math.TwoPointRamp;
 import com.team254.lib.geometry.Rotation2d;
@@ -60,7 +60,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
     public Request getRoutine() {
         final SequentialRequest setUp = new SequentialRequest(
             new ResetPoseRequest(Constants.kAutoStartingPose, quadrant),
-            new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.FIDUCIAL))
+            new LambdaRequest(() -> LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_FIDUCIAL))
         );
 
         final SequentialRequest scoreFirstConeAndLeave = new SequentialRequest(
@@ -126,7 +126,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
         );
 
         final SequentialRequest intakeSecondCone = new SequentialRequest(
-            new LambdaRequest(() -> LimelightProcessor.getInstance().setPipeline(Pipeline.DETECTOR)),
+            new LambdaRequest(() -> LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_DETECTOR)),
             new SetTrajectoryRequest(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant),
             new IfRequest(
                 () -> !getScoredCube(),
