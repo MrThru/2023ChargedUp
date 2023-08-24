@@ -19,6 +19,7 @@ public class Settings {
     public static final boolean kIsUsingPS5Controller = true;
     public static final FieldOffsets kFieldOffsets = new PracticeFieldOffsets();
 
+    public static final boolean kIsReplayingLog = true;
     public static final boolean kSimulate = false;
 	public static final boolean kResetTalons = false;
 }

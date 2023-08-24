@@ -6,8 +6,12 @@ package com.team1323.frc2023;
 
 import java.util.Set;
 
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
 import com.team1323.frc2023.auto.routines.AutoRoutine;
@@ -28,6 +32,7 @@ import com.team1323.lib.util.Netlink;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -78,12 +83,47 @@ public class Robot extends LoggedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		Logger logger = Logger.getInstance();
+
+		// Record metadata
+		logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+		logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+		logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+		logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+		logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+		switch (BuildConstants.DIRTY) {
+			case 0:
+				logger.recordMetadata("GitDirty", "All changes committed");
+				break;
+			case 1:
+				logger.recordMetadata("GitDirty", "Uncomitted changes");
+				break;
+			default:
+				logger.recordMetadata("GitDirty", "Unknown");
+				break;
+		}
+
+		// Set up data receivers & replay source
+		if (RobotBase.isReal()) {
+			logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+			logger.addDataReceiver(new NT4Publisher());
+		} else if (Settings.kIsReplayingLog) {
+			setUseTiming(false); // Run as fast as possible
+			String logPath = LogFileUtil.findReplayLog();
+			logger.setReplaySource(new WPILOGReader(logPath));
+			logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+		} else {
+			logger.addDataReceiver(new WPILOGWriter(""));
+			logger.addDataReceiver(new NT4Publisher());
+		}
+
+		// Start AdvantageKit logger
+		logger.start();
+
 		autoLoop = new AutoLoop(smartDashboardInteractions);
 		driverControls = DriverControls.getInstance();
 		subsystems = driverControls.getSubsystems();
 		looper = new SynchronousLooper(subsystems);
-
-		Swerve.getInstance().zeroSensors();
 
 		looper.registerAutoLoop(autoLoop);
 		looper.registerTeleopLoop(driverControls);
