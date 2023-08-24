@@ -120,6 +120,7 @@ public class Swerve extends Subsystem{
 	
 	// WPILib odometry
 	SwerveDrivePoseEstimator poseEstimator;
+	private boolean isPoseEstimatorInitialized = false;
 	
 	// Module configuration variables (for beginnning of auto)
 	boolean modulesReady = false;
@@ -204,8 +205,6 @@ public class Swerve extends Subsystem{
 			Units.inchesToMeters(Constants.kVehicleToModuleThree)
 		);
 
-		// TODO: The pose estimator may need to be zeroed before the first robot enable, since we are not feeding 
-		// the true gyro angle to it at initialization.
 		poseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.identity(), 
 				getModulePositions(), Pose2d.identity(), VecBuilder.fill(0.1, 0.1, 0.1), 
 				VecBuilder.fill(0.1, 0.1, 0.1));
@@ -952,6 +951,14 @@ public class Swerve extends Subsystem{
 		inputs.gyroRoll = pigeon.getRoll();
 		Logger.getInstance().processInputs("Swerve", inputs);
 
+		if (!isPoseEstimatorInitialized) {
+			// In the swerve constructor, the pose estimator object is created with a default
+			// gyro reading and swerve module states. In order for the heading and position of
+			// the robot to be zeroed properly before the first enable, we need to reset the
+			// pose estimator once, after all of the swerve's inputs have been properly read.
+			zeroSensorsBasedOnAlliance();
+			isPoseEstimatorInitialized = true;
+		}
 		updateOdometry(Timer.getFPGATimestamp());
 	}
 	

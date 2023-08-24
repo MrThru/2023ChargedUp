@@ -15,6 +15,7 @@ import com.team1323.frc2023.auto.routines.HighLinkRoutine;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.loops.AutoLoop;
+import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
 import com.team1323.frc2023.loops.SynchronousLooper;
 import com.team1323.frc2023.subsystems.CubeIntake;
@@ -47,6 +48,23 @@ public class Robot extends LoggedRobot {
 
 	private AutoLoop autoLoop;
 	private DriverControls driverControls;	
+	private final Loop zeroingLoop = new Loop() {
+		@Override
+		public void onStart(double timestamp){
+		}
+
+		@Override
+		public void onLoop(double timestamp){
+			Swerve.getInstance().zeroModuleAngles();
+			Shoulder.getInstance().setAbsolutePositionWithCounter();
+			Wrist.getInstance().setAbsolutePositionWithCounter();
+			CubeIntake.getInstance().setAbsolutePositionWithCounter();
+		}
+
+		@Override
+		public void onStop(double timestamp){
+		}
+	};
 
 	private SynchronousLooper looper;
 
@@ -69,6 +87,7 @@ public class Robot extends LoggedRobot {
 
 		looper.registerAutoLoop(autoLoop);
 		looper.registerTeleopLoop(driverControls);
+		looper.registerDisabledLoop(zeroingLoop);
 		looper.register(QuinticPathTransmitter.getInstance());
 
 		smartDashboardInteractions.initWithDefaults();
@@ -101,7 +120,6 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		// TODO: Update AllianceChooser to support log replay
 		AllianceChooser.update();
 		looper.startTeleop(Timer.getFPGATimestamp());
 	}
@@ -129,12 +147,6 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void disabledPeriodic() {
 		smartDashboardInteractions.output();
-		// TODO: Move this to a Loop
-		Swerve.getInstance().zeroModuleAngles();
-		Shoulder.getInstance().setAbsolutePositionWithCounter();
-		Wrist.getInstance().setAbsolutePositionWithCounter();
-		CubeIntake.getInstance().setAbsolutePositionWithCounter();
-
 		looper.onDisabledLoop(Timer.getFPGATimestamp());
 	}
 
@@ -151,5 +163,5 @@ public class Robot extends LoggedRobot {
 		  }
 		  System.out.println("\n");
 		}
-	  }
+	}
 }

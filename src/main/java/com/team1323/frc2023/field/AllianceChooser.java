@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.vision.AprilTagTracker.AprilTag;
 import com.team1323.lib.math.geometry.Box2d;
@@ -18,7 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
  * the robot's current alliance.
  */
 public class AllianceChooser {
-    private static Alliance alliance;
+    private static AllianceChooserInputs inputs = new AllianceChooserInputs();
     private static final List<AprilTag> redCommunityAprilTags = Arrays.asList(AprilTag.ONE, AprilTag.TWO, AprilTag.THREE);
     private static final List<AprilTag> blueCommunityAprilTags = Arrays.asList(AprilTag.SIX, AprilTag.SEVEN, AprilTag.EIGHT);
     private static final AprilTag redLoadingZoneAprilTag = AprilTag.FIVE;
@@ -45,44 +49,59 @@ public class AllianceChooser {
     private static final List<Double> redConePoleYs = redCommunityAprilTags.stream().flatMap(aprilTagToConePoleYs).toList();
 
     public static Alliance getAlliance() {
-        return alliance;
+        return inputs.alliance;
     }
 
     public static void update() {
-        alliance = DriverStation.getAlliance();
+        inputs.alliance = DriverStation.getAlliance();
+        Logger.getInstance().processInputs("AllianceChooser", inputs);
     }
 
     public static List<AprilTag> getCommunityAprilTags() {
-        return (alliance == Alliance.Blue) ? blueCommunityAprilTags : redCommunityAprilTags;
+        return (inputs.alliance == Alliance.Blue) ? blueCommunityAprilTags : redCommunityAprilTags;
     }
 
     public static AprilTag getLoadingZoneAprilTag() {
-        return (alliance == Alliance.Blue) ? blueLoadingZoneAprilTag : redLoadingZoneAprilTag;
+        return (inputs.alliance == Alliance.Blue) ? blueLoadingZoneAprilTag : redLoadingZoneAprilTag;
     }
 
     public static Box2d getCommunityBoundingBox() {
-        return (alliance == Alliance.Blue) ? blueCommunityBoundingBox : redCommunityBoundingBox;
+        return (inputs.alliance == Alliance.Blue) ? blueCommunityBoundingBox : redCommunityBoundingBox;
     }
 
     public static Box2d getLoadingZoneBoundingBox() {
-        return (alliance == Alliance.Blue) ? blueLoadingZoneBoundingBox : redLoadingZoneBoundingBox;
+        return (inputs.alliance == Alliance.Blue) ? blueLoadingZoneBoundingBox : redLoadingZoneBoundingBox;
     }
 
     public static double getMidConePoleX() {
-        return (alliance == Alliance.Blue) ? blueMidConePoleX : redMidConePoleX;
+        return (inputs.alliance == Alliance.Blue) ? blueMidConePoleX : redMidConePoleX;
     }
 
     public static double getHighConePoleX() {
-        return (alliance == Alliance.Blue) ? blueHighConePoleX : redHighConePoleX;
+        return (inputs.alliance == Alliance.Blue) ? blueHighConePoleX : redHighConePoleX;
     }
 
     public static double getAverageConePoleX() {
-        return (alliance == Alliance.Blue) ?
+        return (inputs.alliance == Alliance.Blue) ?
                 (blueMidConePoleX + blueHighConePoleX) / 2.0 :
                 (redMidConePoleX + redHighConePoleX) / 2.0;
     }
 
     public static List<Double> getConePoleYs() {
-        return (alliance == Alliance.Blue) ? blueConePoleYs : redConePoleYs;
+        return (inputs.alliance == Alliance.Blue) ? blueConePoleYs : redConePoleYs;
+    }
+
+    public static class AllianceChooserInputs implements LoggableInputs {
+        Alliance alliance = Alliance.Red;
+
+        @Override
+        public void toLog(LogTable table) {
+            table.put("Alliance", alliance.toString());
+        }
+
+        @Override
+        public void fromLog(LogTable table) {
+            alliance = table.getString("Alliance", alliance.toString()) == "Blue" ? Alliance.Blue : Alliance.Red;
+        }
     }
 }

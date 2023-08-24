@@ -99,8 +99,9 @@ public class DriverControls implements Loop {
 
         s = Superstructure.getInstance();
 
-        // The swerve should come before the limelight manager in the list below
-        subsystems = new SubsystemManager(Arrays.asList(swerve, cubeIntake, tunnel, verticalElevator, horizontalElevator, wrist, shoulder, claw, leds, s, limelights));
+        // The swerve should come before the limelight manager in the list below.
+        // Also, the superstructure should come first so that its onLoop method will be called first.
+        subsystems = new SubsystemManager(Arrays.asList(s, swerve, cubeIntake, tunnel, verticalElevator, horizontalElevator, wrist, shoulder, claw, leds, limelights));
     }
 
     @Override
@@ -124,9 +125,6 @@ public class DriverControls implements Loop {
 
     @Override
     public void onStop(double timestamp) {
-        // TODO: Make this only occur after teleop ends. Currently, this onStop will be
-        // called whenever auto OR teleop ends. Changes to SynchronousLoop will likely
-        // be required.
         Netlink.setBooleanValue("Subsystems Coast Mode", true);
         subsystems.stop();
     }
