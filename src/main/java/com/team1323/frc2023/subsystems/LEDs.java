@@ -16,8 +16,6 @@ import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.requests.Request;
 import com.team1323.lib.util.Stopwatch;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 /** Add your docs here. */
 public class LEDs extends Subsystem {
     CANdle candle;

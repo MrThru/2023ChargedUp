@@ -18,8 +18,6 @@ import com.team254.lib.trajectory.timing.TimingUtil;
 import com.team254.lib.util.CSVWritable;
 import com.team254.lib.util.Util;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class DriveMotionPlanner implements CSVWritable {
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
@@ -201,10 +199,6 @@ public class DriveMotionPlanner implements CSVWritable {
                                     actual_lookahead_distance), 0.0))), 0.0), lookahead_state.t()
                     , lookahead_state.velocity(), lookahead_state.acceleration());
         }
-        
-        SmartDashboard.putNumber("Path X", lookahead_state.state().getTranslation().x());
-        SmartDashboard.putNumber("Path Y", lookahead_state.state().getTranslation().y());
-        SmartDashboard.putNumber("Path Velocity", lookahead_state.velocity() / Constants.kSwerveMaxSpeedInchesPerSecond);
 
         Translation2d lookaheadTranslation = new Translation2d(current_state.getTranslation(), 
         		lookahead_state.state().getTranslation());
@@ -262,9 +256,6 @@ public class DriveMotionPlanner implements CSVWritable {
         
         TrajectorySamplePoint<TimedState<Pose2dWithCurvature>> sample_point = mCurrentTrajectory.advance(previewQuantity);
         mSetpoint = sample_point.state();
-        /*SmartDashboard.putNumber("Path X", mSetpoint.state().getTranslation().x());
-        SmartDashboard.putNumber("Path Y", mSetpoint.state().getTranslation().y());
-        SmartDashboard.putNumber("Path Velocity", mSetpoint.velocity() / Constants.kSwerveMaxSpeedFeetPerSecond);*/
 
         if (!mCurrentTrajectory.isDone()) {
             mError = current_state.inverse().transformBy(mSetpoint.state().getPose());

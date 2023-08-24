@@ -50,7 +50,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Swerve extends Subsystem{
 	//Instance declaration
@@ -695,8 +694,8 @@ public class Swerve extends Subsystem{
 				break;
 			case VECTORIZED:
 				Translation2d outputVectorV = vf.getVector(pose.getTranslation()).scale(0.25);
-				SmartDashboard.putNumber("Vector Direction", outputVectorV.direction().getDegrees());
-				SmartDashboard.putNumber("Vector Magnitude", outputVectorV.norm());
+				Logger.getInstance().recordOutput("Swerve/Vector Direction", outputVectorV.direction().getDegrees());
+				Logger.getInstance().recordOutput("Swerve/Vector Magnitude", outputVectorV.norm());
 				//			System.out.println(outputVector.x()+" "+outputVector.y());
 				setOpenLoop(inverseKinematics.updateDriveVectors(outputVectorV, rotationCorrection, getPose(), false));
 				break;
@@ -744,7 +743,7 @@ public class Swerve extends Subsystem{
 			case VISION_PID:
 				Pose2d visionPIDOutput = visionPID.update(pose, timestamp, timestamp - lastUpdateTimestamp);
 				Translation2d driveVector = visionPIDOutput.getTranslation();
-				SmartDashboard.putString("Swerve Vision PID Output", driveVector.toString());
+				Logger.getInstance().recordOutput("Swerve/Vision PID Output", driveVector.toString());
 				if (!visionPIDOutput.getRotation().equals(headingController.getTargetHeading())) {
 					setPathHeading(visionPIDOutput.getRotation());
 				}

@@ -1,5 +1,8 @@
 package com.team1323.frc2023.auto;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.team1323.frc2023.auto.routines.AutoRoutine;
 import com.team1323.frc2023.auto.routines.HighLinkRoutine;
 import com.team1323.frc2023.auto.routines.MidLinkRoutine;
@@ -11,8 +14,6 @@ import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.field.AutoZones.StartingSide;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SmartDashboardInteractions {
     private static final String SELECTED_AUTO_MODE = "selected_auto_mode";
@@ -21,12 +22,12 @@ public class SmartDashboardInteractions {
     private static final AutoOption DEFAULT_MODE = AutoOption.TWO_MID_AND_RAMP;
     private static final StartingSide DEFAULT_SIDE = StartingSide.LEFT;
 
-    private SendableChooser<AutoOption> modeChooser;
-    private SendableChooser<StartingSide> sideChooser;
+    private LoggedDashboardChooser<AutoOption> modeChooser;
+    private LoggedDashboardChooser<StartingSide> sideChooser;
     
     public void initWithDefaults(){
-    	modeChooser = new SendableChooser<AutoOption>();
-        modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
+    	modeChooser = new LoggedDashboardChooser<AutoOption>("Auto Routine Chooser");
+        modeChooser.addDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
         modeChooser.addOption(AutoOption.TWO_HIGH_AND_RAMP.name, AutoOption.TWO_HIGH_AND_RAMP);
         modeChooser.addOption(AutoOption.HIGH_MID_AND_RAMP.name, AutoOption.HIGH_MID_AND_RAMP);
         modeChooser.addOption(AutoOption.THREE_MID.name, AutoOption.THREE_MID);
@@ -34,14 +35,9 @@ public class SmartDashboardInteractions {
         modeChooser.addOption(AutoOption.ONE_HIGH_TWO_MID.name, AutoOption.ONE_HIGH_TWO_MID);
         modeChooser.addOption(AutoOption.STAND_STILL.name, AutoOption.STAND_STILL);
 
-        sideChooser = new SendableChooser<StartingSide>();
-        sideChooser.setDefaultOption(DEFAULT_SIDE.toString(), DEFAULT_SIDE);
+        sideChooser = new LoggedDashboardChooser<StartingSide>("Auto Side Chooser");
+        sideChooser.addDefaultOption(DEFAULT_SIDE.toString(), DEFAULT_SIDE);
         sideChooser.addOption(StartingSide.RIGHT.toString(), StartingSide.RIGHT);
-
-        SmartDashboard.putData("Mode Chooser", modeChooser);
-    	SmartDashboard.putString(SELECTED_AUTO_MODE, DEFAULT_MODE.name);
-        SmartDashboard.putData("Side Chooser", sideChooser);
-        SmartDashboard.putString(SELECTED_SIDE, DEFAULT_SIDE.toString());
     }
     
     public AutoRoutine getSelectedAutoRoutine() {
@@ -52,7 +48,7 @@ public class SmartDashboardInteractions {
     }
 
     private StartingSide getSelectedStartingSide() {
-        StartingSide selectedSide = (StartingSide) sideChooser.getSelected();
+        StartingSide selectedSide = sideChooser.get();
 
         if (selectedSide == null) {
             return DEFAULT_SIDE;
@@ -78,7 +74,7 @@ public class SmartDashboardInteractions {
     }
     
     public AutoOption getSelectedAutoEnum() {
-    	AutoOption option = (AutoOption) modeChooser.getSelected();
+    	AutoOption option = modeChooser.get();
 
         if (option == null) {
             return AutoOption.STAND_STILL;
@@ -122,7 +118,7 @@ public class SmartDashboardInteractions {
     }
     
     public void output(){
-    	SmartDashboard.putString(SELECTED_AUTO_MODE, getSelectedAutoEnum().name);
-        SmartDashboard.putString(SELECTED_SIDE, getSelectedStartingSide().toString());
+    	Logger.getInstance().recordOutput(SELECTED_AUTO_MODE, getSelectedAutoEnum().name);
+        Logger.getInstance().recordOutput(SELECTED_SIDE, getSelectedStartingSide().toString());
     }
 }

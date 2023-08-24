@@ -44,7 +44,6 @@ import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * A class to assign controller inputs to robot actions
@@ -60,7 +59,6 @@ public class DriverControls implements Loop {
     }
 
 	Xbox driver, coDriver;
-    //PS4 driver;
 
     private final Swerve swerve;
     private final VerticalElevator verticalElevator;
@@ -108,8 +106,8 @@ public class DriverControls implements Loop {
     @Override
     public void onStart(double timestamp) {
         limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
-        SmartDashboard.putBoolean("Subsystems Coast Mode", false);
-        SmartDashboard.putBoolean("Swerve Coast Mode", false);
+        Netlink.setBooleanValue("Subsystems Coast Mode", false);
+        Netlink.setBooleanValue("Swerve Coast Mode", false);
 
         swerve.setModuleNeutralModes(NeutralMode.Brake);
         cubeIntake.lockPosition();
@@ -121,7 +119,7 @@ public class DriverControls implements Loop {
         driver.update();
         coDriver.update();
         twoControllerMode();;;;;;;
-        SmartDashboard.putNumber("timestamp", timestamp);
+        Netlink.setNumberValue("timestamp", timestamp);
     }
 
     @Override
@@ -129,7 +127,7 @@ public class DriverControls implements Loop {
         // TODO: Make this only occur after teleop ends. Currently, this onStop will be
         // called whenever auto OR teleop ends. Changes to SynchronousLoop will likely
         // be required.
-        SmartDashboard.putBoolean("Subsystems Coast Mode", true);
+        Netlink.setBooleanValue("Subsystems Coast Mode", true);
         subsystems.stop();
     }
 
@@ -147,7 +145,7 @@ public class DriverControls implements Loop {
         
         swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, (Netlink.getBooleanValue("Slow Driving Enabled")/* || driver.leftTrigger.isBeingPressed()*/));
         
-        SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
+        Netlink.setNumberValue("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
 
         if(driver.bButton.wasActivated())
             swerve.rotate(Rotation2d.fromDegrees(-90));
@@ -158,14 +156,6 @@ public class DriverControls implements Loop {
             swerve.rotate(Rotation2d.fromDegrees(90));
         else if (driver.yButton.wasActivated())
             swerve.rotate(Rotation2d.fromDegrees(0));
-        
-        
-        /*if (driver.rightTrigger.wasActivated()) {
-            NodeLocation dashboardNodeLocation = NodeLocation.getDashboardLocation();
-            Pose2d scoringPose = ScoringPoses.getScoringPose(dashboardNodeLocation);
-            SmartDashboard.putNumberArray("Path Pose", new double[]{scoringPose.getTranslation().x(), scoringPose.getTranslation().y(), scoringPose.getRotation().getDegrees(), 0.0}); 
-            s.scoringSequence(dashboardNodeLocation);
-        }*/
 
         if(driver.rightTrigger.wasActivated()) {
             tunnel.setState(Tunnel.State.EJECT_ONE);
@@ -345,7 +335,7 @@ public class DriverControls implements Loop {
                 tunnel.queueShutdown(true);
             }
         }
-        SmartDashboard.putNumber("RB Pressed", (coDriver.rightBumper.isBeingPressed() ? 1 : 0));
+        Netlink.setNumberValue("RB Pressed", (coDriver.rightBumper.isBeingPressed() ? 1 : 0));
 
         if(coDriver.rightCenterClick.wasActivated()) {
             if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {

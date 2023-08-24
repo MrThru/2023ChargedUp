@@ -3,12 +3,13 @@ package com.team1323.frc2023.loops;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.team1323.frc2023.Constants;
 import com.team1323.lib.util.CrashTrackingRunnable;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This code runs all of the robot's loops. Loop objects are stored in a List object. They are started when the robot
@@ -87,6 +88,6 @@ public class NotifierLooper implements ILooper {
     }
 
     public void outputToSmartDashboard() {
-        SmartDashboard.putNumber("looper_dt", dt_);
+        Logger.getInstance().recordOutput("looper_dt", dt_);
     }
 }

@@ -7,6 +7,7 @@ package com.team1323.frc2023;
 import java.util.Set;
 
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
 
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
 import com.team1323.frc2023.auto.routines.AutoRoutine;
@@ -28,7 +29,6 @@ import com.team254.lib.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 /**
@@ -82,16 +82,18 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotPeriodic() {
-		// TODO: Find a way to make these updates compatible with log replay
 		Netlink.getInstance().update();
-		SmartDashboard.putBoolean("Enabled", DriverStation.isEnabled());
-		SmartDashboard.putNumber("Match time", DriverStation.getMatchTime());
-		SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
+
+		// If any of these values are used to alter robot behavior in the future, treat them as
+		// inputs so that they can be replayed accurately from logs.
+		Logger.getInstance().recordOutput("Enabled", DriverStation.isEnabled());
+		Logger.getInstance().recordOutput("Match time", DriverStation.getMatchTime());
+		Logger.getInstance().recordOutput("Battery Voltage", RobotController.getBatteryVoltage());
 	}
 
 	@Override
 	public void autonomousInit() {
-		SmartDashboard.putBoolean("Subsystems Coast Mode", false);
+		Netlink.setBooleanValue("Subsystems Coast Mode", false);
 		AllianceChooser.update();
 		looper.startAuto(Timer.getFPGATimestamp());
 		Swerve.getInstance().requireModuleConfiguration();
@@ -99,7 +101,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		// TOOD: Update AllianceChooser to support log replay
+		// TODO: Update AllianceChooser to support log replay
 		AllianceChooser.update();
 		looper.startTeleop(Timer.getFPGATimestamp());
 	}

@@ -3,6 +3,8 @@ package com.team1323.frc2023.loops;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.team1323.frc2023.Constants;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Translation2d;
@@ -10,8 +12,6 @@ import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class QuinticPathTransmitter implements Loop{
 	private static QuinticPathTransmitter instance = new QuinticPathTransmitter();
@@ -71,7 +71,7 @@ public class QuinticPathTransmitter implements Loop{
 		t = timestamp - startingTime;
 		TimedState<Pose2dWithCurvature> state = currentTrajectory.preview(t).state();
 		Translation2d pos = state.state().getTranslation();
-	SmartDashboard.putNumberArray("Path Pose", new double[]{pos.x(), pos.y(), 0.0, /*Math.abs(state.acceleration()) / 10.0*/Math.abs(state.velocity()) / Constants.kSwerveMaxSpeedInchesPerSecond}); 
+		Logger.getInstance().recordOutput("Path Pose", new double[]{pos.x(), pos.y(), 0.0, /*Math.abs(state.acceleration()) / 10.0*/Math.abs(state.velocity()) / Constants.kSwerveMaxSpeedInchesPerSecond}); 
 		
 		//System.out.println("Accel: " + state.acceleration());
 		if(state.acceleration() < minAccel)

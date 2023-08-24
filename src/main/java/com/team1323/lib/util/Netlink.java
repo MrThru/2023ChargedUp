@@ -4,12 +4,11 @@
 
 package com.team1323.lib.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.team1323.frc2023.subsystems.Tunnel;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /** An easier way to connect robot code to the custom dashboard */
 public class Netlink {
@@ -22,7 +21,7 @@ public class Netlink {
         return instance;
     }
     
-    public Netlink() {
+    private Netlink() {
 
     }
 
@@ -40,33 +39,47 @@ public class Netlink {
     public void update() {
         updateDriveStationStatus();
         if(isDashboardAlive()) {
-            {
-                SmartDashboard.putNumber("Tunnel Cube Count", Tunnel.getInstance().getCubeCount());
-            }
-            
+            // Send any data needed by the dashboard here
         }
     }
     
 
-    private static List<String> initializedSD = new ArrayList<>();
+    private static Map<String, LoggedDashboardNumber> dashboardNumbers = new HashMap<>();
+    private static Map<String, LoggedDashboardBoolean> dashboardBooleans = new HashMap<>();
+
+    private static void addNumberIfNotPresent(String name) {
+        if (!dashboardNumbers.containsKey(name)) {
+            LoggedDashboardNumber newDashboardNumber = new LoggedDashboardNumber(name, 0);
+            newDashboardNumber.set(0);
+            dashboardNumbers.put(name, newDashboardNumber);
+        }
+    }
     
     public static double getNumberValue(String name) {
-        for(int i = 0; i < initializedSD.size(); i++) {
-            if(initializedSD.get(i) == name)
-                return SmartDashboard.getNumber(name, 0);
-        }
-        initializedSD.add(name);
-        SmartDashboard.putNumber(name, 0);
-        return SmartDashboard.getNumber(name, 0);
+        addNumberIfNotPresent(name);
+        return dashboardNumbers.get(name).get();
     }
-    public static boolean getBooleanValue(String name) {
-        for(int i = 0; i < initializedSD.size(); i++) {
-            if(initializedSD.get(i) == name)
-                return SmartDashboard.getBoolean(name, false);
+
+    public static void setNumberValue(String name, double value) {
+        addNumberIfNotPresent(name);
+        dashboardNumbers.get(name).set(value);
+    }
+
+    private static void addBooleanIfNotPresent(String name) {
+        if (!dashboardBooleans.containsKey(name)) {
+            LoggedDashboardBoolean newDashboardBoolean = new LoggedDashboardBoolean(name, false);
+            newDashboardBoolean.set(false);
+            dashboardBooleans.put(name, newDashboardBoolean);
         }
-        initializedSD.add(name);
-        SmartDashboard.putBoolean(name, false);
-        return SmartDashboard.getBoolean(name, false);
+    }
+
+    public static boolean getBooleanValue(String name) {
+        addBooleanIfNotPresent(name);
+        return dashboardBooleans.get(name).get();
     } 
 
+    public static void setBooleanValue(String name, boolean value) {
+        addBooleanIfNotPresent(name);
+        dashboardBooleans.get(name).set(value);
+    }
 }
