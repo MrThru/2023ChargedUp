@@ -14,6 +14,7 @@ import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team1323.lib.drivers.MotorController;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
+import com.team1323.lib.drivers.PhoenixProFXMotorController;
 import com.team1323.lib.util.LogUtil;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Rotation2d;
@@ -45,7 +46,7 @@ public class CoaxialSwerveModule extends SwerveModule {
     }
 
     private MotorController createDriveMotor(SwerveMotorInfo motorInfo) {
-        MotorController driveMotor = Phoenix5FXMotorController.createRealOrSimulatedController(motorInfo.deviceId, Ports.CANBUS);
+        MotorController driveMotor = PhoenixProFXMotorController.createRealOrSimulatedController(motorInfo.deviceId, Ports.CANBUS);
         driveMotor.configureAsCoaxialSwerveDrive();
         driveMotor.setInverted(motorInfo.invertType);
 

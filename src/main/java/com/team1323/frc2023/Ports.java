@@ -49,12 +49,12 @@ public class Ports {
     public static final int[] kModuleEncoders = new int[]{FRONT_RIGHT_ENCODER, FRONT_LEFT_ENCODER,
         REAR_LEFT_ENCODER, REAR_RIGHT_ENCODER};
 
-    public static final int INTAKE_WRIST_ENCODER = 5;
+    public static final int INTAKE_WRIST_ENCODER = Settings.kIsUsingCompBot ? 5 : 6;
     
-    public static final int INTAKE_BANNER = 4;
+    public static final int INTAKE_BANNER = Settings.kIsUsingCompBot ? 4 : 7;
     
-    public static final int TUNNEL_FRONT_BANNER = Settings.kIsUsingCompBot ? 7 : 6;
-    public static final int TUNNEL_REAR_BANNER = Settings.kIsUsingCompBot ? 6: 7;
+    public static final int TUNNEL_FRONT_BANNER = Settings.kIsUsingCompBot ? 7 : 4;
+    public static final int TUNNEL_REAR_BANNER = Settings.kIsUsingCompBot ? 6: 5;
     
     //CANCoders
     

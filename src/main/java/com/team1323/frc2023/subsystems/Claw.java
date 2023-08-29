@@ -260,6 +260,7 @@ public class Claw extends Subsystem {
     @Override
     public void outputTelemetry() {
         Logger.getInstance().recordOutput("Claw/Left Right Offset Mode", flipConeOffsetMode(getCurrentConeOffset()).toString());
+        Logger.getInstance().recordOutput("Claw/Holding Object", getCurrentHoldingObject().toString());
         Logger.getInstance().recordOutput("Claw/RPM", getRPM());
     }
 

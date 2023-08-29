@@ -74,7 +74,7 @@ public class Limelight extends Subsystem {
 	private final Stopwatch lastUpdateStopwatch = new Stopwatch();
 	private double previousHeartbeat = -1.0;
 
-	private boolean isConnected = true;
+	private boolean isConnected = false;
 	
 	public Limelight(String name, Translation2d robotToCameraTranslation, double cameraHeightInches, Rotation2d cameraPitch, Rotation2d cameraYaw) {
 		this.name = name;

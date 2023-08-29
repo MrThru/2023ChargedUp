@@ -96,10 +96,10 @@ public class Constants {
     * Enter angle read by the absolute encoder. Insert as degrees and subtract or add 90° to the value
     * based on where the bevel ended up.
     */
-    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 11.94 : 329.475;
-    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 350.67 : 144.19;
-    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 289.43 : 225.0;
-    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 318.81 : 216.4;
+    public static final double kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? 11.94 : 228.1;
+    public static final double kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 350.67 : 98.1;
+    public static final double kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? 289.43 : 356.7;
+    public static final double kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? 318.81 : 165.6;
     
     //Swerve Module Positions (relative to the center of the drive base)
     public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength / 2, -kWheelbaseWidth / 2);
@@ -196,7 +196,7 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.027; //0.025
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             1,
-            Settings.kIsUsingCompBot ? -334.137878 : -357.864012, //124.287924 
+            Settings.kIsUsingCompBot ? -334.137878 : -147.8, //124.287924 
             109, 
             -45,
             115
@@ -448,8 +448,8 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 28.916016 : 244.511719, 
-            Settings.kIsUsingCompBot ? 177.0 : 174.0, 
+            Settings.kIsUsingCompBot ? 28.916016 : 286.7, 
+            Settings.kIsUsingCompBot ? 177.0 : 177.0, 
             -95.0,
             185.0
         );
@@ -515,7 +515,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 210.937 : 108.457031, 
+            Settings.kIsUsingCompBot ? 210.937 : 326.7, 
             0.0, 
             -149, 
             139.6

@@ -14,7 +14,7 @@ import com.team1323.frc2023.field.PracticeFieldOffsets;
  * 
  */
 public class Settings {
-    public static final boolean kIsUsingCompBot = true;
+    public static final boolean kIsUsingCompBot = false;
     public static final boolean kIsUsingShoulderCANCoder = false;
     public static final boolean kIsUsingPS5Controller = true;
     public static final FieldOffsets kFieldOffsets = new PracticeFieldOffsets();
