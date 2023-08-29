@@ -443,7 +443,9 @@ public class Swerve extends Subsystem{
 	
 	public void setClosedLoopVelocity(List<Translation2d> driveVectors) {
 		for (int i = 0; i < modules.size(); i++) {
-			modules.get(i).setClosedLoopVelocity(driveVectors.get(i));
+			// TODO: Consider reworking the inverse kinematics so that they accept and return vectors in
+			// inches/second, rather than normalized vectors.
+			modules.get(i).setClosedLoopVelocity(driveVectors.get(i).scale(Constants.kSwerveMaxSpeedInchesPerSecond));
 		}
 	}
 
