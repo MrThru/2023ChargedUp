@@ -28,7 +28,7 @@ public class LimelightManager extends Subsystem {
 
     private LimelightManager() {
         centerLimelight = new Limelight(
-            "Limelight", 
+            "limelight", 
             new Translation2d(3.86, 0.0), 
             52.614, 
             Rotation2d.fromDegrees(Settings.kIsUsingCompBot ? 29.5 : 29.5), 
@@ -90,15 +90,16 @@ public class LimelightManager extends Subsystem {
 
     @Override
     public void readPeriodicInputs() {
-        allLimelights.forEach(Limelight::readPeriodicInputs);
-
         double timestamp = Timer.getFPGATimestamp();
         switch (processingMode) {
             case LEFT_AND_RIGHT_FIDUCIAL:
+                leftLimelight.readPeriodicInputs();
+                rightLimelight.readPeriodicInputs();
                 leftLimelight.processAllTargets(timestamp);
                 rightLimelight.processAllTargets(timestamp);
                 break;
             default:
+                centerLimelight.readPeriodicInputs();
                 centerLimelight.processAllTargets(timestamp);
                 break;
         }

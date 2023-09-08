@@ -101,7 +101,7 @@ public class DriverControls implements Loop {
 
         // The swerve should come before the limelight manager in the list below.
         // Also, the superstructure should come first so that its onLoop method will be called first.
-        subsystems = new SubsystemManager(Arrays.asList(s, swerve, cubeIntake, tunnel, verticalElevator, horizontalElevator, wrist, shoulder, claw, leds/*, limelights*/));
+        subsystems = new SubsystemManager(Arrays.asList(s, swerve, cubeIntake, tunnel, verticalElevator, horizontalElevator, wrist, shoulder, claw, leds, limelights));
     }
 
     @Override

@@ -105,7 +105,7 @@ public class Robot extends LoggedRobot {
 
 		// Set up data receivers & replay source
 		if (RobotBase.isReal()) {
-			logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+			// logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
 			logger.addDataReceiver(new NT4Publisher());
 		} else if (Settings.kIsReplayingLog) {
 			setUseTiming(false); // Run as fast as possible
