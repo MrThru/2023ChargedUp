@@ -174,6 +174,7 @@ public class Claw extends Subsystem {
                     stopwatch.start();
                 }
                 if(Util.isInRange(encUnitsToRPM(periodicIO.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 0) && stopwatch.getTime() > 1.0) {
+                    setPercentSpeed(-0.2);
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit, 0.01);
                     claw.setStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit, 0.01);
                     setCurrentHoldingObject(HoldingObject.Cube);
@@ -262,6 +263,7 @@ public class Claw extends Subsystem {
     @Override
     public void outputTelemetry() {
         SmartDashboard.putString("Claw Left Right Offset Mode", flipConeOffsetMode(getCurrentConeOffset()).toString());
+        SmartDashboard.putNumber("Claw RPM", encUnitsToRPM(periodicIO.velocity));
 
     }
 

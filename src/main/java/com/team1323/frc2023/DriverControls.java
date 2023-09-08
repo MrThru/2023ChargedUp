@@ -172,7 +172,7 @@ public class DriverControls implements Loop {
         
         SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
 
-        if(driver.bButton.wasActivated())
+    if(driver.bButton.wasActivated())
             swerve.rotate(Rotation2d.fromDegrees(-90));
             //swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());
         else if(driver.aButton.wasActivated()) 

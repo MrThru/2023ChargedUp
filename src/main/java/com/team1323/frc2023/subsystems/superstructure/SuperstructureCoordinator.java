@@ -56,7 +56,7 @@ public class SuperstructureCoordinator {
     public static final double kCubeMidScoringHorizontalExtension = 16.5;
     public static final double kCubeHighScoringHorizontalExtension = 30.0;
     public static final double kConeIntakingWristAngle = 85.26; //85.26
-    public static final double kCubeHoldingWristAngle = 110.0; //106.0
+    public static final double kCubeHoldingWristAngle = 117.0; //106.0 - 110
 
     private final VerticalElevator verticalElevator;
     private final HorizontalElevator horizontalElevator;
