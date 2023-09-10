@@ -518,7 +518,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 210.937 : 108.457031, 
+            Settings.kIsUsingCompBot ? 213.0 : 108.457031, 
             0.0, 
             -149, 
             139.6
@@ -534,8 +534,8 @@ public class Constants {
 
     public static class Claw {
         
-        public static final double kIntakeConeStatorCurrentLimit = 200.0; //200.0
-        public static final double kIntakeConeStatorHoldCurrent = 30.0; //30.0
+        public static final double kIntakeConeStatorCurrentLimit = 180.0; //200.0
+        public static final double kIntakeConeStatorHoldCurrent = 10.0; //30.0
         public static final double kIntakeConeVelocityThreshold = 200.0;
 
 
