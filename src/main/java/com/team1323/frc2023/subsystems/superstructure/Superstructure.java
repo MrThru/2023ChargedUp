@@ -471,8 +471,8 @@ public class Superstructure extends Subsystem {
 
 	public void coneMidScoringSequence(Pose2d scoringPose) {
 		VisionPIDController controller = new VisionPIDBuilder()
-				.withTolerance(2.0)
-				.withOnTargetTime(0.1)
+				.withTolerance(1.0) //2.0
+				.withOnTargetTime(0.5) //0.1
 				.build();
 		scoringSequence(scoringPose, coordinator::getConeMidScoringChoreography, 
 				Claw.ControlState.CONE_OUTAKE, controller, false, true);
