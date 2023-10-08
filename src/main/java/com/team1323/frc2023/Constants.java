@@ -167,7 +167,7 @@ public class Constants {
         public static final double kMaxControlAngle = 110;
 
         public static final double kStartingAngle = 0;
-        public static final double kIntakeAngle = Settings.kIsUsingCompBot ? -3.75 : -0.5;
+        public static final double kIntakeAngle = Settings.kIsUsingCompBot ? -3.75 : -3.5;
         public static final double kFloorAngle = -38.75;
 
         public static final double kAngleTolerance = Settings.kIsUsingCompBot ? 2.0 : 1.0;
@@ -515,7 +515,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 210.937 : 326.7, 
+            Settings.kIsUsingCompBot ? 210.937 : 312.6, 
             0.0, 
             -149, 
             139.6
@@ -532,7 +532,7 @@ public class Constants {
     public static class Claw {
         
         public static final double kIntakeConeStatorCurrentLimit = 200.0; //200.0
-        public static final double kIntakeConeStatorHoldCurrent = 30.0; //30.0
+        public static final double kIntakeConeStatorHoldCurrent = 20.0; //30.0
         public static final double kIntakeConeVelocityThreshold = 200.0;
 
 
