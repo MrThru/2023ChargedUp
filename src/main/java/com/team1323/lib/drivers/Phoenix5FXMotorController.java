@@ -123,6 +123,20 @@ public class Phoenix5FXMotorController extends LazyPhoenix5TalonFX implements Mo
     }
 
     @Override
+    public void configureAsDifferentialSwerveMotor() {
+        configureDefaultSettings(12.0);
+
+        useIntegratedSensor();
+
+		this.configForwardSoftLimitEnable(false, 10);
+		this.configReverseSoftLimitEnable(false, 10);
+
+        // Slot 1 corresponds to velocity mode
+        setPIDF(1, 0.0, 0.0, 0.0, 0.0);
+        this.selectProfileSlot(1, 0);
+    }
+
+    @Override
     public ErrorCode configSupplyCurrentLimit(double amps) {
         SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(true, amps, amps, 0.25);
         return this.configSupplyCurrentLimit(currentLimitConfiguration);
@@ -153,6 +167,11 @@ public class Phoenix5FXMotorController extends LazyPhoenix5TalonFX implements Mo
     @Override
     public double getAppliedVoltage() {
         return Math.abs(this.getMotorOutputVoltage());
+    }
+
+    @Override
+    public double getMotorTemperature() {
+        return this.getTemperature();
     }
 
     @Override

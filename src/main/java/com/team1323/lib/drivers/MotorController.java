@@ -11,6 +11,7 @@ public interface MotorController {
     public void configureAsServo();
     public void configureAsCoaxialSwerveRotation();
     public void configureAsCoaxialSwerveDrive();
+    public void configureAsDifferentialSwerveMotor();
 
     public ErrorCode configForwardSoftLimitThreshold(double encoderUnits);
     public ErrorCode configReverseSoftLimitThreshold(double encoderUnits);
@@ -28,6 +29,7 @@ public interface MotorController {
     public double getSupplyAmps();
     public double getStatorAmps();
     public double getAppliedVoltage();
+    public double getMotorTemperature();
 
     public double getVelocityEncoderUnitsPer100Ms();
     public double getSelectedSensorPosition();

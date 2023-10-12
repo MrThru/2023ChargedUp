@@ -25,6 +25,10 @@ public class SimulatedMotorController implements MotorController {
     }
 
     @Override
+    public void configureAsDifferentialSwerveMotor() {
+    }
+
+    @Override
     public ErrorCode configForwardSoftLimitThreshold(double encoderUnits) {
         return ErrorCode.OK;
     }
@@ -86,6 +90,10 @@ public class SimulatedMotorController implements MotorController {
 
     @Override
     public double getAppliedVoltage() {
+        return 0.0;
+    }
+    @Override
+    public double getMotorTemperature() {
         return 0.0;
     }
 

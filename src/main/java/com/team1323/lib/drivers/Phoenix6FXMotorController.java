@@ -5,57 +5,66 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenixpro.StatusCode;
-import com.ctre.phoenixpro.configs.TalonFXConfiguration;
-import com.ctre.phoenixpro.controls.ControlRequest;
-import com.ctre.phoenixpro.controls.Follower;
-import com.ctre.phoenixpro.controls.MotionMagicVoltage;
-import com.ctre.phoenixpro.controls.VelocityVoltage;
-import com.ctre.phoenixpro.controls.VoltageOut;
-import com.ctre.phoenixpro.hardware.TalonFX;
-import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenixpro.signals.InvertedValue;
-import com.ctre.phoenixpro.signals.NeutralModeValue;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team1323.frc2023.Constants;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
-public class PhoenixProFXMotorController extends TalonFX implements MotorController {
+public class Phoenix6FXMotorController extends TalonFX implements MotorController {
     private static final double kTalonFXEncoderResolution = 2048.0;
     private static final double kCANCoderResolution = 4096.0;
 
     private final TalonFXConfiguration configuration = new TalonFXConfiguration();
 
     private final VoltageOut voltageOutRequest = new VoltageOut(0.0, true, false);
-    private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0, true, 0.0, 0, false);
+    // TODO: Experiment with the new acceleration field in the VelocityVoltage object.
+    private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0, Constants.kMaxFalconRotationsPerSecond * 5.0, true, 0.0, 0, false);
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0, true, 0.0, 0, false);
     private final Follower followerRequest = new Follower(0, false);
 
     private ControlRequest currentControlRequest = voltageOutRequest;
 
-    public static MotorController createRealOrSimulatedController(int deviceId) {
-        return RobotBase.isReal() ? new PhoenixProFXMotorController(deviceId) : new SimulatedMotorController();
+    public static MotorController createRealOrSimulatedController(int deviceId, boolean enableFOC) {
+        return RobotBase.isReal() ? new Phoenix6FXMotorController(deviceId, enableFOC) : new SimulatedMotorController();
     }
 
-    public static MotorController createRealOrSimulatedController(int deviceId, String canBus) {
-        return RobotBase.isReal() ? new PhoenixProFXMotorController(deviceId, canBus) : new SimulatedMotorController();
+    public static MotorController createRealOrSimulatedController(int deviceId, String canBus, boolean enableFOC) {
+        return RobotBase.isReal() ? new Phoenix6FXMotorController(deviceId, canBus, enableFOC) : new SimulatedMotorController();
     }
 
-    public static MotorController createRealOrSimulatedController(int deviceId, String canBus, int cancoderId) {
-        return RobotBase.isReal() ? new PhoenixProFXMotorController(deviceId, canBus, cancoderId) : new SimulatedMotorController();
+    public static MotorController createRealOrSimulatedController(int deviceId, String canBus, int cancoderId, boolean enableFOC) {
+        return RobotBase.isReal() ? new Phoenix6FXMotorController(deviceId, canBus, cancoderId, enableFOC) : new SimulatedMotorController();
     }
 
-    private PhoenixProFXMotorController(int deviceId) {
-        super(deviceId);
+    private Phoenix6FXMotorController(int deviceId, boolean enableFOC) {
+        this(deviceId, "rio", enableFOC);
     }
 
-    private PhoenixProFXMotorController(int deviceId, String canBus) {
+    private Phoenix6FXMotorController(int deviceId, String canBus, boolean enableFOC) {
         super(deviceId, canBus);
+        enableFOC(enableFOC);
     }
 
-    private PhoenixProFXMotorController(int deviceId, String canBus, int cancoderId) {
+    private Phoenix6FXMotorController(int deviceId, String canBus, int cancoderId, boolean enableFOC) {
         super(deviceId, canBus);
         useCANCoder(cancoderId);
+        enableFOC(enableFOC);
+    }
+
+    private void enableFOC(boolean enable) {
+        voltageOutRequest.EnableFOC = enable;
+        velocityRequest.EnableFOC = enable;
+        motionMagicRequest.EnableFOC = enable;
     }
 
     private void configureDefaultSettings() {
@@ -109,7 +118,22 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
         // Slot 1 corresponds to velocity mode
         setPIDF(new MotorPIDF(1, 0.11, 0.0, 0.0, 12.0 / (Constants.kMaxFalconRotationsPerSecond * 0.95)));
 
-        this.setRotorPosition(0.0);
+        this.setPosition(0.0);
+    }
+
+    @Override
+    public void configureAsDifferentialSwerveMotor() {
+        configureDefaultSettings();
+
+        useIntegratedSensor();
+
+        configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
+        configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
+        applyConfig();
+
+        // Slot 1 corresponds to velocity mode
+        setPIDF(new MotorPIDF(1, 0.0, 0.0, 0.0, 0.0));
+        selectProfileSlot(1);
     }
 
     private double getEncoderResolution() {
@@ -232,6 +256,11 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
     }
 
     @Override
+    public double getMotorTemperature() {
+        return this.getMotorTemperature();
+    }
+
+    @Override
     public double getVelocityEncoderUnitsPer100Ms() {
         return rotationsPerSecondToEncoderVelocity(this.getVelocity().getValue());
     }
@@ -243,7 +272,7 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
 
     @Override
     public ErrorCode setSelectedSensorPosition(double encoderUnits) {
-        return convertToErrorCode(this.setRotorPosition(encoderUnitsToEncoderRotations(encoderUnits)));
+        return convertToErrorCode(this.setPosition(encoderUnitsToEncoderRotations(encoderUnits)));
     }
 
     @Override
@@ -347,6 +376,6 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
 
     @Override
     public boolean isConnected() {
-        return this.getRotorPosition().getError() == StatusCode.OK;
+        return this.getRotorPosition().getStatus() == StatusCode.OK;
     }
 }

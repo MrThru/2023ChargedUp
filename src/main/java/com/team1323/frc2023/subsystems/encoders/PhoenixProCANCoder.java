@@ -1,10 +1,10 @@
 package com.team1323.frc2023.subsystems.encoders;
 
-import com.ctre.phoenixpro.StatusCode;
-import com.ctre.phoenixpro.configs.CANcoderConfiguration;
-import com.ctre.phoenixpro.hardware.CANcoder;
-import com.ctre.phoenixpro.signals.AbsoluteSensorRangeValue;
-import com.ctre.phoenixpro.signals.SensorDirectionValue;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.team1323.frc2023.Ports;
 
 import edu.wpi.first.wpilibj.RobotBase;
@@ -37,6 +37,6 @@ public class PhoenixProCANCoder implements AbsoluteEncoder {
 
     @Override
     public boolean isConnected() {
-        return encoder.getAbsolutePosition().getError() == StatusCode.OK;
+        return encoder.getAbsolutePosition().getStatus() == StatusCode.OK;
     }
 }
