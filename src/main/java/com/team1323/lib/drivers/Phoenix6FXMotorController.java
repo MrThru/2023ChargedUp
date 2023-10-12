@@ -5,19 +5,19 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenixpro.StatusCode;
-import com.ctre.phoenixpro.configs.TalonFXConfiguration;
-import com.ctre.phoenixpro.controls.ControlRequest;
-import com.ctre.phoenixpro.controls.Follower;
-import com.ctre.phoenixpro.controls.MotionMagicVoltage;
-import com.ctre.phoenixpro.controls.VoltageOut;
-import com.ctre.phoenixpro.hardware.TalonFX;
-import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenixpro.signals.InvertedValue;
-import com.ctre.phoenixpro.signals.NeutralModeValue;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team1323.frc2023.Constants;
 
-public class PhoenixProFXMotorController extends TalonFX implements MotorController {
+public class Phoenix6FXMotorController extends TalonFX implements MotorController {
     private static final double kTalonFXEncoderResolution = 2048.0;
     private static final double kCANCoderResolution = 4096.0;
 
@@ -29,17 +29,24 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
 
     private ControlRequest currentControlRequest = voltageOutRequest;
 
-    public PhoenixProFXMotorController(int deviceId) {
-        super(deviceId);
+    public Phoenix6FXMotorController(int deviceId, boolean enableFOC) {
+        this(deviceId, "rio", enableFOC);
     }
 
-    public PhoenixProFXMotorController(int deviceId, String canBus) {
+    public Phoenix6FXMotorController(int deviceId, String canBus, boolean enableFOC) {
         super(deviceId, canBus);
+        enableFOC(enableFOC);
     }
 
-    public PhoenixProFXMotorController(int deviceId, String canBus, int cancoderId) {
+    public Phoenix6FXMotorController(int deviceId, String canBus, int cancoderId, boolean enableFOC) {
         super(deviceId, canBus);
         useCANCoder(cancoderId);
+        enableFOC(enableFOC);
+    }
+
+    private void enableFOC(boolean enable) {
+        voltageOutRequest.EnableFOC = enable;
+        motionMagicRequest.EnableFOC = enable;
     }
 
     private void configureDefaultSettings() {
@@ -197,7 +204,7 @@ public class PhoenixProFXMotorController extends TalonFX implements MotorControl
 
     @Override
     public ErrorCode setSelectedSensorPosition(double encoderUnits) {
-        return convertToErrorCode(this.setRotorPosition(encoderUnitsToEncoderRotations(encoderUnits)));
+        return convertToErrorCode(this.setPosition(encoderUnitsToEncoderRotations(encoderUnits)));
     }
 
     @Override

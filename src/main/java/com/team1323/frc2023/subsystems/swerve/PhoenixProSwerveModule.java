@@ -6,16 +6,15 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
-import com.ctre.phoenixpro.configs.TalonFXConfiguration;
-import com.ctre.phoenixpro.controls.ControlRequest;
-import com.ctre.phoenixpro.controls.MotionMagicVoltage;
-import com.ctre.phoenixpro.controls.VelocityVoltage;
-import com.ctre.phoenixpro.controls.VoltageOut;
-import com.ctre.phoenixpro.hardware.TalonFX;
-import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenixpro.signals.InvertedValue;
-import com.ctre.phoenixpro.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
 import com.team254.drivers.LazyPhoenix5TalonFX;
@@ -33,7 +32,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
     private final TalonFXConfiguration driveConfiguration = new TalonFXConfiguration();
     private final VoltageOut driveVoltageOutRequest = new VoltageOut(0.0, true, false);
     private final MotionMagicVoltage driveMotionMagicRequest = new MotionMagicVoltage(0.0, true, 0.0, 0, false);
-    private final VelocityVoltage driveVelocityRequest = new VelocityVoltage(0.0, true, 0.0, 1, false);
+    private final VelocityVoltage driveVelocityRequest = new VelocityVoltage(0.0, Constants.kMaxFalconRotationsPerSecond * 5.0, true, 0.0, 1, false);
     private ControlRequest currentDriveControlRequest = driveVoltageOutRequest;
 
     public PhoenixProSwerveModule(int rotationPort, int drivePort, int moduleId, 
@@ -42,6 +41,13 @@ public class PhoenixProSwerveModule extends SwerveModule {
         rotationMotor = new LazyPhoenix5TalonFX(rotationPort, Ports.CANBUS);
         driveMotor = new TalonFX(drivePort, Ports.CANBUS);
         configureMotors();
+        enableFOC(true);
+    }
+
+    private void enableFOC(boolean enable) {
+        driveVoltageOutRequest.EnableFOC = enable;
+        driveMotionMagicRequest.EnableFOC = enable;
+        driveVelocityRequest.EnableFOC = enable;
     }
 
     @Override
@@ -92,7 +98,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
         driveConfiguration.Slot1.kD = 0.0;
         driveConfiguration.Slot1.kV = 12.0 / (Constants.kMaxFalconRotationsPerSecond * 0.95);
         driveMotor.getConfigurator().apply(driveConfiguration, Constants.kCANTimeoutMs);
-        driveMotor.setRotorPosition(0.0);
+        driveMotor.setPosition(0.0);
     }
 
     @Override
