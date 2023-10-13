@@ -41,7 +41,7 @@ public class PhoenixProSwerveModule extends SwerveModule {
         rotationMotor = new LazyPhoenix5TalonFX(rotationPort, Ports.CANBUS);
         driveMotor = new TalonFX(drivePort, Ports.CANBUS);
         configureMotors();
-        enableFOC(true);
+        //enableFOC(true);
     }
 
     private void enableFOC(boolean enable) {

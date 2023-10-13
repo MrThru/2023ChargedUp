@@ -10,6 +10,7 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix6.SignalLogger;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
@@ -139,7 +140,7 @@ public class DriverControls implements Loop {
             driver.update();
 			coDriver.update();
             //singleController.update();
-            //testController.update();
+            testController.update();
             if(oneControllerMode)
                 singleController.update();
             if(!oneControllerMode) 
@@ -172,7 +173,7 @@ public class DriverControls implements Loop {
         
         SmartDashboard.putNumber("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
 
-    if(driver.bButton.wasActivated())
+        if(driver.bButton.wasActivated())
             swerve.rotate(Rotation2d.fromDegrees(-90));
             //swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());
         else if(driver.aButton.wasActivated()) 
@@ -195,6 +196,13 @@ public class DriverControls implements Loop {
             //swerve.startBalancePID();
         }
 
+        if(testController.rightBumper.wasActivated()) {
+            SignalLogger.startLogger();
+            System.out.println("Starting Logger");
+        } else if(testController.rightBumper.wasReleased()) {
+            SignalLogger.stopLogger();
+            System.out.println("Stopping Logger");
+        }
         /*if (driver.rightTrigger.wasActivated()) {
             Translation2d conePosition = LimelightProcessor.getInstance().getConePosition();
             if (!conePosition.equals(Translation2d.identity())) {
