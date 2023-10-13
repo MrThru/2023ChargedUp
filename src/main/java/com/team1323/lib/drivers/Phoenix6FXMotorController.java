@@ -257,7 +257,7 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
 
     @Override
     public double getMotorTemperature() {
-        return this.getMotorTemperature();
+        return this.getDeviceTemp().getValue();
     }
 
     @Override

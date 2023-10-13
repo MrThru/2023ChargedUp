@@ -196,7 +196,7 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.027; //0.025
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             1,
-            Settings.kIsUsingCompBot ? -334.137878 : -147.8, //124.287924 
+            Settings.kIsUsingCompBot ? -334.13 : -147.8, //124.287924 
             109, 
             -45,
             115
@@ -515,7 +515,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 210.937 : 312.6, 
+            Settings.kIsUsingCompBot ? 213.0 : 312.6, 
             0.0, 
             -149, 
             139.6

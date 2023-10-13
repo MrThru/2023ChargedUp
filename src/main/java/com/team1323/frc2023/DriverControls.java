@@ -10,6 +10,7 @@ package com.team1323.frc2023;
 import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix6.SignalLogger;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
@@ -58,7 +59,7 @@ public class DriverControls implements Loop {
         return instance;
     }
 
-	Xbox driver, coDriver;
+	Xbox driver, coDriver, testController;
 
     private final Swerve swerve;
     private final VerticalElevator verticalElevator;
@@ -82,6 +83,7 @@ public class DriverControls implements Loop {
     public DriverControls() {
         driver = new Xbox(0);
 		coDriver = new Xbox(1);
+        testController = new Xbox(4);
         driver.setDeadband(0.0);
 		coDriver.setDeadband(0.6); //0.6
 
@@ -119,6 +121,7 @@ public class DriverControls implements Loop {
     public void onLoop(double timestamp) {
         driver.update();
         coDriver.update();
+        testController.update();
         twoControllerMode();;;;;;;
         Netlink.setNumberValue("timestamp", timestamp);
     }
@@ -158,6 +161,12 @@ public class DriverControls implements Loop {
         if(driver.rightTrigger.wasActivated()) {
             tunnel.setState(Tunnel.State.EJECT_ONE);
             //swerve.startBalancePID();
+        }
+
+        if(testController.rightBumper.wasActivated()) {
+            SignalLogger.startLogger();
+        } else if(testController.rightBumper.wasReleased()) {
+            SignalLogger.stopLogger();
         }
 
         /*if (driver.rightTrigger.wasActivated()) {

@@ -253,6 +253,8 @@ public class CoaxialSwerveModule extends SwerveModule {
         LogUtil.recordRotation2d(getLogKey("Angle"), getAngle());
         Logger.getInstance().recordOutput(getLogKey("Inches Driven"), getDriveDistanceInches());
         Logger.getInstance().recordOutput(getLogKey("Inches Per Second"), getDriveVelocityInchesPerSecond());
+        Logger.getInstance().recordOutput(getLogKey("Drive Supply Current"), leadDriveMotor.getSupplyAmps());
+        Logger.getInstance().recordOutput(getLogKey("Drive Temperature"), leadDriveMotor.getMotorTemperature());
     }
 
     @AutoLog
