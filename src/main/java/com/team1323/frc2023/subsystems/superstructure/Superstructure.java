@@ -1,6 +1,7 @@
 package com.team1323.frc2023.subsystems.superstructure;
 
 import com.team1323.frc2023.Constants;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.NodeLocation.Column;
 import com.team1323.frc2023.field.NodeLocation.Row;
@@ -471,8 +472,8 @@ public class Superstructure extends Subsystem {
 
 	public void coneMidScoringSequence(Pose2d scoringPose) {
 		VisionPIDController controller = new VisionPIDBuilder()
-				.withTolerance(1.0) //2.0
-				.withOnTargetTime(0.5) //0.1
+				.withTolerance(Settings.kIsUsingCompBot ? 2.0 : 1.0) //2.0
+				.withOnTargetTime(Settings.kIsUsingCompBot ? 0.1 : 0.5) //0.1
 				.build();
 		scoringSequence(scoringPose, coordinator::getConeMidScoringChoreography, 
 				Claw.ControlState.CONE_OUTAKE, controller, false, true);

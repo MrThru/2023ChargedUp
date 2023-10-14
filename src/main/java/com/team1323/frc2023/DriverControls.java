@@ -36,6 +36,7 @@ import com.team1323.frc2023.vision.GridTracker;
 import com.team1323.frc2023.vision.LimelightManager;
 import com.team1323.frc2023.vision.LimelightManager.ProcessingMode;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
+import com.team1323.io.PS4;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Util;
@@ -59,7 +60,8 @@ public class DriverControls implements Loop {
         return instance;
     }
 
-	Xbox driver, coDriver, testController;
+	Xbox driver, coDriver;
+    //PS4 ps5;
 
     private final Swerve swerve;
     private final VerticalElevator verticalElevator;
@@ -83,7 +85,9 @@ public class DriverControls implements Loop {
     public DriverControls() {
         driver = new Xbox(0);
 		coDriver = new Xbox(1);
-        testController = new Xbox(4);
+
+        //ps5 = new PS4(3);
+        //testController = new Xbox(4);
         driver.setDeadband(0.0);
 		coDriver.setDeadband(0.6); //0.6
 
@@ -121,7 +125,7 @@ public class DriverControls implements Loop {
     public void onLoop(double timestamp) {
         driver.update();
         coDriver.update();
-        testController.update();
+        //testController.update();
         twoControllerMode();;;;;;;
         Netlink.setNumberValue("timestamp", timestamp);
     }
@@ -136,6 +140,10 @@ public class DriverControls implements Loop {
         double swerveYInput = -driver.getLeftX();
         double swerveXInput = -driver.getLeftY();
         double swerveRotationInput = -driver.getRightX(); //+ (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0));
+
+        /*double swerveYInput = -ps5.getLeftX();
+        double swerveXInput = -ps5.getLeftY();
+        double swerveRotationInput = -ps5.getRightX(); //+ (driver.leftBumper.isBeingPressed() ? 0.3 : 0.0));*/
         
         Translation2d currentTranslationVector = Translation2d.identity();
         if(Netlink.getBooleanValue("Driving Rotation Offset Enabled")) {
@@ -163,11 +171,11 @@ public class DriverControls implements Loop {
             //swerve.startBalancePID();
         }
 
-        if(testController.rightBumper.wasActivated()) {
+        /*if(testController.rightBumper.wasActivated()) {
             SignalLogger.startLogger();
         } else if(testController.rightBumper.wasReleased()) {
             SignalLogger.stopLogger();
-        }
+        }*/
 
         /*if (driver.rightTrigger.wasActivated()) {
             Translation2d conePosition = LimelightProcessor.getInstance().getConePosition();

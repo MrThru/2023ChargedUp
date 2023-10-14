@@ -27,6 +27,7 @@ import com.team1323.lib.math.Units;
 import com.team1323.lib.math.geometry.Vector3d;
 import com.team1323.lib.util.CircularBuffer;
 import com.team1323.lib.util.FieldConversions;
+import com.team1323.lib.util.LogUtil;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.Stopwatch;
 import com.team254.lib.geometry.Pose2d;
@@ -169,6 +170,8 @@ public class Limelight extends Subsystem {
 		double rotationalStdDev = rotationalStandardDeviationRamp.calculate(cameraDistanceInches);
 		Matrix<N3, N1> standardDeviations = VecBuilder.fill(translationalStdDev, translationalStdDev, rotationalStdDev);
 		Swerve.getInstance().addVisionMeasurement(estimatedRobotPoseMeters,  timestamp - getTotalLatencySeconds(inputs.results), standardDeviations);
+
+		LogUtil.recordPose2d(getLogKey("Estimated Robot Pose"), estimatedRobotPoseMeters);
 	}
 
 	private double coneLeftRightOffset = 0;
