@@ -232,8 +232,8 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(new Translation2d(126, secondConePickupPose.getTranslation().y()), Rotation2d.fromDegrees(0)));
             waypoints.add(new Pose2d(new Translation2d(178, secondConePickupPose.getTranslation().y()), Rotation2d.fromDegrees(0)));
             waypoints.add(new Pose2dWithQuadrantOffsets(secondConePickupPose)
-                    .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 6.0)))
-                    .withOffset(Quadrant.TOP_LEFT, Pose2d.fromTranslation(new Translation2d(0.0, 6.0)))
+                    .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 0.0))) // y was 6.0 at champs
+                    .withOffset(Quadrant.TOP_LEFT, Pose2d.fromTranslation(new Translation2d(0.0, 0.0))) // y was 6.0 at champs
                     .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, -3)))
                     .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, -3))));
             

@@ -168,7 +168,6 @@ public class DriverControls implements Loop {
 
         if(driver.rightTrigger.wasActivated()) {
             tunnel.setState(Tunnel.State.EJECT_ONE);
-            //swerve.startBalancePID();
         }
 
         /*if(testController.rightBumper.wasActivated()) {

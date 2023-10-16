@@ -17,6 +17,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team1323.frc2023.Constants;
+import com.team1323.frc2023.Settings;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -105,8 +106,10 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
     public void configureAsCoaxialSwerveDrive() {
         useIntegratedSensor();
 
-        configuration.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.2;
+        configuration.OpenLoopRamps.VoltageOpenLoopRampPeriod = Settings.kIsUsingCompBot ? 0.05 : 0.2; // 0.2
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        configuration.CurrentLimits.StatorCurrentLimit = 100.0;
+        configuration.CurrentLimits.StatorCurrentLimitEnable = Settings.kIsUsingCompBot;
         configuration.CurrentLimits.SupplyCurrentLimit = 60.0;
         configuration.CurrentLimits.SupplyCurrentThreshold = 120.0;
         configuration.CurrentLimits.SupplyTimeThreshold = 0.25;
@@ -116,7 +119,9 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
         // Slot 0 is reserved for MotionMagic
         setPIDF(new MotorPIDF(0, 0.18, 0.0, 3.6, 1.0 / Constants.kMaxFalconRotationsPerSecond));
         // Slot 1 corresponds to velocity mode
-        setPIDF(new MotorPIDF(1, 0.11, 0.0, 0.0, 12.0 / (Constants.kMaxFalconRotationsPerSecond * 0.95)));
+        final double falconFeedForward = 12.0 / (Constants.kMaxFalconRotationsPerSecond * 0.95);
+        final double krakenFeedForward = 12.0 / (Constants.kMaxKrakenRotationsPerSecond * 0.92);
+        setPIDF(new MotorPIDF(1, 0.11, 0.0, 0.0, Settings.kIsUsingCompBot ? krakenFeedForward : falconFeedForward));
 
         this.setPosition(0.0);
     }

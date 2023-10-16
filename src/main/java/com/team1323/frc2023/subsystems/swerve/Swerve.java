@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.DriveMotionPlanner;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
@@ -231,9 +232,8 @@ public class Swerve extends Subsystem{
 	public void setMaxSpeed(double max){
 		maxSpeedFactor = max;
 	}
-	private SlewRateLimiter xInputLimiter = new SlewRateLimiter(Constants.kSwerveXInputRate);
-	private SlewRateLimiter yInputLimiter = new SlewRateLimiter(Constants.kSwerveYInputRate);
-	private boolean useSlewLimiter = false;
+	private final SlewRateLimiter inputMagnitudeLimiter = new SlewRateLimiter(2.0);
+	private boolean useSlewLimiter = Settings.kIsUsingCompBot;
 	public void useSlewLimiter(boolean use) {
 		useSlewLimiter = use;
 	}
@@ -278,14 +278,13 @@ public class Swerve extends Subsystem{
 		}
 
 		if (updateInputs) {
-			if (useSlewLimiter) {
-				x = xInputLimiter.calculate(x);
-				y = yInputLimiter.calculate(y);
-			} else {
-				xInputLimiter.reset(x);
-				yInputLimiter.reset(y);
-			}
 			Translation2d translationalInput = new Translation2d(x, y);
+			if (useSlewLimiter) {
+				double limitedMagnitude = inputMagnitudeLimiter.calculate(translationalInput.norm());
+				translationalInput = Translation2d.fromPolar(translationalInput.direction(), limitedMagnitude);
+			} else {
+				inputMagnitudeLimiter.reset(translationalInput.norm());
+			}
 			double inputMagnitude = translationalInput.norm();
 			
 			/* Snap the translational input to its nearest pole, if it is within a certain threshold 
@@ -453,6 +452,13 @@ public class Swerve extends Subsystem{
 		for (int i = 0; i < modules.size(); i++) {
 			modules.get(i).setClosedLoopVelocityStall(driveVectors.get(i).direction());
 		}
+	}
+
+	public void setVelocityMode(Rotation2d direction, double inchesPerSecond) {
+		setState(ControlState.VELOCITY);
+		setClosedLoopVelocity(modules.stream()
+				.map(m -> Translation2d.fromPolar(direction, inchesPerSecond / Constants.kSwerveMaxSpeedInchesPerSecond))
+				.toList());
 	}
 	
 	/**

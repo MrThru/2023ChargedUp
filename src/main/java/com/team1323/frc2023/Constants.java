@@ -158,6 +158,8 @@ public class Constants {
     public static final double kMaxFalconEncoderSpeed = 6380.0 * 2048.0 / 600.0;
     public static final double kFalconMotionMagicFeedForward = 1023.0 / kMaxFalconEncoderSpeed;
 
+    public static final double kMaxKrakenRotationsPerSecond = 6000.0 / 60.0;
+
     public static class CubeIntake {
         public static final double kMotorRotationsPerWristRotation = 41.66666667;
         public static final double kEncoderUnitsPerWristRotation = kMotorRotationsPerWristRotation * 2048.0;
@@ -538,7 +540,7 @@ public class Constants {
 
         public static final double kIntakeCubeStatorCurrentLimit = 15.0;
         public static final double kIntakeCubeWeakStatorCurrentLimit = 10.0;
-        public static final double kIntakeCubeVelocityThreshold = 1500.0;
+        public static final double kIntakeCubeVelocityThreshold = Settings.kIsUsingCompBot ? 2100.0 : 1500.0; //1500.0
         
         
         public static final double kIntakeCubeSpeed = 0.25;

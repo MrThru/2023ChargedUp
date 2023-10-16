@@ -137,6 +137,7 @@ public class Robot extends LoggedRobot {
 		AutoRoutine auto = new HighLinkRoutine(Quadrant.BOTTOM_LEFT, true);
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
+
 	}
 
 	@Override

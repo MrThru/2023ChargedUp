@@ -254,6 +254,7 @@ public class CoaxialSwerveModule extends SwerveModule {
         Logger.getInstance().recordOutput(getLogKey("Inches Driven"), getDriveDistanceInches());
         Logger.getInstance().recordOutput(getLogKey("Inches Per Second"), getDriveVelocityInchesPerSecond());
         Logger.getInstance().recordOutput(getLogKey("Drive Supply Current"), leadDriveMotor.getSupplyAmps());
+        Logger.getInstance().recordOutput(getLogKey("Drive Stator Current"), leadDriveMotor.getStatorAmps());
         Logger.getInstance().recordOutput(getLogKey("Drive Temperature"), leadDriveMotor.getMotorTemperature());
         
     }

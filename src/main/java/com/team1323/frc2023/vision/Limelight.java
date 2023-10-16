@@ -171,7 +171,7 @@ public class Limelight extends Subsystem {
 		Matrix<N3, N1> standardDeviations = VecBuilder.fill(translationalStdDev, translationalStdDev, rotationalStdDev);
 		Swerve.getInstance().addVisionMeasurement(estimatedRobotPoseMeters,  timestamp - getTotalLatencySeconds(inputs.results), standardDeviations);
 
-		LogUtil.recordPose2d(getLogKey("Estimated Robot Pose"), estimatedRobotPoseMeters);
+		LogUtil.recordPose2d(getLogKey("Estimated Robot Pose"), estimatedRobotPoseInches);
 	}
 
 	private double coneLeftRightOffset = 0;
