@@ -1,5 +1,7 @@
 package com.team1323.frc2023.auto.routines;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.auto.ResetPoseRequest;
 import com.team1323.frc2023.auto.SetTrajectoryRequest;
@@ -13,6 +15,7 @@ import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.requests.IfRequest;
 import com.team1323.frc2023.requests.LambdaRequest;
+import com.team1323.frc2023.requests.ParallelRequest;
 import com.team1323.frc2023.requests.Request;
 import com.team1323.frc2023.requests.SequentialRequest;
 import com.team1323.frc2023.requests.WaitRequest;
@@ -58,9 +61,10 @@ public class HighLinkBaseRoutine extends AutoRoutine {
 
     @Override
     public Request getRoutine() {
-        final SequentialRequest setUp = new SequentialRequest(
+        final ParallelRequest setUp = new ParallelRequest(
             new ResetPoseRequest(Constants.kAutoStartingPose, quadrant),
-            new LambdaRequest(() -> LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_FIDUCIAL))
+            new LambdaRequest(() -> LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_FIDUCIAL)),
+            new LambdaRequest(() -> claw.setCurrentHoldingObject(Claw.HoldingObject.Cone))
         );
 
         final SequentialRequest scoreFirstConeAndLeave = new SequentialRequest(
@@ -89,7 +93,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
                     new WaitToIntakeRequest(HoldingObject.Cube, 0.75)
                 ),
                 new SequentialRequest(
-                    new WaitToPassXCoordinateRequest(100, quadrant, 1.5),
+                    new WaitToPassXCoordinateRequest(100, quadrant, 2.25),
                     new WaitToIntakeRequest(HoldingObject.Cube, 1.5)
                 )
             ),
@@ -98,6 +102,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
                 new SequentialRequest(
                     new LambdaRequest(() -> {
                         if (scoreCubeHigh) {
+                            long startTime = Logger.getInstance().getRealTimestamp();
                             s.cubeHighScoringSequence(
                                 ScoringPoses.getCenterScoringPose(swerve.getPose()), 
                                 new VisionPIDBuilder()
@@ -110,6 +115,8 @@ public class HighLinkBaseRoutine extends AutoRoutine {
                                         .build(),
                                 false
                             );
+                            long endTime = Logger.getInstance().getRealTimestamp();
+                            System.out.println(String.format("Initializing cube scoring sequence took %d microseconds", endTime - startTime));
                         } else {
                             s.cubeMidScoringSequence(ScoringPoses.getCenterScoringPose(swerve.getPose()), false);
                         }

@@ -18,17 +18,23 @@ import com.team1323.frc2023.auto.routines.AutoRoutine;
 import com.team1323.frc2023.auto.routines.HighLinkRoutine;
 import com.team1323.frc2023.field.AllianceChooser;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
+import com.team1323.frc2023.field.ScoringPoses;
 import com.team1323.frc2023.loops.AutoLoop;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.loops.QuinticPathTransmitter;
 import com.team1323.frc2023.loops.SynchronousLooper;
+import com.team1323.frc2023.requests.EmptyRequest;
 import com.team1323.frc2023.subsystems.CubeIntake;
 import com.team1323.frc2023.subsystems.LEDs;
 import com.team1323.frc2023.subsystems.Shoulder;
 import com.team1323.frc2023.subsystems.SubsystemManager;
 import com.team1323.frc2023.subsystems.Wrist;
+import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
+import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
+import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.Netlink;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -138,6 +144,27 @@ public class Robot extends LoggedRobot {
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 
+		long startTime = Logger.getInstance().getRealTimestamp();
+		smartDashboardInteractions.preGenerateAutoRoutines();
+		long endTime = Logger.getInstance().getRealTimestamp();
+		System.out.println(String.format("Autos took %d microseconds to generate", endTime - startTime));
+
+		startTime = Logger.getInstance().getRealTimestamp();
+		Superstructure.getInstance().cubeHighScoringSequence(
+			ScoringPoses.getCenterScoringPose(Swerve.getInstance().getPose()), 
+			new VisionPIDBuilder()
+					.withDecelerationRamp(new TwoPointRamp(
+						new Translation2d(1.0, 0.1),
+						new Translation2d(60.0, 0.5),
+						1.0,
+						true
+					))
+					.build(),
+			false
+		);
+		Superstructure.getInstance().request(new EmptyRequest());
+		endTime = Logger.getInstance().getRealTimestamp();
+		System.out.println(String.format("Cube scoring sequence took %d microseconds to generate", endTime - startTime));
 	}
 
 	@Override

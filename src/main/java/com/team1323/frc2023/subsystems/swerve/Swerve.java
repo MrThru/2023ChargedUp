@@ -115,7 +115,7 @@ public class Swerve extends Subsystem{
 	double distanceTraveled;
 	double currentVelocity = 0;
 	double lastUpdateTimestamp = 0;
-	public synchronized Pose2d getPose(){
+	public Pose2d getPose(){
 		return pose;
 	}
 	
@@ -372,7 +372,7 @@ public class Swerve extends Subsystem{
 	public final double rotationDirectionThreshold = Math.toRadians(5.0);
 	public final double rotationDivision = 1.0;
 	
-	public synchronized void updateControllerDirection(Translation2d input){
+	public void updateControllerDirection(Translation2d input){
 		if(Util.epsilonEquals(input.norm(), 1.0, 0.1)){
 			Rotation2d direction = input.direction();
 			double roundedDirection = Math.round(direction.getDegrees() / rotationDivision) * rotationDivision;
@@ -381,7 +381,7 @@ public class Swerve extends Subsystem{
 	}
 	
 	// Various methods to control the heading controller
-	public synchronized void rotate(Rotation2d goalHeading) {
+	public void rotate(Rotation2d goalHeading) {
 		if (AllianceChooser.getAlliance() != Alliance.Blue) {
 			goalHeading = goalHeading.rotateBy(Rotation2d.fromDegrees(180.0));
 		}
@@ -505,7 +505,7 @@ public class Swerve extends Subsystem{
 	* @param rotationScalar Scalar to increase or decrease the robot's rotation speed
 	* @param followingCenter The point (relative to the robot) that will follow the trajectory
 	*/
-	public synchronized void setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d targetHeading,
+	public void setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d targetHeading,
 	double rotationScalar, Translation2d followingCenter){
 		hasStartedFollowing = false;
 		hasFinishedPath = false;
@@ -520,7 +520,7 @@ public class Swerve extends Subsystem{
 		setState(ControlState.TRAJECTORY);
 	}
 	
-	public synchronized void setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d targetHeading,
+	public void setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d targetHeading,
 	double rotationScalar){
 		setTrajectory(trajectory, targetHeading, rotationScalar, Translation2d.identity());
 	}
@@ -540,7 +540,7 @@ public class Swerve extends Subsystem{
 		setTrajectory(trajectory, targetHeading, 1.0);
 	}
 
-	public synchronized void setFieldCentricTrajectory(Translation2d relativeEndPos, Rotation2d targetHeading, double defaultVel) {
+	public void setFieldCentricTrajectory(Translation2d relativeEndPos, Rotation2d targetHeading, double defaultVel) {
 		modulesReady = true;
 		Translation2d endPos = pose.getTranslation().translateBy(relativeEndPos);
 		List<Pose2d> waypoints = new ArrayList<>();
@@ -555,7 +555,7 @@ public class Swerve extends Subsystem{
 		startVisionPID(desiredFieldPose, approachAngle, useTrajectory, new VisionPIDBuilder().build());
 	}
 
-	public synchronized void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, VisionPIDController controller) {
+	public void startVisionPID(Pose2d desiredFieldPose, Rotation2d approachAngle, boolean useTrajectory, VisionPIDController controller) {
 		visionPID = controller;
 		visionPID.start(pose, desiredFieldPose, approachAngle, useTrajectory, false);
 		rotationScalar = 0.75;
@@ -563,27 +563,27 @@ public class Swerve extends Subsystem{
 		setState(ControlState.VISION_PID);
 	}
 
-	public synchronized Translation2d getVisionPIDTarget() {
+	public Translation2d getVisionPIDTarget() {
 		return visionPID.getTargetPosition();
 	}
 
-	public synchronized void setVisionPIDTarget(Translation2d targetPosition) {
+	public void setVisionPIDTarget(Translation2d targetPosition) {
 		visionPID.setTargetPosition(targetPosition);
 	}
 
-	public synchronized void resetVisionPID() {
+	public void resetVisionPID() {
 		visionPID.resetDistanceToTargetPosition();
 	}
 
-	public synchronized double getDistanceToTargetPosition() {
+	public double getDistanceToTargetPosition() {
 		return visionPID.getDistanceToTargetPosition();
 	}
 
-	public synchronized boolean isVisionPIDDone() {
+	public boolean isVisionPIDDone() {
 		return getState() != ControlState.VISION_PID || visionPID.isDone();
 	}
 
-	public synchronized void addRetroObservation(Translation2d retroPosition, double timestamp) {
+	public void addRetroObservation(Translation2d retroPosition, double timestamp) {
 		visionPID.addRetroObservation(retroPosition, timestamp);
 	}
 
@@ -597,14 +597,14 @@ public class Swerve extends Subsystem{
 	
 	/****************************************************/
 	/* Vector Fields */
-	public synchronized void setVectorField(VectorField vf_) {
+	public void setVectorField(VectorField vf_) {
 		vf = vf_;
 		setState(ControlState.VECTORIZED);
 	}
 	
 	/** Determines which wheels the robot should rotate about in order to perform an evasive maneuver */
 	int evadeClosestIndex = 0;
-	public synchronized void determineEvasionWheels(){
+	public void determineEvasionWheels(){
 		List<Translation2d> modulePositions = Constants.kModulePositions;
 		int evadeClosestIndex = 0;
 		for(int i = 0; i < modulePositions.size(); i++) {
@@ -624,7 +624,7 @@ public class Swerve extends Subsystem{
 	final double rotationAmount = 135;
 	int currentModuleIndex = 0;
 	int totalModulesPivoted = 1;
-	public synchronized void startEvadeRevolve(Translation2d revolveAround) {
+	public void startEvadeRevolve(Translation2d revolveAround) {
 		startingRotationValue = inputs.gyroYaw - 45;
 		currentModuleIndex = 0;
 		totalModulesPivoted = 1;
@@ -637,7 +637,7 @@ public class Swerve extends Subsystem{
 	}
 	
 	
-	public synchronized void updateEvadeRevolve() {
+	public void updateEvadeRevolve() {
 		// TODO: Uncomment this when the swerve's velocity reading is fixed to use SwerveModuleState instead of SwerveModulePosition
 		/*
 		double predictedRotation = inputs.gyroYaw + (velocity.dtheta * 180/Math.PI) * 0.1;
@@ -652,7 +652,7 @@ public class Swerve extends Subsystem{
 	}
 
 	/** Called every cycle to update the swerve based on its control state */
-	public synchronized void updateControlCycle(double timestamp){
+	public void updateControlCycle(double timestamp){
 		double rotationCorrection = headingController.updateRotationCorrection(pose.getRotation(), timestamp);
 		switch(currentState){
 			case MANUAL:
@@ -784,7 +784,7 @@ public class Swerve extends Subsystem{
 		}
 	}
 
-	public synchronized void updateOdometry(double timestamp) {
+	public void updateOdometry(double timestamp) {
 		pose = Units.metersToInches(poseEstimator.updateWithTime(timestamp, Rotation2d.fromDegrees(inputs.gyroYaw), getModulePositions()));
 		// TODO: Add a method to the pose estimator (or to the kinematics object) that takes a list of SwerveModuleStates (i.e., velocities)
 		// and returns a Twist2d representing the overall velocity of the robot. This will yield a more accurate velocity for the robot than
@@ -792,7 +792,7 @@ public class Swerve extends Subsystem{
 		// when using a turret to aim at a vision target.
 	}
 
-	public synchronized Pose2d getPoseAtTime(double timeSeconds) {
+	public Pose2d getPoseAtTime(double timeSeconds) {
 		return Units.metersToInches(poseEstimator.getEstimatedPositionAtTime(timeSeconds));
 	}
 	
@@ -945,7 +945,7 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.setRotationMotorZeroed(isZeroed));
 	}
 
-	public synchronized void addVisionMeasurement(Pose2d estimatedRobotPose, double observationTimestamp, Matrix<N3, N1> standardDeviations) {
+	public void addVisionMeasurement(Pose2d estimatedRobotPose, double observationTimestamp, Matrix<N3, N1> standardDeviations) {
 		if (Math.abs(estimatedRobotPose.getRotation().distance(pose.getRotation())) > Math.toRadians(45.0)) {
 			temporarilyDisableHeadingController();
 		}
@@ -981,7 +981,7 @@ public class Swerve extends Subsystem{
 	}
 	
 	/** Puts all rotation and drive motors into open-loop mode */
-	public synchronized void disable(){
+	public void disable(){
 		modules.forEach((m) -> m.disable());
 		setState(ControlState.DISABLED);
 	}
@@ -1003,13 +1003,13 @@ public class Swerve extends Subsystem{
 	}
 	
 	/** Sets the robot's internal position and heading to match that of the given pose. */
-	public synchronized void zeroSensors(Pose2d startingPose){
+	public void zeroSensors(Pose2d startingPose){
 		pose = startingPose;
 		poseEstimator.resetPosition(Rotation2d.fromDegrees(inputs.gyroYaw), getModulePositions(), Units.inchesToMeters(startingPose));
 		distanceTraveled = 0;
 	}
 
-	public synchronized void resetGyroRoll() {
+	public void resetGyroRoll() {
 		pigeon.resetRoll();
 	}
 

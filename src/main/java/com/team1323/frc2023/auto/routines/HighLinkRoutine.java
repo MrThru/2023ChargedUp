@@ -14,8 +14,10 @@ import com.team1323.frc2023.field.NodeLocation.Grid;
 import com.team1323.frc2023.field.NodeLocation.Row;
 import com.team1323.frc2023.requests.IfRequest;
 import com.team1323.frc2023.requests.LambdaRequest;
+import com.team1323.frc2023.requests.ParallelRequest;
 import com.team1323.frc2023.requests.Request;
 import com.team1323.frc2023.requests.SequentialRequest;
+import com.team1323.frc2023.requests.WaitForPrereqRequest;
 import com.team1323.frc2023.subsystems.Claw;
 import com.team1323.frc2023.subsystems.Claw.HoldingObject;
 import com.team1323.frc2023.subsystems.superstructure.Superstructure;
@@ -25,6 +27,7 @@ import com.team1323.frc2023.vision.LimelightManager;
 import com.team1323.frc2023.vision.LimelightManager.ProcessingMode;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.math.TwoPointRamp;
+import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.SynchronousPIDF;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
@@ -105,23 +108,32 @@ public class HighLinkRoutine extends AutoRoutine {
                         NodeLocation nodeLocation = AutoZones.mirror(new NodeLocation(Grid.LEFT, Row.MIDDLE, Column.LEFT), quadrant);
                         s.scoringSequence(nodeLocation);
                     }),
-                    new WaitForRemainingTimeRequest(0.5, runtimeStopwatch),
+                    new WaitForPrereqRequest(() -> 15.0 - runtimeStopwatch.getTime() < 0.5 || claw.getCurrentHoldingObject() == HoldingObject.None),
                     new IfRequest(
-                        () -> {
-                            double distanceToTarget = swerve.getDistanceToTargetPosition();
-                            System.out.println(String.format("Distance to target at 0.5s left was %.2f.", distanceToTarget));
-
-                            return distanceToTarget <= 8.0;
-                        },
+                        () -> claw.getCurrentHoldingObject() == HoldingObject.None,
+                        new ParallelRequest(
+                            new SetTrajectoryRequest(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 0.75, quadrant),
+                            new LambdaRequest(() -> Netlink.setBooleanValue("Swerve Coast Mode", true))
+                        ),
                         new SequentialRequest(
-                            new LambdaRequest(() -> System.out.println("Ejecting cone early.")),
-                            claw.stateRequest(Claw.ControlState.CONE_OUTAKE)
+                            new IfRequest(
+                                () -> {
+                                    double distanceToTarget = swerve.getDistanceToTargetPosition();
+                                    System.out.println(String.format("Distance to target at 0.5s left was %.2f.", distanceToTarget));
+
+                                    return distanceToTarget <= 8.0;
+                                },
+                                new SequentialRequest(
+                                    new LambdaRequest(() -> System.out.println("Ejecting cone early.")),
+                                    claw.stateRequest(Claw.ControlState.CONE_OUTAKE)
+                                )
+                            ),
+                            new WaitForRemainingTimeRequest(0.125, runtimeStopwatch),
+                            new IfRequest(
+                                () -> claw.getState() == Claw.ControlState.CONE_OUTAKE,
+                                new LambdaRequest(() -> claw.setCurrentHoldingObject(HoldingObject.None))
+                            )
                         )
-                    ),
-                    new WaitForRemainingTimeRequest(0.125, runtimeStopwatch),
-                    new IfRequest(
-                        () -> claw.getState() == Claw.ControlState.CONE_OUTAKE,
-                        new LambdaRequest(() -> claw.setCurrentHoldingObject(HoldingObject.None))
                     )
                 ),
                 new SequentialRequest(

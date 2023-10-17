@@ -170,9 +170,7 @@ public class Claw extends Subsystem {
                     }
                 }
 
-            } else if(currentState == ControlState.CUBE_INTAKE) {
-                Logger.getInstance().recordOutput("Claw/Stopwatch Time", stopwatch.getTime());
-                
+            } else if(currentState == ControlState.CUBE_INTAKE) {                
                 if(stateChanged) {
                     claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit);
                     claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeStatorCurrentLimit);
@@ -180,7 +178,7 @@ public class Claw extends Subsystem {
                     stopwatch.start();
                 }
                 if(Util.isInRange(encUnitsToRPM(inputs.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 1000) && stopwatch.getTime() > 1.0) {
-                    setPercentSpeed(-0.1);
+                    setPercentSpeed(-0.2);
                     claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit);
                     claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit);
                     setCurrentHoldingObject(HoldingObject.Cube);
@@ -227,6 +225,8 @@ public class Claw extends Subsystem {
                 needsToNotifyDrivers = false;
                 driversNotifed = false;
             }
+
+            Logger.getInstance().recordOutput("Claw/Stopwatch Time", stopwatch.getTime());
         }
 
         @Override
@@ -265,6 +265,7 @@ public class Claw extends Subsystem {
     @Override
     public void outputTelemetry() {
         Logger.getInstance().recordOutput("Claw/Left Right Offset Mode", flipConeOffsetMode(getCurrentConeOffset()).toString());
+        Logger.getInstance().recordOutput("Claw/State", getState().toString());
         Logger.getInstance().recordOutput("Claw/Holding Object", getCurrentHoldingObject().toString());
         Logger.getInstance().recordOutput("Claw/RPM", getRPM());
         Logger.getInstance().recordOutput("Claw/Stator Current", claw.getStatorAmps());

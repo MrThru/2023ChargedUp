@@ -533,8 +533,8 @@ public class Constants {
 
     public static class Claw {
         
-        public static final double kIntakeConeStatorCurrentLimit = 200.0; //200.0
-        public static final double kIntakeConeStatorHoldCurrent = 20.0; //30.0
+        public static final double kIntakeConeStatorCurrentLimit = Settings.kIsUsingCompBot ? 180.0 : 200.0; //200.0
+        public static final double kIntakeConeStatorHoldCurrent = Settings.kIsUsingCompBot ? 10.0 : 20.0; //30.0
         public static final double kIntakeConeVelocityThreshold = 200.0;
 
 

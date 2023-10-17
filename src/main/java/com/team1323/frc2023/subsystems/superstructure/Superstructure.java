@@ -366,7 +366,7 @@ public class Superstructure extends Subsystem {
 				controller, useTrajectory, stowingChoreo, stopSwerveWhenDone));
 	}
 
-	private Request getCubeScoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo,
+	public Request getCubeScoringSequence(Pose2d scoringPose, ChoreographyProvider scoringChoreo,
 			double horizontalExtension, double preemptiveScoreSeconds, VisionPIDController controller, 
 			boolean useTrajectory, ChoreographyProvider stowingChoreo, boolean stopSwerveWhenDone) {
 		return new SequentialRequest(

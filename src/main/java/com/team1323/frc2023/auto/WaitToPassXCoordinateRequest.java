@@ -32,8 +32,10 @@ public class WaitToPassXCoordinateRequest extends Request {
 	
 	@Override
 	public boolean isFinished() {
-		return (Math.signum(startingXCoordinate - targetXCoordinate) !=
-				Math.signum(swerve.getPose().getTranslation().x() - targetXCoordinate)) ||
-				timeoutStopwatch.getTime() >= timeoutSeconds;
+		boolean hasPassedXCoordinate = (Math.signum(startingXCoordinate - targetXCoordinate) !=
+				Math.signum(swerve.getPose().getTranslation().x() - targetXCoordinate));
+		boolean hasTimedOut = timeoutStopwatch.getTime() >= timeoutSeconds;
+
+		return hasPassedXCoordinate || hasTimedOut;
 	}
 }

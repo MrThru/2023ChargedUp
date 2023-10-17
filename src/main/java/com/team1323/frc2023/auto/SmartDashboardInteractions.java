@@ -116,6 +116,14 @@ public class SmartDashboardInteractions {
                 return new StandStillRoutine();
     	}
     }
+
+    public void preGenerateAutoRoutines() {
+        for (AutoOption option : AutoOption.values()) {
+            for (Quadrant quadrant : Quadrant.values()) {
+                createAutoRoutine(option, quadrant).getRoutine();
+            }
+        }
+    }
     
     public void output(){
     	Logger.getInstance().recordOutput(SELECTED_AUTO_MODE, getSelectedAutoEnum().name);

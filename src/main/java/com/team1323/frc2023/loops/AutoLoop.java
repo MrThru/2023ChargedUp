@@ -1,5 +1,7 @@
 package com.team1323.frc2023.loops;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
 import com.team1323.frc2023.auto.routines.AutoRoutine;
 import com.team1323.frc2023.requests.EmptyRequest;
@@ -15,8 +17,11 @@ public class AutoLoop implements Loop {
 
     @Override
     public void onStart(double timestamp) {
+        long startTime = Logger.getInstance().getRealTimestamp();
         AutoRoutine selectedRoutine = smartDashboardInteractions.getSelectedAutoRoutine();
         requestExecuter.request(selectedRoutine.getRoutine());
+        long endTime = Logger.getInstance().getRealTimestamp();
+        System.out.println(String.format("Time to construct auto request: %d microseconds", endTime - startTime));
     }
 
     @Override
