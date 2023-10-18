@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.Ports;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.loops.ILooper;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.requests.Request;
@@ -178,7 +179,7 @@ public class Claw extends Subsystem {
                     stopwatch.start();
                 }
                 if(Util.isInRange(encUnitsToRPM(inputs.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 1000) && stopwatch.getTime() > 1.0) {
-                    setPercentSpeed(-0.2);
+                    setPercentSpeed(Settings.kIsUsingCompBot ? -0.2 : -0.5);
                     claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit);
                     claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit);
                     setCurrentHoldingObject(HoldingObject.Cube);

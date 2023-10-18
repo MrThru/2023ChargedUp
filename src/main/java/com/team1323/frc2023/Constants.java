@@ -538,7 +538,7 @@ public class Constants {
         public static final double kIntakeConeVelocityThreshold = 200.0;
 
 
-        public static final double kIntakeCubeStatorCurrentLimit = 15.0;
+        public static final double kIntakeCubeStatorCurrentLimit = Settings.kIsUsingCompBot ? 15.0 : 20.0;
         public static final double kIntakeCubeWeakStatorCurrentLimit = 10.0;
         public static final double kIntakeCubeVelocityThreshold = Settings.kIsUsingCompBot ? 2100.0 : 1500.0; //1500.0
         
