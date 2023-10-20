@@ -233,7 +233,7 @@ public class Swerve extends Subsystem{
 		maxSpeedFactor = max;
 	}
 	private final SlewRateLimiter inputMagnitudeLimiter = new SlewRateLimiter(2.0);
-	private boolean useSlewLimiter = Settings.kIsUsingCompBot;
+	private boolean useSlewLimiter = false;//Settings.kIsUsingCompBot;
 	public void useSlewLimiter(boolean use) {
 		useSlewLimiter = use;
 	}

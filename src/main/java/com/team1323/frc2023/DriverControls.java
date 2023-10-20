@@ -155,17 +155,112 @@ public class DriverControls implements Loop {
         swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, (Netlink.getBooleanValue("Slow Driving Enabled")/* || driver.leftTrigger.isBeingPressed()*/));
         
         Netlink.setNumberValue("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
+        if(true) {
+            if(driver.bButton.wasActivated())
+                swerve.rotate(Rotation2d.fromDegrees(-90));
+                //swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());
+            else if(driver.aButton.wasActivated()) 
+                swerve.rotate(Rotation2d.fromDegrees(180));
+            else if (driver.xButton.wasActivated())
+                swerve.rotate(Rotation2d.fromDegrees(90));
+            else if (driver.yButton.wasActivated())
+                swerve.rotate(Rotation2d.fromDegrees(0));
+        } else {
+            if(driver.bButton.shortReleased()) {
+                if(claw.getState() != Claw.ControlState.CONE_INTAKE || claw.getRPM() > 2000 || claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
+                    s.objectAwareStowSequence();
+                }
+            } else if(driver.bButton.longReleased()) {
+                if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && (claw.getRPM() > 2000 || claw.getState() == Claw.ControlState.OFF)) {
+                    s.request(new ParallelRequest(
+                        SuperstructureCoordinator.getInstance().getFullStowChoreography(true),
+                        claw.stateRequest(Claw.ControlState.OFF)
+                    ));
+                    System.out.println("Button Pressed For Full Stow Choreography");
+                } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube && claw.getState() == Claw.ControlState.CUBE_INTAKE) {
+                    s.request(new ParallelRequest(
+                        s.objectAwareStow()
+                    ));
+                }
+            } else if(driver.bButton.longPressed()) {
+                if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
+                    claw.setCurrentHoldingObject(HoldingObject.None);
+                    s.coneIntakeSequence();
+                    limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
+                    System.out.println("Intaking Cone Request");
+                }
+            }
 
-        if(driver.bButton.wasActivated())
-            swerve.rotate(Rotation2d.fromDegrees(-90));
-            //swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());
-        else if(driver.aButton.wasActivated()) 
-            swerve.rotate(Rotation2d.fromDegrees(180));
-        else if (driver.xButton.wasActivated())
-            swerve.rotate(Rotation2d.fromDegrees(90));
-        else if (driver.yButton.wasActivated())
-            swerve.rotate(Rotation2d.fromDegrees(0));
+            if(driver.aButton.wasActivated()) {
+                if(tunnel.getFrontBanner()) {
+                    s.communityIntakeState();
+                } else {
+                    s.intakeState(Tunnel.State.SINGLE_INTAKE);
+                }
+                limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
+                /*if(tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
+                } else if(!tunnel.allowSingleIntakeMode() && !tunnel.cubeOnBumper()) {
+                    tunnel.stateRequest(Tunnel.State.SINGLE_INTAKE);
+                }*/
+            } else if(driver.aButton.isBeingPressed()) {
+                if(tunnel.getRearBanner() && tunnel.getState() == Tunnel.State.SINGLE_INTAKE) {
+                    s.postIntakeState(0.25); //0.25
+                }
+            } else if(driver.aButton.wasReleased()) {
+                if(tunnel.getState() == Tunnel.State.COMMUNITY || tunnel.getState() == Tunnel.State.TRIPLE_CUBE_HOLD) {
+                    cubeIntake.conformToState(CubeIntake.State.FLOOR);
+                } else {
+                    s.postIntakeState(1.0);
+                    tunnel.queueShutdown(true);
+                }
+            }
 
+            if(driver.xButton.shortReleased()) {
+                targetScoringRow = NodeLocation.Row.MIDDLE;
+                if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
+                    s.handOffCubeState(SuperstructureCoordinator.getInstance()::getHalfCubeStowChoreography);
+                }
+                leds.configLEDs(LEDs.LEDColors.ORANGE);
+            } else if(driver.xButton.longPressed()) {
+                if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
+                    s.request(SuperstructureCoordinator.getInstance().getConeMidScoringChoreography());
+                } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
+                    s.request(SuperstructureCoordinator.getInstance().getCubeMidScoringChoreography());
+                }
+            }
+
+            if(driver.yButton.shortReleased()) {
+                targetScoringRow = NodeLocation.Row.TOP;
+                if(claw.getCurrentHoldingObject() == Claw.HoldingObject.None && !tunnel.allowSingleIntakeMode()) {
+                    s.handOffCubeState(SuperstructureCoordinator.getInstance()::getHalfCubeStowChoreography);
+                }
+                leds.configLEDs(LEDs.LEDColors.RED);
+    
+            } else if(driver.yButton.longPressed()) {
+                if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
+                    s.request(SuperstructureCoordinator.getInstance().getConeHighScoringChoreography());
+                } else if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
+                    s.request(SuperstructureCoordinator.getInstance().getCubeHighScoringChoreography());
+                }
+            }
+
+            if(driver.leftCenterClick.wasActivated() && driver.bButton.isBeingPressed()) {
+                //wrist.setPosition(12); // 12
+                s.request(SuperstructureCoordinator.getInstance().getConeFlipChoreography());
+                claw.conformToState(Claw.ControlState.OFF);
+            } else if(driver.leftCenterClick.wasReleased() && driver.bButton.isBeingPressed()) {
+                //s.coneIntakeSequence();
+                if(shoulder.getPosition() < 0) {
+                    s.request(new SequentialRequest(
+                        new ParallelRequest(
+                            shoulder.angleRequest(-55.76),
+                            horizontalElevator.extensionRequest(0.25)
+                        ),
+                        s.getConeIntakeSequence()
+                    ));
+                }
+            }
+        }
         if(driver.rightTrigger.wasActivated()) {
             tunnel.setState(Tunnel.State.EJECT_ONE);
         }

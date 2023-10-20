@@ -106,10 +106,10 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
     public void configureAsCoaxialSwerveDrive() {
         useIntegratedSensor();
 
-        configuration.OpenLoopRamps.VoltageOpenLoopRampPeriod = Settings.kIsUsingCompBot ? 0.05 : 0.2; // 0.2
+        configuration.OpenLoopRamps.VoltageOpenLoopRampPeriod = Settings.kIsUsingCompBot ? 0.0 : 0.2; // 0.2
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configuration.CurrentLimits.StatorCurrentLimit = 100.0;
-        configuration.CurrentLimits.StatorCurrentLimitEnable = Settings.kIsUsingCompBot;
+        configuration.CurrentLimits.StatorCurrentLimitEnable = true;//Settings.kIsUsingCompBot;
         configuration.CurrentLimits.SupplyCurrentLimit = 60.0;
         configuration.CurrentLimits.SupplyCurrentThreshold = 120.0;
         configuration.CurrentLimits.SupplyTimeThreshold = 0.25;
