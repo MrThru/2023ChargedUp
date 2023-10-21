@@ -109,6 +109,7 @@ public class Claw extends Subsystem {
 
     public void setPercentSpeed(double speed) {
         claw.set(ControlMode.PercentOutput, speed);
+        Logger.getInstance().recordOutput("Claw/Target Output", speed);
         //setRPM(6380.0 * speed);
     }
     private void setRPM(double rpm) {
@@ -116,7 +117,7 @@ public class Claw extends Subsystem {
         claw.set(ControlMode.Velocity, rpmToEncUnits(rpm));
     }
     public void conformToState(ControlState state) {
-        if(state != currentState) {
+        if(state != currentState || state != ControlState.CUBE_OUTAKE) {
             if(state == ControlState.CUBE_OUTAKE || state == ControlState.CONE_OUTAKE) {
                 claw.configStatorCurrentLimit(100);
             }
@@ -191,7 +192,7 @@ public class Claw extends Subsystem {
             } else if(currentState == ControlState.CONE_OUTAKE) {
                 if(stateChanged)
                     stopwatch.start();
-                if(stopwatch.getTime() > 0.375) {
+                if(stopwatch.getTime() > 0.375 && encUnitsToRPM(inputs.velocity) < -2000) {
                     conformToState(ControlState.OFF);
                     stopwatch.reset();
                     setCurrentHoldingObject(HoldingObject.None);

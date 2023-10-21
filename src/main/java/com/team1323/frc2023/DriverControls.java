@@ -455,7 +455,9 @@ public class DriverControls implements Loop {
             System.out.println(claw.getCurrentHoldingObject().toString() + " object manually ejected");
         } else if(coDriver.rightCenterClick.wasReleased()) {
             //claw.conformToState(Claw.ControlState.OFF);
-            claw.setCurrentHoldingObject(Claw.HoldingObject.None);
+            if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
+                claw.setCurrentHoldingObject(Claw.HoldingObject.None);
+            }
         }
 
         if(coDriver.leftBumper.wasActivated()) {

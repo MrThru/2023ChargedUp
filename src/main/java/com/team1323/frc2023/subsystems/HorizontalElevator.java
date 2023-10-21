@@ -117,6 +117,7 @@ public class HorizontalElevator extends ServoSubsystemWithCurrentZeroing<ServoSu
 		}
 
         Logger.getInstance().recordOutput(getLogKey("Height"), getPosition());
+        Logger.getInstance().recordOutput(getLogKey("Target Height"), encoderUnitsToOutputUnits(outputs.demand));
         Logger.getInstance().recordOutput(getLogKey("Is On Target"), isOnTarget());
     }
 

@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.team1323.frc2023.auto.SmartDashboardInteractions;
 import com.team1323.frc2023.auto.routines.AutoRoutine;
 import com.team1323.frc2023.auto.routines.HighLinkRoutine;
@@ -111,7 +112,7 @@ public class Robot extends LoggedRobot {
 
 		// Set up data receivers & replay source
 		if (RobotBase.isReal()) {
-			//logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+			logger.addDataReceiver(new WPILOGWriter("/media/sda1"));
 			logger.addDataReceiver(new NT4Publisher());
 		} else if (Settings.kIsReplayingLog) {
 			setUseTiming(false); // Run as fast as possible
@@ -125,6 +126,9 @@ public class Robot extends LoggedRobot {
 
 		// Start AdvantageKit logger
 		logger.start();
+
+		// Disable Phoenix 6 signal logger
+		SignalLogger.enableAutoLogging(false);
 
 		autoLoop = new AutoLoop(smartDashboardInteractions);
 		driverControls = DriverControls.getInstance();

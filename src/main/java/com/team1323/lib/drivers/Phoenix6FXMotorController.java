@@ -109,11 +109,11 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
         configuration.OpenLoopRamps.VoltageOpenLoopRampPeriod = Settings.kIsUsingCompBot ? 0.0 : 0.2; // 0.2
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configuration.CurrentLimits.StatorCurrentLimit = 100.0;
-        configuration.CurrentLimits.StatorCurrentLimitEnable = true;//Settings.kIsUsingCompBot;
+        configuration.CurrentLimits.StatorCurrentLimitEnable = false;// Settings.kIsUsingCompBot;
         configuration.CurrentLimits.SupplyCurrentLimit = 60.0;
         configuration.CurrentLimits.SupplyCurrentThreshold = 120.0;
         configuration.CurrentLimits.SupplyTimeThreshold = 0.25;
-        configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
+        configuration.CurrentLimits.SupplyCurrentLimitEnable = false;
         applyConfig();
 
         // Slot 0 is reserved for MotionMagic
