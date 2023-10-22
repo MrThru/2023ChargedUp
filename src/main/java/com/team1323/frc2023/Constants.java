@@ -142,7 +142,7 @@ public class Constants {
     /** The number of rotations the swerve rotation motor undergoes for every rotation of the module. */
     public static final double kSwerveRotationReduction = 15.42857143;
     /** The number of rotations the swerve drive encoder undergoes for every rotation of the wheel. */
-    public static final double kSwerveEncoderToWheelRatio = Settings.kIsUsingCompBot ? 4.8214 : 6.53; // 6.53 : 5.142857143
+    public static final double kSwerveEncoderToWheelRatio = Settings.kIsUsingCompBot ? 5.142857143 : 6.53; // 6.53 : 5.142857143
     public static final double kSwerveEncUnitsPerWheelRev = kSwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
     public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
     public static final double kSwerveModuleRotationTolerance = 10.0;
