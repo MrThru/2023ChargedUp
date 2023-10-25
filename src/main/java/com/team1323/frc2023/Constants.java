@@ -517,7 +517,7 @@ public class Constants {
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 213.0 : 312.6, 
+            Settings.kIsUsingCompBot ? 208.8 : 312.6, 
             0.0, 
             -149, 
             139.6
@@ -539,7 +539,7 @@ public class Constants {
 
 
         public static final double kIntakeCubeStatorCurrentLimit = Settings.kIsUsingCompBot ? 15.0 : 20.0;
-        public static final double kIntakeCubeWeakStatorCurrentLimit = 10.0;
+        public static final double kIntakeCubeWeakStatorCurrentLimit = 8.0; //10
         public static final double kIntakeCubeVelocityThreshold = Settings.kIsUsingCompBot ? 2100.0 : 1500.0; //1500.0
         
         

@@ -34,6 +34,8 @@ public class Claw extends Subsystem {
     MotorController claw;
 
     private double targetRPM = 0;
+    private double acceleration = 0.0;
+
     private final Stopwatch stopwatch = new Stopwatch();
     private Stopwatch stopwatch2 = new Stopwatch();
     public final Stopwatch rumbleStopwatch = new Stopwatch();
@@ -180,7 +182,7 @@ public class Claw extends Subsystem {
                     stopwatch.start();
                 }
                 if(Util.isInRange(encUnitsToRPM(inputs.velocity), -Constants.Claw.kIntakeCubeVelocityThreshold, 1000) && stopwatch.getTime() > 1.0) {
-                    setPercentSpeed(Settings.kIsUsingCompBot ? -0.2 : -0.5);
+                    setPercentSpeed(Settings.kIsUsingCompBot ? -0.1 : -0.5);
                     claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit);
                     claw.configStatorCurrentLimit(Constants.Claw.kIntakeCubeWeakStatorCurrentLimit);
                     setCurrentHoldingObject(HoldingObject.Cube);
@@ -228,7 +230,12 @@ public class Claw extends Subsystem {
                 driversNotifed = false;
             }
 
+            acceleration = (getRPM() - previousRPM) / (timestamp - previousTimestamp) * 60;
+
+            previousTimestamp = timestamp;
+            previousRPM = getRPM();
             Logger.getInstance().recordOutput("Claw/Stopwatch Time", stopwatch.getTime());
+            Logger.getInstance().recordOutput("Claw/Claw RPM Acceleration", acceleration);
         }
 
         @Override
@@ -257,6 +264,7 @@ public class Claw extends Subsystem {
         return encUnitsToRPM(inputs.velocity);
     }
     private double previousTimestamp = 0;
+    private double previousRPM = 0;
 
     @Override
     public void readPeriodicInputs() {
