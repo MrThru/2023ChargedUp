@@ -32,7 +32,7 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWi
     }
     
     public Shoulder() {
-        super(Settings.kIsUsingCompBot ? Phoenix6FXMotorController.createRealOrSimulatedController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus, false) 
+        super(Settings.kIsUsingCompBot ? Phoenix6FXMotorController.createRealOrSimulatedController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus, true) 
                 : Phoenix5FXMotorController.createRealOrSimulatedController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus), 
                 new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
                 Phoenix5CANCoder.createRealOrSimulatedEncoder(Ports.SHOULDER_ENCODER, true), 
