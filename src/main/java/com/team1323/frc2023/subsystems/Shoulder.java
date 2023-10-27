@@ -18,6 +18,7 @@ import com.team1323.frc2023.subsystems.encoders.Phoenix5CANCoder;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoder;
 import com.team1323.frc2023.subsystems.servo.ServoSubsystemWithAbsoluteEncoderInputs;
 import com.team1323.lib.drivers.Phoenix5FXMotorController;
+import com.team1323.lib.drivers.Phoenix6FXMotorController;
 import com.team1323.lib.util.Netlink;
 import com.team254.lib.geometry.Rotation2d;
 
@@ -31,7 +32,8 @@ public class Shoulder extends ServoSubsystemWithAbsoluteEncoder<ServoSubsystemWi
     }
     
     public Shoulder() {
-        super(Phoenix5FXMotorController.createRealOrSimulatedController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus), 
+        super(Settings.kIsUsingCompBot ? Phoenix6FXMotorController.createRealOrSimulatedController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus, false) 
+                : Phoenix5FXMotorController.createRealOrSimulatedController(Constants.Shoulder.kConfig.leaderPortNumber, Constants.Shoulder.kConfig.canBus), 
                 new ArrayList<>(), Constants.Shoulder.kConfig, Constants.Shoulder.kCurrentZeroingConfig,
                 Phoenix5CANCoder.createRealOrSimulatedEncoder(Ports.SHOULDER_ENCODER, true), 
                 Constants.Shoulder.kAbsoluteEncoderInfo, new ServoSubsystemWithAbsoluteEncoderInputs());

@@ -46,6 +46,7 @@ import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * A class to assign controller inputs to robot actions
@@ -585,6 +586,8 @@ public class DriverControls implements Loop {
         if(cubeIntake.getState() == CubeIntake.State.INTAKE) {
             cubeIntake.acceptManualInput(-coDriver.getLeftY() * 0.1);
         }
+
+        
         
         double rightStickY = -coDriver.getRightY() * 0.15;
         verticalElevator.acceptManualInput(rightStickY);
@@ -637,6 +640,19 @@ public class DriverControls implements Loop {
             coDriver.rumble(1.0, 2.0);
             driver.rumble(1.0, 2.0);
         }
+
+        // if(testController.xButton.wasActivated()) {
+        //     shoulder.setPosition(0);
+        // }
+        // if(testController.yButton.wasActivated()) {
+        //     shoulder.setPosition(45);
+        // }
+        // if(testController.aButton.wasActivated()) {
+        //     shoulder.setPosition(-45);
+        // }
+        // if(testController.bButton.wasActivated()) {
+        //     shoulder.setPosition(160);
+        // }
         
     }
 }

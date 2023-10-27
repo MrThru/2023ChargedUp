@@ -159,6 +159,8 @@ public class Constants {
     public static final double kFalconMotionMagicFeedForward = 1023.0 / kMaxFalconEncoderSpeed;
 
     public static final double kMaxKrakenRotationsPerSecond = 6000.0 / 60.0;
+    public static final double kMaxKrakenEncoderSpeed = 6000.0 * 2048.0 / 600.0;
+    public static final double kKrakenMotionMagicFeedForward = 12.0 / kMaxKrakenRotationsPerSecond;
 
     public static class CubeIntake {
         public static final double kMotorRotationsPerWristRotation = 41.66666667;
@@ -198,7 +200,7 @@ public class Constants {
         public static final double kArbitraryFeedForward = 0.027; //0.025
         public static final AbsoluteEncoderInfo kEncoderInfo = new AbsoluteEncoderInfo(
             1,
-            Settings.kIsUsingCompBot ? -334.13 : -147.8, //124.287924 
+            Settings.kIsUsingCompBot ? -334.13 : -198.121685, //124.287924 
             109, 
             -45,
             115
@@ -416,7 +418,7 @@ public class Constants {
             Ports.SHOULDER,
             new ArrayList<>(),
             Ports.CANBUS,
-            Settings.kIsUsingShoulderCANCoder ? kMaxCANCoderVelocity : kMaxFalconEncoderSpeed,
+            Settings.kIsUsingShoulderCANCoder ? kMaxCANCoderVelocity : (Settings.kIsUsingCompBot ? kMaxKrakenEncoderSpeed : kMaxFalconEncoderSpeed),
             kEncoderUnitsPerDegree,
             kMinControlAngle,
             kMaxControlAngle,
@@ -436,22 +438,22 @@ public class Constants {
 
         private static final MotorPIDF kCompPIDF = new MotorPIDF(
             0,
-            Settings.kIsUsingShoulderCANCoder ? 1.0 : 0.04,
+            Settings.kIsUsingShoulderCANCoder ? 1.0 : 1.0, //0.04
             0.0,
             0.0,
-            Settings.kIsUsingShoulderCANCoder ? 1.475 : kFalconMotionMagicFeedForward
+            Settings.kIsUsingShoulderCANCoder ? 1.475 : kKrakenMotionMagicFeedForward
         );
             
         public static final MotorPIDF kPIDF = Settings.kIsUsingCompBot ? kCompPIDF : kPracticePIDF;
 
-        public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.025 : 0.025;
+        public static final double kArbitraryFeedForward = Settings.kIsUsingCompBot ? 0.02 : 0.025;
 
         public static final double kCANCoderMagnetOffset = Settings.kIsUsingCompBot ? 0.0 : 0.6794106;
 
         public static final AbsoluteEncoderInfo kAbsoluteEncoderInfo = new AbsoluteEncoderInfo(
             1.0, 
-            Settings.kIsUsingCompBot ? 28.916016 : 286.7, 
-            Settings.kIsUsingCompBot ? 177.0 : 177.0, 
+            Settings.kIsUsingCompBot ? 26.015625 : 286.7, 
+            Settings.kIsUsingCompBot ? 173.0 : 177.0, 
             -95.0,
             185.0
         );
@@ -534,7 +536,7 @@ public class Constants {
     public static class Claw {
         
         public static final double kIntakeConeStatorCurrentLimit = Settings.kIsUsingCompBot ? 180.0 : 200.0; //200.0
-        public static final double kIntakeConeStatorHoldCurrent = Settings.kIsUsingCompBot ? 10.0 : 20.0; //30.0
+        public static final double kIntakeConeStatorHoldCurrent = Settings.kIsUsingCompBot ? 15.0 : 20.0; //30.0
         public static final double kIntakeConeVelocityThreshold = 200.0;
 
 
