@@ -71,7 +71,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
             claw.stateRequest(Claw.ControlState.AUTO_CONE_HOLD),
             new LambdaRequest(() -> s.coneHighScoreManual()),
             new WaitForSuperstructureRequest(2.0),
-            new SetTrajectoryRequest(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(quadrant.hasBump() ? -171 : 180), 0.75, quadrant),
+            new SetTrajectoryRequest(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 0.75, quadrant),
             new WaitToEjectObjectRequest(1.5),
             new LambdaRequest(() -> s.request(SuperstructureCoordinator.getInstance().getCommunityConeHoldChoreography()))
         );
@@ -86,16 +86,9 @@ public class HighLinkBaseRoutine extends AutoRoutine {
             new WaitToIntakeCubeRequest(false, 1.0),
             new LambdaRequest(() -> s.request(new SequentialRequest(s.getPostIntakeState(0),
                     s.getHandOffCubeState(SuperstructureCoordinator.getInstance()::getHalfCubeStowChoreography)))),
-            new IfRequest(
-                () -> quadrant.hasBump(),
-                new SequentialRequest(
-                    new WaitToFinishPathRequest(1.5),
-                    new WaitToIntakeRequest(HoldingObject.Cube, 0.75)
-                ),
-                new SequentialRequest(
-                    new WaitToPassXCoordinateRequest(100, quadrant, 2.25),
-                    new WaitToIntakeRequest(HoldingObject.Cube, 1.5)
-                )
+            new SequentialRequest(
+                new WaitToPassXCoordinateRequest(112, quadrant, 2.25), // 100
+                new WaitToIntakeRequest(HoldingObject.Cube, 1.5)
             ),
             new IfRequest(
                 () -> claw.getCurrentHoldingObject() == HoldingObject.Cube,
@@ -134,7 +127,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
 
         final SequentialRequest intakeSecondCone = new SequentialRequest(
             new LambdaRequest(() -> LimelightManager.getInstance().setProcessingMode(ProcessingMode.CENTER_DETECTOR)),
-            new SetTrajectoryRequest(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.75, quadrant),
+            new SetTrajectoryRequest(trajectories.cubeScoreToThirdPiece, Rotation2d.fromDegrees(45), 0.5, quadrant),
             new IfRequest(
                 () -> !getScoredCube(),
                 new SequentialRequest(
@@ -144,7 +137,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
             ),
             new WaitToPassXCoordinateRequest(140.0, quadrant, 4.0),
             new LambdaRequest(() -> s.coneIntakeWithoutScanSequence()),
-            new WaitToPassXCoordinateRequest(quadrant.hasBump() ? 234.0 : 230.0, quadrant, 4.0)
+            new WaitToPassXCoordinateRequest(220.0, quadrant, 4.0) // 230
         );
 
         return new SequentialRequest(setUp, scoreFirstConeAndLeave, intakeCubeAndScore, intakeSecondCone);

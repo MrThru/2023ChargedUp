@@ -74,7 +74,7 @@ public class HighLinkRoutine extends AutoRoutine {
                 new SequentialRequest(
                     new LambdaRequest(() -> {
                         Pose2d adjustedIntakingPosition = getConeIntakingPosition().transformBy(Pose2d.fromTranslation(
-                                new Translation2d(quadrant.hasBump() ? 4 : 0, (quadrant == Quadrant.TOP_RIGHT) ? 3 : 0)));
+                                new Translation2d(0, (quadrant == Quadrant.TOP_RIGHT) ? 3 : 0)));
                         
                         swerve.startVisionPID(adjustedIntakingPosition, adjustedIntakingPosition.getRotation(), false,
                                 new VisionPIDBuilder()
@@ -100,7 +100,7 @@ public class HighLinkRoutine extends AutoRoutine {
 
         final SequentialRequest scoreSecondCone = new SequentialRequest(
             new SetTrajectoryRequest(trajectories.thirdPieceToEdgeColumn, Rotation2d.fromDegrees(180), 0.75, quadrant),
-            new WaitToPassXCoordinateRequest(quadrant.hasBump() ? 106 : 120, quadrant, 4.0),
+            new WaitToPassXCoordinateRequest(120, quadrant, 4.0),
             new IfRequest(
                 () -> claw.getCurrentHoldingObject() == HoldingObject.Cone,
                 new SequentialRequest(

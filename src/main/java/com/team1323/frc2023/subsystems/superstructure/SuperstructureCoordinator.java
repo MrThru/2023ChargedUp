@@ -540,7 +540,10 @@ public class SuperstructureCoordinator {
 
         System.out.println("Cone mid scoring choreo");
 
-        return getHighChoreography(finalPosition);
+        return new SequentialRequest(
+            getHighChoreography(finalPosition),
+            new WaitRequest(0.125)
+        );
     }
 
     public Request getCubeMidScoringChoreography() {

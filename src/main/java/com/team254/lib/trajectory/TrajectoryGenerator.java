@@ -9,6 +9,7 @@ import java.util.function.Function;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.DriveMotionPlanner;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.field.AutoZones;
 import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.field.WaypointList;
@@ -234,8 +235,8 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2dWithQuadrantOffsets(secondConePickupPose)
                     .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 0.0))) // y was 6.0 at champs
                     .withOffset(Quadrant.TOP_LEFT, Pose2d.fromTranslation(new Translation2d(0.0, 0.0))) // y was 6.0 at champs
-                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, -3)))
-                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, -3))));
+                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 3)))
+                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 3))));
             
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 144.0, 240.0, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
@@ -276,7 +277,7 @@ public class TrajectoryGenerator {
                     .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 6))));
             waypoints.add(new Pose2dWithQuadrantOffsets(thirdConePickupPose)
                     .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 0)))
-                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 2))));
+                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 2 : 6.0))));
             
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 102.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }

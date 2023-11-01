@@ -233,7 +233,7 @@ public class Swerve extends Subsystem{
 		maxSpeedFactor = max;
 	}
 	private final SlewRateLimiter inputMagnitudeLimiter = new SlewRateLimiter(2.0);
-	private boolean useSlewLimiter = false;//Settings.kIsUsingCompBot;
+	private boolean useSlewLimiter = false;
 	public void useSlewLimiter(boolean use) {
 		useSlewLimiter = use;
 	}
@@ -686,8 +686,14 @@ public class Swerve extends Subsystem{
 								rotationCorrection, pose, robotCentric));
 					}
 				}else{
-					setOpenLoop(inverseKinematics.updateDriveVectors(translationalVector,
-							rotationalInput + rotationCorrection, pose, robotCentric));
+					double scaledRotation = (rotationCorrection) * (1 - (translationalVector.norm() * 0.4)) + rotationalInput;
+					if (Settings.kIsUsingCompBot) {
+						setClosedLoopVelocity(inverseKinematics.updateDriveVectors(translationalVector,
+								scaledRotation, pose, robotCentric));
+					} else {
+						setOpenLoop(inverseKinematics.updateDriveVectors(translationalVector,
+								scaledRotation, pose, robotCentric));
+					}
 				}
 				break;
 			case POSITION:

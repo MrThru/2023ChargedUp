@@ -81,7 +81,7 @@ public class Constants {
     public static final double kPathMinLookaheadDistance = 6.0;  // inches 24.0 (we've been using 3.0)
     
     //Swerve Speed Constants
-    public static final double kSwerveMaxSpeedInchesPerSecond = 12.5 * 12.0;
+    public static final double kSwerveMaxSpeedInchesPerSecond = 230.0;
     public static final double kSwerveRotationMaxSpeedRps = 106.33 * 0.46728;
     public static final double kSwerveRotationMaxSpeedEncUnits = 12720.0 * 0.8;
     public static final double kSwerveRotationMaxAcceleration = kSwerveRotationMaxSpeedRps * 12.5;

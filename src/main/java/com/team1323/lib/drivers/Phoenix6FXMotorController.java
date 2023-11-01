@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -29,7 +30,8 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
 
     private final VoltageOut voltageOutRequest = new VoltageOut(0.0, true, false);
     // TODO: Experiment with the new acceleration field in the VelocityVoltage object.
-    private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0, Constants.kMaxFalconRotationsPerSecond * 5.0, true, 0.0, 0, false);
+    private final VelocityTorqueCurrentFOC velocityCurrentRequest = new VelocityTorqueCurrentFOC(0.0, Constants.kMaxFalconRotationsPerSecond * 5.0, 0.0, 0, false);
+    private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0, Constants.kMaxFalconRotationsPerSecond * 5.0, true, 0.0, 0, false);
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0, true, 0.0, 0, false);
     private final Follower followerRequest = new Follower(0, false);
 
@@ -64,7 +66,7 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
 
     private void enableFOC(boolean enable) {
         voltageOutRequest.EnableFOC = enable;
-        velocityRequest.EnableFOC = enable;
+        velocityVoltageRequest.EnableFOC = enable;
         motionMagicRequest.EnableFOC = enable;
     }
 
@@ -109,19 +111,28 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
         configuration.OpenLoopRamps.VoltageOpenLoopRampPeriod = Settings.kIsUsingCompBot ? 0.0 : 0.2; // 0.2
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configuration.CurrentLimits.StatorCurrentLimit = 100.0;
-        configuration.CurrentLimits.StatorCurrentLimitEnable = false;// Settings.kIsUsingCompBot;
+        configuration.CurrentLimits.StatorCurrentLimitEnable = Settings.kIsUsingCompBot;
         configuration.CurrentLimits.SupplyCurrentLimit = 60.0;
         configuration.CurrentLimits.SupplyCurrentThreshold = 120.0;
         configuration.CurrentLimits.SupplyTimeThreshold = 0.25;
         configuration.CurrentLimits.SupplyCurrentLimitEnable = false;
+
+        configuration.TorqueCurrent.PeakForwardTorqueCurrent = 75.0;
+        configuration.TorqueCurrent.PeakReverseTorqueCurrent = -75.0;
         applyConfig();
 
         // Slot 0 is reserved for MotionMagic
         setPIDF(new MotorPIDF(0, 0.18, 0.0, 3.6, 1.0 / Constants.kMaxFalconRotationsPerSecond));
         // Slot 1 corresponds to velocity mode
         final double falconFeedForward = 12.0 / (Constants.kMaxFalconRotationsPerSecond * 0.95);
-        final double krakenFeedForward = 12.0 / (Constants.kMaxKrakenRotationsPerSecond * 0.92);
-        setPIDF(new MotorPIDF(1, 0.11, 0.0, 0.0, Settings.kIsUsingCompBot ? krakenFeedForward : falconFeedForward));
+        //final double krakenFeedForward = 12.0 / (Constants.kMaxKrakenRotationsPerSecond * 0.92);
+        final double krakenFeedForward = 0.0;
+        if (Settings.kIsUsingCompBot) {
+            setPIDF(new MotorPIDF(1, 12.5, 0.0, 0.0, krakenFeedForward));
+        } else {
+            setPIDF(new MotorPIDF(1, 0.11, 0.0, 0.0, falconFeedForward));
+        }
+        
 
         this.setPosition(0.0);
     }
@@ -341,7 +352,8 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void selectProfileSlot(int slotIndex) {
-        velocityRequest.Slot = slotIndex;
+        velocityVoltageRequest.Slot = slotIndex;
+        velocityCurrentRequest.Slot = slotIndex;
         motionMagicRequest.Slot = slotIndex;
     }
 
@@ -358,9 +370,16 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
                 currentControlRequest = voltageOutRequest;
                 break;
             case Velocity:
-                velocityRequest.Velocity = encoderVelocityToRotationsPerSecond(demand);
-                velocityRequest.FeedForward = arbitraryFeedForward * 12.0;
-                currentControlRequest = velocityRequest;
+                if (Settings.kIsUsingCompBot) {
+                    velocityCurrentRequest.Velocity = encoderVelocityToRotationsPerSecond(demand);
+                    // velocityRequest.FeedForward = arbitraryFeedForward * 12.0;
+                    velocityCurrentRequest.FeedForward = 0.0;
+                    currentControlRequest = velocityCurrentRequest;
+                } else {
+                    velocityVoltageRequest.Velocity = encoderVelocityToRotationsPerSecond(demand);
+                    velocityVoltageRequest.FeedForward = arbitraryFeedForward * 12.0;
+                    currentControlRequest = velocityVoltageRequest;
+                }
                 break;
             case MotionMagic:
                 motionMagicRequest.Position = encoderUnitsToEncoderRotations(demand);

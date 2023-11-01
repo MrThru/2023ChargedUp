@@ -256,7 +256,7 @@ public class CoaxialSwerveModule extends SwerveModule {
         Logger.getInstance().recordOutput(getLogKey("Drive Supply Current"), leadDriveMotor.getSupplyAmps());
         Logger.getInstance().recordOutput(getLogKey("Drive Stator Current"), leadDriveMotor.getStatorAmps());
         Logger.getInstance().recordOutput(getLogKey("Drive Temperature"), leadDriveMotor.getMotorTemperature());
-        
+        Logger.getInstance().recordOutput(getLogKey("Drive Talon Voltage"), leadDriveMotor.getAppliedVoltage());
     }
 
     @AutoLog
