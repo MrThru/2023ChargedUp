@@ -90,6 +90,8 @@ public class Robot extends LoggedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		RobotController.setBrownoutVoltage(6.1);
+
 		Logger logger = Logger.getInstance();
 
 		// Record metadata

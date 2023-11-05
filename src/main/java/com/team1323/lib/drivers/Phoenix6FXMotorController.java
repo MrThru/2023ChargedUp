@@ -117,8 +117,8 @@ public class Phoenix6FXMotorController extends TalonFX implements MotorControlle
         configuration.CurrentLimits.SupplyTimeThreshold = 0.25;
         configuration.CurrentLimits.SupplyCurrentLimitEnable = false;
 
-        configuration.TorqueCurrent.PeakForwardTorqueCurrent = 75.0;
-        configuration.TorqueCurrent.PeakReverseTorqueCurrent = -75.0;
+        configuration.TorqueCurrent.PeakForwardTorqueCurrent = 100.0; //75.0
+        configuration.TorqueCurrent.PeakReverseTorqueCurrent = -100.0; //75.0
         applyConfig();
 
         // Slot 0 is reserved for MotionMagic

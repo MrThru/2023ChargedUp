@@ -156,7 +156,7 @@ public class DriverControls implements Loop {
         swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, (Netlink.getBooleanValue("Slow Driving Enabled")/* || driver.leftTrigger.isBeingPressed()*/));
         
         Netlink.setNumberValue("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
-        if(true) {
+        if(false) {
             if(driver.bButton.wasActivated())
                 swerve.rotate(Rotation2d.fromDegrees(-90));
                 //swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());
@@ -166,6 +166,33 @@ public class DriverControls implements Loop {
                 swerve.rotate(Rotation2d.fromDegrees(90));
             else if (driver.yButton.wasActivated())
                 swerve.rotate(Rotation2d.fromDegrees(0));
+
+            if(driver.POV270.wasActivated()) {
+                double sign = AllianceChooser.getAlliance() == Alliance.Blue ? 1.0 : -1.0;
+                double offset = sign * 3.0;
+                if (swerve.isVisionPIDDone()) {
+                    Pose2d robotPose = swerve.getPose();
+                    swerve.startVisionPID(new Pose2d(robotPose.getTranslation().translateBy(new Translation2d(0.0, offset)), robotPose.getRotation()), robotPose.getRotation(), false);
+                } else {
+                    swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
+                }
+            }
+            if(driver.POV90.wasActivated()) {
+                double sign = AllianceChooser.getAlliance() == Alliance.Blue ? -1.0 : 1.0;
+                double offset = sign * 3.0;
+                if (swerve.isVisionPIDDone()) {
+                    Pose2d robotPose = swerve.getPose();
+                    swerve.startVisionPID(new Pose2d(robotPose.getTranslation().translateBy(new Translation2d(0.0, offset)), robotPose.getRotation()), robotPose.getRotation(), false);
+                } else {
+                    swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
+                }
+            }
+            if(driver.rightCenterClick.wasActivated()) {
+                swerve.zukLockDrivePosition();
+            } else if(driver.rightCenterClick.wasReleased()) {
+                swerve.stop();
+            }
+    
         } else {
             if(driver.bButton.shortReleased()) {
                 if(claw.getState() != Claw.ControlState.CONE_INTAKE || claw.getRPM() > 2000 || claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone) {
@@ -261,7 +288,36 @@ public class DriverControls implements Loop {
                     ));
                 }
             }
+
+            if(driver.POV270.wasActivated()) {
+                cubeIntake.conformToState(CubeIntake.State.FLOOR);
+            } else if(driver.POV270.wasReleased()) {
+                cubeIntake.conformToState(CubeIntake.State.STOWED);
+            }
+
+            if(driver.POV90.wasActivated()) {
+                if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube)
+                    s.manualShelfSequence();
+                limelights.setProcessingMode(ProcessingMode.CENTER_FIDUCIAL);
+            } else if(driver.POV90.wasReleased()) {
+                s.request(SuperstructureCoordinator.getInstance().getConeStowChoreography());
+            }
+            
+            if(driver.rightCenterClick.wasActivated()) {
+                if(claw.getCurrentHoldingObject() != Claw.HoldingObject.Cube) {
+                    claw.conformToState(Claw.ControlState.CONE_OUTAKE);
+                } else {
+                    claw.conformToState(Claw.ControlState.CUBE_OUTAKE);
+                }
+                System.out.println(claw.getCurrentHoldingObject().toString() + " object manually ejected");
+            } else if(driver.rightCenterClick.wasReleased()) {
+                //claw.conformToState(Claw.ControlState.OFF);
+                if(claw.getCurrentHoldingObject() == Claw.HoldingObject.Cube) {
+                    claw.setCurrentHoldingObject(Claw.HoldingObject.None);
+                }
+            }
         }
+
         if(driver.rightTrigger.wasActivated()) {
             tunnel.setState(Tunnel.State.EJECT_ONE);
         }
@@ -396,32 +452,8 @@ public class DriverControls implements Loop {
         if((!driver.POV0.isBeingPressed() && !driver.POV90.isBeingPressed() && !driver.POV180.isBeingPressed() && !driver.POV270.isBeingPressed())) {
             swerve.setCenterOfRotation(new Translation2d());
         }*/
-        if(driver.POV270.wasActivated()) {
-            double sign = AllianceChooser.getAlliance() == Alliance.Blue ? 1.0 : -1.0;
-            double offset = sign * 3.0;
-            if (swerve.isVisionPIDDone()) {
-                Pose2d robotPose = swerve.getPose();
-                swerve.startVisionPID(new Pose2d(robotPose.getTranslation().translateBy(new Translation2d(0.0, offset)), robotPose.getRotation()), robotPose.getRotation(), false);
-            } else {
-                swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
-            }
-        }
-        if(driver.POV90.wasActivated()) {
-            double sign = AllianceChooser.getAlliance() == Alliance.Blue ? -1.0 : 1.0;
-            double offset = sign * 3.0;
-            if (swerve.isVisionPIDDone()) {
-                Pose2d robotPose = swerve.getPose();
-                swerve.startVisionPID(new Pose2d(robotPose.getTranslation().translateBy(new Translation2d(0.0, offset)), robotPose.getRotation()), robotPose.getRotation(), false);
-            } else {
-                swerve.setVisionPIDTarget(swerve.getVisionPIDTarget().translateBy(new Translation2d(0.0, offset)));
-            }
-        }
-        if(driver.rightCenterClick.wasActivated()) {
-            swerve.zukLockDrivePosition();
-        } else if(driver.rightCenterClick.wasReleased()) {
-            swerve.stop();
-        }
-
+        
+        
         if(coDriver.aButton.wasActivated()) {
             if(tunnel.getFrontBanner()) {
                 s.communityIntakeState();
