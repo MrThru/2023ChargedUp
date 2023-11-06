@@ -156,7 +156,7 @@ public class DriverControls implements Loop {
         swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, (Netlink.getBooleanValue("Slow Driving Enabled")/* || driver.leftTrigger.isBeingPressed()*/));
         
         Netlink.setNumberValue("Translation Scalar", new Translation2d(swerveXInput, swerveYInput).norm());
-        if(false) {
+        if(true) {
             if(driver.bButton.wasActivated())
                 swerve.rotate(Rotation2d.fromDegrees(-90));
                 //swerve.rotate(swerve.getHeading().rotateBy(Rotation2d.fromDegrees(90)).getDegrees());

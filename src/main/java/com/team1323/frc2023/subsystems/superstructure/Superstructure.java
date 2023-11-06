@@ -229,12 +229,16 @@ public class Superstructure extends Subsystem {
 	}
 
 	public void coneIntakeWithoutScanSequence() {
+		coneIntakeWithoutScanSequence(this::objectAwareStow);
+	}
+
+	public void coneIntakeWithoutScanSequence(ChoreographyProvider stowChoreo) {
 		request(new SequentialRequest(
 			new ParallelRequest(
 				SuperstructureCoordinator.getInstance().getConeIntakeChoreography(),
 				claw.stateRequest(Claw.ControlState.CONE_INTAKE)
 			),
-			choreographyRequest(this::objectAwareStow).withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
+			choreographyRequest(stowChoreo).withPrerequisite(() -> claw.getCurrentHoldingObject() == Claw.HoldingObject.Cone)
 		));
 	}
 

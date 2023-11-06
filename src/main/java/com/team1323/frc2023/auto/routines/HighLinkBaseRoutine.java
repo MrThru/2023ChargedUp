@@ -71,7 +71,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
             claw.stateRequest(Claw.ControlState.AUTO_CONE_HOLD),
             new LambdaRequest(() -> s.coneHighScoreManual()),
             new WaitForSuperstructureRequest(2.0),
-            new SetTrajectoryRequest(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 0.75, quadrant),
+            new SetTrajectoryRequest(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 1.0, quadrant),
             new WaitToEjectObjectRequest(1.5),
             new LambdaRequest(() -> s.request(SuperstructureCoordinator.getInstance().getCommunityConeHoldChoreography()))
         );
@@ -136,7 +136,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
                 )
             ),
             new WaitToPassXCoordinateRequest(140.0, quadrant, 4.0),
-            new LambdaRequest(() -> s.coneIntakeWithoutScanSequence()),
+            new LambdaRequest(() -> s.coneIntakeWithoutScanSequence(SuperstructureCoordinator.getInstance()::getCommunityConeHoldChoreography)),
             new WaitToPassXCoordinateRequest(220.0, quadrant, 4.0) // 230
         );
 

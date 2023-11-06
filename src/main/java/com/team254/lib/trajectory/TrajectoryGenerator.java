@@ -202,7 +202,7 @@ public class TrajectoryGenerator {
             cubeScoreToThirdPiece = getCubeScoreToThirdPiece();
             slowCubeScoreToThirdPiece = getSlowCubeScoreToThirdPiece();
             thirdPieceToSecondConeColumn = new MirroredTrajectory(getThirdPieceToSecondConeColumn());
-            thirdPieceToEdgeColumn = new MirroredTrajectory(getThirdPieceToEdgeColumn());
+            thirdPieceToEdgeColumn = getThirdPieceToEdgeColumn();
             thirdPieceToBridgePath = new MirroredTrajectory(getThirdPieceToBridgePath());
 
             // Teleop paths
@@ -235,8 +235,8 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2dWithQuadrantOffsets(secondConePickupPose)
                     .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 0.0))) // y was 6.0 at champs
                     .withOffset(Quadrant.TOP_LEFT, Pose2d.fromTranslation(new Translation2d(0.0, 0.0))) // y was 6.0 at champs
-                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 3)))
-                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 3))));
+                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 6 : 9)))
+                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 6 : 9))));
             
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 144.0, 240.0, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
@@ -273,8 +273,8 @@ public class TrajectoryGenerator {
             WaypointList waypoints = new WaypointList();
             waypoints.add(new Pose2d(new Translation2d(74.3125, 42.19), Rotation2d.fromDegrees(-10)));
             waypoints.add(new Pose2dWithQuadrantOffsets(new Pose2d(new Translation2d(152.57, 24.28), Rotation2d.fromDegrees(0)))
-                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 6)))
-                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 6))));
+                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 6 : 7)))
+                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 6 : 7))));
             waypoints.add(new Pose2dWithQuadrantOffsets(thirdConePickupPose)
                     .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 0)))
                     .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 2 : 6.0))));
@@ -302,13 +302,13 @@ public class TrajectoryGenerator {
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
 
-        private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToEdgeColumn() {
-            List<Pose2d> waypoints = new ArrayList<>();
+        private MirroredTrajectory getThirdPieceToEdgeColumn() {
+            WaypointList waypoints = new WaypointList();
             waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(-135)));
-            waypoints.add(new Pose2d(new Translation2d(152.57, 34.28), Rotation2d.fromDegrees(180)));
+            waypoints.add(new Pose2dWithQuadrantOffsets(new Pose2d(new Translation2d(152.57, Settings.kIsUsingCompBot ? 34.28 : 40.28), Rotation2d.fromDegrees(180))));
             waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(-170)));
             
-            return generateTrajectory(false, waypoints, Arrays.asList(), 102.0, 240, kMaxDecel, kMaxVoltage, 48.0, 1);
+            return new MirroredTrajectory(false, waypoints, Arrays.asList(), 102.0, 240, kMaxDecel, kMaxVoltage, 48.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getThirdPieceToBridgePath(){
