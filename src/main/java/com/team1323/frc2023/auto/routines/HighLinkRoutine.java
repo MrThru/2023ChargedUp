@@ -1,7 +1,7 @@
 package com.team1323.frc2023.auto.routines;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.auto.SetTrajectoryRequest;
@@ -37,6 +37,7 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryGenerator.TrajectorySet.MirroredTrajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 
 public class HighLinkRoutine extends AutoRoutine {
@@ -57,9 +58,10 @@ public class HighLinkRoutine extends AutoRoutine {
 
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Stream.of(trajectories.secondPiecePickupPath, trajectories.secondPieceToCubeScore,
-                        trajectories.cubeScoreToThirdPiece, trajectories.thirdPieceToEdgeColumn)
-                .map(mirroredTrajectory -> mirroredTrajectory.get(Quadrant.BOTTOM_LEFT))
+        final List<MirroredTrajectory> mirroredTrajectories = Arrays.asList(trajectories.secondPiecePickupPath, trajectories.secondPieceToCubeScore,
+                        trajectories.cubeScoreToThirdPiece, trajectories.thirdPieceToEdgeColumn, trajectories.finalBackupPath);
+        return Arrays.stream(Quadrant.values())
+                .flatMap(quadrant -> mirroredTrajectories.stream().map(mirroredTrajectory -> mirroredTrajectory.get(quadrant)))
                 .toList();
     }
 

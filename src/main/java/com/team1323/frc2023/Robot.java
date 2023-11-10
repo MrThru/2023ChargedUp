@@ -157,7 +157,7 @@ public class Robot extends LoggedRobot {
 		for (int i = 0; i < paths.size(); i++) {
 			LogUtil.recordTrajectory(String.format("Paths/Path %d", i), paths.get(i));
 		}
-		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
+		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(paths));
 
 		long startTime = Logger.getInstance().getRealTimestamp();
 		smartDashboardInteractions.preGenerateAutoRoutines();

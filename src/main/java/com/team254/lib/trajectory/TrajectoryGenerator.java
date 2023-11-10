@@ -186,6 +186,7 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory thirdPieceToSecondConeColumn;
         public final MirroredTrajectory thirdPieceToEdgeColumn;
         public final MirroredTrajectory thirdPieceToBridgePath;
+        public final MirroredTrajectory finalBackupPath;
 
         // Teleop Paths
         public final MirroredTrajectory communitySweepPath;
@@ -204,6 +205,7 @@ public class TrajectoryGenerator {
             thirdPieceToSecondConeColumn = new MirroredTrajectory(getThirdPieceToSecondConeColumn());
             thirdPieceToEdgeColumn = getThirdPieceToEdgeColumn();
             thirdPieceToBridgePath = new MirroredTrajectory(getThirdPieceToBridgePath());
+            finalBackupPath = new MirroredTrajectory(getFinalBackupPath());
 
             // Teleop paths
             communitySweepPath = new MirroredTrajectory(getCommunitySweepPath());
@@ -233,8 +235,8 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(new Translation2d(126, secondConePickupPose.getTranslation().y()), Rotation2d.fromDegrees(0)));
             waypoints.add(new Pose2d(new Translation2d(178, secondConePickupPose.getTranslation().y()), Rotation2d.fromDegrees(0)));
             waypoints.add(new Pose2dWithQuadrantOffsets(secondConePickupPose)
-                    .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 0.0))) // y was 6.0 at champs
-                    .withOffset(Quadrant.TOP_LEFT, Pose2d.fromTranslation(new Translation2d(0.0, 0.0))) // y was 6.0 at champs
+                    .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0.0, 6.0))) // y was 6.0 at champs
+                    .withOffset(Quadrant.TOP_LEFT, Pose2d.fromTranslation(new Translation2d(0.0, 6.0))) // y was 6.0 at champs
                     .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 6 : 9)))
                     .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 6 : 9))));
             
@@ -277,7 +279,7 @@ public class TrajectoryGenerator {
                     .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 6 : 7))));
             waypoints.add(new Pose2dWithQuadrantOffsets(thirdConePickupPose)
                     .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 0)))
-                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 2 : 6.0))));
+                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 0))));
             
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 102.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
@@ -305,7 +307,7 @@ public class TrajectoryGenerator {
         private MirroredTrajectory getThirdPieceToEdgeColumn() {
             WaypointList waypoints = new WaypointList();
             waypoints.add(new Pose2d(thirdConePickupPose.getTranslation(), Rotation2d.fromDegrees(-135)));
-            waypoints.add(new Pose2dWithQuadrantOffsets(new Pose2d(new Translation2d(152.57, Settings.kIsUsingCompBot ? 34.28 : 40.28), Rotation2d.fromDegrees(180))));
+            waypoints.add(new Pose2dWithQuadrantOffsets(new Pose2d(new Translation2d(152.57, Settings.kIsUsingCompBot ? 34.28 : 40.28), Rotation2d.fromDegrees(180)))); // y was originally 34.28
             waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(-170)));
             
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 102.0, 240, kMaxDecel, kMaxVoltage, 48.0, 1);
@@ -325,6 +327,14 @@ public class TrajectoryGenerator {
             );
         
             return generateTrajectory(false, waypoints, constraints, 48.0, 36.0, 120.0, kMaxAccel, kMaxDecel, kMaxVoltage, 48.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getFinalBackupPath() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(71 + 60, 20), Rotation2d.fromDegrees(0)));
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), 24.0, 36.0, 144.0, 240.0, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
     }
 }
