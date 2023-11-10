@@ -118,6 +118,10 @@ public class DifferentialSwerveModule extends SwerveModule {
     }
 
     @Override
+    public void setRotationNeutralMode(NeutralMode mode) {
+        
+    }
+    @Override
     public void setOpenLoop(Translation2d driveVector) {
         Rotation2d driveDirection = driveVector.direction();
 

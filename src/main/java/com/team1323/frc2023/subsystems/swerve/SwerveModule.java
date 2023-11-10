@@ -55,6 +55,7 @@ public abstract class SwerveModule extends Subsystem {
 
 	public abstract void setNeutralMode(NeutralMode mode);
 
+	public abstract void setRotationNeutralMode(NeutralMode mode);
 	/**
 	 * @param driveVector A vector whose magnitude represents an open-loop
 	 * drive speed in the range of [0, 1].

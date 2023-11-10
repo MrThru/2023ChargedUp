@@ -218,6 +218,10 @@ public class Swerve extends Subsystem{
 	public void setModuleNeutralModes(NeutralMode mode) {
 		modules.forEach(m -> m.setNeutralMode(mode));
 	}
+
+	public void setModuleRotationModes(NeutralMode mode) {
+		modules.forEach(m -> m.setRotationNeutralMode(mode));
+	}
 	
 	//Teleop driving variables
 	private Translation2d translationalVector = new Translation2d();

@@ -332,9 +332,9 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getFinalBackupPath() {
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(Constants.kAutoStartingPose.getTranslation(), Rotation2d.fromDegrees(0)));
-            waypoints.add(new Pose2d(new Translation2d(71 + 60, 20), Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(new Translation2d(71 + 180, 20), Rotation2d.fromDegrees(0)));
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), 24.0, 36.0, 144.0, 240.0, kMaxDecel, kMaxVoltage, 24.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 84.0, 240.0, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
     }
 }

@@ -12,8 +12,10 @@ import java.util.Arrays;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.SignalLogger;
 import com.team1323.frc2023.field.AllianceChooser;
+import com.team1323.frc2023.field.AutoZones;
 import com.team1323.frc2023.field.NodeLocation;
 import com.team1323.frc2023.field.ScoringPoses;
+import com.team1323.frc2023.field.AutoZones.Quadrant;
 import com.team1323.frc2023.loops.Loop;
 import com.team1323.frc2023.requests.EmptyRequest;
 import com.team1323.frc2023.requests.ParallelRequest;
@@ -43,6 +45,7 @@ import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.trajectory.TrajectoryGenerator;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -320,6 +323,10 @@ public class DriverControls implements Loop {
 
         if(driver.rightTrigger.wasActivated()) {
             tunnel.setState(Tunnel.State.EJECT_ONE);
+            /*Netlink.setBooleanValue("Swerve Coast Mode", true);
+            swerve.setModuleRotationModes(NeutralMode.Brake);
+            swerve.zeroSensors(AutoZones.mirror(Constants.kAutoStartingPose, Quadrant.TOP_RIGHT));
+            swerve.setTrajectory(TrajectoryGenerator.getInstance().getTrajectorySet().finalBackupPath.get(Quadrant.TOP_RIGHT), Rotation2d.identity(), 0.75);*/
         }
 
         /*if(testController.rightBumper.wasActivated()) {
