@@ -404,9 +404,9 @@ public class Limelight extends Subsystem {
 		private static final double[] kDefaultPose2dArray = new double[3];
 		private static final double[] kDefaultPose3dArray = new double[7];
 
-		public double heartbeat;
-		public String jsonDump;
-		public double tx;
+		public double heartbeat = 0.0;
+		public String jsonDump = "";
+		public double tx = 0.0;
 		public Pose2d robotPose2d = Pose2d.identity();
 		public Pose3d cameraPose3d_TargetSpace = new Pose3d();
 		// This should be parsed from the JSON dump input

@@ -1,5 +1,8 @@
 package com.team1323.frc2023.auto.routines;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 import com.team1323.frc2023.Constants;
 import com.team1323.frc2023.auto.SetTrajectoryRequest;
 import com.team1323.frc2023.auto.WaitForRemainingTimeRequest;
@@ -30,8 +33,11 @@ import com.team1323.lib.math.TwoPointRamp;
 import com.team1323.lib.util.Netlink;
 import com.team1323.lib.util.SynchronousPIDF;
 import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.timing.TimedState;
 
 public class HighLinkRoutine extends AutoRoutine {
     private final Quadrant quadrant;
@@ -47,6 +53,14 @@ public class HighLinkRoutine extends AutoRoutine {
         swerve = Swerve.getInstance();
         claw = Claw.getInstance();
         s = Superstructure.getInstance();
+    }
+
+    @Override
+    public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
+        return Stream.of(trajectories.secondPiecePickupPath, trajectories.secondPieceToCubeScore,
+                        trajectories.cubeScoreToThirdPiece, trajectories.thirdPieceToEdgeColumn)
+                .map(mirroredTrajectory -> mirroredTrajectory.get(Quadrant.BOTTOM_LEFT))
+                .toList();
     }
 
     private void setConeIntakingPosition(Pose2d pose) {

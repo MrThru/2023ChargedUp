@@ -4,6 +4,7 @@
 
 package com.team1323.frc2023;
 
+import java.util.List;
 import java.util.Set;
 
 import org.littletonrobotics.junction.LogFileUtil;
@@ -34,9 +35,13 @@ import com.team1323.frc2023.subsystems.superstructure.Superstructure;
 import com.team1323.frc2023.subsystems.swerve.Swerve;
 import com.team1323.frc2023.vision.VisionPIDController.VisionPIDBuilder;
 import com.team1323.lib.math.TwoPointRamp;
+import com.team1323.lib.util.LogUtil;
 import com.team1323.lib.util.Netlink;
+import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryGenerator;
+import com.team254.lib.trajectory.timing.TimedState;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -147,7 +152,11 @@ public class Robot extends LoggedRobot {
 		generator.generateTrajectories();
 
 		AutoRoutine auto = new HighLinkRoutine(Quadrant.BOTTOM_LEFT, true);
-		qTransmitter.addPaths(auto.getPaths());
+		List<Trajectory<TimedState<Pose2dWithCurvature>>> paths = auto.getPaths();
+		qTransmitter.addPaths(paths);
+		for (int i = 0; i < paths.size(); i++) {
+			LogUtil.recordTrajectory(String.format("Paths/Path %d", i), paths.get(i));
+		}
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 
 		long startTime = Logger.getInstance().getRealTimestamp();
