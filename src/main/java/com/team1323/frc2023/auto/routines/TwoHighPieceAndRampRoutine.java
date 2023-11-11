@@ -74,7 +74,7 @@ public class TwoHighPieceAndRampRoutine extends AutoRoutine {
                 new SequentialRequest(
                     new LambdaRequest(() -> {
                         Pose2d adjustedIntakingPosition = getConeIntakingPosition().transformBy(Pose2d.fromTranslation(
-                                new Translation2d(quadrant.hasBump() ? 4 : 0, (quadrant == Quadrant.TOP_RIGHT) ? 3 : 0)));
+                                new Translation2d(0, 0)));
                         
                         swerve.startVisionPID(adjustedIntakingPosition, adjustedIntakingPosition.getRotation(), false,
                                 new VisionPIDBuilder()

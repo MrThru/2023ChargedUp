@@ -10,14 +10,14 @@ public class NonlinearBalanceController implements BalanceController {
 
     private final TwoPointRamp outputRamp = Settings.kIsUsingCompBot ?
     new TwoPointRamp(
-        new Translation2d(kPitchDeadband, 0.03),
-        new Translation2d(16.0, 0.3),
+        new Translation2d(kPitchDeadband, 0.0196),
+        new Translation2d(16.0, 0.19565),
         2.0,
         true
     ) :
     new TwoPointRamp(
-        new Translation2d(kPitchDeadband, 0.03),
-        new Translation2d(16.0, 0.2),
+        new Translation2d(kPitchDeadband, 0.0196),
+        new Translation2d(16.0, 0.163),
         2.0,
         true
     );

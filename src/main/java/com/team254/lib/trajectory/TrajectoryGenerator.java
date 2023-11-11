@@ -278,8 +278,10 @@ public class TrajectoryGenerator {
                     .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 6 : 7)))
                     .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, Settings.kIsUsingCompBot ? 6 : 7))));
             waypoints.add(new Pose2dWithQuadrantOffsets(thirdConePickupPose)
-                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 0)))
-                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 0))));
+                    .withOffset(Quadrant.BOTTOM_LEFT, Pose2d.fromTranslation(new Translation2d(0, 3)))
+                    .withOffset(Quadrant.BOTTOM_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 3)))
+                    .withOffset(Quadrant.TOP_LEFT, Pose2d.fromTranslation(new Translation2d(0, 3)))
+                    .withOffset(Quadrant.TOP_RIGHT, Pose2d.fromTranslation(new Translation2d(0, 3))));
             
             return new MirroredTrajectory(false, waypoints, Arrays.asList(), 24.0, 0.0, 102.0, kMaxAccel, kMaxDecel, kMaxVoltage, 24.0, 1);
         }
