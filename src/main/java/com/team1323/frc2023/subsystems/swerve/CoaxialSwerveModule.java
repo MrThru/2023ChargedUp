@@ -112,8 +112,7 @@ public class CoaxialSwerveModule extends SwerveModule {
     }
 
     @Override
-    public void setNeutralMode(NeutralMode mode) {
-        rotationMotor.setNeutralMode(mode);
+    public void setDriveNeutralMode(NeutralMode mode) {
         allDriveMotors.forEach(m -> m.setNeutralMode(mode));
     }
     

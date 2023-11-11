@@ -128,7 +128,7 @@ public class HighLinkRoutine extends AutoRoutine {
                     new IfRequest(
                         () -> claw.getCurrentHoldingObject() == HoldingObject.None,
                         new ParallelRequest(
-                            new SetTrajectoryRequest(trajectories.secondPiecePickupPath, Rotation2d.fromDegrees(180), 0.75, quadrant),
+                            new SetTrajectoryRequest(trajectories.finalBackupPath, Rotation2d.fromDegrees(180), 0.75, quadrant),
                             new LambdaRequest(() -> Netlink.setBooleanValue("Swerve Coast Mode", true))
                         ),
                         new SequentialRequest(

@@ -215,11 +215,11 @@ public class Swerve extends Subsystem{
 		generator = TrajectoryGenerator.getInstance();
 	}
 
-	public void setModuleNeutralModes(NeutralMode mode) {
-		modules.forEach(m -> m.setNeutralMode(mode));
+	public void setDriveNeutralMode(NeutralMode mode) {
+		modules.forEach(m -> m.setDriveNeutralMode(mode));
 	}
 
-	public void setModuleRotationModes(NeutralMode mode) {
+	public void setRotationNeutralMode(NeutralMode mode) {
 		modules.forEach(m -> m.setRotationNeutralMode(mode));
 	}
 	
@@ -1036,10 +1036,10 @@ public class Swerve extends Subsystem{
 		Logger.getInstance().recordOutput("Swerve/State", currentState.toString());
 
 		if(Netlink.getBooleanValue("Swerve Coast Mode") && neutralModeIsBrake) {
-			setModuleNeutralModes(NeutralMode.Coast);
+			setDriveNeutralMode(NeutralMode.Coast);
 			neutralModeIsBrake = false;
 		} else if(!neutralModeIsBrake && !Netlink.getBooleanValue("Swerve Coast Mode")) {
-			setModuleNeutralModes(NeutralMode.Brake);
+			setDriveNeutralMode(NeutralMode.Brake);
 			neutralModeIsBrake = true;
 		}
 	}
