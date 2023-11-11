@@ -90,7 +90,7 @@ public class HighLinkRoutine extends AutoRoutine {
                 new SequentialRequest(
                     new LambdaRequest(() -> {
                         Pose2d adjustedIntakingPosition = getConeIntakingPosition().transformBy(Pose2d.fromTranslation(
-                                new Translation2d(0, 0)));
+                                new Translation2d(0, (quadrant == Quadrant.BOTTOM_LEFT || quadrant == Quadrant.TOP_RIGHT) ? 4 : -4)));
                         
                         swerve.startVisionPID(adjustedIntakingPosition, adjustedIntakingPosition.getRotation(), false,
                                 new VisionPIDBuilder()
