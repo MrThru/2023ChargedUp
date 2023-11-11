@@ -17,7 +17,7 @@ public class NonlinearBalanceController implements BalanceController {
     ) :
     new TwoPointRamp(
         new Translation2d(kPitchDeadband, 0.03),
-        new Translation2d(16.0, 0.25),
+        new Translation2d(16.0, 0.2),
         2.0,
         true
     );

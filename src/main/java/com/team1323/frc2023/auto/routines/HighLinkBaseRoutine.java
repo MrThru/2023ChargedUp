@@ -137,7 +137,7 @@ public class HighLinkBaseRoutine extends AutoRoutine {
             ),
             new WaitToPassXCoordinateRequest(140.0, quadrant, 4.0),
             new LambdaRequest(() -> s.coneIntakeWithoutScanSequence(SuperstructureCoordinator.getInstance()::getCommunityConeHoldChoreography)),
-            new WaitToPassXCoordinateRequest(220.0, quadrant, 4.0) // 230
+            new WaitToPassXCoordinateRequest(230.0, quadrant, 4.0) // 230
         );
 
         return new SequentialRequest(setUp, scoreFirstConeAndLeave, intakeCubeAndScore, intakeSecondCone);
