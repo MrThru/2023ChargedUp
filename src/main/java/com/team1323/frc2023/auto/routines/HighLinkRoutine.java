@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.team1323.frc2023.Constants;
+import com.team1323.frc2023.Settings;
 import com.team1323.frc2023.auto.SetTrajectoryRequest;
 import com.team1323.frc2023.auto.WaitForRemainingTimeRequest;
 import com.team1323.frc2023.auto.WaitToFinishPathRequest;
@@ -93,7 +94,7 @@ public class HighLinkRoutine extends AutoRoutine {
                         if (quadrant == Quadrant.BOTTOM_LEFT) { 
                             yOffset = 6.0;
                         } else if (quadrant == Quadrant.TOP_RIGHT) {
-                            yOffset = 4.0;
+                            yOffset = Settings.kIsUsingCompBot ? 4.0 : 2.0;
                         } else if (quadrant == Quadrant.BOTTOM_RIGHT) {
                             yOffset = -4.0;
                         } else if (quadrant == Quadrant.TOP_LEFT) {
