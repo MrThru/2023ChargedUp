@@ -533,7 +533,7 @@ public class SuperstructureCoordinator {
     public Request getConeMidScoringChoreography() {
         SuperstructurePosition finalPosition = new SuperstructurePosition(
             0.5,
-            10.5, //11.5
+            11.0, //11.5
             49.5,
             -14.4 //19.4
         );
