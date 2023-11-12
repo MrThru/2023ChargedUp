@@ -409,7 +409,7 @@ public class Constants {
         public static final double kAngleTolerance = 6.0;
 
         public static final double kVelocityScalar = Settings.kIsUsingCompBot ? 1.0 : 1.0;
-        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 5.0 : 5.0;
+        public static final double kAccelerationScalar = Settings.kIsUsingCompBot ? 4.0 : 5.0;
 
         public static final double kTriggerSupplyCurrentLimit = 150.0; //30.0 - 40
         public static final double kContinuousSupplyCurrentLimit = 60.0;
@@ -438,7 +438,7 @@ public class Constants {
 
         private static final MotorPIDF kCompPIDF = new MotorPIDF(
             0,
-            Settings.kIsUsingShoulderCANCoder ? 1.0 : 1.0, //0.04
+            Settings.kIsUsingShoulderCANCoder ? 1.0 : 1.0, // 1.0
             0.0,
             0.0,
             Settings.kIsUsingShoulderCANCoder ? 1.475 : kKrakenMotionMagicFeedForward

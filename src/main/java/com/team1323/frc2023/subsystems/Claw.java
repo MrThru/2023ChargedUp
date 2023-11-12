@@ -119,7 +119,7 @@ public class Claw extends Subsystem {
         claw.set(ControlMode.Velocity, rpmToEncUnits(rpm));
     }
     public void conformToState(ControlState state) {
-        if(state != currentState || state != ControlState.CUBE_OUTAKE) {
+        if(state != currentState || state != ControlState.CUBE_INTAKE) {
             if(state == ControlState.CUBE_OUTAKE || state == ControlState.CONE_OUTAKE) {
                 claw.configStatorCurrentLimit(100);
             }

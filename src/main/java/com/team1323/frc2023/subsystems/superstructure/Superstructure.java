@@ -458,8 +458,8 @@ public class Superstructure extends Subsystem {
 
 			if (nodeLocation.row == Row.MIDDLE) {
 				visionPIDController = new VisionPIDBuilder()
-						.withTolerance(2.0)
-						.withOnTargetTime(0.1)
+						.withTolerance(1.5) // 2.0
+						.withOnTargetTime(0.3) // 0.1
 						.build();
 				scoringChoreo = coordinator::getConeMidScoringChoreography;
 			} else if (nodeLocation.row == Row.TOP) {
@@ -476,8 +476,8 @@ public class Superstructure extends Subsystem {
 
 	public void coneMidScoringSequence(Pose2d scoringPose) {
 		VisionPIDController controller = new VisionPIDBuilder()
-				.withTolerance(Settings.kIsUsingCompBot ? 2.0 : 1.0) //2.0
-				.withOnTargetTime(Settings.kIsUsingCompBot ? 0.1 : 0.5) //0.1
+				.withTolerance(Settings.kIsUsingCompBot ? 1.5 : 1.0) //2.0
+				.withOnTargetTime(Settings.kIsUsingCompBot ? 0.3 : 0.5) //0.1
 				.build();
 		scoringSequence(scoringPose, coordinator::getConeMidScoringChoreography, 
 				Claw.ControlState.CONE_OUTAKE, controller, false, true);

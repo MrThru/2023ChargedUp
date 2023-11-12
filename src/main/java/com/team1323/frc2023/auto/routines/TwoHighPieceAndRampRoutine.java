@@ -75,7 +75,7 @@ public class TwoHighPieceAndRampRoutine extends AutoRoutine {
                     new LambdaRequest(() -> {
                         double yOffset = 0.0;
                         if (quadrant == Quadrant.BOTTOM_LEFT) { 
-                            yOffset = 4.0;
+                            yOffset = 6.0;
                         } else if (quadrant == Quadrant.TOP_RIGHT) {
                             yOffset = 4.0;
                         } else if (quadrant == Quadrant.BOTTOM_RIGHT) {
