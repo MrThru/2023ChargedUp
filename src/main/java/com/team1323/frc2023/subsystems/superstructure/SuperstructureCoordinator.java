@@ -542,7 +542,7 @@ public class SuperstructureCoordinator {
 
         return new SequentialRequest(
             getHighChoreography(finalPosition),
-            new WaitRequest(0.125)
+            new WaitRequest(0.25) //0.125
         );
     }
 

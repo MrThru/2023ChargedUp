@@ -73,8 +73,18 @@ public class TwoHighPieceAndRampRoutine extends AutoRoutine {
                 },
                 new SequentialRequest(
                     new LambdaRequest(() -> {
+                        double yOffset = 0.0;
+                        if (quadrant == Quadrant.BOTTOM_LEFT) { 
+                            yOffset = 4.0;
+                        } else if (quadrant == Quadrant.TOP_RIGHT) {
+                            yOffset = 4.0;
+                        } else if (quadrant == Quadrant.BOTTOM_RIGHT) {
+                            yOffset = -4.0;
+                        } else if (quadrant == Quadrant.TOP_LEFT) {
+                            yOffset = -2.0;
+                        }
                         Pose2d adjustedIntakingPosition = getConeIntakingPosition().transformBy(Pose2d.fromTranslation(
-                                new Translation2d(0, (quadrant == Quadrant.BOTTOM_LEFT || quadrant == Quadrant.TOP_RIGHT) ? 4 : -4)));
+                                new Translation2d(0, yOffset)));
                         
                         swerve.startVisionPID(adjustedIntakingPosition, adjustedIntakingPosition.getRotation(), false,
                                 new VisionPIDBuilder()
